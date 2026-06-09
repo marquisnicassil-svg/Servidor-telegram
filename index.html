@@ -655,14 +655,18 @@
                 <h2>Motor de Inteligência</h2>
             </div>
 
-            <div class="api-selector-grid">
+            <div class="api-selector-grid" style="grid-template-columns: 1fr 1fr 1fr;">
                 <div class="selector-btn active" id="btn-gemini" onclick="setApiType('GEMINI')">
                     <span>♊</span>
-                    <span>Google Gemini</span>
+                    <span>Gemini</span>
                 </div>
                 <div class="selector-btn" id="btn-openai" onclick="setApiType('OPENAI')">
                     <span>🌐</span>
-                    <span>OpenAI (Compatível)</span>
+                    <span>OpenAI</span>
+                </div>
+                <div class="selector-btn" id="btn-groq" onclick="setApiType('GROQ')">
+                    <span>⚡</span>
+                    <span>Groq</span>
                 </div>
             </div>
 
@@ -854,8 +858,9 @@
 
         function setApiType(type, initLoad = false) {
             apiType = type;
-            document.getElementById('btn-gemini').classList.toggle('active', type === "GEMINI");
-            document.getElementById('btn-openai').classList.toggle('active', type === "OPENAI");
+            document.getElementById('btn-gemini')?.classList.toggle('active', type === "GEMINI");
+            document.getElementById('btn-openai')?.classList.toggle('active', type === "OPENAI");
+            document.getElementById('btn-groq')?.classList.toggle('active', type === "GROQ");
             
             if (!initLoad) { // Ao clicar mudar motor na hora, sobrescreve defaults
                 const baseUrl = document.getElementById('base-url');
@@ -864,6 +869,9 @@
                 if (type === "GEMINI") {
                     baseUrl.value = "https://generativelanguage.googleapis.com/";
                     model.value = "gemini-1.5-flash";
+                } else if (type === "GROQ") {
+                    baseUrl.value = "https://api.groq.com/openai/v1/";
+                    model.value = "llama3-8b-8192";
                 } else {
                     baseUrl.value = "https://api.openai.com/v1/";
                     model.value = "gpt-4o";
