@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#000000" id="theme-color-meta">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
     <title>Painel & Console IA</title>
     <style>
         /* ==========================================================================
@@ -467,6 +468,14 @@
             opacity: 0.7;
         }
 
+        /* Botão de Instalação PWA */
+        .btn-install {
+            background-color: var(--success);
+            color: #000;
+            display: none; /* Oculto até que o PWA esteja pronto */
+            margin-top: 1rem;
+        }
+
         /* ==========================================================================
            7. Terminal de Operações (Logs)
            ========================================================================== */
@@ -620,6 +629,10 @@
             <button class="btn-universal" onclick="saveConfiguration()">
                 Aplicar Ajustes
             </button>
+
+            <button class="btn-universal btn-install" id="btn-install" onclick="installPWA()">
+                ⬇️ Baixar / Instalar App (PWA)
+            </button>
         </section>
 
         <!-- ABA 3: TERMINAL / LOGS -->
@@ -666,41 +679,126 @@
             }
         }
 
+        let currentAccentColor = '#ffffff';
+
         function setAccent(color, element) {
+            currentAccentColor = color;
             // Converte HEX para RGBA e aplica a transparência do Background de Destaque
             const hex = color.replace('#', '');
             document.documentElement.style.setProperty('--primary', color);
             document.documentElement.style.setProperty('--primary-bg', `rgba(${parseInt(hex.substring(0,2), 16)}, ${parseInt(hex.substring(2,4), 16)}, ${parseInt(hex.substring(4,6), 16)}, 0.15)`);
             
             document.querySelectorAll('.color-circle').forEach(el => el.classList.remove('active'));
-            element.classList.add('active');
+            if(element) element.classList.add('active');
         }
 
         // --- 3. Controle da Lógica Engine ---
         let apiType = "GEMINI";
 
+        // Variáveis do PWA
+        let deferredPrompt;
+
         // Init Flow
         window.onload = () => {
+            loadConfiguration();
+            
             addLog("Terminal boot sequencial inciado.", "info");
             setTimeout(() => addLog("Camada de Interface Nativa (SuperBlack) anexada.", "success"), 250);
+
+            // Registro do Service Worker (Necessário para o app baixar)
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js')
+                .then(reg => {
+                    addLog("Service Worker / PWA registrado na malha local.", "success");
+                })
+                .catch(err => {
+                    addLog("Service Worker / PWA falhou: " + err, "error");
+                });
+            }
         };
 
-        function setApiType(type) {
+        function loadConfiguration() {
+            try {
+                const saved = localStorage.getItem('ai_console_settings');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    
+                    if (data.apiType) setApiType(data.apiType, true); // passa true p/ não resetar base url se já está salvo
+                    if (data.apiKey !== undefined) document.getElementById('api-key').value = data.apiKey;
+                    if (data.baseUrl) document.getElementById('base-url').value = data.baseUrl;
+                    if (data.modelName) document.getElementById('model-name').value = data.modelName;
+                    if (data.systemPrompt) document.getElementById('system-prompt').value = data.systemPrompt;
+                    
+                    // Restaura estado do Switch AMOLED
+                    if (data.isAmoled === false) {
+                        const sw = document.getElementById('amoled-switch');
+                        if (sw.classList.contains('on')) {
+                            toggleAmoled(); // Desliga se estiver on
+                        }
+                    }
+
+                    // Restaura cor de destaque
+                    if (data.accentColor) {
+                        let matchedEl = null;
+                        const circles = document.querySelectorAll('.color-circle');
+                        circles.forEach(c => {
+                            if(c.getAttribute('style').includes(data.accentColor)) {
+                                matchedEl = c;
+                            }
+                        });
+                        setAccent(data.accentColor, matchedEl);
+                    }
+                }
+            } catch (e) {
+                console.error("Erro ao carregar configurações: ", e);
+            }
+        }
+
+        // Capturar o evento de instalação do PWA
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Mostrar o botão de instalar
+            const installBtn = document.getElementById('btn-install');
+            if(installBtn) {
+                installBtn.style.display = 'block';
+                addLog("Link de Instalação (PWA) habilitado.", "info");
+            }
+        });
+
+        // Lógica de chamar o prompt nativo do celular
+        async function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    addLog("App instalado na tela principal do usuário.", "success");
+                    document.getElementById('btn-install').style.display = 'none';
+                }
+                deferredPrompt = null;
+            } else {
+                alert("Para instalar direto no iOS/iPhone, toque em 'Compartilhar' e depois em 'Adicionar à Tela de Início'.");
+            }
+        }
+
+        function setApiType(type, initLoad = false) {
             apiType = type;
             document.getElementById('btn-gemini').classList.toggle('active', type === "GEMINI");
             document.getElementById('btn-openai').classList.toggle('active', type === "OPENAI");
             
-            const baseUrl = document.getElementById('base-url');
-            const model = document.getElementById('model-name');
+            if (!initLoad) { // Ao clicar mudar motor na hora, sobrescreve defaults
+                const baseUrl = document.getElementById('base-url');
+                const model = document.getElementById('model-name');
 
-            if (type === "GEMINI") {
-                baseUrl.value = "https://generativelanguage.googleapis.com/";
-                model.value = "gemini-1.5-flash";
-            } else {
-                baseUrl.value = "https://api.openai.com/v1/";
-                model.value = "gpt-4o";
+                if (type === "GEMINI") {
+                    baseUrl.value = "https://generativelanguage.googleapis.com/";
+                    model.value = "gemini-1.5-flash";
+                } else {
+                    baseUrl.value = "https://api.openai.com/v1/";
+                    model.value = "gpt-4o";
+                }
+                addLog(`Troca de motor para: ${type}`, "info");
             }
-            addLog(`Troca de motor para: ${type}`, "info");
         }
 
         function addLog(text, type = "info") {
@@ -719,7 +817,19 @@
         }
 
         function saveConfiguration() {
-            addLog("As chaves de registro foram injetadas em ambiente isolado.", "success");
+            const data = {
+                apiType: apiType,
+                apiKey: document.getElementById('api-key').value.trim(),
+                baseUrl: document.getElementById('base-url').value.trim(),
+                modelName: document.getElementById('model-name').value.trim(),
+                systemPrompt: document.getElementById('system-prompt').value, // Preserve formatting
+                isAmoled: document.getElementById('amoled-switch').classList.contains('on'),
+                accentColor: currentAccentColor
+            };
+            
+            localStorage.setItem('ai_console_settings', JSON.stringify(data));
+            
+            addLog("As configurações foram persistidas localmente.", "success");
             
             // UX Nativa Feedback rápido
             const btn = document.querySelector('.btn-universal');
