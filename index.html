@@ -515,16 +515,66 @@
         .log-info { color: var(--text-main); }
         .log-error { color: var(--error); }
 
+        /* ==========================================================================
+           8. Splash / Loading Screen
+           ========================================================================== */
+        #splash-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--card-bg-primary);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .splash-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            animation: splash-intro 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        .splash-icon svg {
+            width: 80px;
+            height: 80px;
+            fill: var(--text-main);
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));
+        }
+        .splash-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+        }
+        @keyframes splash-intro {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body>
+
+    <!-- Splash Screen Dinâmica -->
+    <div id="splash-screen">
+        <div class="splash-content">
+            <div class="splash-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M21 16.5C21 16.88 20.79 17.21 20.47 17.38L12.57 21.82C12.41 21.94 12.21 22 12 22C11.79 22 11.59 21.94 11.43 21.82L3.53 17.38C3.21 17.21 3 16.88 3 16.5V7.5C3 7.12 3.21 6.79 3.53 6.62L11.43 2.18C11.59 2.06 11.79 2 12 2C12.21 2 12.41 2.06 12.57 2.18L20.47 6.62C20.79 6.79 21 7.12 21 7.5V16.5M12 4.15L5 8.09L12 12.03L19 8.09L12 4.15M12 14.1L5.04 10.15V15.77L12 19.71V14.1M20.96 15.77V10.15L14 14.1V19.71L20.96 15.77Z"/>
+                </svg>
+            </div>
+            <div class="splash-title">Core System</div>
+        </div>
+    </div>
 
     <!-- Cabeçalho Fixo Nativo -->
     <header>
         <div class="header-container">
             <div class="brand">
                 <svg viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 16h-2v-2h2v2zm0-4h-2V7h2v7z"/>
+                    <path d="M21 16.5C21 16.88 20.79 17.21 20.47 17.38L12.57 21.82C12.41 21.94 12.21 22 12 22C11.79 22 11.59 21.94 11.43 21.82L3.53 17.38C3.21 17.21 3 16.88 3 16.5V7.5C3 7.12 3.21 6.79 3.53 6.62L11.43 2.18C11.59 2.06 11.79 2 12 2C12.21 2 12.41 2.06 12.57 2.18L20.47 6.62C20.79 6.79 21 7.12 21 7.5V16.5M12 4.15L5 8.09L12 12.03L19 8.09L12 4.15M12 14.1L5.04 10.15V15.77L12 19.71V14.1M20.96 15.77V10.15L14 14.1V19.71L20.96 15.77Z"/>
                 </svg>
                 <h1>Core <span>System</span></h1>
             </div>
@@ -700,6 +750,16 @@
 
         // Init Flow
         window.onload = () => {
+            // Animação de Abertura (Splash Screen Nativa)
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                if (splash) {
+                    splash.style.opacity = '0';
+                    splash.style.transform = 'scale(1.1)'; // Suave efeito de recuo
+                    setTimeout(() => splash.remove(), 500); // Tira da DOM depois
+                }
+            }, 1400);
+
             loadConfiguration();
             
             addLog("Terminal boot sequencial inciado.", "info");
