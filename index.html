@@ -682,7 +682,8 @@
                 </div>
                 <div style="width: 35%;">
                     <label>Modelo</label>
-                    <input type="text" id="model-name" class="form-control" value="gemini-1.5-flash">
+                    <input type="text" id="model-name" class="form-control" list="models-list" value="gemini-1.5-flash">
+                    <datalist id="models-list"></datalist>
                 </div>
             </div>
 
@@ -798,7 +799,11 @@
                 if (saved) {
                     const data = JSON.parse(saved);
                     
-                    if (data.apiType) setApiType(data.apiType, true); // passa true p/ não resetar base url se já está salvo
+                    if (data.apiType) {
+                        setApiType(data.apiType, true); // passa true p/ não resetar base url se já está salvo
+                    } else {
+                        setApiType('GEMINI', true);
+                    }
                     if (data.apiKey !== undefined) document.getElementById('api-key').value = data.apiKey;
                     if (data.baseUrl) document.getElementById('base-url').value = data.baseUrl;
                     if (data.modelName) document.getElementById('model-name').value = data.modelName;
@@ -823,6 +828,9 @@
                         });
                         setAccent(data.accentColor, matchedEl);
                     }
+                } else {
+                    // Preenche o datalist inicial se não houver dados salvos
+                    setApiType('GEMINI', true);
                 }
             } catch (e) {
                 console.error("Erro ao carregar configurações: ", e);
@@ -861,6 +869,24 @@
             document.getElementById('btn-gemini')?.classList.toggle('active', type === "GEMINI");
             document.getElementById('btn-openai')?.classList.toggle('active', type === "OPENAI");
             document.getElementById('btn-groq')?.classList.toggle('active', type === "GROQ");
+
+            const datalist = document.getElementById('models-list');
+            if (datalist) {
+                datalist.innerHTML = '';
+                let options = [];
+                if (type === "GEMINI") {
+                    options = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.0-pro"];
+                } else if (type === "GROQ") {
+                    options = ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "mixtral-8x7b-32768", "gemma2-9b-it"];
+                } else {
+                    options = ["gpt-4o", "gpt-4o-mini", "gpt-4", "gpt-3.5-turbo"];
+                }
+                options.forEach(opt => {
+                    const optionEl = document.createElement('option');
+                    optionEl.value = opt;
+                    datalist.appendChild(optionEl);
+                });
+            }
             
             if (!initLoad) { // Ao clicar mudar motor na hora, sobrescreve defaults
                 const baseUrl = document.getElementById('base-url');
@@ -871,7 +897,7 @@
                     model.value = "gemini-1.5-flash";
                 } else if (type === "GROQ") {
                     baseUrl.value = "https://api.groq.com/openai/v1/";
-                    model.value = "llama3-8b-8192";
+                    model.value = "llama-3.1-8b-instant";
                 } else {
                     baseUrl.value = "https://api.openai.com/v1/";
                     model.value = "gpt-4o";
