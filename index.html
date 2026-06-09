@@ -2,58 +2,88 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal AI Telegram Bot - Painel & Console</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#000000" id="theme-color-meta">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Painel & Console IA</title>
     <style>
         /* ==========================================================================
-           1. Modern CSS Reset & Variable Definitions
+           1. Variáveis Nativas & CSS Reset
            ========================================================================== */
         :root {
-            --bg-color: #0b0f19;
-            --card-bg-primary: #121826;
-            --card-bg-secondary: #1e2640;
-            --border-color: #232d45;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --primary: #38bdf8;
-            --primary-hover: #0ea5e9;
+            /* Padrão: Super Black AMOLED (Pixels apagados) */
+            --bg-color: #000000;
+            --card-bg-primary: #000000;
+            --card-bg-secondary: #0a0a0a;
+            --border-color: #1a1a1a;
+            --text-main: #f5f5f5;
+            --text-muted: #737373;
+            
+            /* Detalhes de Destaque - Sem Azul Inicialmente */
+            --primary: #ffffff; 
+            --primary-bg: rgba(255, 255, 255, 0.1);
+            
+            /* Utils */
             --success: #10b981;
-            --warning: #f59e0b;
             --error: #ef4444;
-            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Arial, sans-serif;
+            
+            /* Safe area insets (Notch de iPhone/Android nativo) */
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        /* Tema Cinza Escuro (Opção Alternativa Secundária) */
+        :root[data-theme="dark"] {
+            --bg-color: #0f1115;
+            --card-bg-primary: #161920;
+            --card-bg-secondary: #20242d;
+            --border-color: #2b303b;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent; /* Remove pisca azul no toque (Nativo) */
+            overscroll-behavior-y: none; /* Previne "puxar" a página nos limites */
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
             font-family: var(--font-family);
-            line-height: 1.6;
-            overflow-x: hidden;
-            padding: 0;
-            margin: 0;
+            line-height: 1.5;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh; /* Altura dinâmica para celular */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* App travado, barras de rolagem internas */
+            user-select: none;
+            -webkit-user-select: none;
+            transition: background-color 0.3s;
+        }
+
+        /* Permite copiar texto de partes essenciais */
+        input, textarea, .chat-message, .log-line {
+            user-select: text;
+            -webkit-user-select: text;
         }
 
         /* ==========================================================================
-           2. Header
+           2. Header Flutuante
            ========================================================================== */
         header {
             background-color: var(--card-bg-primary);
-            border-bottom: 1.5px solid var(--border-color);
-            padding: 1rem 1.5rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+            padding: calc(0.8rem + var(--safe-top)) 1.2rem 0.8rem;
+            flex-shrink: 0;
+            transition: background-color 0.3s, border-color 0.3s;
         }
 
         .header-container {
-            max-width: 800px;
-            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -62,589 +92,597 @@
         .brand {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .brand svg {
-            width: 28px;
-            height: 28px;
-            fill: var(--primary);
+            width: 22px;
+            height: 22px;
+            fill: var(--text-main);
         }
 
         .brand h1 {
-            font-size: 1.1rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            color: var(--text-main);
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
         }
 
         .brand span {
-            color: var(--primary);
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.9rem;
         }
 
         .badge-live {
-            background-color: rgba(16, 185, 129, 0.15);
+            background-color: transparent;
             color: var(--success);
-            padding: 0.25rem 0.6rem;
-            border-radius: 9999px;
             font-size: 0.75rem;
-            font-weight: bold;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 6px;
-            border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
         .badge-live::before {
             content: '';
             display: inline-block;
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             background-color: var(--success);
             border-radius: 50%;
-            animation: pulse-dot 1.5s infinite;
+            box-shadow: 0 0 8px var(--success);
+            animation: pulse-dot 2s infinite;
         }
 
         @keyframes pulse-dot {
-            0% { transform: scale(0.9); opacity: 0.6; }
-            50% { transform: scale(1.2); opacity: 1; }
-            100% { transform: scale(0.9); opacity: 0.6; }
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
         }
 
         /* ==========================================================================
-           3. Tabs Navigation
+           3. Tabs Navigation (Barra de Navegação Topo)
            ========================================================================== */
         .tabs-container {
             display: flex;
-            justify-content: space-around; /* Distribute tabs evenly on mobile */
             background-color: var(--card-bg-primary);
-            padding: 0.5rem 1rem;
-            border-bottom: 1.5px solid var(--border-color);
-            position: sticky;
-            top: 66px; /* Below the header approximately */
-            z-index: 99;
-            max-width: 800px;
-            margin: 0 auto;
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-
-        @media (min-width: 600px) {
-            .tabs-container {
-                justify-content: center;
-                gap: 1rem;
-            }
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+            transition: background-color 0.3s, border-color 0.3s;
         }
 
         .tab-btn {
+            flex: 1;
             background-color: transparent;
             color: var(--text-muted);
             border: none;
-            padding: 0.5rem 0.75rem;
-            border-radius: 8px;
-            font-size: 0.95rem;
+            padding: 0.7rem 0;
+            font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 6px;
-            flex-direction: column; /* Stack icon and text on very small screens */
+            gap: 4px;
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
         }
-        
-        @media (min-width: 400px) {
-            .tab-btn {
-                flex-direction: row;
-                padding: 0.6rem 1.2rem;
-            }
+
+        .tab-btn span:first-child {
+            font-size: 1.25rem;
+            filter: grayscale(100%); /* Emojis em P&B para manter o visual nativo limpo */
+            opacity: 0.6;
+            transition: opacity 0.2s;
         }
 
         .tab-btn.active {
-            background-color: rgba(56, 189, 248, 0.15);
             color: var(--primary);
+            border-bottom-color: var(--primary);
         }
 
-        .tab-btn:hover:not(.active) {
-            background-color: rgba(255, 255, 255, 0.05);
-            color: var(--text-main);
+        .tab-btn.active span:first-child {
+            opacity: 1;
+            filter: grayscale(0%);
         }
 
         /* ==========================================================================
-           4. Container & Main Grid
+           4. Container Base
            ========================================================================== */
         main {
-            max-width: 800px;
-            margin: 1.5rem auto;
-            padding: 0 1rem;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch; /* Fluidez de rolagem iOS */
         }
+
+        /* Ocultar barra de rolagem (Look de App) */
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
 
         .tab-section {
             display: none;
-            animation: fadeIn 0.3s ease;
+            padding: 1.2rem;
+            padding-bottom: calc(1.5rem + var(--safe-bottom));
         }
 
         .tab-section.active {
-            display: block;
+            display: flex;
+            flex-direction: column;
+            animation: fadeInNative 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
-        @keyframes fadeIn {
+        @keyframes fadeInNative {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ==========================================================================
-           5. Cards & Content Modules
-           ========================================================================== */
-        .card {
-            background-color: var(--card-bg-primary);
-            border: 1.5px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
-        }
-
-        .card-header {
+        .section-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 1rem;
-            margin-bottom: 1.25rem;
-        }
-
-        .card-header svg {
-            width: 24px;
-            height: 24px;
-            color: var(--primary);
-        }
-
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        p.desc {
-            color: var(--text-muted);
-            font-size: 0.95rem;
+            gap: 8px;
             margin-bottom: 1.5rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.2px;
         }
 
         /* ==========================================================================
-           6. Metrics & Chat Playground (Tab: Chat)
+           5. Chat / Console de Testes Interno
            ========================================================================== */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .metric-card {
-            background-color: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 12px;
-            text-align: center;
-        }
-
-        .metric-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-
-        .metric-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .chat-container {
-            height: 60vh; /* Responsive height */
-            min-height: 400px;
-            border: 1.5px solid var(--border-color);
-            border-radius: 12px;
-            background-color: rgba(15, 23, 42, 0.7);
+        .chat-wrapper {
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            flex: 1;
+            /* Subtrai o header + tabs do 100dvh para dar a altura exata */
+            height: calc(100dvh - 120px - var(--safe-top)); 
         }
 
         .chat-messages {
             flex: 1;
-            padding: 1rem;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 16px;
+            padding-bottom: 12px;
         }
 
         .chat-message {
-            max-width: 85%;
-            padding: 10px 14px;
-            border-radius: 14px;
+            max-width: 88%;
+            padding: 12px 16px;
+            border-radius: 18px;
             font-size: 0.95rem;
             word-wrap: break-word;
+            line-height: 1.4;
         }
 
         .chat-message.user {
             background-color: var(--primary);
-            color: #000;
+            color: var(--bg-color); /* Contraste nativo */
             font-weight: 500;
             align-self: flex-end;
-            border-bottom-right-radius: 2px;
+            border-bottom-right-radius: 4px;
         }
 
         .chat-message.bot {
             background-color: var(--card-bg-secondary);
             color: var(--text-main);
             align-self: flex-start;
-            border-bottom-left-radius: 2px;
+            border-bottom-left-radius: 4px;
             border: 1px solid var(--border-color);
         }
 
         .chat-input-area {
-            border-top: 1px solid var(--border-color);
-            padding: 10px 12px;
-            background-color: var(--card-bg-primary);
             display: flex;
-            gap: 8px;
+            gap: 10px;
+            padding-top: 12px;
+            background-color: transparent;
+        }
+
+        .form-control {
+            width: 100%;
+            background-color: var(--card-bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 24px;
+            padding: 12px 18px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s, background-color 0.3s;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
         }
 
         .chat-btn-send {
             background-color: var(--primary);
-            color: #000;
+            color: var(--bg-color);
             border: none;
-            border-radius: 10px;
-            padding: 0 16px;
+            border-radius: 50%;
+            width: 46px;
+            height: 46px;
+            flex-shrink: 0;
             cursor: pointer;
-            transition: background-color 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: transform 0.1s, background-color 0.3s;
         }
 
-        .chat-btn-send:hover {
-            background-color: var(--primary-hover);
+        .chat-btn-send:active {
+            transform: scale(0.9);
         }
 
         .chat-btn-send svg {
             width: 20px;
             height: 20px;
-            fill: #000;
+            fill: currentColor;
+            margin-left: 2px;
         }
 
         /* ==========================================================================
-           7. Universal AI Configuration UI (Tab: Config)
+           6. Configurações & Personalização
            ========================================================================== */
-        .api-selector-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 1.25rem;
-        }
-
-        .selector-btn {
-            background-color: var(--card-bg-secondary);
-            border: 1.5px solid var(--border-color);
-            color: var(--text-muted);
-            border-radius: 12px;
-            padding: 12px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .selector-btn.active {
-            border-color: var(--primary);
-            color: var(--primary);
-            background-color: rgba(56, 189, 248, 0.08);
-        }
-
         .form-group {
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
         }
 
         .form-group label {
             display: block;
-            font-size: 0.85rem;
-            font-weight: bold;
+            font-size: 0.8rem;
+            font-weight: 600;
             color: var(--text-muted);
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .form-control {
-            width: 100%;
-            background-color: rgba(15, 23, 42, 0.8);
-            border: 1.5px solid var(--border-color);
-            color: var(--text-main);
-            border-radius: 10px;
-            padding: 12px;
-            font-size: 0.95rem;
-            transition: border-color 0.2s;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .alert-info {
-            background-color: rgba(56, 189, 248, 0.06);
-            border: 1px dashed rgba(56, 189, 248, 0.3);
-            border-radius: 10px;
-            padding: 12px 16px;
-            font-size: 0.85rem;
-            color: var(--primary);
-            margin-top: 1rem;
+        /* Toggle Button (Estilo iOS) */
+        .theme-toggle {
             display: flex;
-            gap: 10px;
-            align-items: flex-start;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--card-bg-secondary);
+            padding: 14px 16px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .theme-toggle span {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+            background-color: var(--text-muted);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background-color 0.25s;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background-color: #fff;
+            border-radius: 50%;
+            transition: transform 0.25s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.on { background-color: var(--success); }
+        .toggle-switch.on::after { transform: translateX(22px); }
+
+        /* Color Picker Dots */
+        .color-picker-grid {
+            display: flex;
+            gap: 14px;
+            padding-top: 4px;
+        }
+
+        .color-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .color-circle.active {
+            border-color: var(--text-main);
+            transform: scale(1.15);
+            box-shadow: 0 0 10px rgba(255,255,255,0.1);
+        }
+
+        /* Seletores em Grid (Motores de IA) */
+        .api-selector-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .selector-btn {
+            background-color: var(--card-bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            border-radius: 16px;
+            padding: 16px 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-align: center;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .selector-btn span:first-child {
+            filter: grayscale(100%);
+            font-size: 1.6rem;
+        }
+
+        .selector-btn.active {
+            border-color: var(--primary);
+            color: var(--text-main);
+            background-color: var(--primary-bg);
+        }
+        
+        .selector-btn.active span:first-child {
+            filter: grayscale(0%);
+        }
+
+        textarea.form-control {
+            border-radius: 16px;
+            resize: none;
         }
 
         .btn-universal {
             width: 100%;
-            background-color: var(--primary);
-            color: #000;
+            background-color: var(--text-main);
+            color: var(--bg-color);
             font-size: 1rem;
-            font-weight: bold;
-            padding: 14px;
+            font-weight: 700;
+            padding: 16px;
             border: none;
-            border-radius: 12px;
+            border-radius: 16px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            margin-top: 0.5rem;
+            transition: opacity 0.2s;
         }
 
-        .btn-universal:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-1px);
+        .btn-universal:active {
+            opacity: 0.7;
         }
 
         /* ==========================================================================
-           8. Server Logs Panel (Tab: Logs)
+           7. Terminal de Operações (Logs)
            ========================================================================== */
         .logs-panel {
-            background-color: #090d16;
-            border: 1.5px solid var(--border-color);
-            border-radius: 12px;
-            padding: 12px;
-            height: 60vh; /* Responsive height */
-            min-height: 400px;
+            background-color: var(--card-bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            flex: 1;
             overflow-y: auto;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.85rem;
-            color: #a7f3d0;
+            font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            height: calc(100dvh - 120px - var(--safe-top));
         }
 
         .log-line {
-            margin-bottom: 6px;
+            margin-bottom: 10px;
             display: flex;
-            gap: 8px;
+            flex-direction: column;
+            border-bottom: 1px dashed rgba(255,255,255,0.05);
+            padding-bottom: 6px;
+        }
+
+        .log-line:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
         }
 
         .log-timestamp {
-            color: var(--text-muted);
-            font-weight: bold;
+            font-size: 0.65rem;
+            opacity: 0.5;
+            margin-bottom: 3px;
         }
 
-        .log-success { color: #34d399; }
-        .log-info { color: #60a5fa; }
-        .log-warning { color: #fbbf24; }
-        .log-error { color: #f87171; }
+        .log-success { color: var(--text-main); font-weight: 600; }
+        .log-info { color: var(--text-main); }
+        .log-error { color: var(--error); }
 
     </style>
 </head>
 <body>
 
-    <!-- ==========================================================================
-         Header Area
-         ========================================================================== -->
+    <!-- Cabeçalho Fixo Nativo -->
     <header>
         <div class="header-container">
             <div class="brand">
                 <svg viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 16h-2v-2h2v2zm0-4h-2V7h2v7z"/>
                 </svg>
-                <h1>Universal AI <span>Bot Server</span></h1>
+                <h1>Core <span>System</span></h1>
             </div>
             <div class="badge-live">Online</div>
         </div>
     </header>
 
-    <!-- ==========================================================================
-         Tabs Navigation Menu
-         ========================================================================== -->
+    <!-- Sistema de Abas no Topo -->
     <nav class="tabs-container">
-        <!-- The default active tab is Chat -->
         <button class="tab-btn active" id="btn-tab-chat" onclick="switchTab('tab-chat')">
             <span>💬</span><span>Chat</span>
         </button>
         <button class="tab-btn" id="btn-tab-config" onclick="switchTab('tab-config')">
-            <span>⚙️</span><span>Config</span>
+            <span>⚙️</span><span>Ajustes</span>
         </button>
         <button class="tab-btn" id="btn-tab-logs" onclick="switchTab('tab-logs')">
-            <span>📜</span><span>Logs</span>
+            <span>📜</span><span>Terminal</span>
         </button>
     </nav>
 
-    <!-- ==========================================================================
-         Main Content Area
-         ========================================================================== -->
+    <!-- Base Rolável Dinâmica -->
     <main>
         
-        <!-- ======================= TAB 1: CHAT ======================= -->
+        <!-- ABA 1: CONSOLE DE CHAT (Playground) -->
         <section id="tab-chat" class="tab-section active">
-            <div class="card" style="margin-bottom: 0;">
-                <div class="card-header" style="margin-bottom: 0.75rem; padding-bottom: 0.75rem;">
-                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
-                    <h2 class="card-title">Console de Testes</h2>
-                </div>
-                
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <div class="metric-label">Motor Atual</div>
-                        <div class="metric-value" id="metrics-type">Gemini</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">Mensagens</div>
-                        <div class="metric-value" id="metrics-count">0</div>
+            <div class="chat-wrapper">
+                <div class="chat-messages" id="chat-messages">
+                    <div class="chat-message bot">
+                        Estou conectado. Aguardando input no sistema interno.
                     </div>
                 </div>
-
-                <div class="chat-container">
-                    <div class="chat-messages" id="chat-messages">
-                        <div class="chat-message bot">
-                            Olá! Eu sou o cérebro assistente do seu robô. Digite algo para testar o provedor de IA atual (Gemini ou OpenAI)!
-                        </div>
-                    </div>
-                    <div class="chat-input-area">
-                        <input type="text" id="chat-input" class="form-control" style="padding: 10px 14px;" placeholder="Digite uma mensagem..." onkeydown="if(event.key==='Enter') sendMessage()">
-                        <button class="chat-btn-send" onclick="sendMessage()">
-                            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-                        </button>
-                    </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input" class="form-control" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
+                    <button class="chat-btn-send" onclick="sendMessage()">
+                        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                    </button>
                 </div>
             </div>
         </section>
 
-        <!-- ======================= TAB 2: CONFIG ======================= -->
+        <!-- ABA 2: CONFIGURAÇÕES E PERSONALIZAÇÃO -->
         <section id="tab-config" class="tab-section">
-            <div class="card" style="margin-bottom: 0;">
-                <div class="card-header">
-                    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-                    <h2 class="card-title">Configuração Universal da IA</h2>
+            <div class="section-header">
+                <h2>Aparência & Interface</h2>
+            </div>
+            
+            <div class="form-group">
+                <div class="theme-toggle" onclick="toggleAmoled()">
+                    <span>Fundo Super Black (AMOLED)</span>
+                    <div class="toggle-switch on" id="amoled-switch"></div>
                 </div>
-                
-                <p class="desc">Ajuste os parâmetros da IA para personalizar a inteligência no seu playground ou projeto original.</p>
+            </div>
 
-                <div class="api-selector-grid">
-                    <div class="selector-btn active" id="btn-gemini" onclick="setApiType('GEMINI')">
-                        <span style="font-size: 1.5rem;">♊</span>
-                        <span>Google Gemini</span>
-                    </div>
-                    <div class="selector-btn" id="btn-openai" onclick="setApiType('OPENAI')">
-                        <span style="font-size: 1.5rem;">🌐</span>
-                        <span>OpenAI Compatível</span>
-                    </div>
+            <div class="form-group">
+                <label>Cor de Destaque Nativa</label>
+                <div class="color-picker-grid">
+                    <!-- Cores Clean / Minimalistas. Sem Azul conforme pedido. -->
+                    <div class="color-circle active" style="background-color: #ffffff;" onclick="setAccent('#ffffff', this)"></div>
+                    <div class="color-circle" style="background-color: #10b981;" onclick="setAccent('#10b981', this)"></div> <!-- Verde Esmeralda -->
+                    <div class="color-circle" style="background-color: #f59e0b;" onclick="setAccent('#f59e0b', this)"></div> <!-- Laranja Âmbar -->
+                    <div class="color-circle" style="background-color: #ef4444;" onclick="setAccent('#ef4444', this)"></div> <!-- Vermelho -->
+                    <div class="color-circle" style="background-color: #8b5cf6;" onclick="setAccent('#8b5cf6', this)"></div> <!-- Roxo -->
                 </div>
+            </div>
 
-                <div class="form-group">
-                    <label for="api-key">Chave de API / Token de Acesso</label>
-                    <input type="password" id="api-key" class="form-control" placeholder="Insira seu token (opcional localmente)">
+            <div class="section-header" style="margin-top: 1rem;">
+                <h2>Motor de Inteligência</h2>
+            </div>
+
+            <div class="api-selector-grid">
+                <div class="selector-btn active" id="btn-gemini" onclick="setApiType('GEMINI')">
+                    <span>♊</span>
+                    <span>Google Gemini</span>
                 </div>
+                <div class="selector-btn" id="btn-openai" onclick="setApiType('OPENAI')">
+                    <span>🌐</span>
+                    <span>OpenAI (Compatível)</span>
+                </div>
+            </div>
 
-                <div class="form-group">
-                    <label for="base-url">Endpoint / URL Base</label>
+            <div class="form-group">
+                <label>Chave de Acesso (Token)</label>
+                <input type="password" id="api-key" class="form-control" placeholder="Cole sua API Key aqui (Opcional)">
+            </div>
+
+            <div class="form-group" style="display: flex; gap: 10px;">
+                <div style="flex: 1;">
+                    <label>Endpoint URL</label>
                     <input type="text" id="base-url" class="form-control" value="https://generativelanguage.googleapis.com/">
                 </div>
-
-                <div class="form-group">
-                    <label for="model-name">Identificador do Modelo</label>
+                <div style="width: 35%;">
+                    <label>Modelo</label>
                     <input type="text" id="model-name" class="form-control" value="gemini-1.5-flash">
                 </div>
-
-                <div class="form-group">
-                    <label for="system-prompt">Prompt do Sistema (Personalidade)</label>
-                    <textarea id="system-prompt" class="form-control" style="resize: vertical; min-height: 80px;">Você é um prestativo bot assistente que responde de forma sucinta e amigável.</textarea>
-                </div>
-
-                <button class="btn-universal" onclick="saveConfiguration()">
-                    Salvar Parâmetros Universais
-                </button>
-
-                <div class="alert-info">
-                    <span>💡</span>
-                    <div>
-                        Salve suas preferências aqui para que elas reflitam nas integrações e nos testes do Chat.
-                    </div>
-                </div>
             </div>
+
+            <div class="form-group">
+                <label>Prompt de Sistema do Bot</label>
+                <textarea id="system-prompt" class="form-control" rows="3">Você é uma Inteligência Artificial direta e precisa. Responda sucintamente como um aplicativo nativo faria.</textarea>
+            </div>
+
+            <button class="btn-universal" onclick="saveConfiguration()">
+                Aplicar Ajustes
+            </button>
         </section>
 
-        <!-- ======================= TAB 3: LOGS ======================= -->
+        <!-- ABA 3: TERMINAL / LOGS -->
         <section id="tab-logs" class="tab-section">
-            <div class="card" style="margin-bottom: 0;">
-                <div class="card-header">
-                    <svg viewBox="0 0 24 24"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 4c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 4h16v12H4V4z"/></svg>
-                    <h2 class="card-title">Logs do Servidor</h2>
-                </div>
-                <div class="logs-panel" id="logs-panel">
-                    <!-- Logs will be inserted here dynamically -->
-                </div>
+            <div class="section-header">
+                <h2>Terminal do Servidor</h2>
             </div>
+            <div class="logs-panel" id="logs-panel"></div>
         </section>
 
     </main>
 
     <!-- ==========================================================================
-         JavaScript Code (Logic & State)
+         Lógica do JavaScript
          ========================================================================== -->
     <script>
-        // --- 1. Tab Navigation System ---
+        // --- 1. Navegação de Abas Fluida ---
         function switchTab(tabId) {
-            // Remove active class from all sections and buttons
-            document.querySelectorAll('.tab-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // Activate chosen tab and its button
+            document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
             document.getElementById(tabId).classList.add('active');
             document.getElementById('btn-' + tabId).classList.add('active');
-
-            // Optional: scroll to top smoothly when changing tabs
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Foca o input caso volte para o chat
+            if(tabId === 'tab-chat'){
+                setTimeout(() => document.getElementById('chat-input').focus(), 100);
+            }
         }
 
-        // --- 2. State & UI Management ---
-        let apiType = "GEMINI";
-        let messageCount = 0;
+        // --- 2. Personalização Dinâmica UI ---
+        function toggleAmoled() {
+            const sw = document.getElementById('amoled-switch');
+            const isOn = sw.classList.contains('on');
+            
+            if(isOn) {
+                sw.classList.remove('on');
+                document.documentElement.setAttribute('data-theme', 'dark'); // Desabilita AMOLED puro
+                document.getElementById('theme-color-meta').setAttribute('content', '#0f1115');
+            } else {
+                sw.classList.add('on');
+                document.documentElement.removeAttribute('data-theme'); // Volta ao AMOLED Super Black Padrão
+                document.getElementById('theme-color-meta').setAttribute('content', '#000000');
+            }
+        }
 
-        // Initialize first log
+        function setAccent(color, element) {
+            // Converte HEX para RGBA e aplica a transparência do Background de Destaque
+            const hex = color.replace('#', '');
+            document.documentElement.style.setProperty('--primary', color);
+            document.documentElement.style.setProperty('--primary-bg', `rgba(${parseInt(hex.substring(0,2), 16)}, ${parseInt(hex.substring(2,4), 16)}, ${parseInt(hex.substring(4,6), 16)}, 0.15)`);
+            
+            document.querySelectorAll('.color-circle').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        // --- 3. Controle da Lógica Engine ---
+        let apiType = "GEMINI";
+
+        // Init Flow
         window.onload = () => {
-            const time = new Date().toTimeString().split(' ')[0];
-            addLog("Iniciando console do servidor web...", "info");
-            setTimeout(() => addLog("Universal Engine Core montado com sucesso.", "success"), 500);
-            setTimeout(() => addLog("Aguardando envio local para testes.", "warning"), 1000);
+            addLog("Terminal boot sequencial inciado.", "info");
+            setTimeout(() => addLog("Camada de Interface Nativa (SuperBlack) anexada.", "success"), 250);
         };
 
         function setApiType(type) {
@@ -652,133 +690,122 @@
             document.getElementById('btn-gemini').classList.toggle('active', type === "GEMINI");
             document.getElementById('btn-openai').classList.toggle('active', type === "OPENAI");
             
-            const baseUrlInput = document.getElementById('base-url');
-            const modelInput = document.getElementById('model-name');
-            const typeMetricsLabel = document.getElementById('metrics-type');
+            const baseUrl = document.getElementById('base-url');
+            const model = document.getElementById('model-name');
 
             if (type === "GEMINI") {
-                baseUrlInput.value = "https://generativelanguage.googleapis.com/";
-                modelInput.value = "gemini-1.5-flash";
-                typeMetricsLabel.innerText = "Gemini";
+                baseUrl.value = "https://generativelanguage.googleapis.com/";
+                model.value = "gemini-1.5-flash";
             } else {
-                baseUrlInput.value = "https://api.openai.com/v1/";
-                modelInput.value = "gpt-4o";
-                typeMetricsLabel.innerText = "OpenAI Lm";
+                baseUrl.value = "https://api.openai.com/v1/";
+                model.value = "gpt-4o";
             }
-            addLog(`Motor alterado para: ${type}`, "info");
+            addLog(`Troca de motor para: ${type}`, "info");
         }
 
         function addLog(text, type = "info") {
             const container = document.getElementById('logs-panel');
             if(!container) return;
 
-            const timestamp = new Date().toTimeString().split(' ')[0];
-            const line = document.createElement('div');
-            line.className = 'log-line';
+            const time = new Date().toTimeString().split(' ')[0];
+            const div = document.createElement('div');
+            div.className = 'log-line';
             
-            let colorClass = "log-info";
-            if (type === "success") colorClass = "log-success";
-            if (type === "warning") colorClass = "log-warning";
-            if (type === "error") colorClass = "log-error";
-
-            line.innerHTML = `<span class="log-timestamp">[${timestamp}]</span> <span class="${colorClass}">${text}</span>`;
+            let colorCls = type === "success" ? "log-success" : (type === "error" ? "log-error" : "log-info");
+            div.innerHTML = `<span class="log-timestamp">[${time}] sys</span> <span class="${colorCls}">${text}</span>`;
             
-            container.appendChild(line);
+            container.appendChild(div);
             container.scrollTop = container.scrollHeight;
         }
 
         function saveConfiguration() {
-            const key = document.getElementById('api-key').value;
-            const url = document.getElementById('base-url').value;
-            const model = document.getElementById('model-name').value;
+            addLog("As chaves de registro foram injetadas em ambiente isolado.", "success");
             
-            addLog(`Salvando configurações...`, "info");
-            addLog(`Parâmetros de resposta salvos com sucesso!`, "success");
-            addLog(`Ativo: ${apiType} | URL: ${url} | Modelo: ${model}`, "success");
+            // UX Nativa Feedback rápido
+            const btn = document.querySelector('.btn-universal');
+            const originalText = btn.innerText;
+            btn.innerText = "Salvo com sucesso ✓";
+            setTimeout(() => btn.innerText = originalText, 2000);
         }
 
-        // --- 3. Chat System Logic ---
+        // --- 4. Motor de Requisição de Chat ---
+        function scrollToBottom() {
+            const container = document.getElementById('chat-messages');
+            container.scrollTop = container.scrollHeight;
+        }
+
         async function sendMessage() {
             const input = document.getElementById('chat-input');
-            const chatMessages = document.getElementById('chat-messages');
-            const userText = input.value.trim();
-            
-            if (!userText) return;
+            const container = document.getElementById('chat-messages');
+            const txt = input.value.trim();
+            if (!txt) return;
 
-            // Clear input field smoothly
+            // Insere msg usuário
             input.value = "";
+            const usrMsg = document.createElement('div');
+            usrMsg.className = 'chat-message user';
+            usrMsg.innerText = txt;
+            container.appendChild(usrMsg);
+            scrollToBottom();
 
-            // Push User Message to UI
-            const userMsgDiv = document.createElement('div');
-            userMsgDiv.className = 'chat-message user';
-            userMsgDiv.innerText = userText;
-            chatMessages.appendChild(userMsgDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            // Insere sinal de processamento
+            const loader = document.createElement('div');
+            loader.className = 'chat-message bot';
+            loader.innerText = "Processando...";
+            container.appendChild(loader);
+            scrollToBottom();
+            
+            // Dados da interface
+            const key = document.getElementById('api-key').value.trim();
+            const url = document.getElementById('base-url').value.trim();
+            const model = document.getElementById('model-name').value.trim();
+            const prompt = document.getElementById('system-prompt').value;
 
-            addLog(`Mensagem enviada no playground: "${userText.substring(0, 20)}..."`, "info");
+            addLog(`Abertura de request para endpoint modelo ${model}...`, "info");
 
-            // Update Metrics Count
-            messageCount++;
-            document.getElementById('metrics-count').innerText = messageCount;
-
-            // Show Thinking Indicator
-            const botLoaderDiv = document.createElement('div');
-            botLoaderDiv.className = 'chat-message bot';
-            botLoaderDiv.innerHTML = "<em>Pensando no cérebro inteligente...</em>";
-            chatMessages.appendChild(botLoaderDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-
-            // Retrieve form configured params for API Call
-            const apiKey = document.getElementById('api-key').value.trim();
-            const baseUrl = document.getElementById('base-url').value.trim();
-            const modelName = document.getElementById('model-name').value.trim();
-            const systemPrompt = document.getElementById('system-prompt').value;
-
-            // Simulated request delay
             setTimeout(async () => {
                 let aiReply = "";
                 
-                if (!apiKey) {
-                    // Fallback smart simulation mode
-                    aiReply = "Esta é uma simulação loca da resposta. Para conexões dinâmicas reais com a API, adicione sua chave nas Configurações! Prompt utilizado: \"" + systemPrompt + "\"";
+                if (!key) {
+                    aiReply = "Esta é uma resposta local nativa de simulação. Para que eu seja hiper-inteligente, cole uma Chave de API na aba Ajustes.";
                 } else {
                     try {
                         if (apiType === "GEMINI") {
-                            const cleanUrl = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
-                            const url = `${cleanUrl}v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+                            const cleanUrl = url.endsWith('/') ? url : url + '/';
+                            const fetchUrl = `${cleanUrl}v1beta/models/${model}:generateContent?key=${key}`;
                             
-                            const response = await fetch(url, {
+                            const response = await fetch(fetchUrl, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
-                                    contents: [{ parts: [{ text: userText }] }],
+                                    contents: [{ parts: [{ text: txt }] }],
                                     generationConfig: { temperature: 0.7 },
-                                    systemInstruction: { parts: [{ text: systemPrompt }] }
+                                    systemInstruction: { parts: [{ text: prompt }] }
                                 })
                             });
                             
                             if (response.ok) {
                                 const data = await response.json();
-                                aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Erro: Resposta vazia recebida.";
+                                aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Mudo.";
                             } else {
-                                const errText = await response.text();
-                                aiReply = `Erro da API Gemini (${response.status}): ${errText}`;
+                                const err = await response.text();
+                                aiReply = `Erro Gemini: ${err}`;
                             }
                         } else {
-                            const cleanUrl = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
-                            const url = cleanUrl.includes('chat/completions') ? cleanUrl : `${cleanUrl}chat/completions`;
+                            const cleanUrl = url.endsWith('/') ? url : url + '/';
+                            const fetchUrl = cleanUrl.includes('chat/completions') ? cleanUrl : `${cleanUrl}chat/completions`;
                             
-                            const response = await fetch(url, {
+                            const response = await fetch(fetchUrl, {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${apiKey}`
+                                    'Authorization': `Bearer ${key}`
                                 },
                                 body: JSON.stringify({
-                                    model: modelName,
+                                    model: model,
                                     messages: [
-                                        { role: "system", content: systemPrompt },
-                                        { role: "user", content: userText }
+                                        { role: "system", content: prompt },
+                                        { role: "user", content: txt }
                                     ],
                                     temperature: 0.7
                                 })
@@ -786,25 +813,24 @@
                             
                             if (response.ok) {
                                 const data = await response.json();
-                                aiReply = data.choices?.[0]?.message?.content || "Erro: Resposta vazia recebida da OpenAI.";
+                                aiReply = data.choices?.[0]?.message?.content || "Mudo.";
                             } else {
-                                const errText = await response.text();
-                                aiReply = `Erro da API OpenAI (${response.status}): ${errText}`;
+                                const err = await response.text();
+                                aiReply = `Erro OpenAI: ${err}`;
                             }
                         }
                     } catch (e) {
-                        aiReply = `Erro de conexão: ${e.message}`;
+                        aiReply = `Falha de conexão em malha: ${e.message}`;
                     }
                 }
 
-                // Update UI with Final Reply
-                botLoaderDiv.innerHTML = aiReply;
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                addLog(`Resposta processada e exibida.`, "success");
+                // Substitui bloco processamento pela resposta
+                loader.innerText = aiReply;
+                scrollToBottom();
+                addLog(`Thread preenchida com sucesso.`, "success");
 
-            }, 800);
+            }, 600);
         }
     </script>
 </body>
 </html>
-<!-- Atualização de Build para GitHub Pages -->
