@@ -466,6 +466,106 @@
             box-shadow: 0 0 10px rgba(255,255,255,0.1);
         }
 
+        /* Supabase Premium Cloud Card */
+        .supabase-card {
+            background-color: var(--card-bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .supabase-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding-bottom: 10px;
+        }
+
+        .supabase-card-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .supabase-status-badge {
+            font-size: 0.75rem;
+            background-color: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
+            padding: 3px 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .supabase-status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #737373;
+            display: inline-block;
+        }
+
+        .supabase-action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .btn-supabase-action {
+            background-color: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-supabase-action:hover {
+            border-color: var(--primary);
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .sql-instructions {
+            background-color: #050608;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 0.75rem;
+            color: #d1d5db;
+            display: none;
+            overflow: hidden;
+            animation: terminal-line-fade 0.25s ease-out forwards;
+        }
+
+        .sql-instructions code {
+            font-family: Menlo, Monaco, Consolas, monospace;
+            display: block;
+            white-space: pre-wrap;
+            margin-top: 8px;
+            color: #10b981;
+            user-select: text;
+        }
+
         /* Seletores em Grid (Motores de IA) */
         .api-selector-grid {
             display: grid;
@@ -871,8 +971,14 @@
         <!-- ABA 1: CONSOLE DE CHAT (Playground) -->
         <section id="tab-chat" class="tab-section active">
             <div class="chat-wrapper">
-                <div class="section-header" style="justify-content: space-between; margin-bottom: 0.5rem; padding: 0 5px;">
-                    <h2 style="font-size: 1rem; color: var(--text-muted); margin: 0;">Sessão de Memória</h2>
+                <div class="section-header" style="justify-content: space-between; margin-bottom: 0.5rem; padding: 0 5px; flex-wrap: wrap; gap: 8px;">
+                    <h2 style="font-size: 1rem; color: var(--text-muted); margin: 0; display: flex; align-items: center; gap: 8px;">
+                        <span>Sessão de Memória</span>
+                        <span id="chat-cloud-indicator" style="font-size: 0.72rem; color: var(--text-muted); padding: 2px 8px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.02);">
+                            <span class="cloud-dot" style="width: 5px; height: 5px; background-color: #737373; border-radius: 50%; display: inline-block;"></span>
+                            <span class="cloud-text">Nuvem Inativa</span>
+                        </span>
+                    </h2>
                     <button style="background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 8px; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="clearChat()">
                         🗑️ Limpar
                     </button>
@@ -993,6 +1099,70 @@
             <div class="form-group">
                 <label>Prompt de Sistema do Bot</label>
                 <textarea id="system-prompt" class="form-control" rows="3">Você é uma Inteligência Artificial direta e precisa. Responda sucintamente como um aplicativo nativo faria.</textarea>
+            </div>
+
+            <!-- Card Superior de Sincronização Cloud Supabase -->
+            <div class="supabase-card">
+                <div class="supabase-card-header">
+                    <span class="supabase-card-title">☁️ Sincronização Supabase</span>
+                    <div class="supabase-status-badge" title="Status de conexão com o Supabase">
+                        <span class="supabase-status-dot" id="supabase-status-dot"></span>
+                        <span id="supabase-status-desc">Inativo</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; gap: 8px;">
+                        <div style="flex: 1;">
+                            <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">URL do Projeto</label>
+                            <input type="text" id="supabase-url" class="form-control" style="border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;" placeholder="https://seu-slug.supabase.co" value="https://hqnlyksuprjdabcgpqdl.supabase.co">
+                        </div>
+                        <div style="width: 35%;">
+                            <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Tabela</label>
+                            <input type="text" id="supabase-table" class="form-control" style="border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;" placeholder="chat_backups" value="chat_backups">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Chave Pública (Anon Key)</label>
+                        <input type="password" id="supabase-key" class="form-control" style="border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;" placeholder="Chave anônima" value="sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa">
+                    </div>
+
+                    <div class="theme-toggle" style="padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); margin-top: 5px;">
+                        <span style="font-size: 0.85rem; font-weight: 500;">Auto-Salvar Mensagens na Nuvem</span>
+                        <div class="toggle-switch" id="supabase-auto-switch" onclick="toggleSupabaseAuto()"></div>
+                    </div>
+                </div>
+
+                <div class="supabase-action-grid">
+                    <button class="btn-supabase-action" onclick="testSupabaseConnection()" title="Testar integridade da conexão">
+                        🔌 Testar Conexão
+                    </button>
+                    <button class="btn-supabase-action" id="btn-cloud-backup" onclick="supabaseSaveBackup(false)" title="Enviar histórico para o Supabase">
+                        📤 Backup Nuvem
+                    </button>
+                    <button class="btn-supabase-action" id="btn-cloud-restore" onclick="supabaseRestoreBackup()" title="Baixar histórico do Supabase" style="grid-column: span 2;">
+                        📥 Restaurar Último Backup
+                    </button>
+                </div>
+
+                <div style="text-align: center; margin-top: 3px;">
+                    <button id="btn-toggle-sql" onclick="toggleSqlSnippet()" style="background: none; border: none; color: var(--text-muted); font-size: 0.75rem; cursor: pointer; text-decoration: underline;">
+                        Como criar a tabela? Mostrar SQL ⌄
+                    </button>
+                </div>
+
+                <!-- Painel de instrução SQL autocontido -->
+                <div id="sql-snippet-block" class="sql-instructions">
+                    <span style="display:block; margin-bottom: 6px;">Cole e execute o código no <strong>SQL Editor</strong> do painel Supabase para criar a tabela compatível:</span>
+                    <code>CREATE TABLE chat_backups (
+    id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+    chat_html text,
+    history_json json,
+    settings_json json
+);</code>
+                </div>
             </div>
 
             <button class="btn-universal" onclick="saveConfiguration()">
@@ -1190,9 +1360,41 @@
                         });
                         setAccent(data.accentColor, matchedEl);
                     }
+
+                    // Restaura Supabase Fields
+                    document.getElementById('supabase-url').value = data.supabaseUrl !== undefined ? data.supabaseUrl : 'https://hqnlyksuprjdabcgpqdl.supabase.co';
+                    document.getElementById('supabase-key').value = data.supabaseKey !== undefined ? data.supabaseKey : 'sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa';
+                    document.getElementById('supabase-table').value = data.supabaseTable !== undefined ? data.supabaseTable : 'chat_backups';
+                    
+                    const autoSw = document.getElementById('supabase-auto-switch');
+                    if (data.supabaseAuto) {
+                        if (autoSw && !autoSw.classList.contains('on')) {
+                            autoSw.classList.add('on');
+                        }
+                    } else {
+                        if (autoSw) {
+                            autoSw.classList.remove('on');
+                        }
+                    }
+
+                    // Se temos dados válidos, testa conexão e atualiza indicadores em background após o boot
+                    setTimeout(() => {
+                        testSupabaseConnection();
+                    }, 1800);
+
                 } else {
                     // Preenche o datalist inicial se não houver dados salvos
                     setApiType('GEMINI', true);
+                    
+                    // Preenche valores padrão de Supabase fornecidos pelo usuário
+                    document.getElementById('supabase-url').value = 'https://hqnlyksuprjdabcgpqdl.supabase.co';
+                    document.getElementById('supabase-key').value = 'sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa';
+                    document.getElementById('supabase-table').value = 'chat_backups';
+                    
+                    // Roda um teste inicial automático de conexão em background
+                    setTimeout(() => {
+                        testSupabaseConnection();
+                    }, 1800);
                 }
             } catch (e) {
                 console.error("Erro ao carregar configurações: ", e);
@@ -1429,6 +1631,27 @@
                         addLog(" → /voice <texto> : Sintetiza voz instantânea via TTS.", "info");
                         addLog(" → /accent <cor> : Muda cor do sistema (ex: verde, laranja, vermelho, roxo, branco).", "info");
                         addLog(" → /simulate : Executa autoensaios e rotinas de rede automáticas.", "info");
+                        addLog(" → /supabase : Verifica status das conexões do Supabase.", "info");
+                        addLog(" → /cloud-backup : Efetua backup manual de dados para o Supabase.", "info");
+                        addLog(" → /cloud-restore : Recupera instantaneamente o último backup salvo.", "info");
+                        break;
+                    case '/supabase':
+                        const subUrl = document.getElementById('supabase-url').value;
+                        const subTbl = document.getElementById('supabase-table').value;
+                        const subAuto = document.getElementById('supabase-auto-switch').classList.contains('on');
+                        addLog("Configuração de Integração Supabase:", "success");
+                        addLog(` - URL Ativa: ${subUrl}`, "info");
+                        addLog(` - Tabela Selecionada: ${subTbl}`, "info");
+                        addLog(` - Sincronização Automática: ${subAuto ? "Ativa" : "Inativa"}`, "info");
+                        testSupabaseConnection();
+                        break;
+                    case '/cloud-backup':
+                        addLog("Forçando backup via linha de comando...", "sys");
+                        supabaseSaveBackup(false);
+                        break;
+                    case '/cloud-restore':
+                        addLog("Iniciando restauração via linha de comando...", "sys");
+                        supabaseRestoreBackup();
                         break;
                     case '/clear':
                         clearTerminalReal();
@@ -1491,12 +1714,21 @@
                 modelName: document.getElementById('model-name').value.trim(),
                 systemPrompt: document.getElementById('system-prompt').value, // Preserve formatting
                 isAmoled: document.getElementById('amoled-switch').classList.contains('on'),
-                accentColor: currentAccentColor
+                accentColor: currentAccentColor,
+                
+                // Supabase Connection Settings
+                supabaseUrl: document.getElementById('supabase-url').value.trim(),
+                supabaseKey: document.getElementById('supabase-key').value.trim(),
+                supabaseTable: document.getElementById('supabase-table').value.trim(),
+                supabaseAuto: document.getElementById('supabase-auto-switch').classList.contains('on')
             };
             
             localStorage.setItem('ai_console_settings', JSON.stringify(data));
             
-            addLog("As configurações foram persistidas localmente.", "success");
+            addLog("As configurações (incluindo Supabase) foram persistidas localmente.", "success");
+            
+            // Testa conexão se os campos forem editados
+            testSupabaseConnection();
             
             // UX Nativa Feedback rápido
             const btn = document.querySelector('.btn-universal');
@@ -1548,6 +1780,11 @@
             document.getElementById('chat-messages').innerHTML = '<div class="chat-message bot">Memória apagada. Sessão reiniciada.</div>';
             saveChatSession();
             addLog("Memória do chat apagada manualmente.", "info");
+            
+            // Auto-Backup no Supabase caso ativado
+            if (document.getElementById('supabase-auto-switch')?.classList.contains('on')) {
+                supabaseSaveBackup(true);
+            }
         }
 
         function scrollToBottom() {
@@ -1674,6 +1911,11 @@
                 saveChatSession();
                 triggerPulse();
                 addLog(`Thread preenchida com sucesso e salva na memória.`, "success");
+
+                // Auto-Sincronização Cloud Supabase caso esteja ativado
+                if (document.getElementById('supabase-auto-switch')?.classList.contains('on')) {
+                    supabaseSaveBackup(true);
+                }
 
             }, 600);
         }
@@ -1822,6 +2064,292 @@
                 console.error(err);
                 outputBox.value = "Falha neural na tradução: " + err.message;
                 addLog("Falha em processar tradução: " + err.message, "error");
+            }
+        }
+
+        // ==========================================================================
+        // 8. Integração e Sincronização Supabase Cloud
+        // ==========================================================================
+        function updateCloudIndicators(status, desc) {
+            const dotColorMap = {
+                'active': '#10b981',   // green
+                'error': '#ef4444',    // red
+                'syncing': '#f59e0b',  // orange
+                'inactive': '#737373'  // gray
+            };
+            const dotColor = dotColorMap[status] || '#737373';
+
+            // No card de Ajustes
+            const cardBadgeText = document.getElementById('supabase-status-desc');
+            const cardBadgeDot = document.getElementById('supabase-status-dot');
+            if (cardBadgeText) cardBadgeText.innerText = desc;
+            if (cardBadgeDot) {
+                cardBadgeDot.style.backgroundColor = dotColor;
+                if (status === 'syncing') {
+                    cardBadgeDot.style.animation = 'pulse-mic 0.6s infinite alternate';
+                } else {
+                    cardBadgeDot.style.animation = 'none';
+                }
+            }
+
+            // No chat (Badge do Header)
+            const chatBadgeText = document.querySelector('#chat-cloud-indicator .cloud-text');
+            const chatBadgeDot = document.querySelector('#chat-cloud-indicator .cloud-dot');
+            if (chatBadgeText) chatBadgeText.innerText = desc;
+            if (chatBadgeDot) {
+                chatBadgeDot.style.backgroundColor = dotColor;
+                if (status === 'syncing') {
+                    chatBadgeDot.style.animation = 'pulse-mic 0.6s infinite alternate';
+                } else {
+                    chatBadgeDot.style.animation = 'none';
+                }
+            }
+        }
+
+        async function testSupabaseConnection() {
+            updateCloudIndicators('syncing', 'Testando...');
+            addLog("Iniciando ping de verificação ao banco Supabase...", "sys");
+
+            const url = document.getElementById('supabase-url').value.trim();
+            const key = document.getElementById('supabase-key').value.trim();
+            const table = document.getElementById('supabase-table').value.trim();
+
+            if (!url || !key || !table) {
+                updateCloudIndicators('inactive', 'Inativo');
+                addLog("Ping suspenso: URL, Key ou Tabela não cadastrados.", "info");
+                return false;
+            }
+
+            try {
+                // Tenta fazer um HEAD ou GET simples com limite de 1 elemento para validar conexões
+                const cleanUrl = url.endsWith('/') ? url : url + '/';
+                const fetchUrl = `${cleanUrl}rest/v1/${table}?limit=1`;
+
+                const response = await fetch(fetchUrl, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': key,
+                        'Authorization': `Bearer ${key}`
+                    }
+                });
+
+                if (response.ok) {
+                    updateCloudIndicators('active', 'Conectado');
+                    addLog("Conexão ao Supabase estabelecida com sucesso!", "success");
+                    return true;
+                } else {
+                    const errorText = await response.text();
+                    try {
+                        const parsed = JSON.parse(errorText);
+                        if (parsed.code === '42P01') { // Codigo Postgres para tabela inexistente
+                            updateCloudIndicators('error', 'Tabela Inexistente');
+                            addLog(`Supabase Conectado, mas tabela "${table}" não existe na DB. Use as instruções SQL para criá-la.`, "error");
+                        } else {
+                            updateCloudIndicators('error', `Falha (${response.status})`);
+                            addLog(`Erro de autorização no Supabase: ${parsed.message || errorText}`, "error");
+                        }
+                    } catch(e) {
+                        updateCloudIndicators('error', `Acesso Rejeitado`);
+                        addLog(`Conexão rejeitada pelo Supabase (Status ${response.status}): ${errorText}`, "error");
+                    }
+                    return false;
+                }
+            } catch(err) {
+                console.error(err);
+                updateCloudIndicators('error', 'Erro de Rede');
+                addLog(`Incapaz de alcançar o servidor Supabase. Host offline ou bloqueio por CORS: ${err.message}`, "error");
+                return false;
+            }
+        }
+
+        async function supabaseSaveBackup(quiet = false) {
+            if (!quiet) triggerPulse();
+            
+            const url = document.getElementById('supabase-url').value.trim();
+            const key = document.getElementById('supabase-key').value.trim();
+            const table = document.getElementById('supabase-table').value.trim();
+
+            if (!url || !key || !table) {
+                if (!quiet) {
+                    alert("Atenção: Cadastre as chaves do Supabase nas configurações antes de tentar criar um backup.");
+                }
+                return;
+            }
+
+            updateCloudIndicators('syncing', 'Sincronizando...');
+            if (!quiet) addLog(`Salvando backup incremental na nuvem ("${table}")...`, "sys");
+
+            const chatMessagesHtml = localStorage.getItem('ai_console_chat') || document.getElementById('chat-messages').innerHTML;
+            const settingsData = {
+                apiType: apiType,
+                apiKey: document.getElementById('api-key').value.trim(),
+                baseUrl: document.getElementById('base-url').value.trim(),
+                modelName: document.getElementById('model-name').value.trim(),
+                systemPrompt: document.getElementById('system-prompt').value,
+                isAmoled: document.getElementById('amoled-switch').classList.contains('on'),
+                accentColor: currentAccentColor
+            };
+
+            const payload = {
+                chat_html: chatMessagesHtml,
+                history_json: chatHistoryObjects,
+                settings_json: settingsData
+            };
+
+            try {
+                const cleanUrl = url.endsWith('/') ? url : url + '/';
+                const fetchUrl = `${cleanUrl}rest/v1/${table}`;
+
+                const response = await fetch(fetchUrl, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': key,
+                        'Authorization': `Bearer ${key}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    updateCloudIndicators('active', 'Sincronizado');
+                    addLog("Backup de histórico persistido com sucesso na nuvem do Supabase!", "success");
+                    
+                    if (!quiet) {
+                        const cloudBtn = document.getElementById('btn-cloud-backup');
+                        if (cloudBtn) {
+                            const original = cloudBtn.innerText;
+                            cloudBtn.innerText = "Nuvem Atualizada ✓";
+                            setTimeout(() => cloudBtn.innerText = original, 2000);
+                        }
+                    }
+                } else {
+                    const errText = await response.text();
+                    updateCloudIndicators('error', 'Falha no Envio');
+                    addLog(`Erro ao persistir backup: ${response.status} - ${errText}`, "error");
+                }
+            } catch(e) {
+                console.error(e);
+                updateCloudIndicators('error', 'Erro de Rede');
+                addLog(`Conexão com a nuvem instável ou bloqueada: ${e.message}`, "error");
+            }
+        }
+
+        async function supabaseRestoreBackup() {
+            triggerPulse();
+            
+            const url = document.getElementById('supabase-url').value.trim();
+            const key = document.getElementById('supabase-key').value.trim();
+            const table = document.getElementById('supabase-table').value.trim();
+
+            if (!url || !key || !table) {
+                alert("Insira suas chaves do Supabase para poder restaurar os backups.");
+                return;
+            }
+
+            if (!confirm("Isso redefinirá seu Histórico de Conversas e Ajustes Globais locais para corresponder ao último backup salvo no Supabase. Continuar?")) {
+                return;
+            }
+
+            updateCloudIndicators('syncing', 'Baixando...');
+            addLog("Baixando último backup armazenado na nuvem...", "sys");
+
+            try {
+                const cleanUrl = url.endsWith('/') ? url : url + '/';
+                // Seleciona o backup mais recente ordenando por id decrescente, limitando a 1 linha
+                const fetchUrl = `${cleanUrl}rest/v1/${table}?order=id.desc&limit=1`;
+
+                const response = await fetch(fetchUrl, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': key,
+                        'Authorization': `Bearer ${key}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.length > 0) {
+                        const backup = data[0];
+                        
+                        // Restaura os logs de chats
+                        if (backup.chat_html) {
+                            localStorage.setItem('ai_console_chat', backup.chat_html);
+                            document.getElementById('chat-messages').innerHTML = backup.chat_html;
+                            scrollToBottom();
+                        }
+                        
+                        // Restaura o array original de histórico estruturado para o backend LLM
+                        if (backup.history_json) {
+                            let history = backup.history_json;
+                            if (typeof history === 'string') {
+                                try { history = JSON.parse(history); } catch(e){}
+                            }
+                            chatHistoryObjects = Array.isArray(history) ? history : [];
+                            localStorage.setItem('ai_console_chat_history', JSON.stringify(chatHistoryObjects));
+                        }
+                        
+                        // Restaura configurações salvas de modelos e de cores
+                        if (backup.settings_json) {
+                            let settings = backup.settings_json;
+                            if (typeof settings === 'string') {
+                                try { settings = JSON.parse(settings); } catch(e){}
+                            }
+                            localStorage.setItem('ai_console_settings', JSON.stringify(settings));
+                            loadConfiguration();
+                        }
+
+                        updateCloudIndicators('active', 'Conectado');
+                        addLog("Restauração concluída! Conversas e configurações locais foram sincronizadas com o backup da nuvem.", "success");
+                        
+                        const cloudBtn = document.getElementById('btn-cloud-restore');
+                        if (cloudBtn) {
+                            const original = cloudBtn.innerText;
+                            cloudBtn.innerText = "Lido com Sucesso ✓";
+                            setTimeout(() => cloudBtn.innerText = original, 2000);
+                        }
+                    } else {
+                        updateCloudIndicators('active', 'Tabela Vazia');
+                        addLog("Nenhum registro de backup disponível de momento no seu Supabase.", "info");
+                    }
+                } else {
+                    const errText = await response.text();
+                    updateCloudIndicators('error', 'Erro de Download');
+                    addLog(`Consulte as regras de RLS do seu Supabase. Erro: ${response.status} - ${errText}`, "error");
+                }
+            } catch(e) {
+                console.error(e);
+                updateCloudIndicators('error', 'Rede Indisponível');
+                addLog(`Incapaz de ler backup no console do Supabase: ${e.message}`, "error");
+            }
+        }
+
+        function toggleSqlSnippet() {
+            triggerPulse();
+            const block = document.getElementById('sql-snippet-block');
+            const btn = document.getElementById('btn-toggle-sql');
+            if (!block) return;
+            if (block.style.display === 'none' || !block.style.display) {
+                block.style.display = 'block';
+                if (btn) btn.innerText = "Ocultar Instruções SQL ⌃";
+            } else {
+                block.style.display = 'none';
+                if (btn) btn.innerText = "Como criar a tabela? Mostrar SQL ⌄";
+            }
+        }
+
+        function toggleSupabaseAuto() {
+            triggerPulse();
+            const sw = document.getElementById('supabase-auto-switch');
+            if (!sw) return;
+            const isOn = sw.classList.contains('on');
+            if (isOn) {
+                sw.classList.remove('on');
+                addLog("Auto-Salvamento desativado na nuvem.", "info");
+            } else {
+                sw.classList.add('on');
+                addLog("Auto-Salvamento ativado. Seus backups na nuvem agora acompanham do envio de mensagens.", "success");
+                supabaseSaveBackup(true); // Força um backup silencioso imediato de sincronização
             }
         }
     </script>
