@@ -1155,13 +1155,30 @@
                 <!-- Painel de instrução SQL autocontido -->
                 <div id="sql-snippet-block" class="sql-instructions">
                     <span style="display:block; margin-bottom: 6px;">Cole e execute o código no <strong>SQL Editor</strong> do painel Supabase para criar a tabela compatível:</span>
-                    <code>CREATE TABLE chat_backups (
+                    <code>-- Remove a tabela antiga se necessário para recriar
+DROP TABLE IF EXISTS public.chat_backups;
+
+-- Cria a tabela com suporte a backups completos e mensagens individuais
+CREATE TABLE public.chat_backups (
     id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+    role text,
+    content text,
     chat_html text,
     history_json json,
     settings_json json
-);</code>
+);
+
+-- Ativa Segurança de Nível de Linha (RLS)
+ALTER TABLE public.chat_backups ENABLE ROW LEVEL SECURITY;
+
+-- Cria política permissiva total para testes locais/front-end rápidos
+CREATE POLICY "Permitir acesso total para testes" 
+ON public.chat_backups 
+FOR ALL 
+TO anon, authenticated
+USING (true) 
+WITH CHECK (true);</code>
                 </div>
             </div>
 
