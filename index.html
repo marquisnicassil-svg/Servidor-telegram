@@ -542,10 +542,148 @@
            ========================================================================== */
         #tab-logs {
             overflow: hidden;
+            display: none;
         }
 
-        .logs-panel {
+        #tab-logs.active {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .terminal-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 100%;
+            min-height: 0;
+        }
+
+        /* Widgets de Status de Sistema */
+        .terminal-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 4px;
+            flex-shrink: 0;
+        }
+
+        .stat-card {
             background-color: var(--card-bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 8px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            transition: border-color 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        .stat-value {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--text-main);
+            font-family: Menlo, Monaco, monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .pulse-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse-green 1.2s infinite alternate;
+        }
+
+        @keyframes pulse-green {
+            from { transform: scale(0.85); opacity: 0.4; }
+            to { transform: scale(1.25); opacity: 1; box-shadow: 0 0 6px var(--primary); }
+        }
+
+        /* Barra de Ações do Terminal */
+        .terminal-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--card-bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 8px 12px;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .filter-tags::-webkit-scrollbar { display: none; }
+
+        .filter-chip {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .filter-chip.active {
+            background: var(--primary-bg);
+            border-color: var(--primary);
+            color: var(--text-main);
+        }
+
+        .terminal-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .terminal-act-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+
+        .terminal-act-btn:hover {
+            border-color: var(--text-main);
+            color: var(--text-main);
+        }
+
+        /* Painel Digital do Terminal */
+        .logs-panel {
+            background-color: #050608;
             border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 16px;
@@ -553,32 +691,87 @@
             overflow-y: auto;
             font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
             font-size: 0.8rem;
-            color: var(--text-muted);
+            color: #d1d5db;
             min-height: 0;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            border-left: 3px solid var(--primary);
         }
 
         .log-line {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             display: flex;
-            flex-direction: column;
-            border-bottom: 1px dashed rgba(255,255,255,0.05);
-            padding-bottom: 6px;
+            align-items: flex-start;
+            gap: 8px;
+            line-height: 1.4;
+            animation: terminal-line-fade 0.2s ease-out forwards;
         }
 
-        .log-line:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
+        @keyframes terminal-line-fade {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .log-timestamp {
-            font-size: 0.65rem;
-            opacity: 0.5;
-            margin-bottom: 3px;
+            color: #6b7280;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+            user-select: none;
         }
 
-        .log-success { color: var(--text-main); font-weight: 600; }
-        .log-info { color: var(--text-main); }
-        .log-error { color: var(--error); }
+        .log-badge {
+            font-size: 0.65rem;
+            padding: 1px 5px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: bold;
+            flex-shrink: 0;
+            user-select: none;
+        }
+
+        .badge-sys { background: rgba(255,255,255,0.08); color: #9ca3af; border: 1px solid rgba(255,255,255,0.15); }
+        .badge-info { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+        .badge-success { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+        .badge-error { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+
+        .log-content {
+            word-break: break-all;
+        }
+
+        .log-success-text { color: #34d399; }
+        .log-info-text { color: #d1d5db; }
+        .log-error-text { color: #f87171; font-weight: bold; }
+
+        /* CLI de Entrada de Terminal */
+        .terminal-cli-container {
+            display: flex;
+            align-items: center;
+            background-color: #050608;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 8px 12px;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .cli-prompt {
+            color: var(--primary);
+            font-family: Menlo, Monaco, monospace;
+            font-size: 0.8rem;
+            font-weight: bold;
+            user-select: none;
+        }
+
+        .cli-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #d1d5db;
+            font-family: Menlo, Monaco, monospace;
+            font-size: 0.8rem;
+            flex: 1;
+            padding: 0;
+            caret-color: var(--primary);
+        }
 
         /* ==========================================================================
            8. Splash / Loading Screen
@@ -813,10 +1006,56 @@
 
         <!-- ABA 3: TERMINAL / LOGS -->
         <section id="tab-logs" class="tab-section">
-            <div class="section-header">
-                <h2>Terminal do Servidor</h2>
+            <div class="terminal-wrapper">
+                
+                <!-- Grade de Sensores de Sistema (M3 Micro-Cards) -->
+                <div class="terminal-stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Servidor</span>
+                        <span class="stat-value"><span class="pulse-dot"></span> Online</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Latência</span>
+                        <span class="stat-value" id="stats-pinger">-- ms</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Módulos</span>
+                        <span class="stat-value">v2.1</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Requisições</span>
+                        <span class="stat-value" id="stats-reqs">0</span>
+                    </div>
+                </div>
+
+                <!-- Barra de Ferramentas / Filtros Avançados -->
+                <div class="terminal-toolbar">
+                    <div class="filter-tags">
+                        <div class="filter-chip active" onclick="filterLogs('all')" id="filter-all">Tudo</div>
+                        <div class="filter-chip" onclick="filterLogs('info')" id="filter-info">Info</div>
+                        <div class="filter-chip" onclick="filterLogs('success')" id="filter-success">Sucesso</div>
+                        <div class="filter-chip" onclick="filterLogs('error')" id="filter-error">Erros</div>
+                    </div>
+                    <div class="terminal-actions">
+                        <button class="terminal-act-btn" onclick="simulateActivity()" title="Simula atividade ou chamadas de teste">
+                            ⚡ Ensaio
+                        </button>
+                        <button class="terminal-act-btn" onclick="clearTerminalReal()" title="Limpa o buffer do terminal">
+                            🗑️ Limpar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Terminal Monocromático de Logs -->
+                <div class="logs-panel" id="logs-panel"></div>
+
+                <!-- Painel de Linha de Comando (CLI) Interativo -->
+                <div class="terminal-cli-container">
+                    <span class="cli-prompt">sys@core:~$</span>
+                    <input type="text" id="cli-input" class="cli-input" placeholder="Digite comandos (ex: /help)..." onkeydown="if(event.key==='Enter') executeCliCommand()">
+                </div>
+
             </div>
-            <div class="logs-panel" id="logs-panel"></div>
         </section>
 
     </main>
@@ -911,6 +1150,9 @@
                     addLog("Service Worker / PWA falhou: " + err, "error");
                 });
             }
+
+            // Inicia o sensor de latência dinâmico no terminal
+            startLatencyHeartbeat();
         };
 
         function loadConfiguration() {
@@ -1028,19 +1270,216 @@
             }
         }
 
+        // --- 7. Motor Avançado de Logs e Terminal de Operações ---
+        let logsHistoryBuffer = [];
+        let terminalReqCount = 0;
+
         function addLog(text, type = "info") {
             const container = document.getElementById('logs-panel');
             if(!container) return;
 
             const time = new Date().toTimeString().split(' ')[0];
+            
+            // Registra no buffer de histórico global do terminal
+            const logObj = { time, text, type };
+            logsHistoryBuffer.push(logObj);
+
+            // Atualiza widgets de sensores do dashboard
+            if (type === "success") {
+                terminalReqCount++;
+                const reqCounterEl = document.getElementById('stats-reqs');
+                if (reqCounterEl) reqCounterEl.innerText = terminalReqCount;
+            }
+
+            // Exibe o log no painel se passar pelo filtro atual
+            appendLogToPanel(logObj);
+        }
+
+        function appendLogToPanel(logObj) {
+            const container = document.getElementById('logs-panel');
+            if (!container) return;
+
+            // Determina se devemos pular devido ao filtro ativo
+            const currentFilter = document.querySelector('.filter-chip.active')?.id.replace('filter-', '') || 'all';
+            if (currentFilter !== 'all' && logObj.type !== currentFilter) {
+                return;
+            }
+
             const div = document.createElement('div');
             div.className = 'log-line';
             
-            let colorCls = type === "success" ? "log-success" : (type === "error" ? "log-error" : "log-info");
-            div.innerHTML = `<span class="log-timestamp">[${time}] sys</span> <span class="${colorCls}">${text}</span>`;
+            let badgeClass = "badge-info";
+            let contentClass = "log-info-text";
+            if (logObj.type === "success") {
+                badgeClass = "badge-success";
+                contentClass = "log-success-text";
+            } else if (logObj.type === "error") {
+                badgeClass = "badge-error";
+                contentClass = "log-error-text";
+            } else if (logObj.type === "sys") {
+                badgeClass = "badge-sys";
+                contentClass = "log-info-text";
+            }
+
+            div.innerHTML = `
+                <span class="log-timestamp">[${logObj.time}]</span>
+                <span class="log-badge ${badgeClass}">${logObj.type}</span>
+                <span class="log-content ${contentClass}">${logObj.text}</span>
+            `;
             
             container.appendChild(div);
             container.scrollTop = container.scrollHeight;
+        }
+
+        // Filtro rápido de logs por tags
+        function filterLogs(filterType) {
+            triggerPulse();
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            
+            const selectedChip = document.getElementById('filter-' + filterType);
+            if (selectedChip) selectedChip.classList.add('active');
+
+            const container = document.getElementById('logs-panel');
+            if (!container) return;
+
+            // Limpa o painel e reconstrói filtrando do histórico completo
+            container.innerHTML = "";
+            logsHistoryBuffer.forEach(log => {
+                if (filterType === "all" || log.type === filterType) {
+                    appendLogToPanel(log);
+                }
+            });
+            
+            addLog(`Filtro de terminal alterado para: ${filterType.toUpperCase()}`, "sys");
+        }
+
+        // Limpeza real do terminal
+        function clearTerminalReal() {
+            triggerPulse();
+            logsHistoryBuffer = [];
+            const container = document.getElementById('logs-panel');
+            if (container) container.innerHTML = "";
+            addLog("Buffer de tela e memória de histórico redefinidos.", "sys");
+        }
+
+        // Simula tarefas e atividades de rede no Console (Estilo Matrix)
+        function simulateActivity() {
+            triggerPulse();
+            addLog("Iniciando varredura automatizada de subsistemas...", "sys");
+            
+            setTimeout(() => {
+                addLog("Análise de latência de servidores DNS iniciada.", "info");
+            }, 300);
+
+            setTimeout(() => {
+                const randomPing = Math.floor(Math.random() * 80) + 12;
+                document.getElementById('stats-pinger').innerText = randomPing + " ms";
+                addLog(`Endereço IP secundário pingado com sucesso: ${randomPing}ms`, "success");
+            }, 900);
+
+            setTimeout(() => {
+                addLog("Limpeza preventiva de cache neural secundário finalizada.", "info");
+            }, 1500);
+
+            setTimeout(() => {
+                addLog("Simulação concluída com sucesso. Zero erros em loop central.", "success");
+            }, 2100);
+        }
+
+        // Sensor Heartbeat (Latência do Servidor Fictício que atualiza dinamicamente)
+        function startLatencyHeartbeat() {
+            const updatePing = () => {
+                const pingerEl = document.getElementById('stats-pinger');
+                if (pingerEl) {
+                    const fakeLatency = Math.floor(Math.random() * 45) + 15;
+                    pingerEl.innerText = fakeLatency + " ms";
+                }
+            };
+            updatePing();
+            setInterval(updatePing, 5000);
+        }
+
+        // Executador de virtual comandos (CLI)
+        function executeCliCommand() {
+            triggerPulse();
+            const input = document.getElementById('cli-input');
+            if (!input) return;
+
+            const val = input.value.trim();
+            if (!val) return;
+
+            input.value = ""; // Limpa campo
+
+            // Printa o comando digitado no terminal
+            addLog(`Executando: ${val}`, "sys");
+
+            const parts = val.split(' ');
+            const cmd = parts[0].toLowerCase();
+            const arg = parts.slice(1).join(' ').trim();
+
+            setTimeout(() => {
+                switch (cmd) {
+                    case '/help':
+                        addLog("Comandos virtuais aceitos no sistema do terminal:", "info");
+                        addLog(" → /help : Mostra esta ajuda de terminal.", "info");
+                        addLog(" → /clear : Limpa o histórico de comandos e logs.", "info");
+                        addLog(" → /ping : Testa a velocidade de conexão fictícia neural.", "info");
+                        addLog(" → /stats : Exibe estatísticas internas acumuladas.", "info");
+                        addLog(" → /theme : Toggles entre modo escuro padrão/AMOLED.", "info");
+                        addLog(" → /voice <texto> : Sintetiza voz instantânea via TTS.", "info");
+                        addLog(" → /accent <cor> : Muda cor do sistema (ex: verde, laranja, vermelho, roxo, branco).", "info");
+                        addLog(" → /simulate : Executa autoensaios e rotinas de rede automáticas.", "info");
+                        break;
+                    case '/clear':
+                        clearTerminalReal();
+                        break;
+                    case '/ping':
+                        const simulated = Math.floor(Math.random() * 50) + 10;
+                        document.getElementById('stats-pinger').innerText = simulated + " ms";
+                        addLog(`Conexão neural está UP. Retorno em ${simulated}ms.`, "success");
+                        break;
+                    case '/stats':
+                        addLog("SISTEMA CORE STATS:", "success");
+                        addLog(` - Requisições ativas salvas: ${terminalReqCount}`, "info");
+                        addLog(` - Versão engine: WebApp-Alpha v2.1`, "info");
+                        addLog(` - Tamanho do cache de logs: ${logsHistoryBuffer.length} linhas`, "info");
+                        addLog(` - Cor hexadecimal ativa: ${currentAccentColor}`, "info");
+                        addLog(` - Motor de Inteligência: ${apiType}`, "info");
+                        break;
+                    case '/theme':
+                        toggleAmoled();
+                        addLog("Tema de fundo de tela alterado via comando.", "success");
+                        break;
+                    case '/simulate':
+                        simulateActivity();
+                        break;
+                    case '/voice':
+                        if (!arg) {
+                            addLog("Uso incorreto. Exemplo: /voice Olá mundo", "error");
+                        } else {
+                            speakText(arg);
+                            addLog(`Enviado áudio via CLI: "${arg}"`, "success");
+                        }
+                        break;
+                    case '/accent':
+                        if (!arg) {
+                            addLog("Uso do comando: /accent [verde/laranja/vermelho/roxo/branco]", "error");
+                        } else {
+                            let colorHex = "#ffffff";
+                            const colorName = arg.toLowerCase();
+                            if (colorName === "verde" || colorName === "green") colorHex = "#10b981";
+                            else if (colorName === "laranja" || colorName === "orange") colorHex = "#f59e0b";
+                            else if (colorName === "vermelho" || colorName === "red") colorHex = "#ef4444";
+                            else if (colorName === "roxo" || colorName === "purple") colorHex = "#8b5cf6";
+                            
+                            setAccent(colorHex, null);
+                            addLog(`Cor do sistema alterada com sucesso para ${colorHex}`, "success");
+                        }
+                        break;
+                    default:
+                        addLog(`bash: comando não reconhecido: "${cmd}". Tente digitar "/help" para uma lista completa.`, "error");
+                }
+            }, 100);
         }
 
         function saveConfiguration() {
