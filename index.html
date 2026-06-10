@@ -152,7 +152,27 @@
             border-bottom: 1px solid var(--border-color);
             flex-shrink: 0;
             transition: background-color 0.3s, border-color 0.3s;
+            overflow-x: auto;
         }
+
+        /* Voice & TTS classes */
+        #btn-mic {
+            transition: transform 0.2s, background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+        #btn-mic.listening {
+            animation: pulse-mic 1s infinite alternate;
+            background-color: rgba(255, 60, 60, 0.2) !important;
+            color: #ff4444;
+        }
+        @keyframes pulse-mic {
+            from { transform: scale(1); filter: drop-shadow(0 0 2px rgba(255,60,60,0.5)); }
+            to { transform: scale(1.1); filter: drop-shadow(0 0 10px rgba(255,60,60,0.8)); }
+        }
+        .reader-btn:hover { color: var(--text-main) !important; }
 
         .tab-btn {
             flex: 1;
@@ -647,6 +667,9 @@
         <button class="tab-btn" id="btn-tab-logs" onclick="switchTab('tab-logs')">
             <span>📜</span><span>Terminal</span>
         </button>
+        <button class="tab-btn" id="btn-tab-translator" onclick="switchTab('tab-translator')">
+            <span>🌍</span><span>Tradutor</span>
+        </button>
     </nav>
 
     <!-- Base Rolável Dinâmica -->
@@ -666,10 +689,45 @@
                         Estou conectado e com memória ativada.
                     </div>
                 </div>
-                <div class="chat-input-area">
+                <div class="chat-input-area" style="align-items: center;">
+                    <button id="btn-mic" onclick="toggleMic()" style="background: transparent; border: none; font-size: 1.4rem; padding: 8px; cursor: pointer; flex-shrink: 0;" title="Ditado por Voz">🎤</button>
                     <input type="text" id="chat-input" class="form-control" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
                     <button class="chat-btn-send" onclick="sendMessage()">
                         <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABA TRADUTOR -->
+        <section id="tab-translator" class="tab-section">
+            <div class="section-header">
+                <h2>Tradutor IA</h2>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div>
+                    <label style="display:block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Traduzir para:</label>
+                    <select id="transl-target-lang" class="form-control">
+                        <option value="Português Brasileiro">Português</option>
+                        <option value="Inglês">Inglês</option>
+                        <option value="Espanhol">Espanhol</option>
+                        <option value="Francês">Francês</option>
+                        <option value="Alemão">Alemão</option>
+                        <option value="Italiano">Italiano</option>
+                        <option value="Japonês">Japonês</option>
+                        <option value="Mandarim">Mandarim</option>
+                    </select>
+                </div>
+                
+                <textarea id="transl-input" class="form-control" rows="4" placeholder="Cole aqui o texto original que deseja traduzir..."></textarea>
+                
+                <button class="btn-universal" style="background-color: var(--primary); color: var(--bg-color); border: none; border-radius: 24px; padding: 14px; font-size: 0.95rem; font-weight: 600; cursor: pointer; text-align: center; display: block; width: 100%; transition: opacity 0.2s;" onclick="doTranslation()">Realizar Tradução ✨</button>
+                
+                <div style="position: relative;">
+                    <textarea id="transl-output" class="form-control" rows="5" placeholder="A tradução aparecerá aqui..." readonly style="background-color: var(--card-bg-primary); padding-bottom: 50px;"></textarea>
+                    
+                    <button class="reader-btn" onclick="speakText(document.getElementById('transl-output').value)" style="position: absolute; right: 10px; bottom: 10px; background: var(--card-bg-secondary); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 8px; padding: 6px 12px; cursor: pointer; transition: all 0.2s;" title="Ouvir Tradução">
+                        🔊 Ouvir
                     </button>
                 </div>
             </div>
@@ -1168,14 +1226,164 @@
                 // Salva na memória a resposta da AI
                 chatHistoryObjects.push({ role: 'assistant', content: aiReply });
 
-                // Substitui bloco processamento pela resposta
-                loader.innerHTML = formatAIResponse(aiReply);
+                // Injeta bloco processamento e player de voz (TTS)
+                const escapedForSpeech = aiReply.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
+                const readerHtml = `<div class="action-bar" style="text-align: right; margin-top: 8px;"><button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size: 0.9em; padding: 4px;">🔊 Ouvir</button></div>`;
+                
+                loader.innerHTML = formatAIResponse(aiReply) + readerHtml;
                 scrollToBottom();
                 saveChatSession();
                 triggerPulse();
                 addLog(`Thread preenchida com sucesso e salva na memória.`, "success");
 
             }, 600);
+        }
+        // --- 5. Reconhecimento de Voz (STT) e Leitura em Voz Alta (TTS) ---
+        function speakText(text) {
+            triggerPulse();
+            if (!text) return;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Para fala atual
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.05;
+                window.speechSynthesis.speak(utterance);
+                addLog("Leitura por voz ativada.", "info");
+            } else {
+                addLog("API de voz não suportada neste navegador.", "error");
+                alert("Seu navegador não suporta leitura de voz embutida.");
+            }
+        }
+
+        let recognition = null;
+        let isListening = false;
+        function toggleMic() {
+            triggerPulse();
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                addLog("Reconhecimento não suportado.", "error");
+                alert("Seu navegador não suporta captura de microfone nativa.");
+                return;
+            }
+
+            if (isListening) {
+                if (recognition) recognition.stop();
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'pt-BR'; // Assume Pt-BR local
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = function() {
+                isListening = true;
+                document.getElementById('btn-mic').classList.add('listening');
+                addLog("Gravando... Escutando microfone.", "info");
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                const inputForm = document.getElementById('chat-input');
+                if (inputForm.value) inputForm.value += ' ' + transcript;
+                else inputForm.value = transcript;
+                
+                addLog("Áudio reconhecido via IA nativa.", "success");
+            };
+
+            recognition.onerror = function(event) {
+                addLog("Erro no microfone: " + event.error, "error");
+            };
+
+            recognition.onend = function() {
+                isListening = false;
+                document.getElementById('btn-mic').classList.remove('listening');
+            };
+
+            recognition.start();
+        }
+
+        // --- 6. Motor do Tradutor Inteligente (Aba Separada) ---
+        async function doTranslation() {
+            triggerPulse();
+            const inputTxt = document.getElementById('transl-input').value.trim();
+            const targetLang = document.getElementById('transl-target-lang').value;
+            const outputBox = document.getElementById('transl-output');
+            
+            if (!inputTxt) {
+                alert("Por favor, cole um texto para ser traduzido.");
+                return;
+            }
+
+            outputBox.value = "Aguarde... Conectando à IA para tradução...";
+
+            const promptConfig = `Você é um tradutor nativo hiper-fluente de nível corporativo e técnico. Traduza agora este exato texto do usuário para o idioma: ${targetLang}. IMPORTANTE: Retorne APENAS a tradução crua, mantendo exatamente o tom, as gírias do contexto, não interaja com o usuário nem adicione introduções como "Aqui está". Somente o texto traduzido.`;
+
+            try {
+                const type = apiType;
+                const key = document.getElementById('api-key').value.trim();
+                const url = document.getElementById('base-url').value.trim();
+                const model = document.getElementById('model-name').value.trim();
+
+                if (!key || key === "") {
+                    outputBox.value = "Erro fatal: API Key não detectada - Verifique a aba de Configurações.";
+                    return;
+                }
+
+                let aiReply = "";
+
+                if (type === "GEMINI") {
+                    const cleanUrl = url.endsWith('/') ? url : url + '/';
+                    const fetchUrl = `${cleanUrl}v1beta/models/${model}:generateContent?key=${key}`;
+                    
+                    const response = await fetch(fetchUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: inputTxt }] }],
+                            generationConfig: { temperature: 0.1 },
+                            systemInstruction: { parts: [{ text: promptConfig }] }
+                        })
+                    });
+                    
+                    const rData = await response.json();
+                    if (rData.error) throw new Error(rData.error.message);
+                    
+                    aiReply = rData.candidates[0].content.parts[0].text;
+
+                } else {
+                    const cleanUrl = url.endsWith('/') ? url : url + '/';
+                    const fetchUrl = cleanUrl.includes('chat/completions') ? cleanUrl : `${cleanUrl}chat/completions`;
+                    
+                    const response = await fetch(fetchUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${key}`
+                        },
+                        body: JSON.stringify({
+                            model: model,
+                            messages: [
+                                { role: "system", content: promptConfig },
+                                { role: "user", content: inputTxt }
+                            ],
+                            temperature: 0.1
+                        })
+                    });
+                    
+                    const rData = await response.json();
+                    if (rData.error) throw new Error(rData.error.message);
+                    
+                    aiReply = rData.choices[0].message.content;
+                }
+
+                outputBox.value = aiReply;
+                addLog("Tradução rápida processada: " + targetLang, "success");
+
+            } catch (err) {
+                console.error(err);
+                outputBox.value = "Falha neural na tradução: " + err.message;
+                addLog("Falha em processar tradução: " + err.message, "error");
+            }
         }
     </script>
 </body>
