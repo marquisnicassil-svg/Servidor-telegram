@@ -1979,7 +1979,7 @@ WITH CHECK (true);</code>
             if (!container) return;
 
             // Determina se devemos pular devido ao filtro ativo
-            const currentFilter = document.querySelector('.filter-chip.active')?.id.replace('filter-', '') || 'all';
+            const currentFilter = document.querySelector('.terminal-toolbar .filter-chip.active')?.id.replace('filter-', '') || 'all';
             if (currentFilter !== 'all' && logObj.type !== currentFilter) {
                 return;
             }
