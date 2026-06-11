@@ -1245,6 +1245,10 @@ WITH CHECK (true);</code>
             <button class="btn-universal btn-install" id="btn-install" onclick="installPWA()">
                 ⬇️ Baixar / Instalar App (PWA)
             </button>
+
+            <button class="btn-universal" style="background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.4); color: #fbbf24; margin-top: 10px;" onclick="forceAppUpdateAndClearCache()">
+                🔄 Limpar Cache & Forçar Atualização
+            </button>
         </section>
 
         <!-- ABA 3: TERMINAL / LOGS -->
@@ -1376,7 +1380,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js')
+                navigator.serviceWorker.register('./sw.js?v=4')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -1406,6 +1410,13 @@ WITH CHECK (true);</code>
         async function initializeSessionAndApp() {
             const statusText = document.getElementById('splash-status-text');
             if (statusText) statusText.innerText = "Sincronizando configurações locais...";
+
+            // Carrega parâmetros de URL se existirem nocache ativo
+            if (window.location.search.includes('nocache=')) {
+                setTimeout(() => {
+                    addLog("🔄 Sistema reiniciado com bypass total de cache executado com sucesso!", "success");
+                }, 100);
+            }
 
             // 1. Carrega configurações do LocalStorage (necessário para pegar as chaves do Supabase)
             loadConfiguration();
@@ -1695,6 +1706,34 @@ WITH CHECK (true);</code>
             addLog("Buffer de tela e memória de histórico redefinidos.", "sys");
         }
 
+        async function forceAppUpdateAndClearCache() {
+            triggerPulse();
+            addLog("Comando de atualização forçada recebido. Prunando caches de navegador...", "sys");
+            if (confirm("Deseja limpar todos os arquivos em cache do navegador para forçar o download da nova versão? (Sua sessão e histórico local serão preservados)")) {
+                try {
+                    if (navigator.serviceWorker) {
+                        const regs = await navigator.serviceWorker.getRegistrations();
+                        for (let reg of regs) {
+                            await reg.unregister();
+                        }
+                    }
+                    if (window.caches) {
+                        const keys = await caches.keys();
+                        for (let key of keys) {
+                            await caches.delete(key);
+                        }
+                    }
+                    addLog("Limpeza executada com sucesso! Redirecionando...", "success");
+                    alert("Caches limpos com sucesso! O aplicativo será recarregado para obter a nova versão.");
+                    window.location.href = window.location.pathname + '?nocache=' + Date.now();
+                } catch (e) {
+                    console.error(e);
+                    addLog("Erro ao limpar caches: " + e.message, "error");
+                    window.location.reload();
+                }
+            }
+        }
+
         // Simula tarefas e atividades de rede no Console (Estilo Matrix)
         function simulateActivity() {
             triggerPulse();
@@ -1769,6 +1808,11 @@ WITH CHECK (true);</code>
                         addLog(" → /user : Exibe informações do usuário autenticado atual.", "info");
                         addLog(" → /cloud-backup : Efetua backup manual de dados para o Supabase.", "info");
                         addLog(" → /cloud-restore : Recupera instantaneamente o último backup salvo.", "info");
+                        addLog(" → /update : Limpa todos os caches e força a atualização com a última versão.", "info");
+                        break;
+                    case '/update':
+                    case '/refresh':
+                        forceAppUpdateAndClearCache();
                         break;
                     case '/supabase':
                         const subUrl = document.getElementById('supabase-url').value;
