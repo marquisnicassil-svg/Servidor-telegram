@@ -56,7 +56,7 @@ fun BotDashboardScreen(
     val distinctChatsCount by viewModel.distinctChatsState.collectAsStateWithLifecycle()
 
     var activeTab by remember { mutableStateOf(0) }
-    val tabTitles = listOf("Dashboard", "Console Logs", "Playground IA", "Configurar")
+    val tabTitles = listOf("Dashboard", "Console Logs", "Gmail Integrado", "Playground IA", "Configurar")
 
     // Primary modern dark background gradient to give a beautiful futuristic server style
     val backgroundBrush = Brush.verticalGradient(
@@ -128,13 +128,14 @@ fun BotDashboardScreen(
                     NavigationBarItem(
                         selected = selected,
                         onClick = { activeTab = index },
-                        label = { Text(title, fontSize = 10.sp, fontWeight = FontWeight.Bold) },
+                        label = { Text(title, fontSize = 9.sp, fontWeight = FontWeight.Bold, maxLines = 1) },
                         icon = {
                             Icon(
                                 imageVector = when (index) {
                                     0 -> Icons.Default.Info
                                     1 -> Icons.Default.List
-                                    2 -> Icons.Default.Send
+                                    2 -> Icons.Default.Email
+                                    3 -> Icons.Default.Send
                                     else -> Icons.Default.Settings
                                 },
                                 contentDescription = title
@@ -181,10 +182,13 @@ fun BotDashboardScreen(
                         logs = consoleLogs,
                         onClearLogs = { viewModel.clearLogs() }
                     )
-                    2 -> PlaygroundTab(
+                    2 -> GmailTab(
                         viewModel = viewModel
                     )
-                    3 -> SettingsTab(
+                    3 -> PlaygroundTab(
+                        viewModel = viewModel
+                    )
+                    4 -> SettingsTab(
                         initialToken = config?.token ?: "",
                         initialPrompt = config?.systemPrompt ?: "",
                         initialTemp = config?.temperature ?: 0.7f,
@@ -1243,5 +1247,508 @@ fun SettingsTab(
                 Text("Salvar Configurações", fontWeight = FontWeight.Black, color = Color(0xFF020617))
             }
         }
+    }
+}
+
+@Composable
+fun GmailTab(
+    viewModel: BotViewModel
+) {
+    val config by viewModel.configState.collectAsStateWithLifecycle()
+    val inbox by viewModel.gmailInbox.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isGmailLoading.collectAsStateWithLifecycle()
+    val statusMsg by viewModel.gmailStatusMsg.collectAsStateWithLifecycle()
+
+    var emailInput by remember { mutableStateOf(config?.gmailEmail ?: "nicassil2017@gmail.com") }
+    var tokenInput by remember { mutableStateOf(config?.gmailToken ?: "") }
+    var useDemoMode by remember { mutableStateOf(config?.gmailUseDemoMode ?: true) }
+
+    var showCompose by remember { mutableStateOf(false) }
+    var composeTo by remember { mutableStateOf("") }
+    var composeSubject by remember { mutableStateOf("") }
+    var composeBody by remember { mutableStateOf("") }
+
+    var selectedEmailForDetail by remember { mutableStateOf<com.example.data.model.GmailEmailItem?>(null) }
+
+    // Synchronize form when config loads
+    LaunchedEffect(config) {
+        config?.let {
+            emailInput = it.gmailEmail.ifEmpty { "nicassil2017@gmail.com" }
+            tokenInput = it.gmailToken
+            useDemoMode = it.gmailUseDemoMode
+        }
+    }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag("gmail_view_container")
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // 1. Connection Status Banner Card
+        item {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                shape = RoundedCornerShape(16.dp),
+                border = BorderStroke(1.dp, Color(0xFF334155)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(10.dp)
+                                    .clip(CircleShape)
+                                    .background(if (config?.gmailIsConnected == true) Color(0xFF4ADE80) else Color(0xFFEF4444))
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = if (config?.gmailIsConnected == true) "CONECTADO AO GMAIL" else "DISPOSITIVO DESCONECTADO",
+                                fontSize = 11.sp,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Bold,
+                                color = if (config?.gmailIsConnected == true) Color(0xFF4ADE80) else Color(0xFF94A3B8)
+                            )
+                        }
+
+                        if (config?.gmailIsConnected == true) {
+                            IconButton(
+                                onClick = { viewModel.fetchGmailEmails() },
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Refresh,
+                                    contentDescription = "Sincronizar",
+                                    tint = Color(0xFF38BDF8),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    if (config?.gmailIsConnected == true) {
+                        Text(
+                            text = config?.gmailEmail ?: "",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                        Text(
+                            text = if (config?.gmailUseDemoMode == true) "Ambiente Sincronizado: Demo Simulada 🛠️" else "Ambiente Sincronizado: Produção Real 🌐",
+                            fontSize = 12.sp,
+                            color = Color(0xFF38BDF8),
+                            fontFamily = FontFamily.Monospace,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                        statusMsg?.let { msg ->
+                            Text(
+                                text = "Status: $msg",
+                                fontSize = 11.sp,
+                                color = Color(0xFF94A3B8),
+                                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Button(
+                                onClick = { showCompose = !showCompose },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF38BDF8)),
+                                shape = RoundedCornerShape(8.dp),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(imageVector = Icons.Default.Send, contentDescription = null, tint = Color(0xFF020617), modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(if (showCompose) "Fechar Envio" else "Escrever e-mail", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFF020617))
+                            }
+
+                            OutlinedButton(
+                                onClick = { viewModel.disconnectGmail() },
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFEF4444)),
+                                border = BorderStroke(1.dp, Color(0xFFEF4444)),
+                                shape = RoundedCornerShape(8.dp),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(imageVector = Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("Desconectar", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    } else {
+                        Text(
+                            text = "Integre seu e-mail do Gmail para que o seu chatbot do Telegram consiga sincronizar e enviar relatórios Inteligentes em tempo real!",
+                            fontSize = 13.sp,
+                            color = Color(0xFF94A3B8)
+                        )
+                    }
+                }
+            }
+        }
+
+        // 2. Connector Form (if disconnected)
+        if (config?.gmailIsConnected != true) {
+            item {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                    shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(1.dp, Color(0xFF334155)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Text(
+                            text = "VINCULAR MINHA CONTA GOOGLE",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            color = Color(0xFF38BDF8),
+                            fontFamily = FontFamily.Monospace
+                        )
+
+                        OutlinedTextField(
+                            value = emailInput,
+                            onValueChange = { emailInput = it },
+                            label = { Text("E-mail do Gmail") },
+                            leadingIcon = { Icon(imageVector = Icons.Default.AccountBox, contentDescription = null, tint = Color(0xFF64748B)) },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedBorderColor = Color(0xFF38BDF8),
+                                unfocusedBorderColor = Color(0xFF334155),
+                                focusedLabelColor = Color(0xFF38BDF8)
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        OutlinedTextField(
+                            value = tokenInput,
+                            onValueChange = { tokenInput = it },
+                            label = { Text("Token OAuth / Senha de App (Real)") },
+                            placeholder = { Text("Insira o Token OAuth ou senha se usar API real") },
+                            leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = null, tint = Color(0xFF64748B)) },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedBorderColor = Color(0xFF38BDF8),
+                                unfocusedBorderColor = Color(0xFF334155),
+                                focusedLabelColor = Color(0xFF38BDF8)
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text("Usar Modo Demonstrativo", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                                Text("Simula um inbox local perfeito sem precisar da API comercial", color = Color(0xFF94A3B8), fontSize = 11.sp)
+                            }
+                            Switch(
+                                checked = useDemoMode,
+                                onCheckedChange = { useDemoMode = it },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = Color(0xFF38BDF8),
+                                    checkedTrackColor = Color(0xFF0F172A)
+                                )
+                            )
+                        }
+
+                        Button(
+                            onClick = {
+                                viewModel.connectGmail(emailInput, tokenInput, useDemoMode)
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF38BDF8)),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                                .padding(top = 8.dp)
+                        ) {
+                            Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null, tint = Color(0xFF020617))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Autorizar e Salvar Parcerias", fontWeight = FontWeight.Black, color = Color(0xFF020617))
+                        }
+                    }
+                }
+            }
+        }
+
+        // 3. Compose Panel (if toggle writing active)
+        if (config?.gmailIsConnected == true && showCompose) {
+            item {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                    shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(1.dp, Color(0xFF38BDF8)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Text(
+                            text = "NOVA MENSAGEM DE E-MAIL",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 11.sp,
+                            color = Color(0xFF38BDF8),
+                            fontFamily = FontFamily.Monospace
+                        )
+
+                        OutlinedTextField(
+                            value = composeTo,
+                            onValueChange = { composeTo = it },
+                            label = { Text("Destinatário") },
+                            placeholder = { Text("exemplo@destino.com") },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedBorderColor = Color(0xFF38BDF8),
+                                unfocusedBorderColor = Color(0xFF334155)
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        OutlinedTextField(
+                            value = composeSubject,
+                            onValueChange = { composeSubject = it },
+                            label = { Text("Assunto") },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedBorderColor = Color(0xFF38BDF8),
+                                unfocusedBorderColor = Color(0xFF334155)
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        OutlinedTextField(
+                            value = composeBody,
+                            onValueChange = { composeBody = it },
+                            label = { Text("Escreva seu Conteúdo") },
+                            minLines = 4,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedBorderColor = Color(0xFF38BDF8),
+                                unfocusedBorderColor = Color(0xFF334155)
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Button(
+                            onClick = {
+                                if (composeTo.isNotBlank() && composeSubject.isNotBlank() && composeBody.isNotBlank()) {
+                                    viewModel.sendGmailEmail(composeTo, composeSubject, composeBody)
+                                    // Reset compose state
+                                    composeTo = ""
+                                    composeSubject = ""
+                                    composeBody = ""
+                                    showCompose = false
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4ADE80)),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(44.dp)
+                        ) {
+                            Icon(imageVector = Icons.Default.Send, contentDescription = null, tint = Color(0xFF020617))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Disparar E-mail Integrado", fontWeight = FontWeight.Bold, color = Color(0xFF020617))
+                        }
+                    }
+                }
+            }
+        }
+
+        // 4. Config settings switcher (if connected)
+        if (config?.gmailIsConnected == true) {
+            item {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text("Modo Simulação Sandbox", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                            Text("Alterne para suspender/ativar conexões reais de rede", color = Color(0xFF94A3B8), fontSize = 10.sp)
+                        }
+                        Switch(
+                            checked = useDemoMode,
+                            onCheckedChange = {
+                                useDemoMode = it
+                                viewModel.toggleGmailDemoModeSetting(it)
+                            },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = Color(0xFF38BDF8),
+                                checkedTrackColor = Color(0xFF0F172A)
+                            )
+                        )
+                    }
+                }
+            }
+
+            // Title
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "ÚLTIMAS TRIPULAÇÕES DE ENTRADA",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp,
+                        color = Color(0xFF94A3B8),
+                        fontFamily = FontFamily.Monospace
+                    )
+                    
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            color = Color(0xFF38BDF8),
+                            strokeWidth = 2.dp
+                        )
+                    }
+                }
+            }
+
+            // 5. Inbox lists
+            if (inbox.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Nenhum e-mail sincronizado no painel.\nToque no botão de sincronizar acima.",
+                            color = Color(0xFF64748B),
+                            fontSize = 13.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            } else {
+                items(inbox) { item ->
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(1.dp, if (!item.isRead) Color(0xFF38BDF8) else Color(0xFF334155)),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { selectedEmailForDetail = item }
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.Top
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    if (!item.isRead) {
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(end = 6.dp)
+                                                .size(8.dp)
+                                                .clip(CircleShape)
+                                                .background(Color(0xFF38BDF8))
+                                        )
+                                    }
+                                    Text(
+                                        text = item.sender,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp,
+                                        color = Color.White,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                                Text(
+                                    text = item.date,
+                                    fontSize = 10.sp,
+                                    color = Color(0xFF64748B)
+                                )
+                            }
+
+                            Text(
+                                text = item.subject,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 13.sp,
+                                color = Color(0xFF38BDF8),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+
+                            Text(
+                                text = item.snippet,
+                                fontSize = 11.sp,
+                                color = Color(0xFF94A3B8),
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Detail Dialog
+    selectedEmailForDetail?.let { email ->
+        AlertDialog(
+            onDismissRequest = { selectedEmailForDetail = null },
+            title = {
+                Column {
+                    Text(email.sender, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
+                    Text("<${email.senderEmail}>", fontSize = 11.sp, color = Color(0xFF38BDF8), fontFamily = FontFamily.Monospace)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(email.date, fontSize = 10.sp, color = Color(0xFF64748B))
+                }
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(email.subject, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Color.White)
+                    HorizontalDivider(color = Color(0xFF334155))
+                    Text(
+                        email.snippet, 
+                        fontSize = 13.sp, 
+                        color = Color(0xFFCBD5E1),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { selectedEmailForDetail = null }) {
+                    Text("Fechar", fontWeight = FontWeight.Bold, color = Color(0xFF38BDF8))
+                }
+            },
+            containerColor = Color(0xFF0F172A),
+            textContentColor = Color.White,
+            titleContentColor = Color.White
+        )
     }
 }

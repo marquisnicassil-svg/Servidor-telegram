@@ -311,14 +311,21 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
                                 )
                                 repository.insertMessage(userMessageEntity)
 
-                                // 2. Trigger AI Response using context history
-                                addLog("IA pensando para <$senderName>...", LogType.AI_SYS)
-                                val aiReply = repository.generateAiContent(
-                                    userMessage = msg.text,
-                                    systemPrompt = config.systemPrompt,
-                                    temperature = config.temperature,
-                                    chatId = chatId
-                                )
+                                // 2. Trigger AI Response using context history or intercept Gmail commands
+                                val incomingText = msg.text.trim()
+                                val aiReply = if (incomingText.startsWith("/ver_emails")) {
+                                    handleTelegramGmailCheck()
+                                } else if (incomingText.startsWith("/enviar_email")) {
+                                    handleTelegramGmailSend(incomingText)
+                                } else {
+                                    addLog("IA pensando para <$senderName>...", LogType.AI_SYS)
+                                    repository.generateAiContent(
+                                        userMessage = msg.text,
+                                        systemPrompt = config.systemPrompt,
+                                        temperature = config.temperature,
+                                        chatId = chatId
+                                    )
+                                }
 
                                 // 3. Send AI response back to user
                                 addLog("Enviando resposta gerada para o Telegram...", LogType.INFO)
@@ -409,6 +416,275 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
             repository.clearAllMessages()
             addLog("Histórico de mensagens e log limpos no banco de dados.", LogType.WARNING)
         }
+    }
+
+    // --- Gmail Integration Flows ---
+    private val _gmailInbox = MutableStateFlow<List<com.example.data.model.GmailEmailItem>>(emptyList())
+    val gmailInbox: StateFlow<List<com.example.data.model.GmailEmailItem>> = _gmailInbox.asStateFlow()
+
+    private val _isGmailLoading = MutableStateFlow(false)
+    val isGmailLoading: StateFlow<Boolean> = _isGmailLoading.asStateFlow()
+
+    private val _gmailStatusMsg = MutableStateFlow<String?>(null)
+    val gmailStatusMsg: StateFlow<String?> = _gmailStatusMsg.asStateFlow()
+
+    fun connectGmail(email: String, token: String, useDemo: Boolean) {
+        viewModelScope.launch {
+            val config = configState.value ?: return@launch
+            val newConfig = config.copy(
+                gmailEmail = email,
+                gmailIsConnected = true,
+                gmailToken = token,
+                gmailUseDemoMode = useDemo
+            )
+            repository.saveConfig(newConfig)
+            addLog("Gmail vinculado com sucesso para o usuário: $email", LogType.SUCCESS)
+            fetchGmailEmails()
+        }
+    }
+
+    fun disconnectGmail() {
+        viewModelScope.launch {
+            val config = configState.value ?: return@launch
+            val newConfig = config.copy(
+                gmailEmail = "",
+                gmailIsConnected = false,
+                gmailToken = "",
+                gmailUseDemoMode = true
+            )
+            repository.saveConfig(newConfig)
+            _gmailInbox.value = emptyList()
+            addLog("Serviço do Gmail desconectado com sucesso.", LogType.WARNING)
+        }
+    }
+
+    fun toggleGmailDemoModeSetting(useDemo: Boolean) {
+        viewModelScope.launch {
+            val config = configState.value ?: return@launch
+            val newConfig = config.copy(gmailUseDemoMode = useDemo)
+            repository.saveConfig(newConfig)
+            addLog("Formatado modo integração Gmail: ${if (useDemo) "Demo Simulada" else "API Real"}", LogType.INFO)
+            fetchGmailEmails()
+        }
+    }
+
+    fun fetchGmailEmails() {
+        val config = configState.value ?: return
+        if (!config.gmailIsConnected) {
+            _gmailInbox.value = emptyList()
+            return
+        }
+
+        viewModelScope.launch {
+            _isGmailLoading.value = true
+            _gmailStatusMsg.value = "Conectando ao Gmail..."
+            delay(1000)
+
+            if (config.gmailUseDemoMode) {
+                _gmailInbox.value = listOf(
+                    com.example.data.model.GmailEmailItem(
+                        id = "msg1",
+                        sender = "Google Workspace Team",
+                        senderEmail = "workspace-noreply@google.com",
+                        subject = "Bem-vindo ao Gmail OAuth Integrado! 🎉",
+                        snippet = "Parabéns! Sua integração de Gmail com o aplicativo de IA para o Telegram foi estabelecida com sucesso. Agora você pode monitorar e-mails e receber avisos.",
+                        date = "Hoje, 10:45",
+                        isRead = true
+                    ),
+                    com.example.data.model.GmailEmailItem(
+                        id = "msg2",
+                        sender = "Gemini AI Team",
+                        senderEmail = "gemini-api@google.com",
+                        subject = "Dica de Prompting: Supercharge seu Bot ♊",
+                        snippet = "Para obter melhores respostas do Telegram Bot AI, utilize variáveis de contexto de e-mails em seus prompts e limite a temperatura a 0.7f.",
+                        date = "Hoje, 09:32",
+                        isRead = false
+                    ),
+                    com.example.data.model.GmailEmailItem(
+                        id = "msg3",
+                        sender = "Suporte Telegram Bot",
+                        senderEmail = "support@telegram.org",
+                        subject = "Servidor Inteligent Ativo 🛰️",
+                        snippet = "O servidor de escuta local do robô Telegram foi sincronizado com sucesso e as credenciais de Gmail conectadas.",
+                        date = "Ontem, 11:15",
+                        isRead = true
+                    )
+                )
+                _gmailStatusMsg.value = "Sincronizado (Demo)"
+                addLog("Gmail: Sincronizadas 3 mensagens demonstrativas.", LogType.INFO)
+            } else {
+                if (config.gmailToken.isBlank()) {
+                    _gmailStatusMsg.value = "Erro: Token ausente"
+                    _isGmailLoading.value = false
+                    return@launch
+                }
+                try {
+                    val authHeader = "Bearer ${config.gmailToken}"
+                    val response = com.example.data.api.NetworkModule.gmailApiService.listMessages(authHeader, maxResults = 5)
+                    val summaries = response.messages ?: emptyList()
+                    
+                    val parsedList = mutableListOf<com.example.data.model.GmailEmailItem>()
+                    for (sum in summaries) {
+                        try {
+                            val details = com.example.data.api.NetworkModule.gmailApiService.getMessageDetails(authHeader = authHeader, messageId = sum.id)
+                            val headers = details.payload?.headers ?: emptyList()
+                            val from = headers.firstOrNull { it.name.trim().lowercase() == "from" }?.value ?: "Desconhecido"
+                            val subject = headers.firstOrNull { it.name.trim().lowercase() == "subject" }?.value ?: "(Sem Assunto)"
+                            val date = headers.firstOrNull { it.name.trim().lowercase() == "date" }?.value ?: ""
+                            
+                            val parsedEmail = if (from.contains("<")) {
+                                from.substringAfter("<").substringBefore(">")
+                            } else {
+                                from
+                            }
+                            val parsedName = if (from.contains("<")) {
+                                from.substringBefore("<").trim()
+                            } else {
+                                from
+                            }
+
+                            parsedList.add(
+                                com.example.data.model.GmailEmailItem(
+                                    id = details.id,
+                                    sender = parsedName.ifEmpty { parsedEmail },
+                                    senderEmail = parsedEmail,
+                                    subject = subject,
+                                    snippet = details.snippet ?: "",
+                                    date = date.substringBefore("+").substringBefore("-").trim(),
+                                    isRead = !details.labelIds.orEmpty().contains("UNREAD")
+                                )
+                            )
+                        } catch (e: Exception) {
+                            Log.e("BotViewModel", "Error inside details fetch: ${e.message}")
+                        }
+                    }
+                    _gmailInbox.value = parsedList
+                    _gmailStatusMsg.value = "Sincronizado via API"
+                    addLog("Gmail Inbox: Sincronizados ${parsedList.size} e-mails reais com sucesso.", LogType.SUCCESS)
+                } catch (e: Exception) {
+                    val errMsg = e.localizedMessage ?: e.message ?: "Falha na conexão"
+                    _gmailStatusMsg.value = "Erro: Token Expirado/Inválido"
+                    addLog("Erro Gmail API real: $errMsg. Use o modo demo ou re-insira um token de acesso válido.", LogType.ERROR)
+                }
+            }
+            _isGmailLoading.value = false
+        }
+    }
+
+    fun sendGmailEmail(to: String, subject: String, body: String) {
+        val config = configState.value ?: return
+        if (!config.gmailIsConnected) {
+            addLog("Aviso: Conecte o Gmail antes de enviar e-mails.", LogType.WARNING)
+            return
+        }
+
+        viewModelScope.launch {
+            _isGmailLoading.value = true
+            _gmailStatusMsg.value = "Enviando e-mail..."
+            delay(1200)
+
+            if (config.gmailUseDemoMode) {
+                val newE = com.example.data.model.GmailEmailItem(
+                    id = "sent_" + java.util.UUID.randomUUID().toString().take(6),
+                    sender = "Você (Gmail Demo)",
+                    senderEmail = config.gmailEmail.ifEmpty { "me@gmail.com" },
+                    subject = "Enviado: $subject",
+                    snippet = body,
+                    date = "Agora",
+                    isRead = true
+                )
+                _gmailInbox.value = listOf(newE) + _gmailInbox.value
+                _gmailStatusMsg.value = "Mensagem enviada com sucesso!"
+                addLog("E-mail Enviado! Para: $to | Assunto: $subject", LogType.SUCCESS)
+            } else {
+                if (config.gmailToken.isBlank()) {
+                    _gmailStatusMsg.value = "Erro: Token vazio"
+                    _isGmailLoading.value = false
+                    return@launch
+                }
+                try {
+                    val authHeader = "Bearer ${config.gmailToken}"
+                    val emailContent = "From: ${config.gmailEmail}\n" +
+                            "To: $to\n" +
+                            "Subject: $subject\n" +
+                            "Content-Type: text/plain; charset=UTF-8\n\n" +
+                            body
+                    val base64Raw = android.util.Base64.encodeToString(
+                        emailContent.toByteArray(),
+                        android.util.Base64.URL_SAFE or android.util.Base64.NO_WRAP or android.util.Base64.NO_PADDING
+                    )
+                    
+                    val sendReq = com.example.data.api.GmailSendRequest(raw = base64Raw)
+                    com.example.data.api.NetworkModule.gmailApiService.sendMessage(authHeader, request = sendReq)
+                    addLog("E-mail real enviado! Para: $to | Assunto: $subject", LogType.SUCCESS)
+                    _gmailStatusMsg.value = "Enviado real!"
+                    fetchGmailEmails()
+                } catch (e: Exception) {
+                    val errMsg = e.localizedMessage ?: e.message ?: "Falha"
+                    _gmailStatusMsg.value = "Erro no envio"
+                    addLog("Erro Gmail API ao enviar real: $errMsg", LogType.ERROR)
+                }
+            }
+            _isGmailLoading.value = false
+        }
+    }
+
+    fun handleTelegramGmailCheck(): String {
+        val config = configState.value
+        if (config == null || !config.gmailIsConnected) {
+            return "⚠️ *Serviço do Gmail Desconectado!*\n\n" +
+                   "Por favor, configure sua conta de e-mail na aba *Gmail Integrado* do aplicativo."
+        }
+        
+        val emails = _gmailInbox.value
+        if (emails.isEmpty()) {
+            return "📥 *E-mails cadastrados para: ${config.gmailEmail}*\n\n" +
+                   "Nenhum e-mail sincronizado no momento.\n" +
+                   "💡 _Abra o aplicativo e clique em Sincronizar._"
+        }
+
+        val sb = StringBuilder()
+        sb.append("📥 *Seus Últimos E-mails (${config.gmailEmail}):*\n\n")
+        emails.take(5).forEachIndexed { index, item ->
+            sb.append("${index + 1}. *De:* ${item.sender} (<${item.senderEmail}>)\n")
+            sb.append("   *Assunto:* _${item.subject}_\n")
+            sb.append("   *Snippet:* ${item.snippet.take(100)}...\n")
+            sb.append("   *Status:* ${if (item.isRead) "Lido" else "🔴 Não Lido"}\n\n")
+        }
+        sb.append("💡 _Digite `/enviar_email destinatario, assunto, mensagem` para enviar novas respostas pelo Telegram._")
+        return sb.toString()
+    }
+
+    fun handleTelegramGmailSend(commandText: String): String {
+        val config = configState.value
+        if (config == null || !config.gmailIsConnected) {
+            return "⚠️ *Gmail Desconectado!* Conecte sua conta na aba Gmail do aplicativo."
+        }
+
+        val paramStr = commandText.removePrefix("/enviar_email").trim()
+        if (paramStr.isEmpty()) {
+            return "⚠️ *Formato Inválido!*\n\n" +
+                   "Formato: `/enviar_email destinatario@gmail.com, Assunto, Escreva a mensagem`"
+        }
+
+        val parts = paramStr.split(",", limit = 3)
+        if (parts.size < 3) {
+            return "⚠️ *Parâmetros incorretos!*\n\n" +
+                   "Separadores por vírgula em falta. Exemplo:\n" +
+                   "`/enviar_email teste@gmail.com, Assunto de Teste, Mensagem do email aqui`"
+        }
+
+        val to = parts[0].trim()
+        val subject = parts[1].trim()
+        val body = parts[2].trim()
+
+        sendGmailEmail(to, subject, body)
+
+        return "📧 *Disparo de E-mail Solicitado via Telegram!*\n\n" +
+               "• *Enviar para:* $to\n" +
+               "• *Assunto:* $subject\n" +
+               "• *Canal:* ${if (config.gmailUseDemoMode) "Demo Simulada" else "API Real"}\n\n" +
+               "Monitore o status do envio na console de logs do seu aplicativo."
     }
 
     override fun onCleared() {

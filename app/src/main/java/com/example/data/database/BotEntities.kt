@@ -15,7 +15,11 @@ data class BotConfigEntity(
     val aiApiKey: String = "",
     val aiApiType: String = "GEMINI", // "GEMINI" or "OPENAI"
     val aiBaseUrl: String = "https://generativelanguage.googleapis.com/",
-    val aiModel: String = "gemini-1.5-flash"
+    val aiModel: String = "gemini-1.5-flash",
+    val gmailEmail: String = "",
+    val gmailIsConnected: Boolean = false,
+    val gmailToken: String = "",
+    val gmailUseDemoMode: Boolean = true
 )
 
 @Entity(tableName = "bot_messages")

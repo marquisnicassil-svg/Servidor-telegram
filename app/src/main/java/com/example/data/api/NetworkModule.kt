@@ -45,4 +45,13 @@ object NetworkModule {
             .build()
             .create(GeminiApiService::class.java)
     }
+
+    val gmailApiService: GmailApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl("https://gmail.googleapis.com/")
+            .client(okHttpClient)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+            .create(GmailApiService::class.java)
+    }
 }
