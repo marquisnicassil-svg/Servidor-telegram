@@ -933,6 +933,7 @@
                 <img src="https://img.icons8.com/nolan/512/artificial-intelligence.png" alt="Core System Icon">
             </div>
             <div class="splash-title">Core System</div>
+            <div class="splash-status" id="splash-status-text" style="color: var(--text-muted); font-size: 0.85rem; margin-top: 8px; font-family: monospace;">Iniciando sistema...</div>
         </div>
     </div>
 
@@ -1116,6 +1117,11 @@
                     <div style="display: flex; gap: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; margin-bottom: 4px;">
                         <button class="filter-chip active" id="auth-tab-signin" onclick="setAuthTab('signin')" style="padding: 4px 12px; font-size: 0.72rem;">Login / Entrar</button>
                         <button class="filter-chip" id="auth-tab-signup" onclick="setAuthTab('signup')" style="padding: 4px 12px; font-size: 0.72rem;">Criar Conta / Sign Up</button>
+                    </div>
+
+                    <div id="auth-username-container" style="display: none;">
+                        <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Nome de Usuário</label>
+                        <input type="text" id="auth-username" class="form-control" style="border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;" placeholder="Ex: Maria Silva" value="">
                     </div>
 
                     <div>
@@ -1359,23 +1365,14 @@ WITH CHECK (true);</code>
         let deferredPrompt;
 
         // Init Flow
-        window.onload = () => {
+        window.onload = async () => {
             loadChatSession(); // Restaura memoria do chat
 
-            // Animação de Abertura (Splash Screen Nativa)
-            setTimeout(() => {
-                const splash = document.getElementById('splash-screen');
-                if (splash) {
-                    splash.style.opacity = '0';
-                    splash.style.transform = 'scale(1.1)'; // Suave efeito de recuo
-                    setTimeout(() => splash.remove(), 500); // Tira da DOM depois
-                }
-            }, 1400);
-
-            loadConfiguration();
-            
-            addLog("Terminal boot sequencial inciado.", "info");
+            addLog("Terminal boot sequencial iniciado.", "info");
             setTimeout(() => addLog("Camada de Interface Nativa (SuperBlack) anexada.", "success"), 250);
+
+            // Chamada da rotina de inicialização de sessão/token segura
+            await initializeSessionAndApp();
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
@@ -1391,6 +1388,55 @@ WITH CHECK (true);</code>
             // Inicia o sensor de latência dinâmico no terminal
             startLatencyHeartbeat();
         };
+
+        async function initializeSessionAndApp() {
+            const statusText = document.getElementById('splash-status-text');
+            if (statusText) statusText.innerText = "Sincronizando configurações locais...";
+
+            // 1. Carrega configurações do LocalStorage (necessário para pegar as chaves do Supabase)
+            loadConfiguration();
+
+            // 2. Tenta recuperar sessão do Supabase Auth
+            if (statusText) statusText.innerText = "Verificando sessão segura na nuvem...";
+            checkSupabaseAuthSession();
+
+            const url = document.getElementById('supabase-url').value.trim();
+            const key = document.getElementById('supabase-key').value.trim();
+
+            if (supabaseSession && url && key) {
+                if (statusText) statusText.innerText = `Validando credenciais de ${supabaseSession.user?.email || "usuário"}...`;
+                // Tenta validar o token e pingar o banco de dados
+                const connected = await testSupabaseConnection();
+                if (connected) {
+                    addLog("Sessão segura ativa reconhecida com êxito na inicialização.", "success");
+                    const displayName = getDisplayName(supabaseSession);
+                    if (displayName) {
+                        greetUserAfterLogin(displayName, true);
+                    }
+                } else {
+                    addLog("Sessão ativa encontrada, porém falhou na verificação de autenticação ou rede.", "info");
+                }
+            } else {
+                if (url && key) {
+                    if (statusText) statusText.innerText = "Verificando ping do banco anônimo...";
+                    await testSupabaseConnection();
+                } else {
+                    addLog("Nenhuma conexão Supabase configurada até o momento.", "info");
+                }
+            }
+
+            if (statusText) statusText.innerText = "Inicialização de segurança concluída!";
+            
+            // Dismiss loader/splash screen smoothly
+            await new Promise(resolve => setTimeout(resolve, 600));
+            const splash = document.getElementById('splash-screen');
+            if (splash) {
+                splash.style.opacity = '0';
+                splash.style.transform = 'scale(1.05)'; // Suave efeito de recuo
+                await new Promise(resolve => setTimeout(resolve, 500));
+                splash.remove();
+            }
+        }
 
         function loadConfiguration() {
             try {
@@ -2202,6 +2248,46 @@ WITH CHECK (true);</code>
         // ==========================================================================
         let supabaseSession = null;
         let authMode = "signin";
+        let isAuthLoading = false;
+
+        function getDisplayName(session) {
+            if (!session || !session.user) return null;
+            const user = session.user;
+            const meta = user.user_metadata || user.raw_user_meta_data || {};
+            return meta.display_name || meta.username || user.email.split('@')[0];
+        }
+
+        function greetUserAfterLogin(displayName, isFirstLoad = false) {
+            if (!displayName) return;
+            
+            // 1. Atualizar e salvar novas configurações com prompt personalizado
+            const systemPromptEl = document.getElementById('system-prompt');
+            if (systemPromptEl) {
+                const basePrompt = "Você é uma Inteligência Artificial direta e precisa. Responda sucintamente como um aplicativo nativo faria.";
+                systemPromptEl.value = `${basePrompt} O usuário chama-se ${displayName}. Refira-se a ele amigavelmente por este nome nas respostas.`;
+                saveConfiguration();
+            }
+
+            // 2. Injetar na aba de Chat se o chat estiver vazio ou apenas com o template padrão
+            const container = document.getElementById('chat-messages');
+            if (container) {
+                const messagesList = container.querySelectorAll('.chat-message');
+                const isEmptyOrWelcome = messagesList.length === 0 || 
+                    (messagesList.length === 1 && (
+                        messagesList[0].innerText.includes("Memória apagada") || 
+                        messagesList[0].innerText.includes("Sessão reiniciada") ||
+                        messagesList[0].innerText.includes("Olá!")
+                    ));
+
+                if (isEmptyOrWelcome) {
+                    container.innerHTML = `<div class="chat-message bot">Olá, <strong>${displayName}</strong>! Bem-vindo de volta. Como posso ajudar você hoje?</div>`;
+                    chatHistoryObjects = [{ role: 'assistant', content: `Olá, ${displayName}! Bem-vindo de volta. Como posso ajudar você hoje?` }];
+                    saveChatSession();
+                } else {
+                    addLog(`Chatbot sincronizado e personalizado para o usuário: ${displayName}`, "success");
+                }
+            }
+        }
 
         function updateCloudIndicators(status, desc) {
             const dotColorMap = {
@@ -2514,23 +2600,28 @@ WITH CHECK (true);</code>
             }
         }
 
-        // --- SUBSECÇÃO SUPABASE AUTH (Login/Cadastro) ---
+         // --- SUBSECÇÃO SUPABASE AUTH (Login/Cadastro) ---
         function setAuthTab(type) {
             triggerPulse();
             authMode = type;
             document.querySelectorAll('#supabase-auth-card .filter-chip').forEach(c => c.classList.remove('active'));
+            const userContainer = document.getElementById('auth-username-container');
             if (type === 'signin') {
                 document.getElementById('auth-tab-signin').classList.add('active');
                 document.getElementById('auth-btn-submit').innerText = '🔌 Fazer Login';
                 document.getElementById('auth-password').placeholder = 'Sua senha';
+                if (userContainer) userContainer.style.display = 'none';
             } else {
                 document.getElementById('auth-tab-signup').classList.add('active');
                 document.getElementById('auth-btn-submit').innerText = '✨ Criar Conta';
                 document.getElementById('auth-password').placeholder = 'Mínimo de 6 caracteres';
+                if (userContainer) userContainer.style.display = 'block';
             }
         }
 
         async function executeSupabaseAuth() {
+            if (isAuthLoading) return;
+
             triggerPulse();
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value;
@@ -2544,6 +2635,16 @@ WITH CHECK (true);</code>
                 return;
             }
 
+            let username = "";
+            if (authMode === "signup") {
+                const nameInput = document.getElementById('auth-username');
+                username = nameInput ? nameInput.value.trim() : "";
+                if (!username) {
+                    alert("Como deseja se cadastrar, preencha o Nome de Usuário.");
+                    return;
+                }
+            }
+
             const url = document.getElementById('supabase-url').value.trim();
             const key = document.getElementById('supabase-key').value.trim();
 
@@ -2552,19 +2653,21 @@ WITH CHECK (true);</code>
                 return;
             }
 
+            isAuthLoading = true;
             const cleanUrl = url.endsWith('/') ? url : url + '/';
             
             if (authMode === "signup") {
-                await supabaseSignUp(cleanUrl, key, email, password);
+                await supabaseSignUp(cleanUrl, key, email, password, username);
             } else {
                 await supabaseSignIn(cleanUrl, key, email, password);
             }
         }
 
-        async function supabaseSignUp(baseUrl, key, email, password) {
+        async function supabaseSignUp(baseUrl, key, email, password, username) {
             addLog(`Enviando solicitação de registro de conta para ${email}...`, "sys");
-            document.getElementById('auth-btn-submit').innerText = "Processando Cadastro...";
-            document.getElementById('auth-btn-submit').disabled = true;
+            const submitBtn = document.getElementById('auth-btn-submit');
+            submitBtn.innerText = "Processando Cadastro...";
+            submitBtn.disabled = true;
 
             try {
                 const response = await fetch(`${baseUrl}auth/v1/signup`, {
@@ -2573,7 +2676,14 @@ WITH CHECK (true);</code>
                         'apikey': key,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ 
+                        email, 
+                        password,
+                        data: {
+                            display_name: username,
+                            username: username
+                        }
+                    })
                 });
 
                 if (response.ok) {
@@ -2584,9 +2694,13 @@ WITH CHECK (true);</code>
                         localStorage.setItem('supabase_auth_session', JSON.stringify(supabaseSession));
                         updateAuthUI();
                         addLog(`Conta criada e autenticada com sucesso como ${email}!`, "success");
+                        const displayName = getDisplayName(supabaseSession);
+                        if (displayName) {
+                            greetUserAfterLogin(displayName);
+                        }
                     } else {
-                        addLog(`Inscrição enviada para ${email}! Verifique seu e-mail para confirmação se necessário. Pode tentar fazer login.`, "success");
-                        alert("Inscrição efetuada com sucesso! Caso o seu Supabase exija confirmação de e-mail, verifique sua caixa de entrada; caso contrário, você já pode entrar na conta.");
+                        addLog(`Inscrição enviada para ${email}! Verifique seu e-mail para confirmação se necessário.`, "success");
+                        alert("Inscrição efetuada com sucesso! Caso o seu Supabase exija confirmação de e-mail, verifique sua caixa de entrada; caso contrário, você já pode fazer login na conta.");
                         setAuthTab('signin');
                     }
                 } else {
@@ -2600,15 +2714,17 @@ WITH CHECK (true);</code>
                 console.error(err);
                 addLog(`Incapaz de registrar conta: sem conexão ou erro CORS: ${err.message}`, "error");
             } finally {
-                document.getElementById('auth-btn-submit').disabled = false;
+                isAuthLoading = false;
+                submitBtn.disabled = false;
                 setAuthTab('signup');
             }
         }
 
         async function supabaseSignIn(baseUrl, key, email, password) {
             addLog(`Autenticando usuário ${email} no Supabase Auth...`, "sys");
-            document.getElementById('auth-btn-submit').innerText = "Autenticando...";
-            document.getElementById('auth-btn-submit').disabled = true;
+            const submitBtn = document.getElementById('auth-btn-submit');
+            submitBtn.innerText = "Autenticando...";
+            submitBtn.disabled = true;
 
             try {
                 const response = await fetch(`${baseUrl}auth/v1/token?grant_type=password`, {
@@ -2631,6 +2747,11 @@ WITH CHECK (true);</code>
                     
                     addLog(`Sessão carregada com sucesso! Usuário autenticado como: ${email}`, "success");
                     
+                    const displayName = getDisplayName(supabaseSession);
+                    if (displayName) {
+                        greetUserAfterLogin(displayName);
+                    }
+                    
                     // Executa um teste rápido de conexões passando as novas credenciais
                     testSupabaseConnection();
                 } else {
@@ -2644,7 +2765,8 @@ WITH CHECK (true);</code>
                 console.error(err);
                 addLog(`Incapaz de autenticar: sem conexão ou erro de rede/CORS: ${err.message}`, "error");
             } finally {
-                document.getElementById('auth-btn-submit').disabled = false;
+                isAuthLoading = false;
+                submitBtn.disabled = false;
                 setAuthTab('signin');
             }
         }
