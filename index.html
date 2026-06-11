@@ -1379,9 +1379,23 @@ WITH CHECK (true);</code>
                 navigator.serviceWorker.register('./sw.js')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
+                    // Força a verificação de atualizações no script do Service Worker
+                    reg.update().catch(() => {});
                 })
                 .catch(err => {
                     addLog("Service Worker / PWA falhou: " + err, "error");
+                });
+
+                // Detecta se um novo Service Worker assumiu o controle e recarrega para aplicar as novas alterações
+                let refreshing = false;
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    if (!refreshing) {
+                        refreshing = true;
+                        addLog("Nova versão instalada com sucesso! Recarregando sistema...", "sys");
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    }
                 });
             }
 
