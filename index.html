@@ -2865,6 +2865,19 @@ WITH CHECK (true);</code>
                         if (parsed.code === '42P01') { // Codigo Postgres para tabela inexistente
                             updateCloudIndicators('error', 'Tabela Inexistente');
                             addLog(`Supabase Conectado, mas tabela "${table}" não existe na DB. Use as instruções SQL para criá-la.`, "error");
+                        } else if (parsed.message && parsed.message.includes("JWT expired")) {
+                            updateCloudIndicators('error', 'Token Expirado');
+                            addLog("Sessão do Supabase expirada de forma natural (JWT Expirado). Renovando permissões locais...", "warning");
+                            
+                            // Remove a sessão do supabase localmente
+                            supabaseSession = null;
+                            localStorage.removeItem('supabase_auth_session');
+                            updateAuthUI();
+                            
+                            addLog("Credenciais locais de usuário expiradas limpas. Reconectando sob nível Anônimo automaticamente...", "info");
+                            
+                            // Re-testa a conexão depois de 200 milissegundos usando a chave anônima default
+                            setTimeout(() => testSupabaseConnection(), 200);
                         } else {
                             updateCloudIndicators('error', `Falha (${response.status})`);
                             addLog(`Erro de autorização no Supabase: ${parsed.message || errorText}`, "error");
@@ -2959,8 +2972,29 @@ WITH CHECK (true);</code>
                     }
                 } else {
                     const errText = await response.text();
-                    updateCloudIndicators('error', 'Falha no Envio');
-                    addLog(`Erro ao persistir backup: ${response.status} - ${errText}`, "error");
+                    let isJwtExpired = false;
+                    try {
+                        const parsed = JSON.parse(errText);
+                        if (parsed.message && parsed.message.includes("JWT expired")) {
+                            isJwtExpired = true;
+                        }
+                    } catch(e) {}
+
+                    if (isJwtExpired) {
+                        updateCloudIndicators('error', 'Token Expirado');
+                        addLog("Erro ao salvar backup: Token expirado (JWT Expired). Renovando status local de credenciais...", "warning");
+                        
+                        // Reseta a sessão local
+                        supabaseSession = null;
+                        localStorage.removeItem('supabase_auth_session');
+                        updateAuthUI();
+                        
+                        addLog("Sessão expirada limpa. Tentando retransmitir backup sob nível anônimo...", "info");
+                        supabaseSaveBackup(quiet);
+                    } else {
+                        updateCloudIndicators('error', 'Falha no Envio');
+                        addLog(`Erro ao persistir backup: ${response.status} - ${errText}`, "error");
+                    }
                 }
             } catch(e) {
                 console.error(e);
@@ -3055,8 +3089,29 @@ WITH CHECK (true);</code>
                     }
                 } else {
                     const errText = await response.text();
-                    updateCloudIndicators('error', 'Erro de Download');
-                    addLog(`Consulte as regras de RLS do seu Supabase. Erro: ${response.status} - ${errText}`, "error");
+                    let isJwtExpired = false;
+                    try {
+                        const parsed = JSON.parse(errText);
+                        if (parsed.message && parsed.message.includes("JWT expired")) {
+                            isJwtExpired = true;
+                        }
+                    } catch(e) {}
+
+                    if (isJwtExpired) {
+                        updateCloudIndicators('error', 'Token Expirado');
+                        addLog("Erro ao baixar backup: Token expirado (JWT Expired). Renovando credenciais locais...", "warning");
+                        
+                        // Reseta a sessão local
+                        supabaseSession = null;
+                        localStorage.removeItem('supabase_auth_session');
+                        updateAuthUI();
+                        
+                        addLog("Sessão expirada limpa. Tentando re-sincronizar download sob nível anônimo...", "info");
+                        supabaseRestoreBackup();
+                    } else {
+                        updateCloudIndicators('error', 'Erro de Download');
+                        addLog(`Consulte as regras de RLS do seu Supabase. Erro: ${response.status} - ${errText}`, "error");
+                    }
                 }
             } catch(e) {
                 console.error(e);
