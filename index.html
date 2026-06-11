@@ -1101,6 +1101,56 @@
                 <textarea id="system-prompt" class="form-control" rows="3">Você é uma Inteligência Artificial direta e precisa. Responda sucintamente como um aplicativo nativo faria.</textarea>
             </div>
 
+            <!-- Card de Autenticação Supabase Auth -->
+            <div class="supabase-card" id="supabase-auth-card">
+                <div class="supabase-card-header">
+                    <span class="supabase-card-title">🔑 Supabase Auth (Autenticação)</span>
+                    <div class="supabase-status-badge" title="Status da Sessão de Usuário">
+                        <span class="supabase-status-dot" id="auth-status-dot" style="background-color: #737373;"></span>
+                        <span id="auth-status-desc">Inativo</span>
+                    </div>
+                </div>
+
+                <!-- Formulário de Login / Cadastro (Visível quando DESLOGADO) -->
+                <div id="auth-form-container" style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; gap: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; margin-bottom: 4px;">
+                        <button class="filter-chip active" id="auth-tab-signin" onclick="setAuthTab('signin')" style="padding: 4px 12px; font-size: 0.72rem;">Login / Entrar</button>
+                        <button class="filter-chip" id="auth-tab-signup" onclick="setAuthTab('signup')" style="padding: 4px 12px; font-size: 0.72rem;">Criar Conta / Sign Up</button>
+                    </div>
+
+                    <div>
+                        <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">E-mail do Usuário</label>
+                        <input type="email" id="auth-email" class="form-control" style="border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;" placeholder="usuario@provedor.com" value="">
+                    </div>
+
+                    <div>
+                        <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Senha de Acesso</label>
+                        <input type="password" id="auth-password" class="form-control" style="border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;" placeholder="Mínimo 6 caracteres" value="">
+                    </div>
+
+                    <button class="btn-supabase-action" onclick="executeSupabaseAuth()" id="auth-btn-submit" style="margin-top: 5px; width: 100%; border-color: var(--primary); background: rgba(255,255,255,0.02);">
+                        🔌 Fazer Login
+                    </button>
+                </div>
+
+                <!-- Painel de Usuário Autenticado (Visível quando LOGADO) -->
+                <div id="auth-user-container" style="display: none; flex-direction: column; gap: 10px; padding: 6px 0;">
+                    <div style="background: rgba(16,185,129,0.04); border: 1px solid rgba(34,197,94,0.2); border-radius: 12px; padding: 12px; font-size: 0.82rem; color: #d1d5db; line-height: 1.4;">
+                        <span style="display:block; font-size: 0.65rem; color: #34d399; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">Sessão Segura Ativa</span>
+                        <strong>E-mail:</strong> <span id="auth-user-email">--</span><br>
+                        <strong>User ID:</strong> <span id="auth-user-id" style="font-family: monospace; font-size: 0.7rem; color: var(--text-muted)">--</span>
+                    </div>
+
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; font-style: italic; margin-top: -2px;">
+                        🔑 Backups e leituras agora usam autenticação RLS ativa no banco de dados.
+                    </div>
+
+                    <button class="btn-supabase-action" onclick="supabaseSignOut()" style="border-color: #ef4444; color: #f87171; background: rgba(239,68,68,0.02); width: 100%;">
+                        ❌ Desconectar Sessão (Sair)
+                    </button>
+                </div>
+            </div>
+
             <!-- Card Superior de Sincronização Cloud Supabase -->
             <div class="supabase-card">
                 <div class="supabase-card-header">
@@ -1413,6 +1463,10 @@ WITH CHECK (true);</code>
                         testSupabaseConnection();
                     }, 1800);
                 }
+
+                // Verifica se há alguma sessão segura do Supabase ativa
+                checkSupabaseAuthSession();
+
             } catch (e) {
                 console.error("Erro ao carregar configurações: ", e);
             }
@@ -1649,6 +1703,10 @@ WITH CHECK (true);</code>
                         addLog(" → /accent <cor> : Muda cor do sistema (ex: verde, laranja, vermelho, roxo, branco).", "info");
                         addLog(" → /simulate : Executa autoensaios e rotinas de rede automáticas.", "info");
                         addLog(" → /supabase : Verifica status das conexões do Supabase.", "info");
+                        addLog(" → /login <email> <senha> : Autentica usuário no console Supabase Auth.", "info");
+                        addLog(" → /signup <email> <senha> : Cria nova conta de usuário no Supabase.", "info");
+                        addLog(" → /logout : Encerra a sessão atual de usuário no banco.", "info");
+                        addLog(" → /user : Exibe informações do usuário autenticado atual.", "info");
                         addLog(" → /cloud-backup : Efetua backup manual de dados para o Supabase.", "info");
                         addLog(" → /cloud-restore : Recupera instantaneamente o último backup salvo.", "info");
                         break;
@@ -1661,6 +1719,61 @@ WITH CHECK (true);</code>
                         addLog(` - Tabela Selecionada: ${subTbl}`, "info");
                         addLog(` - Sincronização Automática: ${subAuto ? "Ativa" : "Inativa"}`, "info");
                         testSupabaseConnection();
+                        break;
+                    case '/login':
+                        if (!arg) {
+                            addLog("Uso: /login [email] [senha]. Exemplo: /login admin@teste.com 123456", "error");
+                        } else {
+                            const params = arg.split(/\s+/);
+                            if (params.length < 2) {
+                                addLog("Erro: informe tanto o email quanto a senha.", "error");
+                            } else {
+                                const email = params[0];
+                                const pwd = params[1];
+                                const url = document.getElementById('supabase-url').value.trim();
+                                const key = document.getElementById('supabase-key').value.trim();
+                                if(!url || !key) {
+                                    addLog("Erro: configure a URL e Anon Key do Supabase nos Ajustes.", "error");
+                                } else {
+                                    const cleanUrl = url.endsWith('/') ? url : url + '/';
+                                    supabaseSignIn(cleanUrl, key, email, pwd);
+                                }
+                            }
+                        }
+                        break;
+                    case '/signup':
+                        if (!arg) {
+                            addLog("Uso: /signup [email] [senha]. Exemplo: /signup admin@teste.com 123456", "error");
+                        } else {
+                            const params = arg.split(/\s+/);
+                            if (params.length < 2) {
+                                addLog("Erro: informe tanto o email quanto a senha para o cadastro.", "error");
+                            } else {
+                                const email = params[0];
+                                const pwd = params[1];
+                                const url = document.getElementById('supabase-url').value.trim();
+                                const key = document.getElementById('supabase-key').value.trim();
+                                if(!url || !key) {
+                                    addLog("Erro: configure a URL e Anon Key do Supabase nos Ajustes.", "error");
+                                } else {
+                                    const cleanUrl = url.endsWith('/') ? url : url + '/';
+                                    supabaseSignUp(cleanUrl, key, email, pwd);
+                                }
+                            }
+                        }
+                        break;
+                    case '/logout':
+                        supabaseSignOut();
+                        break;
+                    case '/user':
+                        if (supabaseSession && supabaseSession.user) {
+                            addLog(`Sessão ativa de usuário no Supabase:`, "success");
+                            addLog(` - E-mail: ${supabaseSession.user.email}`, "info");
+                            addLog(` - ID: ${supabaseSession.user.id}`, "info");
+                            addLog(` - Token JWT: ${supabaseSession.access_token.substring(0, 15)}...`, "info");
+                        } else {
+                            addLog("Nenhum usuário logado de momento. O sistema está usando a Anon Key.", "info");
+                        }
                         break;
                     case '/cloud-backup':
                         addLog("Forçando backup via linha de comando...", "sys");
@@ -2085,8 +2198,11 @@ WITH CHECK (true);</code>
         }
 
         // ==========================================================================
-        // 8. Integração e Sincronização Supabase Cloud
+        // 8. Integração, Sincronização e Autenticação Supabase Cloud
         // ==========================================================================
+        let supabaseSession = null;
+        let authMode = "signin";
+
         function updateCloudIndicators(status, desc) {
             const dotColorMap = {
                 'active': '#10b981',   // green
@@ -2142,12 +2258,20 @@ WITH CHECK (true);</code>
                 const cleanUrl = url.endsWith('/') ? url : url + '/';
                 const fetchUrl = `${cleanUrl}rest/v1/${table}?limit=1`;
 
+                const headers = {
+                    'apikey': key
+                };
+                
+                // Se o usuário está logado via Supabase Auth, envia seu token JWT real
+                if (supabaseSession && supabaseSession.access_token) {
+                    headers['Authorization'] = `Bearer ${supabaseSession.access_token}`;
+                } else {
+                    headers['Authorization'] = `Bearer ${key}`;
+                }
+
                 const response = await fetch(fetchUrl, {
                     method: 'GET',
-                    headers: {
-                        'apikey': key,
-                        'Authorization': `Bearer ${key}`
-                    }
+                    headers: headers
                 });
 
                 if (response.ok) {
@@ -2213,18 +2337,31 @@ WITH CHECK (true);</code>
                 settings_json: settingsData
             };
 
+            // Anexa o ID do usuário autenticado se a sessão estiver ativa para suporte fácil a RLS
+            if (supabaseSession && supabaseSession.user) {
+                payload.user_id = supabaseSession.user.id;
+            }
+
             try {
                 const cleanUrl = url.endsWith('/') ? url : url + '/';
                 const fetchUrl = `${cleanUrl}rest/v1/${table}`;
 
+                const headers = {
+                    'apikey': key,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=representation'
+                };
+
+                // Define cabeçalho de autorização adaptativo (User JWT vs Anon Key)
+                if (supabaseSession && supabaseSession.access_token) {
+                    headers['Authorization'] = `Bearer ${supabaseSession.access_token}`;
+                } else {
+                    headers['Authorization'] = `Bearer ${key}`;
+                }
+
                 const response = await fetch(fetchUrl, {
                     method: 'POST',
-                    headers: {
-                        'apikey': key,
-                        'Authorization': `Bearer ${key}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=representation'
-                    },
+                    headers: headers,
                     body: JSON.stringify(payload)
                 });
 
@@ -2276,12 +2413,19 @@ WITH CHECK (true);</code>
                 // Seleciona o backup mais recente ordenando por id decrescente, limitando a 1 linha
                 const fetchUrl = `${cleanUrl}rest/v1/${table}?order=id.desc&limit=1`;
 
+                const headers = {
+                    'apikey': key
+                };
+
+                if (supabaseSession && supabaseSession.access_token) {
+                    headers['Authorization'] = `Bearer ${supabaseSession.access_token}`;
+                } else {
+                    headers['Authorization'] = `Bearer ${key}`;
+                }
+
                 const response = await fetch(fetchUrl, {
                     method: 'GET',
-                    headers: {
-                        'apikey': key,
-                        'Authorization': `Bearer ${key}`
-                    }
+                    headers: headers
                 });
 
                 if (response.ok) {
@@ -2367,6 +2511,212 @@ WITH CHECK (true);</code>
                 sw.classList.add('on');
                 addLog("Auto-Salvamento ativado. Seus backups na nuvem agora acompanham do envio de mensagens.", "success");
                 supabaseSaveBackup(true); // Força um backup silencioso imediato de sincronização
+            }
+        }
+
+        // --- SUBSECÇÃO SUPABASE AUTH (Login/Cadastro) ---
+        function setAuthTab(type) {
+            triggerPulse();
+            authMode = type;
+            document.querySelectorAll('#supabase-auth-card .filter-chip').forEach(c => c.classList.remove('active'));
+            if (type === 'signin') {
+                document.getElementById('auth-tab-signin').classList.add('active');
+                document.getElementById('auth-btn-submit').innerText = '🔌 Fazer Login';
+                document.getElementById('auth-password').placeholder = 'Sua senha';
+            } else {
+                document.getElementById('auth-tab-signup').classList.add('active');
+                document.getElementById('auth-btn-submit').innerText = '✨ Criar Conta';
+                document.getElementById('auth-password').placeholder = 'Mínimo de 6 caracteres';
+            }
+        }
+
+        async function executeSupabaseAuth() {
+            triggerPulse();
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+
+            if(!email || !password) {
+                alert("Por favor, preencha o e-mail e a senha.");
+                return;
+            }
+            if(password.length < 6) {
+                alert("A senha precisa ter no mínimo 6 caracteres.");
+                return;
+            }
+
+            const url = document.getElementById('supabase-url').value.trim();
+            const key = document.getElementById('supabase-key').value.trim();
+
+            if(!url || !key) {
+                alert("Configure a URL do Projeto e a Chave Pública (Anon Key) nas conexões do Supabase antes de se autenticar.");
+                return;
+            }
+
+            const cleanUrl = url.endsWith('/') ? url : url + '/';
+            
+            if (authMode === "signup") {
+                await supabaseSignUp(cleanUrl, key, email, password);
+            } else {
+                await supabaseSignIn(cleanUrl, key, email, password);
+            }
+        }
+
+        async function supabaseSignUp(baseUrl, key, email, password) {
+            addLog(`Enviando solicitação de registro de conta para ${email}...`, "sys");
+            document.getElementById('auth-btn-submit').innerText = "Processando Cadastro...";
+            document.getElementById('auth-btn-submit').disabled = true;
+
+            try {
+                const response = await fetch(`${baseUrl}auth/v1/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': key,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.session) {
+                        supabaseSession = data.session;
+                        localStorage.setItem('supabase_auth_session', JSON.stringify(supabaseSession));
+                        updateAuthUI();
+                        addLog(`Conta criada e autenticada com sucesso como ${email}!`, "success");
+                    } else {
+                        addLog(`Inscrição enviada para ${email}! Verifique seu e-mail para confirmação se necessário. Pode tentar fazer login.`, "success");
+                        alert("Inscrição efetuada com sucesso! Caso o seu Supabase exija confirmação de e-mail, verifique sua caixa de entrada; caso contrário, você já pode entrar na conta.");
+                        setAuthTab('signin');
+                    }
+                } else {
+                    const errText = await response.text();
+                    let parsedErr = { message: errText };
+                    try { parsedErr = JSON.parse(errText); } catch(e){}
+                    addLog(`Erro ao criar conta no Supabase: ${parsedErr.message || errText}`, "error");
+                    alert(`Erro no Cadastro: ${parsedErr.message || errText}`);
+                }
+            } catch (err) {
+                console.error(err);
+                addLog(`Incapaz de registrar conta: sem conexão ou erro CORS: ${err.message}`, "error");
+            } finally {
+                document.getElementById('auth-btn-submit').disabled = false;
+                setAuthTab('signup');
+            }
+        }
+
+        async function supabaseSignIn(baseUrl, key, email, password) {
+            addLog(`Autenticando usuário ${email} no Supabase Auth...`, "sys");
+            document.getElementById('auth-btn-submit').innerText = "Autenticando...";
+            document.getElementById('auth-btn-submit').disabled = true;
+
+            try {
+                const response = await fetch(`${baseUrl}auth/v1/token?grant_type=password`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': key,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Salva a sessão localmente
+                    supabaseSession = data;
+                    localStorage.setItem('supabase_auth_session', JSON.stringify(supabaseSession));
+                    
+                    updateAuthUI();
+                    
+                    addLog(`Sessão carregada com sucesso! Usuário autenticado como: ${email}`, "success");
+                    
+                    // Executa um teste rápido de conexões passando as novas credenciais
+                    testSupabaseConnection();
+                } else {
+                    const errText = await response.text();
+                    let parsedErr = { message: errText };
+                    try { parsedErr = JSON.parse(errText); } catch(e){}
+                    addLog(`Credenciais rejeitadas: ${parsedErr.message || errText}`, "error");
+                    alert(`Erro de Login: ${parsedErr.message || errText}`);
+                }
+            } catch (err) {
+                console.error(err);
+                addLog(`Incapaz de autenticar: sem conexão ou erro de rede/CORS: ${err.message}`, "error");
+            } finally {
+                document.getElementById('auth-btn-submit').disabled = false;
+                setAuthTab('signin');
+            }
+        }
+
+        function supabaseSignOut() {
+            triggerPulse();
+            
+            const savedSession = localStorage.getItem('supabase_auth_session');
+            if (savedSession) {
+                try {
+                    const s = JSON.parse(savedSession);
+                    const url = document.getElementById('supabase-url').value.trim();
+                    const key = document.getElementById('supabase-key').value.trim();
+                    if (s.access_token && url && key) {
+                        const cleanUrl = url.endsWith('/') ? url : url + '/';
+                        fetch(`${cleanUrl}auth/v1/logout`, {
+                            method: 'POST',
+                            headers: {
+                                'apikey': key,
+                                'Authorization': `Bearer ${s.access_token}`
+                            }
+                        }).catch(() => {}); // ignora erros de logout no servidor
+                    }
+                } catch(e){}
+            }
+
+            supabaseSession = null;
+            localStorage.removeItem('supabase_auth_session');
+            updateAuthUI();
+            addLog("Sessão segura encerrada no console local.", "info");
+            
+            // Re-testa canais de conexão agora anônimos
+            testSupabaseConnection();
+        }
+
+        function checkSupabaseAuthSession() {
+            try {
+                const s = localStorage.getItem('supabase_auth_session');
+                if (s) {
+                    supabaseSession = JSON.parse(s);
+                    updateAuthUI();
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function updateAuthUI() {
+            const formContainer = document.getElementById('auth-form-container');
+            const userContainer = document.getElementById('auth-user-container');
+            const authDot = document.getElementById('auth-status-dot');
+            const authDesc = document.getElementById('auth-status-desc');
+
+            if (!formContainer || !userContainer) return;
+
+            if (supabaseSession && supabaseSession.user) {
+                // Logado
+                formContainer.style.display = 'none';
+                userContainer.style.display = 'flex';
+                
+                document.getElementById('auth-user-email').innerText = supabaseSession.user.email;
+                document.getElementById('auth-user-id').innerText = supabaseSession.user.id;
+                
+                if (authDot) authDot.style.backgroundColor = '#10b981'; // green
+                if (authDesc) authDesc.innerText = 'Logado';
+            } else {
+                // Deslogado
+                formContainer.style.display = 'flex';
+                userContainer.style.display = 'none';
+                
+                if (authDot) authDot.style.backgroundColor = '#737373'; // gray
+                if (authDesc) authDesc.innerText = 'Inativo';
             }
         }
     </script>
