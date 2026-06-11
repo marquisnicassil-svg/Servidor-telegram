@@ -1079,7 +1079,10 @@
 
             <div class="form-group">
                 <label>Chave de Acesso (Token)</label>
-                <input type="password" id="api-key" class="form-control" placeholder="Cole sua API Key aqui (Opcional)">
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="password" id="api-key" class="form-control" style="padding-right: 40px;" placeholder="Cole sua API Key aqui (Opcional)" autocomplete="current-password">
+                    <button type="button" onclick="togglePasswordVisibility('api-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
+                </div>
             </div>
 
             <div class="form-group" style="display: flex; gap: 10px;">
@@ -1131,7 +1134,10 @@
 
                     <div>
                         <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Senha de Acesso</label>
-                        <input type="password" id="auth-password" class="form-control" style="border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;" placeholder="Mínimo 6 caracteres" value="">
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <input type="password" id="auth-password" class="form-control" style="border-radius: 10px; padding: 8px 40px 8px 12px; font-size: 0.85rem;" placeholder="Mínimo 6 caracteres" value="" autocomplete="current-password">
+                            <button type="button" onclick="togglePasswordVisibility('auth-password', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Senha">👁️</button>
+                        </div>
                     </div>
 
                     <button class="btn-supabase-action" onclick="executeSupabaseAuth()" id="auth-btn-submit" style="margin-top: 5px; width: 100%; border-color: var(--primary); background: rgba(255,255,255,0.02);">
@@ -1181,7 +1187,10 @@
 
                     <div>
                         <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Chave Pública (Anon Key)</label>
-                        <input type="password" id="supabase-key" class="form-control" style="border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;" placeholder="Chave anônima" value="sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa">
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <input type="password" id="supabase-key" class="form-control" style="border-radius: 10px; padding: 8px 40px 8px 12px; font-size: 0.85rem;" placeholder="Chave anônima" value="sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa" autocomplete="current-password">
+                            <button type="button" onclick="togglePasswordVisibility('supabase-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
+                        </div>
                     </div>
 
                     <div class="theme-toggle" style="padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); margin-top: 5px;">
@@ -1411,55 +1420,71 @@ WITH CHECK (true);</code>
             const statusText = document.getElementById('splash-status-text');
             if (statusText) statusText.innerText = "Sincronizando configurações locais...";
 
-            // Carrega parâmetros de URL se existirem nocache ativo
-            if (window.location.search.includes('nocache=')) {
-                setTimeout(() => {
-                    addLog("🔄 Sistema reiniciado com bypass total de cache executado com sucesso!", "success");
-                }, 100);
-            }
-
-            // 1. Carrega configurações do LocalStorage (necessário para pegar as chaves do Supabase)
-            loadConfiguration();
-
-            // 2. Tenta recuperar sessão do Supabase Auth
-            if (statusText) statusText.innerText = "Verificando sessão segura na nuvem...";
-            checkSupabaseAuthSession();
-
-            const url = document.getElementById('supabase-url').value.trim();
-            const key = document.getElementById('supabase-key').value.trim();
-
-            if (supabaseSession && url && key) {
-                if (statusText) statusText.innerText = `Validando credenciais de ${supabaseSession.user?.email || "usuário"}...`;
-                // Tenta validar o token e pingar o banco de dados
-                const connected = await testSupabaseConnection();
-                if (connected) {
-                    addLog("Sessão segura ativa reconhecida com êxito na inicialização.", "success");
-                    const displayName = getDisplayName(supabaseSession);
-                    if (displayName) {
-                        greetUserAfterLogin(displayName, true);
-                    }
-                } else {
-                    addLog("Sessão ativa encontrada, porém falhou na verificação de autenticação ou rede.", "info");
+            try {
+                // Carrega parâmetros de URL se existirem nocache ativo
+                if (window.location.search.includes('nocache=')) {
+                    setTimeout(() => {
+                        addLog("🔄 Sistema reiniciado com bypass total de cache executado com sucesso!", "success");
+                    }, 100);
                 }
-            } else {
+
+                // 1. Carrega configurações do LocalStorage (necessário para pegar as chaves do Supabase)
+                loadConfiguration();
+
+                // 2. Tenta recuperar sessão do Supabase Auth
+                if (statusText) statusText.innerText = "Verificando sessão segura na nuvem...";
+                checkSupabaseAuthSession();
+
+                const url = document.getElementById('supabase-url').value.trim();
+                const key = document.getElementById('supabase-key').value.trim();
+
                 if (url && key) {
-                    if (statusText) statusText.innerText = "Verificando ping do banco anônimo...";
-                    await testSupabaseConnection();
+                    // Nós envolvemos o ping/teste de conexão em um limite de tempo (timeout de 1.8 segundos)
+                    // com garantia de retorno rápido para evitar que o splash screen trave o app em rede instável.
+                    const connectionPromise = testSupabaseConnection();
+                    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve('timeout'), 1800));
+
+                    if (statusText) {
+                        statusText.innerText = supabaseSession && supabaseSession.user 
+                            ? `Validando credenciais de ${supabaseSession.user.email}...` 
+                            : "Verificando ping do banco de dados...";
+                    }
+
+                    const result = await Promise.race([connectionPromise, timeoutPromise]);
+                    
+                    if (result === 'timeout') {
+                        addLog("Atenção: A verificação de conexão com o Supabase excedeu o limite de tempo (timeout). Prosseguindo em paralelo.", "info");
+                    } else if (result === true && supabaseSession) {
+                        addLog("Sessão segura ativa reconhecida com êxito na inicialização.", "success");
+                        const displayName = getDisplayName(supabaseSession);
+                        if (displayName) {
+                            greetUserAfterLogin(displayName, true);
+                        }
+                    }
                 } else {
                     addLog("Nenhuma conexão Supabase configurada até o momento.", "info");
                 }
+            } catch (err) {
+                console.error("Erro durante a inicialização segura de sessão:", err);
+                addLog("Tratador Geral: Houve uma exceção durante o boot de sessão. Forçando carregamento da interface.", "error");
             }
 
             if (statusText) statusText.innerText = "Inicialização de segurança concluída!";
             
-            // Dismiss loader/splash screen smoothly
-            await new Promise(resolve => setTimeout(resolve, 600));
-            const splash = document.getElementById('splash-screen');
-            if (splash) {
-                splash.style.opacity = '0';
-                splash.style.transform = 'scale(1.05)'; // Suave efeito de recuo
-                await new Promise(resolve => setTimeout(resolve, 500));
-                splash.remove();
+            // Dismiss loader/splash screen smoothly under any circumstance (Sempre executado devido à garantia fora do try-catch do ping)
+            try {
+                await new Promise(resolve => setTimeout(resolve, 300));
+                const splash = document.getElementById('splash-screen');
+                if (splash) {
+                    splash.style.opacity = '0';
+                    splash.style.transform = 'scale(1.05)'; // Suave efeito de recuo
+                    await new Promise(resolve => setTimeout(resolve, 400));
+                    splash.remove();
+                }
+            } catch (splashErr) {
+                console.error("Falha ao dispensar splash screen:", splashErr);
+                const splash = document.getElementById('splash-screen');
+                if (splash) splash.remove();
             }
         }
 
@@ -1678,7 +1703,7 @@ WITH CHECK (true);</code>
         // Filtro rápido de logs por tags
         function filterLogs(filterType) {
             triggerPulse();
-            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.terminal-toolbar .filter-chip').forEach(c => c.classList.remove('active'));
             
             const selectedChip = document.getElementById('filter-' + filterType);
             if (selectedChip) selectedChip.classList.add('active');
@@ -2658,6 +2683,21 @@ WITH CHECK (true);</code>
             }
         }
 
+        function togglePasswordVisibility(id, btn) {
+            triggerPulse();
+            const input = document.getElementById(id);
+            if (!input) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.innerText = '🙈';
+                addLog(`Exibindo caracteres do campo invisível.`, "info");
+            } else {
+                input.type = 'password';
+                btn.innerText = '👁️';
+                addLog(`Ocultando caracteres do campo.`, "info");
+            }
+        }
+
          // --- SUBSECÇÃO SUPABASE AUTH (Login/Cadastro) ---
         function setAuthTab(type) {
             triggerPulse();
@@ -2774,7 +2814,12 @@ WITH CHECK (true);</code>
             } finally {
                 isAuthLoading = false;
                 submitBtn.disabled = false;
-                setAuthTab('signup');
+                // Preserve whichever tab is currently active instead of resetting to signup
+                if (authMode === 'signup') {
+                    submitBtn.innerText = "✨ Criar Conta";
+                } else {
+                    submitBtn.innerText = "🔌 Fazer Login";
+                }
             }
         }
 
@@ -2825,7 +2870,11 @@ WITH CHECK (true);</code>
             } finally {
                 isAuthLoading = false;
                 submitBtn.disabled = false;
-                setAuthTab('signin');
+                if (authMode === 'signin') {
+                    submitBtn.innerText = "🔌 Fazer Login";
+                } else {
+                    submitBtn.innerText = "✨ Criar Conta";
+                }
             }
         }
 
