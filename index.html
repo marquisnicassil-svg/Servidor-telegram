@@ -922,6 +922,71 @@
             50% { transform: scale(1.1); filter: drop-shadow(0 0 35px rgba(138, 92, 246, 0.8)); }
             100% { transform: scale(1); }
         }
+
+        /* ==========================================================================
+           9. Onboarding / Auth Gate Screen
+           ========================================================================== */
+        #auth-gate-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--bg-color);
+            z-index: 9998; /* Just below splash but hiding everything else */
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 24px calc(24px + var(--safe-top));
+            overflow-y: auto;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .auth-gate-wrapper {
+            width: 100%;
+            max-width: 400px;
+            background-color: var(--card-bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 28px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+            animation: gate-intro 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        .auth-gate-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .auth-gate-logo img {
+            width: 72px;
+            height: 72px;
+            filter: drop-shadow(0 0 15px rgba(138, 92, 246, 0.3));
+        }
+        .auth-gate-logo h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+        .auth-gate-logo p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            padding: 0 10px;
+        }
+        .auth-gate-footer {
+            text-align: center;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
+        @keyframes gate-intro {
+            0% { transform: scale(0.96); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -934,6 +999,51 @@
             </div>
             <div class="splash-title">Core System</div>
             <div class="splash-status" id="splash-status-text" style="color: var(--text-muted); font-size: 0.85rem; margin-top: 8px; font-family: monospace;">Iniciando sistema...</div>
+        </div>
+    </div>
+
+    <!-- Tela do Portal de Autenticação Obrigatória (Gate de Entrada) -->
+    <div id="auth-gate-screen" style="display: none; opacity: 0; transform: scale(0.97);">
+        <div class="auth-gate-wrapper">
+            <div class="auth-gate-logo">
+                <img src="https://img.icons8.com/nolan/256/artificial-intelligence.png" alt="Core System Icon">
+                <h2>Portal de Acesso</h2>
+                <p>Para desbloquear o console de IA e sincronizar o histórico, conecte-se com sua conta segura.</p>
+            </div>
+
+            <!-- Formulário de Login / Cadastro Unificado -->
+            <div id="auth-form-container" style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; gap: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; margin-bottom: 4px;">
+                    <button class="filter-chip active" id="auth-tab-signin" onclick="setAuthTab('signin')" style="padding: 8px 16px; font-size: 0.78rem; border-radius: 8px; flex: 1; text-align: center;">Login / Entrar</button>
+                    <button class="filter-chip" id="auth-tab-signup" onclick="setAuthTab('signup')" style="padding: 8px 16px; font-size: 0.78rem; border-radius: 8px; flex: 1; text-align: center;">Criar Conta</button>
+                </div>
+
+                <div id="auth-username-container" style="display: none;">
+                    <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Nome de Usuário</label>
+                    <input type="text" id="auth-username" class="form-control" style="border-radius: 10px; padding: 10px 12px; font-size: 0.85rem;" placeholder="Ex: Maria Silva" value="">
+                </div>
+
+                <div>
+                    <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">E-mail do Usuário</label>
+                    <input type="email" id="auth-email" class="form-control" style="border-radius: 10px; padding: 10px 12px; font-size: 0.85rem;" placeholder="usuario@provedor.com" value="">
+                </div>
+
+                <div>
+                    <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Senha de Acesso</label>
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <input type="password" id="auth-password" class="form-control" style="border-radius: 10px; padding: 10px 42px 10px 12px; font-size: 0.85rem;" placeholder="Mínimo 6 caracteres" value="" autocomplete="current-password">
+                        <button type="button" onclick="togglePasswordVisibility('auth-password', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Senha">👁️</button>
+                    </div>
+                </div>
+
+                <button class="btn-supabase-action" onclick="executeSupabaseAuth()" id="auth-btn-submit" style="margin-top: 10px; width: 100%; border-color: var(--primary); background: rgba(255,255,255,0.02); padding: 12px; font-weight: bold; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    🔌 Fazer Login
+                </button>
+            </div>
+
+            <div class="auth-gate-footer">
+                🔒 Conexão Criptografada SSL • Supabase Cloud
+            </div>
         </div>
     </div>
 
@@ -1115,33 +1225,14 @@
                     </div>
                 </div>
 
-                <!-- Formulário de Login / Cadastro (Visível quando DESLOGADO) -->
-                <div id="auth-form-container" style="display: flex; flex-direction: column; gap: 8px;">
-                    <div style="display: flex; gap: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; margin-bottom: 4px;">
-                        <button class="filter-chip active" id="auth-tab-signin" onclick="setAuthTab('signin')" style="padding: 4px 12px; font-size: 0.72rem;">Login / Entrar</button>
-                        <button class="filter-chip" id="auth-tab-signup" onclick="setAuthTab('signup')" style="padding: 4px 12px; font-size: 0.72rem;">Criar Conta / Sign Up</button>
+                <!-- Mensagem informativa quando DESLOGADO -->
+                <div id="auth-settings-logged-out-msg" style="display: flex; flex-direction: column; gap: 10px; padding: 6px 0; align-items: center; text-align: center;">
+                    <div style="background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 12px; padding: 12px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.4; width: 100%;">
+                        <span style="font-size: 1.3rem; display: block; margin-bottom: 2px;">🔒</span>
+                        Você não está autenticado. Para sincronizar o sistema e fazer backup de mensagens na nuvem, realize o login de segurança no portal inicial.
                     </div>
-
-                    <div id="auth-username-container" style="display: none;">
-                        <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Nome de Usuário</label>
-                        <input type="text" id="auth-username" class="form-control" style="border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;" placeholder="Ex: Maria Silva" value="">
-                    </div>
-
-                    <div>
-                        <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">E-mail do Usuário</label>
-                        <input type="email" id="auth-email" class="form-control" style="border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;" placeholder="usuario@provedor.com" value="">
-                    </div>
-
-                    <div>
-                        <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Senha de Acesso</label>
-                        <div style="position: relative; display: flex; align-items: center;">
-                            <input type="password" id="auth-password" class="form-control" style="border-radius: 10px; padding: 8px 40px 8px 12px; font-size: 0.85rem;" placeholder="Mínimo 6 caracteres" value="" autocomplete="current-password">
-                            <button type="button" onclick="togglePasswordVisibility('auth-password', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Senha">👁️</button>
-                        </div>
-                    </div>
-
-                    <button class="btn-supabase-action" onclick="executeSupabaseAuth()" id="auth-btn-submit" style="margin-top: 5px; width: 100%; border-color: var(--primary); background: rgba(255,255,255,0.02);">
-                        🔌 Fazer Login
+                    <button class="btn-supabase-action" onclick="showAuthGateScreen()" style="border-color: var(--primary); background: rgba(255,255,255,0.02); width: 100%; padding: 10px; font-size: 0.85rem; border-radius: 10px;">
+                        🔑 Ir para a Tela de De Acesso
                     </button>
                 </div>
 
@@ -2422,67 +2513,8 @@ WITH CHECK (true);</code>
         }
 
         function triggerAuthOrFirstGreeting() {
-            if (supabaseSession) return;
-            
-            if (sessionStorage.getItem('first_time_greeted') === 'true') {
-                return;
-            }
-            sessionStorage.setItem('first_time_greeted', 'true');
-
-            const container = document.getElementById('chat-messages');
-            if (container) {
-                // Remove prompt antigo se houver
-                const existingPrompt = document.getElementById('local-welcome-prompt-card');
-                if (existingPrompt) existingPrompt.remove();
-
-                const welcomeCard = document.createElement('div');
-                welcomeCard.id = 'local-welcome-prompt-card';
-                welcomeCard.className = 'chat-message bot';
-                welcomeCard.style.borderLeft = '3px solid #38bdf8';
-                welcomeCard.style.background = 'rgba(56, 189, 248, 0.05)';
-                welcomeCard.style.padding = '14px';
-                welcomeCard.style.borderRadius = '12px';
-                welcomeCard.style.marginTop = '10px';
-                welcomeCard.style.marginBottom = '10px';
-                welcomeCard.style.transition = 'all 0.3s ease';
-                
-                welcomeCard.innerHTML = `
-                    <div style="font-weight: bold; margin-bottom: 6px; color: #38bdf8; display: flex; align-items: center; gap: 6px;">
-                        <span>🔌 Supabase Cloud Backup</span>
-                    </div>
-                    <div style="font-size: 0.82rem; line-height: 1.4; color: #d1d5db; margin-bottom: 12px;">
-                        Olá! Você está usando o console de IA no modo local. Deseja <strong>salvar suas configurações e fazer backup automático das suas mensagens</strong> na nuvem de forma segura?
-                    </div>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <button onclick="goToAuthSection()" style="font-size: 0.78rem; padding: 6px 12px; background: #38bdf8; color: #020617; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; gap: 4px;">
-                            🔑 Registrar / Fazer Login
-                        </button>
-                        <button onclick="dismissLocalWelcome()" style="font-size: 0.78rem; padding: 6px 12px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 8px; cursor: pointer; transition: opacity 0.2s;">
-                            Continuar Offline ⚡
-                        </button>
-                    </div>
-                `;
-                
-                container.appendChild(welcomeCard);
-                scrollToBottom();
-                
-                addLog("Aviso: Console carregado em modo local. O Backup automático requer autenticação.", "info");
-                showAppToast("Backup na Nuvem ou Modo Offline? Escolha no Chat! 💾", "info");
-            }
-        }
-
-        function dismissLocalWelcome() {
-            triggerPulse();
-            const el = document.getElementById('local-welcome-prompt-card');
-            if (el) {
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(-10px)';
-                setTimeout(() => {
-                    el.remove();
-                    addLog("Modo de Operação Local (Offline) validado.", "info");
-                    showAppToast("Operando localmente. Sincronização inativa.", "info");
-                }, 300);
-            }
+            // A autenticação agora é um portal obrigatório no carregamento do app
+            updateAuthUI();
         }
 
         function greetUserAfterLogin(displayName, isFirstLoad = false) {
@@ -3078,18 +3110,31 @@ WITH CHECK (true);</code>
                 const s = localStorage.getItem('supabase_auth_session');
                 if (s) {
                     supabaseSession = JSON.parse(s);
-                    updateAuthUI();
                 }
+                updateAuthUI();
             } catch (e) {
                 console.error(e);
+                updateAuthUI();
+            }
+        }
+
+        function showAuthGateScreen() {
+            const authGate = document.getElementById('auth-gate-screen');
+            if (authGate) {
+                authGate.style.display = 'flex';
+                authGate.offsetHeight; // force reflow (for transitions)
+                authGate.style.opacity = '1';
+                authGate.style.transform = 'scale(1)';
             }
         }
 
         function updateAuthUI() {
             const formContainer = document.getElementById('auth-form-container');
             const userContainer = document.getElementById('auth-user-container');
+            const loggedOutMsg = document.getElementById('auth-settings-logged-out-msg');
             const authDot = document.getElementById('auth-status-dot');
             const authDesc = document.getElementById('auth-status-desc');
+            const authGate = document.getElementById('auth-gate-screen');
 
             if (!formContainer || !userContainer) return;
 
@@ -3097,19 +3142,40 @@ WITH CHECK (true);</code>
                 // Logado
                 formContainer.style.display = 'none';
                 userContainer.style.display = 'flex';
+                if (loggedOutMsg) loggedOutMsg.style.display = 'none';
                 
                 document.getElementById('auth-user-email').innerText = supabaseSession.user.email;
                 document.getElementById('auth-user-id').innerText = supabaseSession.user.id;
                 
                 if (authDot) authDot.style.backgroundColor = '#10b981'; // green
                 if (authDesc) authDesc.innerText = 'Logado';
+
+                // Descarta o gate de login com animação suave
+                if (authGate) {
+                    authGate.style.opacity = '0';
+                    authGate.style.transform = 'scale(1.03)';
+                    setTimeout(() => {
+                        authGate.style.display = 'none';
+                    }, 400);
+                }
             } else {
                 // Deslogado
                 formContainer.style.display = 'flex';
                 userContainer.style.display = 'none';
+                if (loggedOutMsg) loggedOutMsg.style.display = 'flex';
                 
                 if (authDot) authDot.style.backgroundColor = '#737373'; // gray
                 if (authDesc) authDesc.innerText = 'Inativo';
+
+                // Exibe o gate garantindo bloqueio total
+                if (authGate) {
+                    authGate.style.display = 'flex';
+                    // Pequeno timeout caso esteja iniciando
+                    setTimeout(() => {
+                        authGate.style.opacity = '1';
+                        authGate.style.transform = 'scale(1)';
+                    }, 50);
+                }
             }
         }
     </script>
