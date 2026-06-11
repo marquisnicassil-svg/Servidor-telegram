@@ -1454,15 +1454,19 @@ WITH CHECK (true);</code>
                     
                     if (result === 'timeout') {
                         addLog("Atenção: A verificação de conexão com o Supabase excedeu o limite de tempo (timeout). Prosseguindo em paralelo.", "info");
+                        triggerAuthOrFirstGreeting();
                     } else if (result === true && supabaseSession) {
                         addLog("Sessão segura ativa reconhecida com êxito na inicialização.", "success");
                         const displayName = getDisplayName(supabaseSession);
                         if (displayName) {
                             greetUserAfterLogin(displayName, true);
                         }
+                    } else {
+                        triggerAuthOrFirstGreeting();
                     }
                 } else {
                     addLog("Nenhuma conexão Supabase configurada até o momento.", "info");
+                    triggerAuthOrFirstGreeting();
                 }
             } catch (err) {
                 console.error("Erro durante a inicialização segura de sessão:", err);
@@ -2340,6 +2344,147 @@ WITH CHECK (true);</code>
             return meta.display_name || meta.username || user.email.split('@')[0];
         }
 
+        function showAppToast(message, type = "info") {
+            let container = document.getElementById('toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toast-container';
+                container.style.position = 'fixed';
+                container.style.bottom = '24px';
+                container.style.left = '50%';
+                container.style.transform = 'translateX(-50%)';
+                container.style.zIndex = '99999';
+                container.style.display = 'flex';
+                container.style.flexDirection = 'column';
+                container.style.gap = '10px';
+                container.style.width = '90%';
+                container.style.maxWidth = '380px';
+                container.style.pointerEvents = 'none';
+                document.body.appendChild(container);
+            }
+            
+            const toast = document.createElement('div');
+            toast.style.background = 'rgba(15, 23, 42, 0.95)';
+            toast.style.color = '#fff';
+            toast.style.padding = '12px 18px';
+            toast.style.borderRadius = '14px';
+            toast.style.border = type === 'success' ? '1px solid #10b981' : '1px solid var(--border-color)';
+            toast.style.boxShadow = '0 10px 35px rgba(0,0,0,0.6)';
+            toast.style.fontSize = '0.85rem';
+            toast.style.fontFamily = 'system-ui, -apple-system, sans-serif';
+            toast.style.display = 'flex';
+            toast.style.alignItems = 'center';
+            toast.style.justifyContent = 'space-between';
+            toast.style.transition = 'all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(15px)';
+            toast.style.backdropFilter = 'blur(10px)';
+            toast.style.pointerEvents = 'auto';
+            
+            const dotColor = type === 'success' ? '#10b981' : 'var(--primary)';
+            toast.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: ${dotColor}; display: inline-block;"></span>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateY(0)';
+            }, 60);
+            
+            setTimeout(() => {
+               toast.style.opacity = '0';
+               toast.style.transform = 'translateY(-15px)';
+               setTimeout(() => {
+                   toast.remove();
+               }, 350);
+            }, 4500);
+        }
+
+        function goToAuthSection() {
+            triggerPulse();
+            switchTab('tab-config');
+            setTimeout(() => {
+                const el = document.getElementById('supabase-auth-card');
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    el.style.transition = 'box-shadow 0.4s ease';
+                    el.style.boxShadow = '0 0 25px rgba(56, 189, 248, 0.55)';
+                    setTimeout(() => {
+                        el.style.boxShadow = '';
+                    }, 2500);
+                }
+            }, 300);
+        }
+
+        function triggerAuthOrFirstGreeting() {
+            if (supabaseSession) return;
+            
+            if (sessionStorage.getItem('first_time_greeted') === 'true') {
+                return;
+            }
+            sessionStorage.setItem('first_time_greeted', 'true');
+
+            const container = document.getElementById('chat-messages');
+            if (container) {
+                // Remove prompt antigo se houver
+                const existingPrompt = document.getElementById('local-welcome-prompt-card');
+                if (existingPrompt) existingPrompt.remove();
+
+                const welcomeCard = document.createElement('div');
+                welcomeCard.id = 'local-welcome-prompt-card';
+                welcomeCard.className = 'chat-message bot';
+                welcomeCard.style.borderLeft = '3px solid #38bdf8';
+                welcomeCard.style.background = 'rgba(56, 189, 248, 0.05)';
+                welcomeCard.style.padding = '14px';
+                welcomeCard.style.borderRadius = '12px';
+                welcomeCard.style.marginTop = '10px';
+                welcomeCard.style.marginBottom = '10px';
+                welcomeCard.style.transition = 'all 0.3s ease';
+                
+                welcomeCard.innerHTML = `
+                    <div style="font-weight: bold; margin-bottom: 6px; color: #38bdf8; display: flex; align-items: center; gap: 6px;">
+                        <span>🔌 Supabase Cloud Backup</span>
+                    </div>
+                    <div style="font-size: 0.82rem; line-height: 1.4; color: #d1d5db; margin-bottom: 12px;">
+                        Olá! Você está usando o console de IA no modo local. Deseja <strong>salvar suas configurações e fazer backup automático das suas mensagens</strong> na nuvem de forma segura?
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button onclick="goToAuthSection()" style="font-size: 0.78rem; padding: 6px 12px; background: #38bdf8; color: #020617; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; gap: 4px;">
+                            🔑 Registrar / Fazer Login
+                        </button>
+                        <button onclick="dismissLocalWelcome()" style="font-size: 0.78rem; padding: 6px 12px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 8px; cursor: pointer; transition: opacity 0.2s;">
+                            Continuar Offline ⚡
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(welcomeCard);
+                scrollToBottom();
+                
+                addLog("Aviso: Console carregado em modo local. O Backup automático requer autenticação.", "info");
+                showAppToast("Backup na Nuvem ou Modo Offline? Escolha no Chat! 💾", "info");
+            }
+        }
+
+        function dismissLocalWelcome() {
+            triggerPulse();
+            const el = document.getElementById('local-welcome-prompt-card');
+            if (el) {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    el.remove();
+                    addLog("Modo de Operação Local (Offline) validado.", "info");
+                    showAppToast("Operando localmente. Sincronização inativa.", "info");
+                }, 300);
+            }
+        }
+
         function greetUserAfterLogin(displayName, isFirstLoad = false) {
             if (!displayName) return;
             
@@ -2351,25 +2496,44 @@ WITH CHECK (true);</code>
                 saveConfiguration();
             }
 
-            // 2. Injetar na aba de Chat se o chat estiver vazio ou apenas com o template padrão
+            // 2. Injetar na aba de Chat para garantir visualização
             const container = document.getElementById('chat-messages');
             if (container) {
-                const messagesList = container.querySelectorAll('.chat-message');
-                const isEmptyOrWelcome = messagesList.length === 0 || 
-                    (messagesList.length === 1 && (
-                        messagesList[0].innerText.includes("Memória apagada") || 
-                        messagesList[0].innerText.includes("Sessão reiniciada") ||
-                        messagesList[0].innerText.includes("Olá!")
-                    ));
+                // Remove prompt local se houver
+                const existingPrompt = document.getElementById('local-welcome-prompt-card');
+                if (existingPrompt) existingPrompt.remove();
 
-                if (isEmptyOrWelcome) {
-                    container.innerHTML = `<div class="chat-message bot">Olá, <strong>${displayName}</strong>! Bem-vindo de volta. Como posso ajudar você hoje?</div>`;
-                    chatHistoryObjects = [{ role: 'assistant', content: `Olá, ${displayName}! Bem-vindo de volta. Como posso ajudar você hoje?` }];
+                const welcomeMsgId = 'auth-welcome-msg-' + displayName.replace(/[^a-zA-Z0-9]/g, '');
+                if (!document.getElementById(welcomeMsgId)) {
+                    const welcomeDiv = document.createElement('div');
+                    welcomeDiv.id = welcomeMsgId;
+                    welcomeDiv.className = 'chat-message bot';
+                    welcomeDiv.style.borderLeft = '3px solid var(--primary)';
+                    welcomeDiv.style.background = 'rgba(56, 189, 248, 0.05)';
+                    welcomeDiv.style.borderRadius = '12px';
+                    welcomeDiv.style.padding = '12px';
+                    welcomeDiv.style.marginTop = '8px';
+                    welcomeDiv.style.marginBottom = '8px';
+                    
+                    welcomeDiv.innerHTML = `🌟 Olá, <strong>${displayName}</strong>! Sua sessão está ativa e sincronizada com segurança na nuvem via Supabase. Seu histórico está protegido! Como posso te ajudar hoje?`;
+                    container.appendChild(welcomeDiv);
+                    
+                    chatHistoryObjects.push({ 
+                        role: 'assistant', 
+                        content: `Olá, ${displayName}! Sua sessão está ativa e sincronizada com segurança na nuvem via Supabase. Seu histórico está protegido! Como posso te ajudar hoje?` 
+                    });
                     saveChatSession();
-                } else {
-                    addLog(`Chatbot sincronizado e personalizado para o usuário: ${displayName}`, "success");
+                    scrollToBottom();
                 }
             }
+
+            // 3. Exibir notificação brilhante na interface
+            showAppToast(`Olá, ${displayName}! Sessão segura em nuvem ativa. ✨`, "success");
+            
+            // 4. Ler em voz alta para confirmação por som!
+            speakText(`Olá ${displayName}! Conexão estabelecida com sucesso.`);
+            
+            addLog(`Sessão segura ativa sincronizada e personalizada para: ${displayName}`, "success");
         }
 
         function updateCloudIndicators(status, desc) {
