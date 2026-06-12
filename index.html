@@ -2498,8 +2498,9 @@ WITH CHECK (true);</code>
 
         async function forceAppUpdateAndClearCache() {
             triggerPulse();
-            addLog("Comando de atualização forçada recebido. Prunando caches de navegador...", "sys");
-            if (confirm("Deseja limpar todos os arquivos em cache do navegador para forçar o download da nova versão? (Sua sessão e histórico local serão preservados)")) {
+            addLog("Comando de atualização forçada recebido.", "sys");
+            showAppConfirm("Deseja limpar todos os arquivos em cache do navegador para forçar o download da nova versão? (Sua sessão e histórico local serão preservados)", async () => {
+                addLog("Prunando caches de navegador...", "sys");
                 try {
                     if (navigator.serviceWorker) {
                         const regs = await navigator.serviceWorker.getRegistrations();
@@ -2523,7 +2524,7 @@ WITH CHECK (true);</code>
                     addLog("Erro ao limpar caches: " + e.message, "error");
                     window.location.reload();
                 }
-            }
+            });
         }
 
         // Simula tarefas e atividades de rede no Console (Estilo Matrix)
@@ -3238,6 +3239,117 @@ WITH CHECK (true);</code>
             showAppToast(msg, type);
         };
 
+        // Modal de confirmação customizado assíncrono para substituir o confirm nativo
+        function showAppConfirm(message, onConfirm, onCancel = null) {
+            const existing = document.getElementById('app-confirm-modal');
+            if (existing) existing.remove();
+
+            const modal = document.createElement('div');
+            modal.id = 'app-confirm-modal';
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100vw';
+            modal.style.height = '100vh';
+            modal.style.backgroundColor = 'rgba(3, 4, 6, 0.82)';
+            modal.style.backdropFilter = 'blur(12px)';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.style.zIndex = '100000';
+            modal.style.opacity = '0';
+            modal.style.transition = 'opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)';
+            modal.style.padding = '20px';
+
+            const card = document.createElement('div');
+            card.style.background = 'rgba(21, 23, 30, 0.98)';
+            card.style.border = '1px solid rgba(255, 255, 255, 0.08)';
+            card.style.borderRadius = '16px';
+            card.style.padding = '24px';
+            card.style.maxWidth = '420px';
+            card.style.width = '100%';
+            card.style.boxShadow = '0 24px 60px rgba(0,0,0,0.8)';
+            card.style.transform = 'scale(0.96)';
+            card.style.transition = 'transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.15)';
+            card.style.fontFamily = 'system-ui, -apple-system, sans-serif';
+            card.style.color = '#ffffff';
+
+            card.innerHTML = `
+                <div style="display: flex; align-items: flex-start; gap: 14px; margin-bottom: 22px;">
+                    <span style="font-size: 1.6rem; line-height: 1; flex-shrink: 0; user-select: none;">❓</span>
+                    <div style="flex: 1;">
+                        <h4 style="margin: 0 0 6px 0; font-size: 1.15rem; font-weight: 600; color: #f3f4f6;">Confirmação Requerida</h4>
+                        <p style="margin: 0; font-size: 0.88rem; line-height: 1.5; color: #9ca3af; word-break: break-word;">${message}</p>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button id="confirm-btn-cancel" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); color: #d1d5db; padding: 10px 18px; border-radius: 10px; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.2s; outline: none;">Cancelar</button>
+                    <button id="confirm-btn-ok" style="background: #3b82f6; border: none; color: #ffffff; padding: 10px 18px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35); outline: none;">Confirmar</button>
+                </div>
+            `;
+
+            modal.appendChild(card);
+            document.body.appendChild(modal);
+
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                card.style.transform = 'scale(1)';
+            }, 20);
+
+            const closeModal = () => {
+                modal.style.opacity = '0';
+                card.style.transform = 'scale(0.96)';
+                setTimeout(() => modal.remove(), 230);
+            };
+
+            const cancelBtn = card.querySelector('#confirm-btn-cancel');
+            const okBtn = card.querySelector('#confirm-btn-ok');
+
+            cancelBtn.onmouseenter = () => {
+                cancelBtn.style.background = 'rgba(255,255,255,0.06)';
+                cancelBtn.style.color = '#ffffff';
+                cancelBtn.style.borderColor = 'rgba(255,255,255,0.2)';
+            };
+            cancelBtn.onmouseleave = () => {
+                cancelBtn.style.background = 'rgba(255,255,255,0.02)';
+                cancelBtn.style.color = '#d1d5db';
+                cancelBtn.style.borderColor = 'rgba(255,255,255,0.1)';
+            };
+
+            okBtn.onmouseenter = () => {
+                okBtn.style.background = '#2563eb';
+                okBtn.style.boxShadow = '0 6px 14px rgba(59, 130, 246, 0.45)';
+            };
+            okBtn.onmouseleave = () => {
+                okBtn.style.background = '#3b82f6';
+                okBtn.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.35)';
+            };
+
+            cancelBtn.onclick = () => {
+                closeModal();
+                if (onCancel) onCancel();
+            };
+
+            okBtn.onclick = () => {
+                closeModal();
+                onConfirm();
+            };
+
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                    if (onCancel) onCancel();
+                }
+            };
+        }
+
+        // Sobrescrita de segurança global para o confirm silencioso
+        window.confirm = function(msg) {
+            console.warn("Utilize showAppConfirm(msg, onConfirm, onCancel) para confirmações assíncronas modernas.");
+            showAppToast("Confirm bloqueado. Ação cancelada ou requer confirmação em modal.", "warning");
+            return false;
+        };
+
         function goToAuthSection() {
             triggerPulse();
             switchTab('tab-config');
@@ -3550,109 +3662,107 @@ WITH CHECK (true);</code>
                 return;
             }
 
-            if (!confirm("Isso redefinirá seu Histórico de Conversas e Ajustes Globais locais para corresponder ao último backup salvo no Supabase. Continuar?")) {
-                return;
-            }
+            showAppConfirm("Isso redefinirá seu Histórico de Conversas e Ajustes Globais locais para corresponder ao último backup salvo no Supabase. Continuar?", async () => {
+                updateCloudIndicators('syncing', 'Baixando...');
+                addLog("Baixando último backup armazenado na nuvem...", "sys");
 
-            updateCloudIndicators('syncing', 'Baixando...');
-            addLog("Baixando último backup armazenado na nuvem...", "sys");
+                try {
+                    const cleanUrl = url.endsWith('/') ? url : url + '/';
+                    // Seleciona o backup mais recente ordenando por id decrescente, limitando a 1 linha
+                    const fetchUrl = `${cleanUrl}rest/v1/${table}?order=id.desc&limit=1`;
 
-            try {
-                const cleanUrl = url.endsWith('/') ? url : url + '/';
-                // Seleciona o backup mais recente ordenando por id decrescente, limitando a 1 linha
-                const fetchUrl = `${cleanUrl}rest/v1/${table}?order=id.desc&limit=1`;
+                    const headers = {
+                        'apikey': key
+                    };
 
-                const headers = {
-                    'apikey': key
-                };
+                    if (supabaseSession && supabaseSession.access_token) {
+                        headers['Authorization'] = `Bearer ${supabaseSession.access_token}`;
+                    } else {
+                        headers['Authorization'] = `Bearer ${key}`;
+                    }
 
-                if (supabaseSession && supabaseSession.access_token) {
-                    headers['Authorization'] = `Bearer ${supabaseSession.access_token}`;
-                } else {
-                    headers['Authorization'] = `Bearer ${key}`;
-                }
+                    const response = await fetch(fetchUrl, {
+                        method: 'GET',
+                        headers: headers
+                    });
 
-                const response = await fetch(fetchUrl, {
-                    method: 'GET',
-                    headers: headers
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && data.length > 0) {
-                        const backup = data[0];
-                        
-                        // Restaura os logs de chats
-                        if (backup.chat_html) {
-                            localStorage.setItem('ai_console_chat', backup.chat_html);
-                            document.getElementById('chat-messages').innerHTML = backup.chat_html;
-                            scrollToBottom();
-                        }
-                        
-                        // Restaura o array original de histórico estruturado para o backend LLM
-                        if (backup.history_json) {
-                            let history = backup.history_json;
-                            if (typeof history === 'string') {
-                                try { history = JSON.parse(history); } catch(e){}
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data && data.length > 0) {
+                            const backup = data[0];
+                            
+                            // Restaura os logs de chats
+                            if (backup.chat_html) {
+                                localStorage.setItem('ai_console_chat', backup.chat_html);
+                                document.getElementById('chat-messages').innerHTML = backup.chat_html;
+                                scrollToBottom();
                             }
-                            chatHistoryObjects = Array.isArray(history) ? history : [];
-                            localStorage.setItem('ai_console_chat_history', JSON.stringify(chatHistoryObjects));
-                        }
-                        
-                        // Restaura configurações salvas de modelos e de cores
-                        if (backup.settings_json) {
-                            let settings = backup.settings_json;
-                            if (typeof settings === 'string') {
-                                try { settings = JSON.parse(settings); } catch(e){}
+                            
+                            // Restaura o array original de histórico estruturado para o backend LLM
+                            if (backup.history_json) {
+                                let history = backup.history_json;
+                                if (typeof history === 'string') {
+                                    try { history = JSON.parse(history); } catch(e){}
+                                }
+                                chatHistoryObjects = Array.isArray(history) ? history : [];
+                                localStorage.setItem('ai_console_chat_history', JSON.stringify(chatHistoryObjects));
                             }
-                            localStorage.setItem('ai_console_settings', JSON.stringify(settings));
-                            loadConfiguration();
-                        }
+                            
+                            // Restaura configurações salvas de modelos e de cores
+                            if (backup.settings_json) {
+                                let settings = backup.settings_json;
+                                if (typeof settings === 'string') {
+                                    try { settings = JSON.parse(settings); } catch(e){}
+                                }
+                                localStorage.setItem('ai_console_settings', JSON.stringify(settings));
+                                loadConfiguration();
+                            }
 
-                        updateCloudIndicators('active', 'Conectado');
-                        addLog("Restauração concluída! Conversas e configurações locais foram sincronizadas com o backup da nuvem.", "success");
-                        
-                        const cloudBtn = document.getElementById('btn-cloud-restore');
-                        if (cloudBtn) {
-                            const original = cloudBtn.innerText;
-                            cloudBtn.innerText = "Lido com Sucesso ✓";
-                            setTimeout(() => cloudBtn.innerText = original, 2000);
+                            updateCloudIndicators('active', 'Conectado');
+                            addLog("Restauração concluída! Conversas e configurações locais foram sincronizadas com o backup da nuvem.", "success");
+                            
+                            const cloudBtn = document.getElementById('btn-cloud-restore');
+                            if (cloudBtn) {
+                                const original = cloudBtn.innerText;
+                                cloudBtn.innerText = "Lido com Sucesso ✓";
+                                setTimeout(() => cloudBtn.innerText = original, 2000);
+                            }
+                        } else {
+                            updateCloudIndicators('active', 'Tabela Vazia');
+                            addLog("Nenhum registro de backup disponível de momento no seu Supabase.", "info");
                         }
                     } else {
-                        updateCloudIndicators('active', 'Tabela Vazia');
-                        addLog("Nenhum registro de backup disponível de momento no seu Supabase.", "info");
-                    }
-                } else {
-                    const errText = await response.text();
-                    let isJwtExpired = false;
-                    try {
-                        const parsed = JSON.parse(errText);
-                        if (parsed.message && parsed.message.includes("JWT expired")) {
-                            isJwtExpired = true;
-                        }
-                    } catch(e) {}
+                        const errText = await response.text();
+                        let isJwtExpired = false;
+                        try {
+                            const parsed = JSON.parse(errText);
+                            if (parsed.message && parsed.message.includes("JWT expired")) {
+                                isJwtExpired = true;
+                            }
+                        } catch(e) {}
 
-                    if (isJwtExpired) {
-                        updateCloudIndicators('error', 'Token Expirado');
-                        addLog("Erro ao baixar backup: Token expirado (JWT Expired). Renovando credenciais locais...", "warning");
-                        
-                        // Reseta a sessão local
-                        supabaseSession = null;
-                        localStorage.removeItem('supabase_auth_session');
-                        updateAuthUI();
-                        
-                        addLog("Sessão expirada limpa. Tentando re-sincronizar download sob nível anônimo...", "info");
-                        supabaseRestoreBackup();
-                    } else {
-                        updateCloudIndicators('error', 'Erro de Download');
-                        addLog(`Consulte as regras de RLS do seu Supabase. Erro: ${response.status} - ${errText}`, "error");
+                        if (isJwtExpired) {
+                            updateCloudIndicators('error', 'Token Expirado');
+                            addLog("Erro ao baixar backup: Token expirado (JWT Expired). Renovando credenciais locais...", "warning");
+                            
+                            // Reseta a sessão local
+                            supabaseSession = null;
+                            localStorage.removeItem('supabase_auth_session');
+                            updateAuthUI();
+                            
+                            addLog("Sessão expirada limpa. Tentando re-sincronizar download sob nível anônimo...", "info");
+                            supabaseRestoreBackup();
+                        } else {
+                            updateCloudIndicators('error', 'Erro de Download');
+                            addLog(`Consulte as regras de RLS do seu Supabase. Erro: ${response.status} - ${errText}`, "error");
+                        }
                     }
+                } catch(e) {
+                    console.error(e);
+                    updateCloudIndicators('error', 'Rede Indisponível');
+                    addLog(`Incapaz de ler backup no console do Supabase: ${e.message}`, "error");
                 }
-            } catch(e) {
-                console.error(e);
-                updateCloudIndicators('error', 'Rede Indisponível');
-                addLog(`Incapaz de ler backup no console do Supabase: ${e.message}`, "error");
-            }
+            });
         }
 
         function toggleSqlSnippet() {
@@ -4131,7 +4241,7 @@ WITH CHECK (true);</code>
 
         function disconnectGmailWeb() {
             triggerPulse();
-            if (confirm("Deseja realmente desvincular sua conta do Gmail?")) {
+            showAppConfirm("Deseja realmente desvincular sua conta do Gmail?", () => {
                 gmailSettings.isConnected = false;
                 gmailSettings.token = "";
                 saveGmailSettings();
@@ -4142,7 +4252,7 @@ WITH CHECK (true);</code>
                 
                 // Oculta composes
                 document.getElementById('gmail-compose-card').style.display = 'none';
-            }
+            });
         }
 
         function toggleGmailComposeForm() {
