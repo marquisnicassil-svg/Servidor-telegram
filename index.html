@@ -310,7 +310,7 @@
             border-bottom-right-radius: 18px;
             border-bottom-left-radius: 4px;
             border: 1px solid var(--border-color);
-            padding-right: 36px;
+            padding: 10px 38px 24px 14px;
         }
 
         /* Markdown Styles */
@@ -1264,7 +1264,7 @@
             <button id="menu-drawer-btn" onclick="toggleDrawer(true)" style="background: transparent; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; outline: none; margin-right: 15px;">
                 ☰
             </button>
-            <h1 id="topbar-section-title" style="font-size: 1.05rem; font-weight: 700; text-align: center; margin: 0; flex: 1; color: var(--text-main);">💬 Novo Chat / Conversas</h1>
+            <h1 id="topbar-section-title" style="font-size: 1.05rem; font-weight: 700; text-align: center; margin: 0; flex: 1; color: var(--text-main);">💬 Conversas</h1>
             <div style="display: flex; align-items: center; gap: 12px; min-width: 60px; justify-content: flex-end;">
                 <button id="header-clear-chat-btn" onclick="clearChat()" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; outline: none; color: var(--text-muted); opacity: 0.8; transition: opacity 0.2s;" title="Apagar Conversa" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
                     🗑️
@@ -1286,9 +1286,9 @@
             </div>
         </div>
         <ul class="drawer-menu">
-            <li class="drawer-item active" onclick="clickDrawerItem('tab-chat', '💬 Novo Chat / Conversas')">
+            <li class="drawer-item active" onclick="clickDrawerItem('tab-chat', '💬 Conversas')">
                 <span class="drawer-icon">💬</span>
-                <span class="drawer-label">Novo Chat / Conversas</span>
+                <span class="drawer-label">Conversas</span>
             </li>
             <li class="drawer-item" onclick="clickDrawerItem('tab-config', '⚙️ Configurações (Ajustes)')">
                 <span class="drawer-icon">⚙️</span>
@@ -1337,13 +1337,13 @@
                 <div class="chat-messages" id="chat-messages">
                     <div class="chat-message bot">
                         Estou conectado e com memória ativada.
-                        <button class="reader-btn" data-text="Estou conectado e com memória ativada." onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 10px; bottom: 8px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 4px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>
+                        <button class="reader-btn" data-text="Estou conectado e com memória ativada." onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 8px; bottom: 6px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 6px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>
                     </div>
                 </div>
                 <div class="chat-input-area" style="align-items: center; gap: 10px; padding-top: 10px; padding-bottom: 10px;">
                     <div style="position: relative; flex: 1; display: flex; align-items: center;">
-                        <button id="btn-mic" onclick="toggleMic()" style="position: absolute; left: 8px; background: transparent; border: none; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; color: var(--text-muted); outline: none; z-index: 5;" title="Ditado por Voz">🎤</button>
-                        <input type="text" id="chat-input" class="form-control" style="padding-left: 44px; padding-right: 18px; border-radius: 24px; background-color: #171719; border: 1px solid var(--border-color); height: 46px; color: #ffffff;" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
+                        <button id="btn-mic" onclick="toggleMic()" style="position: absolute; left: 6px; background: transparent; border: none; font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; color: var(--text-muted); outline: none; z-index: 5;" title="Ditado por Voz">🎤</button>
+                        <input type="text" id="chat-input" class="form-control" style="padding-left: 44px; padding-right: 18px; border-radius: 24px; background-color: #1E1E22; border: 1px solid rgba(255, 255, 255, 0.08); height: 48px; color: #ffffff;" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
                     </div>
                     <button class="chat-btn-send" onclick="sendMessage()">
                         <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
@@ -1949,7 +1949,7 @@ WITH CHECK (true);</code>
         }
 
         const tabTitlesMap = {
-            'tab-chat': '💬 Novo Chat / Conversas',
+            'tab-chat': '💬 Conversas',
             'tab-config': '⚙️ Configurações (Ajustes)',
             'tab-logs': '🖥️ Terminal de Comandos',
             'tab-translator': '🌐 Tradutor de Textos',
@@ -2807,7 +2807,7 @@ WITH CHECK (true);</code>
         function clearChat() {
             triggerPulse();
             chatHistoryObjects = [];
-            document.getElementById('chat-messages').innerHTML = '<div class="chat-message bot">Memória apagada. Sessão reiniciada.<button class="reader-btn" data-text="Memória apagada. Sessão reiniciada." onclick="speakText(this.getAttribute(\'data-text\'))" style="position: absolute; right: 10px; bottom: 8px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 4px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity=\'1\'" onmouseout="this.style.opacity=\'0.7\'">🔊</button></div>';
+            document.getElementById('chat-messages').innerHTML = '<div class="chat-message bot">Memória apagada. Sessão reiniciada.<button class="reader-btn" data-text="Memória apagada. Sessão reiniciada." onclick="speakText(this.getAttribute(\'data-text\'))" style="position: absolute; right: 8px; bottom: 6px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 6px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity=\'1\'" onmouseout="this.style.opacity=\'0.7\'">🔊</button></div>';
             saveChatSession();
             addLog("Memória do chat apagada manualmente.", "info");
             
@@ -2934,7 +2934,7 @@ WITH CHECK (true);</code>
 
                 // Injeta bloco processamento e player de voz (TTS)
                 const escapedForSpeech = aiReply.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
-                const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 10px; bottom: 8px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 4px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
+                const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 8px; bottom: 6px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 6px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
                 
                 loader.innerHTML = formatAIResponse(aiReply) + readerHtml;
                 scrollToBottom();
