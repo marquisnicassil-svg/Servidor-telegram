@@ -1523,6 +1523,18 @@
                         <span style="color: var(--text-muted); font-weight: bold; font-family: monospace; font-size: 1.1rem; padding-left: 10px;">&gt;</span>
                     </div>
 
+                    <!-- Opção: Conexão Bot do Telegram — ADICIONADO -->
+                    <div class="config-index-item" onclick="openConfigSubView('telegram')" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 14px; cursor: pointer; transition: background 0.2s; min-height: 72px;">
+                        <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
+                            <span style="font-size: 1.5rem; line-height: 1;">🤖</span>
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;">Conexão Bot do Telegram</span>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;">Insira o token do BotFather e configure a integração do robô</span>
+                            </div>
+                        </div>
+                        <span style="color: var(--text-muted); font-weight: bold; font-family: monospace; font-size: 1.1rem; padding-left: 10px;">&gt;</span>
+                    </div>
+
                     <!-- Opção 2: Motor de Inteligência Artificial -->
                     <div class="config-index-item" onclick="openConfigSubView('ai')" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 14px; cursor: pointer; transition: background 0.2s; min-height: 72px;">
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
@@ -1609,6 +1621,39 @@
                 </button>
             </div>
 
+            <!-- SUB-VIEW TELEGRAM: CONEXÃO BOT DO TELEGRAM -->
+            <div id="config-subview-telegram" class="config-subview" style="display: none;">
+                <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;">⬅️ Voltar para Ajustes</button>
+                
+                <div class="section-header" style="text-align: left;">
+                    <h2>🤖 Conexão Bot do Telegram</h2>
+                </div>
+
+                <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: #000000; border: 1px solid var(--border-color); border-radius: 16px;">
+                    <div style="padding: 16px; display: flex; flex-direction: column; gap: 14px;">
+                        <div class="form-group">
+                            <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">🤖 Token do Bot (Telegram)</label>
+                            <div style="position: relative; display: flex; align-items: center;">
+                                <input type="password" id="telegram-token" class="form-control" style="padding-right: 40px; border-radius: 10px;" placeholder="Insira o token gerado pelo @BotFather...">
+                                <button type="button" onclick="togglePasswordVisibility('telegram-token', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Token">👁️</button>
+                            </div>
+                        </div>
+
+                        <span style="color: #94a3b8; font-size: 0.75rem; text-align: left; line-height: 1.4; display: block; margin-top: -4px;">
+                            Insira o token gerado pelo @BotFather para ativar o Moreno no Telegram.
+                        </span>
+
+                        <button class="btn-universal" id="btn-test-telegram" onclick="testTelegramConnection()" style="background: rgba(30, 41, 59, 0.5); border: 1px solid var(--border-color); color: #38bdf8; font-weight: bold; font-size: 0.85rem; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; cursor: pointer; width: 100%;">
+                            🔄 Testar Conexão do Bot
+                        </button>
+                    </div>
+                </div>
+
+                <button class="btn-universal" onclick="saveConfiguration()">
+                    Salvar Token
+                </button>
+            </div>
+
             <!-- SUB-VIEW 2: MOTOR DE INTELIGÊNCIA ARTIFICIAL -->
             <div id="config-subview-ai" class="config-subview" style="display: none;">
                 <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;">⬅️ Voltar para Ajustes</button>
@@ -1633,9 +1678,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Chave de Acesso (Token)</label>
+                    <label>Chave de API da IA Selecionada</label>
                     <div style="position: relative; display: flex; align-items: center;">
-                        <input type="password" id="api-key" class="form-control" style="padding-right: 40px;" placeholder="Cole sua API Key aqui (Opcional)" autocomplete="current-password">
+                        <input type="password" id="api-key" class="form-control" style="padding-right: 40px;" placeholder="Cole sua API Key para a IA selecionada..." autocomplete="current-password">
                         <button type="button" onclick="togglePasswordVisibility('api-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
                     </div>
                 </div>
@@ -2172,6 +2217,11 @@ WITH CHECK (true);</code>
                         setApiType('GEMINI', true);
                     }
                     if (data.apiKey !== undefined) document.getElementById('api-key').value = data.apiKey;
+                    if (data.telegramToken !== undefined) {
+                        document.getElementById('telegram-token').value = data.telegramToken;
+                    } else {
+                        document.getElementById('telegram-token').value = "";
+                    }
                     if (data.baseUrl) document.getElementById('base-url').value = data.baseUrl;
                     if (data.modelName) document.getElementById('model-name').value = data.modelName;
                     if (data.systemPrompt) document.getElementById('system-prompt').value = data.systemPrompt;
@@ -2641,6 +2691,7 @@ WITH CHECK (true);</code>
             const data = {
                 apiType: apiType,
                 apiKey: document.getElementById('api-key').value.trim(),
+                telegramToken: document.getElementById('telegram-token').value.trim(),
                 baseUrl: document.getElementById('base-url').value.trim(),
                 modelName: document.getElementById('model-name').value.trim(),
                 systemPrompt: document.getElementById('system-prompt').value, // Preserve formatting
@@ -2656,7 +2707,7 @@ WITH CHECK (true);</code>
             
             localStorage.setItem('ai_console_settings', JSON.stringify(data));
             
-            addLog("As configurações (incluindo Supabase) foram persistidas localmente.", "success");
+            addLog("As configurações (incluindo Supabase e Telegram) foram persistidas localmente.", "success");
             
             // Testa conexão se os campos forem editados
             testSupabaseConnection();
@@ -2666,6 +2717,45 @@ WITH CHECK (true);</code>
             const originalText = btn.innerText;
             btn.innerText = "Salvo com sucesso ✓";
             setTimeout(() => btn.innerText = originalText, 2000);
+        }
+
+        async function testTelegramConnection() {
+            triggerPulse();
+            const token = document.getElementById('telegram-token').value.trim();
+            if (!token) {
+                addLog("Por favor, insira o token do bot antes de testar.", "error");
+                alert("Por favor, insira o token do bot.");
+                return;
+            }
+            addLog("Testando conexão do Bot com a API do Telegram...", "sys");
+            const btn = document.getElementById('btn-test-telegram');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `Aguarde...`;
+            btn.disabled = true;
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${token}/getMe`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.ok) {
+                        const username = data.result.username;
+                        addLog(`Conexão do Bot estabelecida com sucesso! @${username} está online.`, "success");
+                        alert(`Sucesso! Conexão ativa com o bot @${username}.`);
+                    } else {
+                        addLog("Erro na validação do token do Telegram.", "error");
+                        alert("Token inválido.");
+                    }
+                } else {
+                    addLog("Token inválido ou inexistente. Por favor, verifique.", "error");
+                    alert("Falha na conexão. Token inválido.");
+                }
+            } catch (err) {
+                console.error(err);
+                addLog(`Incapaz de atingir a API do Telegram: ${err.message}`, "error");
+                alert("Erro de rede ao conectar com o Telegram.");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         }
 
         // --- 4. Motor de Requisição de Chat ---
