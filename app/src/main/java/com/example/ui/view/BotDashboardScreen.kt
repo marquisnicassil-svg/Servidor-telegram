@@ -1002,55 +1002,29 @@ fun SettingsTab(
                 }
             }
 
-            // Pre-configured themes list
+            // Informative design tip
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                    colors = CardDefaults.cardColors(containerColor = Color(0x05FFFFFF)),
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
                 ) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            "Combinações de Temas Prontos",
+                            "💡 Dica de Aparência",
                             fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp,
-                            color = Color.White
+                            fontSize = 12.sp,
+                            color = Color(0xFF38BDF8)
                         )
                         Spacer(modifier = Modifier.height(4.dp))
-
-                        val themesList = listOf(
-                            Triple("🌌 Minimal Slate", "#FFFFFF", true),
-                            Triple("🌿 Cyber Forest", "#10B981", true),
-                            Triple("🔥 Solar Eclipse", "#F59E0B", false),
-                            Triple("👾 Galactic Nebula", "#8B5CF6", true)
+                        Text(
+                            "Combine qualquer Cor de Destaque com o modo AMOLED ativo para um visual minimalista de altíssimo contraste, ou desative o AMOLED para carregar tons de cinza-slate clássico.",
+                            fontSize = 11.sp,
+                            color = Color(0xFF94A3B8),
+                            lineHeight = 16.sp
                         )
-
-                        themesList.forEach { (name, hex, amoled) ->
-                            Button(
-                                onClick = { onUpdateTheme(amoled, hex) },
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(10.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0F172A)),
-                                border = BorderStroke(1.dp, Color(0xFF27272A))
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(name, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                                    val dotColor = Color(android.graphics.Color.parseColor(hex))
-                                    Box(
-                                        modifier = Modifier
-                                            .size(12.dp)
-                                            .clip(CircleShape)
-                                            .background(dotColor)
-                                    )
-                                }
-                            }
-                        }
                     }
                 }
             }
