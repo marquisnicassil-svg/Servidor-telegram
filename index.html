@@ -1673,6 +1673,17 @@
                             Insira o token gerado pelo @BotFather para ativar o Moreno no Telegram.
                         </span>
 
+                        <div class="form-group" style="margin-top: 6px;">
+                            <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">🔗 URL do Webhook (Telegram)</label>
+                            <div style="position: relative; display: flex; align-items: center;">
+                                <input type="text" id="telegram-webhook" class="form-control" style="border-radius: 10px;" placeholder="Insira a URL do Webhook...">
+                            </div>
+                        </div>
+
+                        <span style="color: #94a3b8; font-size: 0.75rem; text-align: left; line-height: 1.4; display: block; margin-top: -4px;">
+                            Informe a URL do Webhook para que o Bot envie as mensagens e atualizações recebidas.
+                        </span>
+
                         <button class="btn-universal" id="btn-test-telegram" onclick="testTelegramConnection()" style="background: rgba(30, 41, 59, 0.5); border: 1px solid var(--border-color); color: #38bdf8; font-weight: bold; font-size: 0.85rem; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; cursor: pointer; width: 100%;">
                             🔄 Testar Conexão do Bot
                         </button>
@@ -1680,7 +1691,7 @@
                 </div>
 
                 <button class="btn-universal" onclick="saveConfiguration()">
-                    Salvar Token
+                    Salvar Configurações do Bot
                 </button>
             </div>
 
@@ -2258,6 +2269,11 @@ WITH CHECK (true);</code>
                     } else {
                         document.getElementById('telegram-token').value = "";
                     }
+                    if (data.telegramWebhook !== undefined) {
+                        document.getElementById('telegram-webhook').value = data.telegramWebhook;
+                    } else {
+                        document.getElementById('telegram-webhook').value = "";
+                    }
                     if (data.baseUrl) document.getElementById('base-url').value = data.baseUrl;
                     if (data.modelName) document.getElementById('model-name').value = data.modelName;
                     if (data.systemPrompt) document.getElementById('system-prompt').value = data.systemPrompt;
@@ -2738,6 +2754,7 @@ WITH CHECK (true);</code>
                 apiType: apiType,
                 apiKey: document.getElementById('api-key').value.trim(),
                 telegramToken: document.getElementById('telegram-token').value.trim(),
+                telegramWebhook: document.getElementById('telegram-webhook').value.trim(),
                 baseUrl: document.getElementById('base-url').value.trim(),
                 modelName: document.getElementById('model-name').value.trim(),
                 systemPrompt: document.getElementById('system-prompt').value, // Preserve formatting
