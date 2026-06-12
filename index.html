@@ -295,16 +295,39 @@
             color: var(--bg-color); /* Contraste nativo */
             font-weight: 500;
             align-self: flex-end;
-            border-radius: 18px 18px 4px 18px !important;
+            border-radius: 18px 18px 0px 18px !important;
         }
 
         .chat-message.bot {
             background-color: var(--card-bg-secondary);
             color: var(--text-main);
             align-self: flex-start;
-            border-radius: 18px 18px 18px 4px !important;
+            border-radius: 18px 18px 18px 0px !important;
             border: 1px solid var(--border-color);
             padding: 10px 42px 28px 14px;
+        }
+
+        /* Espaçamento interno e margem do botão de áudio nos balões de chat */
+        .chat-message .reader-btn {
+            position: absolute;
+            right: 12px;
+            bottom: 10px;
+            background: none !important;
+            border: none !important;
+            color: var(--text-muted) !important;
+            cursor: pointer;
+            font-size: 1.15rem;
+            padding: 8px !important; /* Espaçamento interno */
+            margin: 4px !important; /* Desgruda totalmente da borda interna inferior direita */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .chat-message .reader-btn:hover {
+            color: var(--text-main) !important;
+            opacity: 1 !important;
         }
 
         /* Markdown Styles */
@@ -1336,8 +1359,8 @@
                 </div>
                 <div class="chat-input-area" style="align-items: center; gap: 10px; padding-top: 10px; padding-bottom: 10px;">
                     <div style="position: relative; flex: 1; display: flex; align-items: center;">
-                        <button id="btn-mic" onclick="toggleMic()" style="position: absolute; left: 6px; background: transparent; border: none; font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; color: var(--text-muted); outline: none; z-index: 5;" title="Ditado por Voz">🎤</button>
-                        <input type="text" id="chat-input" class="form-control" style="padding-left: 44px; padding-right: 18px; border-radius: 24px; background-color: #1E1E22; border: 1px solid rgba(255, 255, 255, 0.08); height: 48px; color: #ffffff;" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
+                        <input type="text" id="chat-input" class="form-control" style="padding-left: 18px; padding-right: 44px; border-radius: 24px; background-color: #1E1E22; border: 1px solid rgba(255, 255, 255, 0.08); height: 48px; color: #ffffff;" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
+                        <button id="btn-mic" onclick="toggleMic()" style="position: absolute; right: 6px; background: transparent; border: none; font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; color: var(--text-muted); outline: none; z-index: 5;" title="Ditado por Voz">🎤</button>
                     </div>
                     <button class="chat-btn-send" onclick="sendMessage()">
                         <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
