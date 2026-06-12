@@ -827,11 +827,11 @@
             align-items: flex-start;
             gap: 8px;
             line-height: 1.4;
-            animation: terminal-line-fade 0.2s ease-out forwards;
+            animation: terminal-line-fade 150ms ease-out forwards;
         }
 
         @keyframes terminal-line-fade {
-            from { opacity: 0; transform: translateY(4px); }
+            from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -858,7 +858,10 @@
         .badge-error { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
 
         .log-content {
+            flex: 1;
+            min-width: 0;
             word-break: break-all;
+            white-space: pre-wrap;
         }
 
         .log-success-text { color: #34d399; }
@@ -2412,7 +2415,7 @@ WITH CHECK (true);</code>
             appendLogToPanel(logObj);
         }
 
-        function appendLogToPanel(logObj) {
+        function appendLogToPanel(logObj, forceScroll = false) {
             const container = document.getElementById('logs-panel');
             if (!container) return;
 
@@ -2444,8 +2447,15 @@ WITH CHECK (true);</code>
                 <span class="log-content ${contentClass}">${logObj.text}</span>
             `;
             
+            // Auto-Scroll Inteligente: Verifica se o scroll já está perto do fim
+            const threshold = 50; // pixels de tolerancia
+            const isAtBottom = (container.scrollHeight - container.scrollTop - container.clientHeight) <= threshold;
+            
             container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
+            
+            if (forceScroll || isAtBottom) {
+                container.scrollTop = container.scrollHeight;
+            }
         }
 
         // Filtro rápido de logs por tags
@@ -2463,7 +2473,7 @@ WITH CHECK (true);</code>
             container.innerHTML = "";
             logsHistoryBuffer.forEach(log => {
                 if (filterType === "all" || log.type === filterType) {
-                    appendLogToPanel(log);
+                    appendLogToPanel(log, true);
                 }
             });
             
