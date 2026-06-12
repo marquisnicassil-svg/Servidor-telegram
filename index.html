@@ -1359,16 +1359,83 @@
 
         <!-- ABA 2: CONFIGURAÇÕES E PERSONALIZAÇÃO -->
         <section id="tab-config" class="tab-section">
-            <!-- Segmented Category Switcher (Sub-Abas de Gestão) -->
-            <div class="config-tabs-nav" style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
-                <button class="config-subtab-btn active" id="btn-subtab-themes" onclick="switchConfigSubtab('themes')" style="flex: 1; padding: 10px; border-radius: 12px; border: 1px solid var(--border-color); background: rgba(56, 189, 248, 0.05); color: var(--primary); font-weight: bold; cursor: pointer; transition: all 0.2s; font-size: 0.85rem;">🎨 Temas (Aparência)</button>
-                <button class="config-subtab-btn" id="btn-subtab-others" onclick="switchConfigSubtab('others')" style="flex: 1; padding: 10px; border-radius: 12px; border: 1px solid transparent; background: transparent; color: var(--text-muted); font-weight: bold; cursor: pointer; transition: all 0.2s; font-size: 0.85rem;">⚙️ Outros Ajustes</button>
+            
+            <!-- TELA DE ÍNDICE (Menu Principal de Ajustes) -->
+            <div id="config-index-view">
+                <div class="section-header" style="margin-bottom: 20px; text-align: left;">
+                    <h2>⚙️ Ajustes do Sistema</h2>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">Gerencie recursos visuais, inteligência e dados de nuvem</p>
+                </div>
+
+                <!-- Lista Minimalista / Menu de Lista com fundo Super Black -->
+                <div class="config-index-list" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+                    
+                    <!-- Opção 1: Aparência e Temas -->
+                    <div class="config-index-item" onclick="openConfigSubView('appearance')" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 14px; cursor: pointer; transition: background 0.2s; min-height: 72px;">
+                        <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
+                            <span style="font-size: 1.5rem; line-height: 1;">🎨</span>
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;">Aparência e Temas</span>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;">Modo AMOLED, cores de destaque e customização visual</span>
+                            </div>
+                        </div>
+                        <span style="color: var(--text-muted); font-weight: bold; font-family: monospace; font-size: 1.1rem; padding-left: 10px;">&gt;</span>
+                    </div>
+
+                    <!-- Opção 2: Motor de Inteligência Artificial -->
+                    <div class="config-index-item" onclick="openConfigSubView('ai')" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 14px; cursor: pointer; transition: background 0.2s; min-height: 72px;">
+                        <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
+                            <span style="font-size: 1.5rem; line-height: 1;">🧠</span>
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;">Motor de Inteligência Artificial</span>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;">Gerencie provedores como Gemini, OpenAI, Groq, chaves de API e prompts</span>
+                            </div>
+                        </div>
+                        <span style="color: var(--text-muted); font-weight: bold; font-family: monospace; font-size: 1.1rem; padding-left: 10px;">&gt;</span>
+                    </div>
+
+                    <!-- Opção 3: Conexão e Banco de Dados -->
+                    <div class="config-index-item" onclick="openConfigSubView('database')" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 14px; cursor: pointer; transition: background 0.2s; min-height: 72px;">
+                        <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
+                            <span style="font-size: 1.5rem; line-height: 1;">☁️</span>
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;">Conexão e Banco de Dados</span>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;">Configurações do Supabase, URLs do projeto, tabelas e backups</span>
+                            </div>
+                        </div>
+                        <span style="color: var(--text-muted); font-weight: bold; font-family: monospace; font-size: 1.1rem; padding-left: 10px;">&gt;</span>
+                    </div>
+
+                    <!-- Opção 4: Minha Conta & Sessão -->
+                    <div class="config-index-item" onclick="openConfigSubView('account')" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 14px; cursor: pointer; transition: background 0.2s; min-height: 72px;">
+                        <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
+                            <span style="font-size: 1.5rem; line-height: 1;">👤</span>
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;">Minha Conta & Sessão</span>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;">Dados do usuário conectado, chaves de acesso e gerenciamento de login</span>
+                            </div>
+                        </div>
+                        <span style="color: var(--text-muted); font-weight: bold; font-family: monospace; font-size: 1.1rem; padding-left: 10px;">&gt;</span>
+                    </div>
+
+                </div>
+
+                <!-- Botões secundários que ficam no índice principal de ajustes -->
+                <button class="btn-universal btn-install" id="btn-install" onclick="installPWA()" style="display: none; margin-bottom: 12px;">
+                    ⬇️ Baixar / Instalar App (PWA)
+                </button>
+
+                <button class="btn-universal" style="background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.4); color: #fbbf24; margin-top: 10px;" onclick="forceAppUpdateAndClearCache()">
+                    🔄 Limpar Cache & Forçar Atualização
+                </button>
             </div>
 
-            <!-- Sub-Aba 1: Categorias de Temas -->
-            <div id="subtab-themes" class="config-subtab-content">
-                <div class="section-header">
-                    <h2>🎨 Categorias de Temas</h2>
+            <!-- SUB-VIEW 1: APARÊNCIA E TEMAS -->
+            <div id="config-subview-appearance" class="config-subview" style="display: none;">
+                <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;">⬅️ Voltar para Ajustes</button>
+                
+                <div class="section-header" style="text-align: left;">
+                    <h2>🎨 Aparência e Temas</h2>
                 </div>
                 
                 <div class="form-group" style="background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 14px; padding: 14px; margin-bottom: 15px;">
@@ -1384,32 +1451,32 @@
                 <div class="form-group" style="background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 14px; padding: 14px; margin-bottom: 15px;">
                     <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Cor de Destaque Nativa</label>
                     <div class="color-picker-grid" style="margin-top: 8px; margin-bottom: 4px;">
-                        <!-- Cores Clean / Minimalistas. Sem Azul conforme pedido. -->
-                        <div class="color-circle active" style="background-color: #ffffff;" onclick="setAccent('#ffffff', this)" title="Branco Minimalista"></div>
-                        <div class="color-circle" style="background-color: #10b981;" onclick="setAccent('#10b981', this)" title="Verde Esmeralda"></div> <!-- Verde Esmeralda -->
-                        <div class="color-circle" style="background-color: #f59e0b;" onclick="setAccent('#f59e0b', this)" title="Laranja Âmbar"></div> <!-- Laranja Âmbar -->
-                        <div class="color-circle" style="background-color: #ef4444;" onclick="setAccent('#ef4444', this)" title="Vermelho Carmesim"></div> <!-- Vermelho -->
-                        <div class="color-circle" style="background-color: #8b5cf6;" onclick="setAccent('#8b5cf6', this)" title="Roxo Cósmico"></div> <!-- Roxo -->
+                        <span class="color-circle" style="background-color: #ffffff;" onclick="setAccent('#ffffff', this)" title="Branco Minimalista"></span>
+                        <span class="color-circle" style="background-color: #10b981;" onclick="setAccent('#10b981', this)" title="Verde Esmeralda"></span>
+                        <span class="color-circle" style="background-color: #f59e0b;" onclick="setAccent('#f59e0b', this)" title="Laranja Âmbar"></span>
+                        <span class="color-circle" style="background-color: #ef4444;" onclick="setAccent('#ef4444', this)" title="Vermelho Carmesim"></span>
+                        <span class="color-circle" style="background-color: #8b5cf6;" onclick="setAccent('#8b5cf6', this)" title="Roxo Cósmico"></span>
                     </div>
                 </div>
 
-                <!-- Dica informativa unificada -->
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; margin-top: 20px; font-size: 0.8rem; color: var(--text-muted); text-align: left; line-height: 1.4;">
+                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; font-size: 0.8rem; color: var(--text-muted); text-align: left; line-height: 1.4; margin-bottom: 24px;">
                     💡 <b>Dica de Design:</b> Combine qualquer Cor de Destaque com o modo AMOLED ativo para um visual minimalista e de altíssimo contraste, ou desative o AMOLED para um tom suave de cinza-slate clássico.
                 </div>
+
+                <button class="btn-universal" onclick="saveConfiguration()">
+                    Aplicar Ajustes
+                </button>
             </div>
 
-            <!-- Sub-Aba 2: Outros Ajustes -->
-            <div id="subtab-others" class="config-subtab-content" style="display: none;">
-                <div class="section-header">
-                    <h2>⚙️ Demais Ajustes de Sistema</h2>
+            <!-- SUB-VIEW 2: MOTOR DE INTELIGÊNCIA ARTIFICIAL -->
+            <div id="config-subview-ai" class="config-subview" style="display: none;">
+                <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;">⬅️ Voltar para Ajustes</button>
+                
+                <div class="section-header" style="text-align: left;">
+                    <h2>🧠 Motor de Inteligência Artificial</h2>
                 </div>
 
-                <div class="section-header" style="margin-top: 5px;">
-                    <h2>Motor de Inteligência</h2>
-                </div>
-
-                <div class="api-selector-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                <div class="api-selector-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom: 16px;">
                     <div class="selector-btn active" id="btn-gemini" onclick="setApiType('GEMINI')">
                         <span>♊</span>
                         <span>Gemini</span>
@@ -1447,52 +1514,26 @@
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 24px;">
                     <label>Prompt de Sistema do Bot</label>
                     <textarea id="system-prompt" class="form-control" rows="3">Você é uma Inteligência Artificial direta e precisa. Responda sucintamente como um aplicativo nativo faria.</textarea>
                 </div>
 
-                <!-- Card de Autenticação Supabase Auth -->
-                <div class="supabase-card" id="supabase-auth-card">
-                    <div class="supabase-card-header">
-                        <span class="supabase-card-title">🔑 Supabase Auth (Autenticação)</span>
-                        <div class="supabase-status-badge" title="Status da Sessão de Usuário">
-                            <span class="supabase-status-dot" id="auth-status-dot" style="background-color: #737373;"></span>
-                            <span id="auth-status-desc">Inativo</span>
-                        </div>
-                    </div>
+                <button class="btn-universal" onclick="saveConfiguration()">
+                    Aplicar Ajustes
+                </button>
+            </div>
 
-                    <!-- Mensagem informativa quando DESLOGADO -->
-                    <div id="auth-settings-logged-out-msg" style="display: flex; flex-direction: column; gap: 10px; padding: 6px 0; align-items: center; text-align: center;">
-                        <div style="background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 12px; padding: 12px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.4; width: 100%;">
-                            <span style="font-size: 1.3rem; display: block; margin-bottom: 2px;">🔒</span>
-                            Você não está autenticado. Para sincronizar o sistema e fazer backup de mensagens na nuvem, realize o login de segurança no portal inicial.
-                        </div>
-                        <button class="btn-supabase-action" onclick="showAuthGateScreen()" style="border-color: var(--primary); background: rgba(255,255,255,0.02); width: 100%; padding: 10px; font-size: 0.85rem; border-radius: 10px;">
-                            🔑 Ir para a Tela de De Acesso
-                        </button>
-                    </div>
-
-                    <!-- Painel de Usuário Autenticado (Visível quando LOGADO) -->
-                    <div id="auth-user-container" style="display: none; flex-direction: column; gap: 10px; padding: 6px 0;">
-                        <div style="background: rgba(16,185,129,0.04); border: 1px solid rgba(34,197,94,0.2); border-radius: 12px; padding: 12px; font-size: 0.82rem; color: #d1d5db; line-height: 1.4;">
-                            <span style="display:block; font-size: 0.65rem; color: #34d399; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">Sessão Segura Ativa</span>
-                            <strong>E-mail:</strong> <span id="auth-user-email">--</span><br>
-                            <strong>User ID:</strong> <span id="auth-user-id" style="font-family: monospace; font-size: 0.7rem; color: var(--text-muted)">--</span>
-                        </div>
-
-                        <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; font-style: italic; margin-top: -2px;">
-                            🔑 Backups e leituras agora usam autenticação RLS ativa no banco de dados.
-                        </div>
-
-                        <button class="btn-supabase-action" onclick="supabaseSignOut()" style="border-color: #ef4444; color: #f87171; background: rgba(239,68,68,0.02); width: 100%;">
-                            ❌ Desconectar Sessão (Sair)
-                        </button>
-                    </div>
+            <!-- SUB-VIEW 3: CONEXÃO E BANCO DE DADOS -->
+            <div id="config-subview-database" class="config-subview" style="display: none;">
+                <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;">⬅️ Voltar para Ajustes</button>
+                
+                <div class="section-header" style="text-align: left;">
+                    <h2>☁️ Conexão e Banco de Dados (Supabase)</h2>
                 </div>
 
                 <!-- Card Superior de Sincronização Cloud Supabase -->
-                <div class="supabase-card">
+                <div class="supabase-card" style="margin-bottom: 24px; text-align: left;">
                     <div class="supabase-card-header">
                         <span class="supabase-card-title">☁️ Sincronização Supabase</span>
                         <div class="supabase-status-badge" title="Status de conexão com o Supabase">
@@ -1539,7 +1580,7 @@
                         </button>
                     </div>
 
-                    <div style="text-align: center; margin-top: 3px;">
+                    <div style="text-align: center; margin-top: 6px;">
                         <button id="btn-toggle-sql" onclick="toggleSqlSnippet()" style="background: none; border: none; color: var(--text-muted); font-size: 0.75rem; cursor: pointer; text-decoration: underline;">
                             Como criar a tabela? Mostrar SQL ⌄
                         </button>
@@ -1574,19 +1615,64 @@ USING (true)
 WITH CHECK (true);</code>
                     </div>
                 </div>
+
+                <button class="btn-universal" onclick="saveConfiguration()">
+                    Aplicar Ajustes
+                </button>
             </div>
 
-            <button class="btn-universal" onclick="saveConfiguration()">
-                Aplicar Ajustes
-            </button>
+            <!-- SUB-VIEW 4: MINHA CONTA & SESSÃO -->
+            <div id="config-subview-account" class="config-subview" style="display: none;">
+                <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;">⬅️ Voltar para Ajustes</button>
+                
+                <div class="section-header" style="text-align: left;">
+                    <h2>👤 Minha Conta & Sessão</h2>
+                </div>
 
-            <button class="btn-universal btn-install" id="btn-install" onclick="installPWA()">
-                ⬇️ Baixar / Instalar App (PWA)
-            </button>
+                <!-- Card de Autenticação Supabase Auth -->
+                <div class="supabase-card" id="supabase-auth-card" style="margin-bottom: 24px; text-align: left;">
+                    <div class="supabase-card-header">
+                        <span class="supabase-card-title">🔑 Supabase Auth (Autenticação)</span>
+                        <div class="supabase-status-badge" title="Status da Sessão de Usuário">
+                            <span class="supabase-status-dot" id="auth-status-dot" style="background-color: #737373;"></span>
+                            <span id="auth-status-desc">Inativo</span>
+                        </div>
+                    </div>
 
-            <button class="btn-universal" style="background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.4); color: #fbbf24; margin-top: 10px;" onclick="forceAppUpdateAndClearCache()">
-                🔄 Limpar Cache & Forçar Atualização
-            </button>
+                    <!-- Mensagem informativa quando DESLOGADO -->
+                    <div id="auth-settings-logged-out-msg" style="display: flex; flex-direction: column; gap: 10px; padding: 6px 0; align-items: center; text-align: center;">
+                        <div style="background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 12px; padding: 12px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.4; width: 100%;">
+                            <span style="font-size: 1.3rem; display: block; margin-bottom: 2px;">🔒</span>
+                            Você não está autenticado. Para sincronizar o sistema e fazer backup de mensagens na nuvem, realize o login de segurança no portal inicial.
+                        </div>
+                        <button class="btn-supabase-action" onclick="showAuthGateScreen()" style="border-color: var(--primary); background: rgba(255,255,255,0.02); width: 100%; padding: 10px; font-size: 0.85rem; border-radius: 10px;">
+                            🔑 Ir para a Tela de Acesso
+                        </button>
+                    </div>
+
+                    <!-- Painel de Usuário Autenticado (Visível quando LOGADO) -->
+                    <div id="auth-user-container" style="display: none; flex-direction: column; gap: 10px; padding: 6px 0;">
+                        <div style="background: rgba(16,185,129,0.04); border: 1px solid rgba(34,197,94,0.2); border-radius: 12px; padding: 12px; font-size: 0.82rem; color: #d1d5db; line-height: 1.4;">
+                            <span style="display:block; font-size: 0.65rem; color: #34d399; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">Sessão Segura Ativa</span>
+                            <strong>E-mail:</strong> <span id="auth-user-email">--</span><br>
+                            <strong>User ID:</strong> <span id="auth-user-id" style="font-family: monospace; font-size: 0.7rem; color: var(--text-muted)">--</span>
+                        </div>
+
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; font-style: italic; margin-top: -2px;">
+                            🔑 Backups e leituras agora usam autenticação RLS ativa no banco de dados.
+                        </div>
+
+                        <button class="btn-supabase-action" onclick="supabaseSignOut()" style="border-color: #ef4444; color: #f87171; background: rgba(239,68,68,0.02); width: 100%;">
+                            ❌ Desconectar Sessão (Sair)
+                        </button>
+                    </div>
+                </div>
+
+                <button class="btn-universal" onclick="saveConfiguration()">
+                    Aplicar Ajustes
+                </button>
+            </div>
+
         </section>
 
         <!-- ABA 3: TERMINAL / LOGS -->
@@ -1667,27 +1753,24 @@ WITH CHECK (true);</code>
             if(tabId === 'tab-chat'){
                 setTimeout(() => document.getElementById('chat-input').focus(), 100);
             }
+            // Reseta para a tela de índice caso mude para configurações
+            if(tabId === 'tab-config'){
+                showConfigIndex();
+            }
         }
 
-        // --- 1B. Navegação de Sub-Abas de Configuração ---
-        function switchConfigSubtab(subTabId) {
+        // --- 1B. Navegação de Sub-Views de Configuração ---
+        function openConfigSubView(viewId) {
             triggerPulse();
-            document.querySelectorAll('.config-subtab-content').forEach(element => {
-                element.style.display = 'none';
-            });
-            document.querySelectorAll('.config-subtab-btn').forEach(btn => {
-                btn.classList.remove('active');
-                btn.style.background = 'transparent';
-                btn.style.borderColor = 'transparent';
-                btn.style.color = 'var(--text-muted)';
-            });
+            document.getElementById('config-index-view').style.display = 'none';
+            document.querySelectorAll('.config-subview').forEach(el => el.style.display = 'none');
+            document.getElementById('config-subview-' + viewId).style.display = 'block';
+        }
 
-            document.getElementById('subtab-' + subTabId).style.display = 'block';
-            const activeBtn = document.getElementById('btn-subtab-' + subTabId);
-            activeBtn.classList.add('active');
-            activeBtn.style.background = 'rgba(56, 189, 248, 0.05)';
-            activeBtn.style.borderColor = 'var(--border-color)';
-            activeBtn.style.color = 'var(--primary)';
+        function showConfigIndex() {
+            triggerPulse();
+            document.querySelectorAll('.config-subview').forEach(el => el.style.display = 'none');
+            document.getElementById('config-index-view').style.display = 'block';
         }
 
         // --- 1C. Aplicação de Temas Prontos ---

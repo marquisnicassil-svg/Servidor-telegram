@@ -39,6 +39,8 @@ import com.example.data.database.BotMessageEntity
 import com.example.ui.viewmodel.BotViewModel
 import com.example.ui.viewmodel.ConsoleLogItem
 import com.example.ui.viewmodel.LogType
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -823,6 +825,63 @@ fun PlaygroundTab(
 }
 
 @Composable
+fun SettingsMenuItem(
+    icon: String,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit
+) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(16.dp))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 18.dp, horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.spacedBy(14.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = icon,
+                    fontSize = 22.sp
+                )
+                Column {
+                    Text(
+                        text = title,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = subtitle,
+                        fontSize = 11.sp,
+                        color = Color(0xFF94A3B8),
+                        lineHeight = 15.sp
+                    )
+                }
+            }
+            Text(
+                text = ">",
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                color = Color(0xFF475569)
+            )
+        }
+    }
+}
+
+@Composable
 fun SettingsTab(
     initialToken: String,
     initialPrompt: String,
@@ -848,7 +907,16 @@ fun SettingsTab(
     var aiBaseUrl by remember(initialAiBaseUrl) { mutableStateOf(initialAiBaseUrl) }
     var aiModel by remember(initialAiModel) { mutableStateOf(initialAiModel) }
 
-    var activeSubtab by remember { mutableStateOf("themes") } // "themes" or "others"
+    // Navigation subview state: null means Index List
+    var activeSettingsView by remember { mutableStateOf<String?>(null) } // "appearance", "ai", "database", "account"
+
+    // Mock states for Supabase settings tab
+    var supabaseUrl by remember { mutableStateOf("https://hqnlyksuprjdabcgpqdl.supabase.co") }
+    var supabaseKey by remember { mutableStateOf("sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa") }
+    var supabaseTable by remember { mutableStateOf("chat_backups") }
+    var supabaseAuto by remember { mutableStateOf(false) }
+    var testConnectionStatus by remember { mutableStateOf("") } // "", "TESTING", "SUCCESS", "ERROR"
+    val scope = rememberCoroutineScope()
 
     LazyColumn(
         modifier = Modifier
@@ -856,579 +924,792 @@ fun SettingsTab(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Sub-tabs segment switcher at the top
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Button(
-                    onClick = { activeSubtab = "themes" },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (activeSubtab == "themes") Color(0xFF38BDF8) else Color(0xFF1E293B)
-                    )
-                ) {
+        if (activeSettingsView == null) {
+            // Main Index List Header
+            item {
+                Column(modifier = Modifier.padding(bottom = 8.dp)) {
                     Text(
-                        "🎨 Temas (Aparência)",
-                        color = if (activeSubtab == "themes") Color(0xFF020617) else Color(0xFF94A3B8),
+                        text = "⚙️ AJUSTES DO SISTEMA",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 11.sp
+                        fontSize = 15.sp,
+                        color = Color.White,
+                        letterSpacing = 0.5.sp
                     )
-                }
-
-                Button(
-                    onClick = { activeSubtab = "others" },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (activeSubtab == "others") Color(0xFF38BDF8) else Color(0xFF1E293B)
-                    )
-                ) {
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        "⚙️ Outros Ajustes",
-                        color = if (activeSubtab == "others") Color(0xFF020617) else Color(0xFF94A3B8),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 11.sp
+                        text = "Gerencie recursos visuais, inteligência e dados de nuvem",
+                        fontSize = 11.sp,
+                        color = Color(0xFF94A3B8)
                     )
                 }
             }
-        }
 
-        if (activeSubtab == "themes") {
+            // Options Index List
             item {
-                Text(
-                    text = "CATEGORIAS DE TEMAS & APARÊNCIA",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Monospace,
-                    color = Color(0xFF38BDF8)
-                )
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    SettingsMenuItem(
+                        icon = "🎨",
+                        title = "Aparência e Temas",
+                        subtitle = "Modo AMOLED, cores de destaque e customização visual",
+                        onClick = { activeSettingsView = "appearance" }
+                    )
+                    SettingsMenuItem(
+                        icon = "🧠",
+                        title = "Motor de Inteligência Artificial",
+                        subtitle = "Gerencie provedores como Gemini, OpenAI, Groq, chaves de API e prompts",
+                        onClick = { activeSettingsView = "ai" }
+                    )
+                    SettingsMenuItem(
+                        icon = "☁️",
+                        title = "Conexão e Banco de Dados",
+                        subtitle = "Configurações do Supabase, URLs do projeto, tabelas e backups",
+                        onClick = { activeSettingsView = "database" }
+                    )
+                    SettingsMenuItem(
+                        icon = "👤",
+                        title = "Minha Conta & Sessão",
+                        subtitle = "Dados do usuário conectado, chaves de acesso e gerenciamento de login",
+                        onClick = { activeSettingsView = "account" }
+                    )
+                }
             }
-
-            // AMOLED Switch Card
+        } else {
+            // BACK BUTTON AT THE TOP OF EVEY SUBVIEW
             item {
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
-                    shape = RoundedCornerShape(16.dp),
+                Button(
+                    onClick = { activeSettingsView = null },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
+                        .padding(bottom = 4.dp)
+                        .height(38.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E293B)),
+                    shape = RoundedCornerShape(10.dp),
+                    border = BorderStroke(1.dp, Color(0xFF334155))
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                "Fundo Super Black (AMOLED)",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp,
-                                color = Color.White
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                "Preto puro para economizar bateria",
-                                fontSize = 11.sp,
-                                color = Color(0xFF94A3B8)
-                            )
-                        }
-                        Switch(
-                            checked = isAmoled,
-                            onCheckedChange = { onUpdateTheme(it, accentColor) },
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = Color(0xFF38BDF8),
-                                checkedTrackColor = Color(0x6638BDF8)
-                            )
-                        )
+                        Text("⬅️ Voltar para Ajustes", fontSize = 11.sp, color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 }
             }
 
-            // Color Accent Picker Card
-            item {
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+            when (activeSettingsView) {
+                "appearance" -> {
+                    item {
                         Text(
-                            "Cor de Destaque Nativa",
+                            text = "🎨 APARÊNCIA E TEMAS",
                             fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp,
+                            fontSize = 15.sp,
                             color = Color.White
                         )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        
-                        val colorsList = listOf(
-                            "#FFFFFF" to "Branco",
-                            "#10B981" to "Esmeralda",
-                            "#F59E0B" to "Âmbar",
-                            "#EF4444" to "Carmesim",
-                            "#8B5CF6" to "Roxo"
-                        )
+                    }
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
+                    // AMOLED Switch Card
+                    item {
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
                         ) {
-                            colorsList.forEach { (hexCode, label) ->
-                                val rgbColor = try { Color(android.graphics.Color.parseColor(hexCode)) } catch(e: Exception) { Color.White }
-                                val isSelected = accentColor.equals(hexCode, ignoreCase = true)
-                                Box(
-                                    modifier = Modifier
-                                        .size(44.dp)
-                                        .clip(CircleShape)
-                                        .background(rgbColor)
-                                        .border(
-                                            width = if (isSelected) 3.dp else 1.dp,
-                                            color = if (isSelected) Color(0xFF38BDF8) else Color(0xFF334155),
-                                            shape = CircleShape
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        "Fundo Super Black (AMOLED)",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp,
+                                        color = Color.White
+                                    )
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(
+                                        "Preto puro para economizar bateria",
+                                        fontSize = 11.sp,
+                                        color = Color(0xFF94A3B8)
+                                    )
+                                }
+                                Switch(
+                                    checked = isAmoled,
+                                    onCheckedChange = { onUpdateTheme(it, accentColor) },
+                                    colors = SwitchDefaults.colors(
+                                        checkedThumbColor = Color(0xFF38BDF8),
+                                        checkedTrackColor = Color(0x6638BDF8)
+                                    )
+                                )
+                            }
+                        }
+                    }
+
+                    // Color Accent Picker Card
+                    item {
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    "Cor de Destaque Nativa",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp,
+                                    color = Color.White
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                val colorsList = listOf(
+                                    "#FFFFFF" to "Branco",
+                                    "#10B981" to "Esmeralda",
+                                    "#F59E0B" to "Âmbar",
+                                    "#EF4444" to "Carmesim",
+                                    "#8B5CF6" to "Roxo"
+                                )
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                ) {
+                                    colorsList.forEach { (hexCode, label) ->
+                                        val rgbColor = try { Color(android.graphics.Color.parseColor(hexCode)) } catch(e: Exception) { Color.White }
+                                        val isSelected = accentColor.equals(hexCode, ignoreCase = true)
+                                        Box(
+                                            modifier = Modifier
+                                                .size(44.dp)
+                                                .clip(CircleShape)
+                                                .background(rgbColor)
+                                                .border(
+                                                    width = if (isSelected) 3.dp else 1.dp,
+                                                    color = if (isSelected) Color(0xFF38BDF8) else Color(0xFF334155),
+                                                    shape = CircleShape
+                                                )
+                                                .clickable { onUpdateTheme(isAmoled, hexCode) }
                                         )
-                                        .clickable { onUpdateTheme(isAmoled, hexCode) }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Informative design tip
+                    item {
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color(0x05FFFFFF)),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    "💡 Dica de Aparência",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                    color = Color(0xFF38BDF8)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    "Combine qualquer Cor de Destaque com o modo AMOLED ativo para um visual minimalista de altíssimo contraste, ou desative o AMOLED para carregar tons de cinza-slate clássico.",
+                                    fontSize = 11.sp,
+                                    color = Color(0xFF94A3B8),
+                                    lineHeight = 16.sp
                                 )
                             }
                         }
                     }
                 }
-            }
 
-            // Informative design tip
-            item {
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0x05FFFFFF)),
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                "ai" -> {
+                    item {
                         Text(
-                            "💡 Dica de Aparência",
+                            text = "🧠 MOTOR DE INTELIGÊNCIA ARTIFICIAL",
                             fontWeight = FontWeight.Bold,
-                            fontSize = 12.sp,
-                            color = Color(0xFF38BDF8)
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            "Combine qualquer Cor de Destaque com o modo AMOLED ativo para um visual minimalista de altíssimo contraste, ou desative o AMOLED para carregar tons de cinza-slate clássico.",
-                            fontSize = 11.sp,
-                            color = Color(0xFF94A3B8),
-                            lineHeight = 16.sp
-                        )
-                    }
-                }
-            }
-        } else {
-            // Other adjustments
-            item {
-                Text(
-                    text = "DEMAIS CONFIGURAÇÕES DO SISTEMA",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Monospace,
-                    color = Color(0xFF38BDF8)
-                )
-            }
-
-            // Telegram credentials card
-            item {
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = "CONFIGURAR TOKEN DO BOT TELEGRAM",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp,
+                            fontSize = 15.sp,
                             color = Color.White
                         )
+                    }
 
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        OutlinedTextField(
-                            value = token,
-                            onValueChange = { token = it },
-                            label = { Text("Token do Bot") },
+                    // Universal AI Provider Config
+                    item {
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                            shape = RoundedCornerShape(16.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .testTag("settings_token_input"),
-                            shape = RoundedCornerShape(12.dp),
-                            singleLine = true,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color(0xFF38BDF8),
-                                unfocusedBorderColor = Color(0xFF334155),
-                                focusedContainerColor = Color(0xFF0F172A),
-                                unfocusedContainerColor = Color(0xFF0F172A),
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White
-                            )
-                        )
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        Button(
-                            onClick = { onVerifyToken(token) },
-                            modifier = Modifier
-                                .align(Alignment.End)
-                                .testTag("settings_verify_btn"),
-                            shape = RoundedCornerShape(10.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E293B)),
-                            border = BorderStroke(1.dp, Color(0xFF334155))
+                                .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
                         ) {
-                            if (verificationStatus == "VERIFYING") {
-                                CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = Color(0xFF38BDF8))
-                                Spacer(modifier = Modifier.width(8.dp))
-                            }
-                            Text("Validar Token", color = Color(0xFF38BDF8), fontWeight = FontWeight.Bold)
-                        }
-
-                        // Bot Credentials Indicator Card inside Token Config
-                        if (verificationStatus != null) {
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(
-                                        when (verificationStatus) {
-                                            "VALID" -> Color(0x334ADE80)
-                                            "INVALID" -> Color(0x33EF4444)
-                                            else -> Color(0x331E293B)
-                                        }
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        imageVector = Icons.Default.Settings,
+                                        contentDescription = null,
+                                        tint = Color(0xFF38BDF8),
+                                        modifier = Modifier.size(16.dp)
                                     )
-                                    .border(
-                                        1.dp,
-                                        when (verificationStatus) {
-                                            "VALID" -> Color(0xFF4ADE80)
-                                            "INVALID" -> Color(0xFFEF4444)
-                                            else -> Color(0xFF334155)
-                                        },
-                                        RoundedCornerShape(8.dp)
-                                    )
-                                    .padding(12.dp)
-                            ) {
-                                Column {
+                                    Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = when (verificationStatus) {
-                                            "VALID" -> "✓ Bot Autenticado com Sucesso"
-                                            "INVALID" -> "✗ Erro na Autenticação do Telegram"
-                                            else -> "Verificando token ativo..."
-                                        },
+                                        text = "CONFIGURAÇÃO DE MODELOS",
                                         fontWeight = FontWeight.Bold,
-                                        fontSize = 12.sp,
-                                        color = when (verificationStatus) {
-                                            "VALID" -> Color(0xFF4ADE80)
-                                            "INVALID" -> Color(0xFFEF4444)
-                                            else -> Color.White
-                                        }
+                                        fontSize = 13.sp,
+                                        color = Color.White
                                     )
-                                    if (verificationStatus == "VALID" && verifiedBotName != null) {
-                                        Spacer(modifier = Modifier.height(4.dp))
-                                        Text("Nome: $verifiedBotName", fontSize = 11.sp, color = Color.White)
-                                        Text("Username: @$verifiedBotUsername", fontSize = 11.sp, color = Color(0xFF38BDF8))
+                                }
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                Text(
+                                    text = "Tipo de Provedor / API:",
+                                    fontSize = 12.sp,
+                                    color = Color(0xFF94A3B8)
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    listOf("GEMINI" to "Gemini ♊", "OPENAI" to "ChatGPT 🌐").forEach { (typePref, label) ->
+                                        val isSelected = aiApiType == typePref
+                                        Box(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .clip(RoundedCornerShape(10.dp))
+                                                .background(if (isSelected) Color(0x2238BDF8) else Color(0xFF0F172A))
+                                                .border(
+                                                    width = 1.dp,
+                                                    color = if (isSelected) Color(0xFF38BDF8) else Color(0xFF334155),
+                                                    shape = RoundedCornerShape(10.dp)
+                                                )
+                                                .clickable {
+                                                    aiApiType = typePref
+                                                    if (typePref == "GEMINI") {
+                                                        aiBaseUrl = "https://generativelanguage.googleapis.com/"
+                                                        aiModel = "gemini-1.5-flash"
+                                                    } else {
+                                                        aiBaseUrl = "https://api.openai.com/v1/"
+                                                        aiModel = "gpt-4o"
+                                                    }
+                                                }
+                                                .padding(vertical = 12.dp, horizontal = 4.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = label,
+                                                fontSize = 11.sp,
+                                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                                color = if (isSelected) Color(0xFF38BDF8) else Color(0xFF64748B)
+                                            )
+                                        }
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(14.dp))
+
+                                // API Key
+                                Text(
+                                    text = if (aiApiType == "GEMINI") "Chave de API do Gemini (AI Key):" else "Chave de API / Token do Provedor:",
+                                    fontSize = 12.sp,
+                                    color = Color(0xFF94A3B8)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+
+                                OutlinedTextField(
+                                    value = aiApiKey,
+                                    onValueChange = { aiApiKey = it },
+                                    placeholder = {
+                                        Text(
+                                            text = if (aiApiType == "GEMINI") "Usar chave GEMINI_API_KEY do AI Studio" else "Digite seu token aqui (sk-...)",
+                                            fontSize = 12.sp,
+                                            color = Color(0xFF475569)
+                                        )
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .testTag("settings_ai_api_key_input"),
+                                    shape = RoundedCornerShape(12.dp),
+                                    singleLine = true,
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = Color(0xFF38BDF8),
+                                        unfocusedBorderColor = Color(0xFF334155),
+                                        focusedContainerColor = Color(0xFF0F172A),
+                                        unfocusedContainerColor = Color(0xFF0F172A),
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White
+                                    )
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                // API Base URL
+                                Text(
+                                    text = "URL Base da API (Endpoint Base):",
+                                    fontSize = 12.sp,
+                                    color = Color(0xFF94A3B8)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+
+                                OutlinedTextField(
+                                    value = aiBaseUrl,
+                                    onValueChange = { aiBaseUrl = it },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .testTag("settings_ai_base_url_input"),
+                                    shape = RoundedCornerShape(12.dp),
+                                    singleLine = true,
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = Color(0xFF38BDF8),
+                                        unfocusedBorderColor = Color(0xFF334155),
+                                        focusedContainerColor = Color(0xFF0F172A),
+                                        unfocusedContainerColor = Color(0xFF0F172A),
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White
+                                    )
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                // Model Name
+                                Text(
+                                    text = "Nome do Modelo:",
+                                    fontSize = 12.sp,
+                                    color = Color(0xFF94A3B8)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+
+                                OutlinedTextField(
+                                    value = aiModel,
+                                    onValueChange = { aiModel = it },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .testTag("settings_ai_model_input"),
+                                    shape = RoundedCornerShape(12.dp),
+                                    singleLine = true,
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = Color(0xFF38BDF8),
+                                        unfocusedBorderColor = Color(0xFF334155),
+                                        focusedContainerColor = Color(0xFF0F172A),
+                                        unfocusedContainerColor = Color(0xFF0F172A),
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White
+                                    )
+                                )
+                            }
+                        }
+                    }
+
+                    // AI Engine Config (Prompts & Creativity)
+                    item {
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    text = "PROMPTS & CRIATIVIDADE",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                    color = Color.White
+                                )
+
+                                Spacer(modifier = Modifier.height(10.dp))
+
+                                Text(
+                                    text = "Instruções do Sistema (System Directive):",
+                                    fontSize = 12.sp,
+                                    color = Color(0xFF94A3B8)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+
+                                OutlinedTextField(
+                                    value = systemPrompt,
+                                    onValueChange = { systemPrompt = it },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(120.dp)
+                                        .testTag("settings_prompt_input"),
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = Color(0xFF38BDF8),
+                                        unfocusedBorderColor = Color(0xFF334155),
+                                        focusedContainerColor = Color(0xFF0F172A),
+                                        unfocusedContainerColor = Color(0xFF0F172A),
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White
+                                    )
+                                )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = "Criatividade (Temperature):",
+                                        fontSize = 12.sp,
+                                        color = Color(0xFF94A3B8)
+                                    )
+                                    Text(
+                                        text = String.format("%.2f", temperature),
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF38BDF8),
+                                        fontSize = 12.sp
+                                    )
+                                }
+
+                                Slider(
+                                    value = temperature,
+                                    onValueChange = { temperature = it },
+                                    valueRange = 0.1f..1.5f,
+                                    steps = 14,
+                                    colors = SliderDefaults.colors(
+                                        thumbColor = Color(0xFF38BDF8),
+                                        activeTrackColor = Color(0xFF38BDF8),
+                                        inactiveTrackColor = Color(0xFF334155)
+                                    )
+                                )
+                            }
+                        }
+                    }
+
+                    // Save settings action
+                    item {
+                        Button(
+                            onClick = { onSaveSettings(token, systemPrompt, temperature, aiApiKey, aiApiType, aiBaseUrl, aiModel) },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF38BDF8)),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp)
+                                .testTag("settings_save_btn")
+                        ) {
+                            Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = Color(0xFF020617))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Salvar Configurações", fontWeight = FontWeight.Black, color = Color(0xFF020617))
+                        }
+                    }
+                }
+
+                "database" -> {
+                    item {
+                        Text(
+                            text = "☁️ CONEXÃO E BANCO DE DADOS",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = Color.White
+                        )
+                    }
+
+                    // Supabase configuration fields
+                    item {
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                Text(
+                                    text = "CONFIGURAR CONEXÃO NUVEM",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                    color = Color.White
+                                )
+
+                                OutlinedTextField(
+                                    value = supabaseUrl,
+                                    onValueChange = { supabaseUrl = it },
+                                    label = { Text("URL do Projeto Supabase") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    singleLine = true,
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = Color(0xFF38BDF8),
+                                        unfocusedBorderColor = Color(0xFF334155),
+                                        focusedContainerColor = Color(0xFF0F172A),
+                                        unfocusedContainerColor = Color(0xFF0F172A),
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White
+                                    )
+                                )
+
+                                OutlinedTextField(
+                                    value = supabaseTable,
+                                    onValueChange = { supabaseTable = it },
+                                    label = { Text("Nome da Tabela de Backups") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    singleLine = true,
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = Color(0xFF38BDF8),
+                                        unfocusedBorderColor = Color(0xFF334155),
+                                        focusedContainerColor = Color(0xFF0F172A),
+                                        unfocusedContainerColor = Color(0xFF0F172A),
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White
+                                    )
+                                )
+
+                                OutlinedTextField(
+                                    value = supabaseKey,
+                                    onValueChange = { supabaseKey = it },
+                                    label = { Text("Chave Pública (Anon Key)") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    singleLine = true,
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = Color(0xFF38BDF8),
+                                        unfocusedBorderColor = Color(0xFF334155),
+                                        focusedContainerColor = Color(0xFF0F172A),
+                                        unfocusedContainerColor = Color(0xFF0F172A),
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White
+                                    )
+                                )
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text("Auto-Salvar Mensagens na Nuvem", fontSize = 12.sp, color = Color.White)
+                                    Switch(
+                                        checked = supabaseAuto,
+                                        onCheckedChange = { supabaseAuto = it },
+                                        colors = SwitchDefaults.colors(
+                                            checkedThumbColor = Color(0xFF38BDF8),
+                                            checkedTrackColor = Color(0x6638BDF8)
+                                        )
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(4.dp))
+
+                                // Connection operations buttons (Mocked)
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Button(
+                                        onClick = {
+                                            scope.launch {
+                                                testConnectionStatus = "TESTING"
+                                                delay(1000)
+                                                testConnectionStatus = "SUCCESS"
+                                                delay(2000)
+                                                testConnectionStatus = ""
+                                            }
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(10.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0F172A)),
+                                        border = BorderStroke(1.dp, Color(0xFF334155))
+                                    ) {
+                                        Text(
+                                            if (testConnectionStatus == "TESTING") "Conectando..." else "🔌 Testar",
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF38BDF8)
+                                        )
+                                    }
+
+                                    Button(
+                                        onClick = {
+                                            scope.launch {
+                                                testConnectionStatus = "BACKUP_RUNNING"
+                                                delay(1200)
+                                                testConnectionStatus = "BACKUP_OK"
+                                                delay(2000)
+                                                testConnectionStatus = ""
+                                            }
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(10.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0F172A)),
+                                        border = BorderStroke(1.dp, Color(0xFF334155))
+                                    ) {
+                                        Text(
+                                            if (testConnectionStatus == "BACKUP_RUNNING") "Enviando..." else "📤 Backup",
+                                            fontSize = 11.sp,
+                                            color = Color(0xFF4ADE80),
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+
+                                if (testConnectionStatus.isNotEmpty()) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(Color(0x2238BDF8))
+                                            .padding(10.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = when (testConnectionStatus) {
+                                                "TESTING" -> "🔌 Ping do servidor ativo: Testando integridade..."
+                                                "SUCCESS" -> "✓ Canal de sincronização operacional!"
+                                                "BACKUP_RUNNING" -> "📤 Compactando base de testes e gerando backup..."
+                                                "BACKUP_OK" -> "✓ Sincronização e backup concluídos!"
+                                                else -> testConnectionStatus
+                                            },
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Medium,
+                                            color = Color(0xFF38BDF8)
+                                        )
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            // Universal AI Provider Config
-            item {
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Settings,
-                                contentDescription = null,
-                                tint = Color(0xFF38BDF8),
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "CONFIGURAÇÃO DA INTELIGÊNCIA ARTIFICIAL",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 13.sp,
-                                color = Color.White
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
+                "account" -> {
+                    item {
                         Text(
-                            text = "Tipo de Provedor / API:",
-                            fontSize = 12.sp,
-                            color = Color(0xFF94A3B8)
+                            text = "👤 MINHA CONTA & SESSÃO",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = Color.White
                         )
-                        Spacer(modifier = Modifier.height(6.dp))
+                    }
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    // Telegram Token Card
+                    item {
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
                         ) {
-                            listOf("GEMINI" to "Google Gemini ♊", "OPENAI" to "ChatGPT 🌐").forEach { (typePref, label) ->
-                                val isSelected = aiApiType == typePref
-                                Box(
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    text = "CREDENCIAS DO BOT TELEGRAM",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                    color = Color.White
+                                )
+
+                                Spacer(modifier = Modifier.height(10.dp))
+
+                                OutlinedTextField(
+                                    value = token,
+                                    onValueChange = { token = it },
+                                    label = { Text("Token do Bot") },
                                     modifier = Modifier
-                                        .weight(1f)
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .background(if (isSelected) Color(0x2238BDF8) else Color(0xFF0F172A))
-                                        .border(
-                                            width = 1.dp,
-                                            color = if (isSelected) Color(0xFF38BDF8) else Color(0xFF334155),
-                                            shape = RoundedCornerShape(10.dp)
-                                        )
-                                        .clickable {
-                                            aiApiType = typePref
-                                            if (typePref == "GEMINI") {
-                                                aiBaseUrl = "https://generativelanguage.googleapis.com/"
-                                                aiModel = "gemini-1.5-flash"
-                                            } else {
-                                                aiBaseUrl = "https://api.openai.com/v1/"
-                                                aiModel = "gpt-4o"
+                                        .fillMaxWidth()
+                                        .testTag("settings_token_input"),
+                                    shape = RoundedCornerShape(12.dp),
+                                    singleLine = true,
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = Color(0xFF38BDF8),
+                                        unfocusedBorderColor = Color(0xFF334155),
+                                        focusedContainerColor = Color(0xFF0F172A),
+                                        unfocusedContainerColor = Color(0xFF0F172A),
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White
+                                    )
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                Button(
+                                    onClick = { onVerifyToken(token) },
+                                    modifier = Modifier
+                                        .align(Alignment.End)
+                                        .testTag("settings_verify_btn"),
+                                    shape = RoundedCornerShape(10.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E293B)),
+                                    border = BorderStroke(1.dp, Color(0xFF334155))
+                                ) {
+                                    if (verificationStatus == "VERIFYING") {
+                                        CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = Color(0xFF38BDF8))
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                    }
+                                    Text("Validar Token", color = Color(0xFF38BDF8), fontWeight = FontWeight.Bold)
+                                }
+
+                                // Bot Credentials Indicator Card inside Token Config
+                                if (verificationStatus != null) {
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(
+                                                when (verificationStatus) {
+                                                    "VALID" -> Color(0x334ADE80)
+                                                    "INVALID" -> Color(0x33EF4444)
+                                                    else -> Color(0x331E293B)
+                                                }
+                                            )
+                                            .border(
+                                                1.dp,
+                                                when (verificationStatus) {
+                                                    "VALID" -> Color(0xFF4ADE80)
+                                                    "INVALID" -> Color(0xFFEF4444)
+                                                    else -> Color(0xFF334155)
+                                                },
+                                                RoundedCornerShape(8.dp)
+                                            )
+                                            .padding(12.dp)
+                                    ) {
+                                        Column {
+                                            Text(
+                                                text = when (verificationStatus) {
+                                                    "VALID" -> "✓ Bot Autenticado com Sucesso"
+                                                    "INVALID" -> "✗ Erro na Autenticação do Telegram"
+                                                    else -> "Verificando token ativo..."
+                                                },
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 12.sp,
+                                                color = when (verificationStatus) {
+                                                    "VALID" -> Color(0xFF4ADE80)
+                                                    "INVALID" -> Color(0xFFEF4444)
+                                                    else -> Color.White
+                                                }
+                                            )
+                                            if (verificationStatus == "VALID" && verifiedBotName != null) {
+                                                Spacer(modifier = Modifier.height(4.dp))
+                                                Text("Nome: $verifiedBotName", fontSize = 11.sp, color = Color.White)
+                                                Text("Username: @$verifiedBotUsername", fontSize = 11.sp, color = Color(0xFF38BDF8))
                                             }
                                         }
-                                        .padding(vertical = 12.dp, horizontal = 4.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = label,
-                                        fontSize = 11.sp,
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                        color = if (isSelected) Color(0xFF38BDF8) else Color(0xFF64748B)
-                                    )
+                                    }
                                 }
                             }
                         }
-
-                        Spacer(modifier = Modifier.height(14.dp))
-
-                        // API Key
-                        Text(
-                            text = if (aiApiType == "GEMINI") "Chave de API do Gemini (AI Key):" else "Chave de API / Token do Provedor:",
-                            fontSize = 12.sp,
-                            color = Color(0xFF94A3B8)
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        OutlinedTextField(
-                            value = aiApiKey,
-                            onValueChange = { aiApiKey = it },
-                            placeholder = {
-                                Text(
-                                    text = if (aiApiType == "GEMINI") "Usar chave GEMINI_API_KEY do AI Studio (Padrão)" else "Digite seu token aqui (ex: sk-...)",
-                                    fontSize = 12.sp,
-                                    color = Color(0xFF475569)
-                                )
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("settings_ai_api_key_input"),
-                            shape = RoundedCornerShape(12.dp),
-                            singleLine = true,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color(0xFF38BDF8),
-                                unfocusedBorderColor = Color(0xFF334155),
-                                focusedContainerColor = Color(0xFF0F172A),
-                                unfocusedContainerColor = Color(0xFF0F172A),
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White
-                            )
-                        )
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        // API Base URL
-                        Text(
-                            text = "URL Base da API (Endpoint Base):",
-                            fontSize = 12.sp,
-                            color = Color(0xFF94A3B8)
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        OutlinedTextField(
-                            value = aiBaseUrl,
-                            onValueChange = { aiBaseUrl = it },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("settings_ai_base_url_input"),
-                            shape = RoundedCornerShape(12.dp),
-                            singleLine = true,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color(0xFF38BDF8),
-                                unfocusedBorderColor = Color(0xFF334155),
-                                focusedContainerColor = Color(0xFF0F172A),
-                                unfocusedContainerColor = Color(0xFF0F172A),
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White
-                            )
-                        )
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        // Model Name
-                        Text(
-                            text = "Nome do Modelo:",
-                            fontSize = 12.sp,
-                            color = Color(0xFF94A3B8)
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        OutlinedTextField(
-                            value = aiModel,
-                            onValueChange = { aiModel = it },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("settings_ai_model_input"),
-                            shape = RoundedCornerShape(12.dp),
-                            singleLine = true,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color(0xFF38BDF8),
-                                unfocusedBorderColor = Color(0xFF334155),
-                                focusedContainerColor = Color(0xFF0F172A),
-                                unfocusedContainerColor = Color(0xFF0F172A),
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White
-                            )
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = if (aiApiType == "GEMINI") {
-                                "💡 Suporta chaves Gemini pagas ou gratuitas através de endpoints proxy locais."
-                            } else {
-                                "💡 Compatível com qualquer endpoint no formato OpenAI Chat (ex: DeepSeek ou local)."
-                            },
-                            fontSize = 10.sp,
-                            color = Color(0xFF64748B)
-                        )
                     }
-                }
-            }
 
-            // AI Engine Config
-            item {
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = "PROMPTS & COMPORTAMENTO (GEMINI)",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp,
-                            color = Color.White
-                        )
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        Text(
-                            text = "Instruções do Sistema (System Directive):",
-                            fontSize = 12.sp,
-                            color = Color(0xFF94A3B8)
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        OutlinedTextField(
-                            value = systemPrompt,
-                            onValueChange = { systemPrompt = it },
+                    // Save settings action
+                    item {
+                        Button(
+                            onClick = { onSaveSettings(token, systemPrompt, temperature, aiApiKey, aiApiType, aiBaseUrl, aiModel) },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF38BDF8)),
+                            shape = RoundedCornerShape(12.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(140.dp)
-                                .testTag("settings_prompt_input"),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color(0xFF38BDF8),
-                                unfocusedBorderColor = Color(0xFF334155),
-                                focusedContainerColor = Color(0xFF0F172A),
-                                unfocusedContainerColor = Color(0xFF0F172A),
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White
-                            )
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                                .height(50.dp)
+                                .testTag("settings_save_btn")
                         ) {
-                            Text(
-                                text = "Criatividade (Temperature):",
-                                fontSize = 12.sp,
-                                color = Color(0xFF94A3B8)
-                            )
-                            Text(
-                                text = String.format("%.2f", temperature),
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF38BDF8),
-                                fontSize = 12.sp
-                            )
-                        }
-                        
-                        Slider(
-                            value = temperature,
-                            onValueChange = { temperature = it },
-                            valueRange = 0.1f..1.5f,
-                            steps = 14,
-                            colors = SliderDefaults.colors(
-                                thumbColor = Color(0xFF38BDF8),
-                                activeTrackColor = Color(0xFF38BDF8),
-                                inactiveTrackColor = Color(0xFF334155)
-                            )
-                        )
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text("Mais Preciso (0.2f)", fontSize = 10.sp, color = Color(0xFF64748B))
-                            Text("Equilibrado (0.7f)", fontSize = 10.sp, color = Color(0xFF64748B))
-                            Text("Mais Criativo (1.2f)", fontSize = 10.sp, color = Color(0xFF64748B))
+                            Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = Color(0xFF020617))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Salvar Token & Ajustes", fontWeight = FontWeight.Black, color = Color(0xFF020617))
                         }
                     }
-                }
-            }
-
-            // Save settings action
-            item {
-                Button(
-                    onClick = { onSaveSettings(token, systemPrompt, temperature, aiApiKey, aiApiType, aiBaseUrl, aiModel) },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF38BDF8)),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .testTag("settings_save_btn")
-                ) {
-                    Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = Color(0xFF020617))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Salvar Configurações", fontWeight = FontWeight.Black, color = Color(0xFF020617))
                 }
             }
         }
