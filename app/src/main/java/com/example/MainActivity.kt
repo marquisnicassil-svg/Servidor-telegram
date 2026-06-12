@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.view.BotDashboardScreen
@@ -18,7 +19,13 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
     setContent {
-      MyApplicationTheme {
+      val isAmoledState = botViewModel.isAmoled.collectAsState()
+      val accentColorState = botViewModel.accentColorHex.collectAsState()
+
+      MyApplicationTheme(
+        isAmoled = isAmoledState.value,
+        accentColor = accentColorState.value
+      ) {
         BotDashboardScreen(
           viewModel = botViewModel,
           modifier = Modifier.fillMaxSize()

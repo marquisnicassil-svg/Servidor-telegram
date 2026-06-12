@@ -1359,173 +1359,214 @@
 
         <!-- ABA 2: CONFIGURAÇÕES E PERSONALIZAÇÃO -->
         <section id="tab-config" class="tab-section">
-            <div class="section-header">
-                <h2>Aparência & Interface</h2>
-            </div>
-            
-            <div class="form-group">
-                <div class="theme-toggle" onclick="toggleAmoled()">
-                    <span>Fundo Super Black (AMOLED)</span>
-                    <div class="toggle-switch on" id="amoled-switch"></div>
-                </div>
+            <!-- Segmented Category Switcher (Sub-Abas de Gestão) -->
+            <div class="config-tabs-nav" style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                <button class="config-subtab-btn active" id="btn-subtab-themes" onclick="switchConfigSubtab('themes')" style="flex: 1; padding: 10px; border-radius: 12px; border: 1px solid var(--border-color); background: rgba(56, 189, 248, 0.05); color: var(--primary); font-weight: bold; cursor: pointer; transition: all 0.2s; font-size: 0.85rem;">🎨 Temas (Aparência)</button>
+                <button class="config-subtab-btn" id="btn-subtab-others" onclick="switchConfigSubtab('others')" style="flex: 1; padding: 10px; border-radius: 12px; border: 1px solid transparent; background: transparent; color: var(--text-muted); font-weight: bold; cursor: pointer; transition: all 0.2s; font-size: 0.85rem;">⚙️ Outros Ajustes</button>
             </div>
 
-            <div class="form-group">
-                <label>Cor de Destaque Nativa</label>
-                <div class="color-picker-grid">
-                    <!-- Cores Clean / Minimalistas. Sem Azul conforme pedido. -->
-                    <div class="color-circle active" style="background-color: #ffffff;" onclick="setAccent('#ffffff', this)"></div>
-                    <div class="color-circle" style="background-color: #10b981;" onclick="setAccent('#10b981', this)"></div> <!-- Verde Esmeralda -->
-                    <div class="color-circle" style="background-color: #f59e0b;" onclick="setAccent('#f59e0b', this)"></div> <!-- Laranja Âmbar -->
-                    <div class="color-circle" style="background-color: #ef4444;" onclick="setAccent('#ef4444', this)"></div> <!-- Vermelho -->
-                    <div class="color-circle" style="background-color: #8b5cf6;" onclick="setAccent('#8b5cf6', this)"></div> <!-- Roxo -->
+            <!-- Sub-Aba 1: Categorias de Temas -->
+            <div id="subtab-themes" class="config-subtab-content">
+                <div class="section-header">
+                    <h2>🎨 Categorias de Temas</h2>
                 </div>
-            </div>
-
-            <div class="section-header" style="margin-top: 1rem;">
-                <h2>Motor de Inteligência</h2>
-            </div>
-
-            <div class="api-selector-grid" style="grid-template-columns: 1fr 1fr 1fr;">
-                <div class="selector-btn active" id="btn-gemini" onclick="setApiType('GEMINI')">
-                    <span>♊</span>
-                    <span>Gemini</span>
-                </div>
-                <div class="selector-btn" id="btn-openai" onclick="setApiType('OPENAI')">
-                    <span>🌐</span>
-                    <span>OpenAI</span>
-                </div>
-                <div class="selector-btn" id="btn-groq" onclick="setApiType('GROQ')">
-                    <span>⚡</span>
-                    <span>Groq</span>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Chave de Acesso (Token)</label>
-                <div style="position: relative; display: flex; align-items: center;">
-                    <input type="password" id="api-key" class="form-control" style="padding-right: 40px;" placeholder="Cole sua API Key aqui (Opcional)" autocomplete="current-password">
-                    <button type="button" onclick="togglePasswordVisibility('api-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
-                </div>
-            </div>
-
-            <div class="form-group" style="display: flex; gap: 10px;">
-                <div style="flex: 1;">
-                    <label>Endpoint URL</label>
-                    <input type="text" id="base-url" class="form-control" value="https://generativelanguage.googleapis.com/">
-                </div>
-                <div style="width: 35%;">
-                    <label>Modelo</label>
-                    <select id="model-name" class="form-control">
-                        <option value="gemini-1.5-flash">gemini-1.5-flash</option>
-                        <option value="gemini-1.5-pro">gemini-1.5-pro</option>
-                        <option value="gemini-1.0-pro">gemini-1.0-pro</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Prompt de Sistema do Bot</label>
-                <textarea id="system-prompt" class="form-control" rows="3">Você é uma Inteligência Artificial direta e precisa. Responda sucintamente como um aplicativo nativo faria.</textarea>
-            </div>
-
-            <!-- Card de Autenticação Supabase Auth -->
-            <div class="supabase-card" id="supabase-auth-card">
-                <div class="supabase-card-header">
-                    <span class="supabase-card-title">🔑 Supabase Auth (Autenticação)</span>
-                    <div class="supabase-status-badge" title="Status da Sessão de Usuário">
-                        <span class="supabase-status-dot" id="auth-status-dot" style="background-color: #737373;"></span>
-                        <span id="auth-status-desc">Inativo</span>
-                    </div>
-                </div>
-
-                <!-- Mensagem informativa quando DESLOGADO -->
-                <div id="auth-settings-logged-out-msg" style="display: flex; flex-direction: column; gap: 10px; padding: 6px 0; align-items: center; text-align: center;">
-                    <div style="background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 12px; padding: 12px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.4; width: 100%;">
-                        <span style="font-size: 1.3rem; display: block; margin-bottom: 2px;">🔒</span>
-                        Você não está autenticado. Para sincronizar o sistema e fazer backup de mensagens na nuvem, realize o login de segurança no portal inicial.
-                    </div>
-                    <button class="btn-supabase-action" onclick="showAuthGateScreen()" style="border-color: var(--primary); background: rgba(255,255,255,0.02); width: 100%; padding: 10px; font-size: 0.85rem; border-radius: 10px;">
-                        🔑 Ir para a Tela de De Acesso
-                    </button>
-                </div>
-
-                <!-- Painel de Usuário Autenticado (Visível quando LOGADO) -->
-                <div id="auth-user-container" style="display: none; flex-direction: column; gap: 10px; padding: 6px 0;">
-                    <div style="background: rgba(16,185,129,0.04); border: 1px solid rgba(34,197,94,0.2); border-radius: 12px; padding: 12px; font-size: 0.82rem; color: #d1d5db; line-height: 1.4;">
-                        <span style="display:block; font-size: 0.65rem; color: #34d399; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">Sessão Segura Ativa</span>
-                        <strong>E-mail:</strong> <span id="auth-user-email">--</span><br>
-                        <strong>User ID:</strong> <span id="auth-user-id" style="font-family: monospace; font-size: 0.7rem; color: var(--text-muted)">--</span>
-                    </div>
-
-                    <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; font-style: italic; margin-top: -2px;">
-                        🔑 Backups e leituras agora usam autenticação RLS ativa no banco de dados.
-                    </div>
-
-                    <button class="btn-supabase-action" onclick="supabaseSignOut()" style="border-color: #ef4444; color: #f87171; background: rgba(239,68,68,0.02); width: 100%;">
-                        ❌ Desconectar Sessão (Sair)
-                    </button>
-                </div>
-            </div>
-
-            <!-- Card Superior de Sincronização Cloud Supabase -->
-            <div class="supabase-card">
-                <div class="supabase-card-header">
-                    <span class="supabase-card-title">☁️ Sincronização Supabase</span>
-                    <div class="supabase-status-badge" title="Status de conexão com o Supabase">
-                        <span class="supabase-status-dot" id="supabase-status-dot"></span>
-                        <span id="supabase-status-desc">Inativo</span>
-                    </div>
-                </div>
-
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <div style="display: flex; gap: 8px;">
-                        <div style="flex: 1;">
-                            <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">URL do Projeto</label>
-                            <input type="text" id="supabase-url" class="form-control" style="border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;" placeholder="https://seu-slug.supabase.co" value="https://hqnlyksuprjdabcgpqdl.supabase.co">
+                
+                <div class="form-group" style="background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 14px; padding: 14px; margin-bottom: 15px;">
+                    <div class="theme-toggle" onclick="toggleAmoled()">
+                        <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
+                            <span style="font-weight: 600; display: block; font-size: 0.9rem; color: #fff;">Fundo Super Black (AMOLED)</span>
+                            <span style="color: var(--text-muted); font-size: 0.72rem;">Economize bateria com pretos extremamente profundos</span>
                         </div>
-                        <div style="width: 35%;">
-                            <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Tabela</label>
-                            <input type="text" id="supabase-table" class="form-control" style="border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;" placeholder="chat_backups" value="chat_backups">
+                        <div class="toggle-switch on" id="amoled-switch"></div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 14px; padding: 14px; margin-bottom: 15px;">
+                    <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Cor de Destaque Nativa</label>
+                    <div class="color-picker-grid" style="margin-top: 8px; margin-bottom: 4px;">
+                        <!-- Cores Clean / Minimalistas. Sem Azul conforme pedido. -->
+                        <div class="color-circle active" style="background-color: #ffffff;" onclick="setAccent('#ffffff', this)" title="Branco Minimalista"></div>
+                        <div class="color-circle" style="background-color: #10b981;" onclick="setAccent('#10b981', this)" title="Verde Esmeralda"></div> <!-- Verde Esmeralda -->
+                        <div class="color-circle" style="background-color: #f59e0b;" onclick="setAccent('#f59e0b', this)" title="Laranja Âmbar"></div> <!-- Laranja Âmbar -->
+                        <div class="color-circle" style="background-color: #ef4444;" onclick="setAccent('#ef4444', this)" title="Vermelho Carmesim"></div> <!-- Vermelho -->
+                        <div class="color-circle" style="background-color: #8b5cf6;" onclick="setAccent('#8b5cf6', this)" title="Roxo Cósmico"></div> <!-- Roxo -->
+                    </div>
+                </div>
+
+                <!-- Estilos de temas prontos de fábrica -->
+                <div class="form-group" style="background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 14px; padding: 14px;">
+                    <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 10px; text-align: left; color: #fff;">🏁 Combinações de Temas Prontos</label>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
+                        <button class="btn-universal" onclick="applyPresetTheme('#ffffff', true)" style="text-align: left; background: rgba(255,255,255,0.02); color: #fff; font-size: 0.8rem; border: 1px solid var(--border-color); font-weight: 500; border-radius: 10px; padding: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                            <span>🌌 Minimal Slate (Super Black + Branco)</span>
+                            <span style="font-size: 1.1rem;">⚪</span>
+                        </button>
+                        <button class="btn-universal" onclick="applyPresetTheme('#10b981', true)" style="text-align: left; background: rgba(16, 185, 129, 0.02); color: #10b981; font-size: 0.8rem; border: 1px solid rgba(16, 185, 129, 0.2); font-weight: 500; border-radius: 10px; padding: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                            <span>🌿 Cyber Forest (Super Black + Verde Esmeralda)</span>
+                            <span style="font-size: 1.1rem;">🟢</span>
+                        </button>
+                        <button class="btn-universal" onclick="applyPresetTheme('#f59e0b', false)" style="text-align: left; background: rgba(245, 158, 11, 0.02); color: #f59e0b; font-size: 0.8rem; border: 1px solid rgba(245, 158, 11, 0.2); font-weight: 500; border-radius: 10px; padding: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                            <span>🔥 Solar Eclipse (Dark Grey + Âmbar Laranja)</span>
+                            <span style="font-size: 1.1rem;">🟡</span>
+                        </button>
+                        <button class="btn-universal" onclick="applyPresetTheme('#8b5cf6', true)" style="text-align: left; background: rgba(139, 92, 246, 0.02); color: #a78bfa; font-size: 0.8rem; border: 1px solid rgba(139, 92, 246, 0.2); font-weight: 500; border-radius: 10px; padding: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                            <span>👾 Galactic Nebula (AMOLED + Deep Violet)</span>
+                            <span style="font-size: 1.1rem;">💜</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sub-Aba 2: Outros Ajustes -->
+            <div id="subtab-others" class="config-subtab-content" style="display: none;">
+                <div class="section-header">
+                    <h2>⚙️ Demais Ajustes de Sistema</h2>
+                </div>
+
+                <div class="section-header" style="margin-top: 5px;">
+                    <h2>Motor de Inteligência</h2>
+                </div>
+
+                <div class="api-selector-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                    <div class="selector-btn active" id="btn-gemini" onclick="setApiType('GEMINI')">
+                        <span>♊</span>
+                        <span>Gemini</span>
+                    </div>
+                    <div class="selector-btn" id="btn-openai" onclick="setApiType('OPENAI')">
+                        <span>🌐</span>
+                        <span>OpenAI</span>
+                    </div>
+                    <div class="selector-btn" id="btn-groq" onclick="setApiType('GROQ')">
+                        <span>⚡</span>
+                        <span>Groq</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Chave de Acesso (Token)</label>
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <input type="password" id="api-key" class="form-control" style="padding-right: 40px;" placeholder="Cole sua API Key aqui (Opcional)" autocomplete="current-password">
+                        <button type="button" onclick="togglePasswordVisibility('api-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
+                    </div>
+                </div>
+
+                <div class="form-group" style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label>Endpoint URL</label>
+                        <input type="text" id="base-url" class="form-control" value="https://generativelanguage.googleapis.com/">
+                    </div>
+                    <div style="width: 35%;">
+                        <label>Modelo</label>
+                        <select id="model-name" class="form-control">
+                            <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+                            <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+                            <option value="gemini-1.0-pro">gemini-1.0-pro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Prompt de Sistema do Bot</label>
+                    <textarea id="system-prompt" class="form-control" rows="3">Você é uma Inteligência Artificial direta e precisa. Responda sucintamente como um aplicativo nativo faria.</textarea>
+                </div>
+
+                <!-- Card de Autenticação Supabase Auth -->
+                <div class="supabase-card" id="supabase-auth-card">
+                    <div class="supabase-card-header">
+                        <span class="supabase-card-title">🔑 Supabase Auth (Autenticação)</span>
+                        <div class="supabase-status-badge" title="Status da Sessão de Usuário">
+                            <span class="supabase-status-dot" id="auth-status-dot" style="background-color: #737373;"></span>
+                            <span id="auth-status-desc">Inativo</span>
                         </div>
                     </div>
 
-                    <div>
-                        <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Chave Pública (Anon Key)</label>
-                        <div style="position: relative; display: flex; align-items: center;">
-                            <input type="password" id="supabase-key" class="form-control" style="border-radius: 10px; padding: 8px 40px 8px 12px; font-size: 0.85rem;" placeholder="Chave anônima" value="sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa" autocomplete="current-password">
-                            <button type="button" onclick="togglePasswordVisibility('supabase-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
+                    <!-- Mensagem informativa quando DESLOGADO -->
+                    <div id="auth-settings-logged-out-msg" style="display: flex; flex-direction: column; gap: 10px; padding: 6px 0; align-items: center; text-align: center;">
+                        <div style="background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 12px; padding: 12px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.4; width: 100%;">
+                            <span style="font-size: 1.3rem; display: block; margin-bottom: 2px;">🔒</span>
+                            Você não está autenticado. Para sincronizar o sistema e fazer backup de mensagens na nuvem, realize o login de segurança no portal inicial.
+                        </div>
+                        <button class="btn-supabase-action" onclick="showAuthGateScreen()" style="border-color: var(--primary); background: rgba(255,255,255,0.02); width: 100%; padding: 10px; font-size: 0.85rem; border-radius: 10px;">
+                            🔑 Ir para a Tela de De Acesso
+                        </button>
+                    </div>
+
+                    <!-- Painel de Usuário Autenticado (Visível quando LOGADO) -->
+                    <div id="auth-user-container" style="display: none; flex-direction: column; gap: 10px; padding: 6px 0;">
+                        <div style="background: rgba(16,185,129,0.04); border: 1px solid rgba(34,197,94,0.2); border-radius: 12px; padding: 12px; font-size: 0.82rem; color: #d1d5db; line-height: 1.4;">
+                            <span style="display:block; font-size: 0.65rem; color: #34d399; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">Sessão Segura Ativa</span>
+                            <strong>E-mail:</strong> <span id="auth-user-email">--</span><br>
+                            <strong>User ID:</strong> <span id="auth-user-id" style="font-family: monospace; font-size: 0.7rem; color: var(--text-muted)">--</span>
+                        </div>
+
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; font-style: italic; margin-top: -2px;">
+                            🔑 Backups e leituras agora usam autenticação RLS ativa no banco de dados.
+                        </div>
+
+                        <button class="btn-supabase-action" onclick="supabaseSignOut()" style="border-color: #ef4444; color: #f87171; background: rgba(239,68,68,0.02); width: 100%;">
+                            ❌ Desconectar Sessão (Sair)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card Superior de Sincronização Cloud Supabase -->
+                <div class="supabase-card">
+                    <div class="supabase-card-header">
+                        <span class="supabase-card-title">☁️ Sincronização Supabase</span>
+                        <div class="supabase-status-badge" title="Status de conexão com o Supabase">
+                            <span class="supabase-status-dot" id="supabase-status-dot"></span>
+                            <span id="supabase-status-desc">Inativo</span>
                         </div>
                     </div>
 
-                    <div class="theme-toggle" style="padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); margin-top: 5px;">
-                        <span style="font-size: 0.85rem; font-weight: 500;">Auto-Salvar Mensagens na Nuvem</span>
-                        <div class="toggle-switch" id="supabase-auto-switch" onclick="toggleSupabaseAuto()"></div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display: flex; gap: 8px;">
+                            <div style="flex: 1;">
+                                <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">URL do Projeto</label>
+                                <input type="text" id="supabase-url" class="form-control" style="border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;" placeholder="https://seu-slug.supabase.co" value="https://hqnlyksuprjdabcgpqdl.supabase.co">
+                            </div>
+                            <div style="width: 35%;">
+                                <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Tabela</label>
+                                <input type="text" id="supabase-table" class="form-control" style="border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;" placeholder="chat_backups" value="chat_backups">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Chave Pública (Anon Key)</label>
+                            <div style="position: relative; display: flex; align-items: center;">
+                                <input type="password" id="supabase-key" class="form-control" style="border-radius: 10px; padding: 8px 40px 8px 12px; font-size: 0.85rem;" placeholder="Chave anônima" value="sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa" autocomplete="current-password">
+                                <button type="button" onclick="togglePasswordVisibility('supabase-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
+                            </div>
+                        </div>
+
+                        <div class="theme-toggle" style="padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); margin-top: 5px;">
+                            <span style="font-size: 0.85rem; font-weight: 500;">Auto-Salvar Mensagens na Nuvem</span>
+                            <div class="toggle-switch" id="supabase-auto-switch" onclick="toggleSupabaseAuto()"></div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="supabase-action-grid">
-                    <button class="btn-supabase-action" onclick="testSupabaseConnection()" title="Testar integridade da conexão">
-                        🔌 Testar Conexão
-                    </button>
-                    <button class="btn-supabase-action" id="btn-cloud-backup" onclick="supabaseSaveBackup(false)" title="Enviar histórico para o Supabase">
-                        📤 Backup Nuvem
-                    </button>
-                    <button class="btn-supabase-action" id="btn-cloud-restore" onclick="supabaseRestoreBackup()" title="Baixar histórico do Supabase" style="grid-column: span 2;">
-                        📥 Restaurar Último Backup
-                    </button>
-                </div>
+                    <div class="supabase-action-grid">
+                        <button class="btn-supabase-action" onclick="testSupabaseConnection()" title="Testar integridade da conexão">
+                            🔌 Testar Conexão
+                        </button>
+                        <button class="btn-supabase-action" id="btn-cloud-backup" onclick="supabaseSaveBackup(false)" title="Enviar histórico para o Supabase">
+                            📤 Backup Nuvem
+                        </button>
+                        <button class="btn-supabase-action" id="btn-cloud-restore" onclick="supabaseRestoreBackup()" title="Baixar histórico do Supabase" style="grid-column: span 2;">
+                            📥 Restaurar Último Backup
+                        </button>
+                    </div>
 
-                <div style="text-align: center; margin-top: 3px;">
-                    <button id="btn-toggle-sql" onclick="toggleSqlSnippet()" style="background: none; border: none; color: var(--text-muted); font-size: 0.75rem; cursor: pointer; text-decoration: underline;">
-                        Como criar a tabela? Mostrar SQL ⌄
-                    </button>
-                </div>
+                    <div style="text-align: center; margin-top: 3px;">
+                        <button id="btn-toggle-sql" onclick="toggleSqlSnippet()" style="background: none; border: none; color: var(--text-muted); font-size: 0.75rem; cursor: pointer; text-decoration: underline;">
+                            Como criar a tabela? Mostrar SQL ⌄
+                        </button>
+                    </div>
 
-                <!-- Painel de instrução SQL autocontido -->
-                <div id="sql-snippet-block" class="sql-instructions">
-                    <span style="display:block; margin-bottom: 6px;">Cole e execute o código no <strong>SQL Editor</strong> do painel Supabase para criar a tabela compatível:</span>
-                    <code>-- Remove a tabela antiga se necessário para recriar
+                    <!-- Painel de instrução SQL autocontido -->
+                    <div id="sql-snippet-block" class="sql-instructions">
+                        <span style="display:block; margin-bottom: 6px;">Cole e execute o código no <strong>SQL Editor</strong> do painel Supabase para criar a tabela compatível:</span>
+                        <code>-- Remove a tabela antiga se necessário para recriar
 DROP TABLE IF EXISTS public.chat_backups;
 
 -- Cria a tabela com suporte a backups completos e mensagens individuais
@@ -1549,6 +1590,7 @@ FOR ALL
 TO anon, authenticated
 USING (true) 
 WITH CHECK (true);</code>
+                    </div>
                 </div>
             </div>
 
@@ -1643,6 +1685,75 @@ WITH CHECK (true);</code>
             if(tabId === 'tab-chat'){
                 setTimeout(() => document.getElementById('chat-input').focus(), 100);
             }
+        }
+
+        // --- 1B. Navegação de Sub-Abas de Configuração ---
+        function switchConfigSubtab(subTabId) {
+            triggerPulse();
+            document.querySelectorAll('.config-subtab-content').forEach(element => {
+                element.style.display = 'none';
+            });
+            document.querySelectorAll('.config-subtab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.style.background = 'transparent';
+                btn.style.borderColor = 'transparent';
+                btn.style.color = 'var(--text-muted)';
+            });
+
+            document.getElementById('subtab-' + subTabId).style.display = 'block';
+            const activeBtn = document.getElementById('btn-subtab-' + subTabId);
+            activeBtn.classList.add('active');
+            activeBtn.style.background = 'rgba(56, 189, 248, 0.05)';
+            activeBtn.style.borderColor = 'var(--border-color)';
+            activeBtn.style.color = 'var(--primary)';
+        }
+
+        // --- 1C. Aplicação de Temas Prontos ---
+        function applyPresetTheme(accentColor, amoledOn) {
+            triggerPulse();
+            
+            // Set AMOLED Switch status and configure body variables
+            const sw = document.getElementById('amoled-switch');
+            if (amoledOn) {
+                if (!sw.classList.contains('on')) {
+                    sw.classList.add('on');
+                    document.documentElement.removeAttribute('data-theme');
+                    document.getElementById('theme-color-meta').setAttribute('content', '#000000');
+                }
+            } else {
+                if (sw.classList.contains('on')) {
+                    sw.classList.remove('on');
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    document.getElementById('theme-color-meta').setAttribute('content', '#0f1115');
+                }
+            }
+
+            // Find the accent color circle and click it to change the accent
+            const circles = document.querySelectorAll('.color-circle');
+            let matchedCircle = null;
+            circles.forEach(circle => {
+                let bgStyleColor = circle.style.backgroundColor;
+                // Normalize and compare
+                if (bgStyleColor === accentColor || 
+                    (accentColor === '#ffffff' && (bgStyleColor === 'rgb(255, 255, 255)' || bgStyleColor === 'white')) ||
+                    (accentColor === '#10b981' && bgStyleColor === 'rgb(16, 185, 129)') ||
+                    (accentColor === '#f59e0b' && bgStyleColor === 'rgb(245, 158, 11)') ||
+                    (accentColor === '#ef4444' && bgStyleColor === 'rgb(239, 68, 68)') ||
+                    (accentColor === '#8b5cf6' && bgStyleColor === 'rgb(139, 92, 246)')
+                ) {
+                    matchedCircle = circle;
+                }
+            });
+
+            if (matchedCircle) {
+                matchedCircle.click();
+            } else {
+                // If not in the circle list, just set it directly
+                setAccent(accentColor, null);
+            }
+            
+            showAppToast(`Tema aplicado com sucesso! ✨`, "success");
+            addLog(`Tema ajustado para ${accentColor} (AMOLED: ${amoledOn})`, "success");
         }
 
         // --- 2. Personalização Dinâmica UI ---

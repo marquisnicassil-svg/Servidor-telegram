@@ -8,6 +8,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme =
@@ -18,35 +19,36 @@ private val LightColorScheme =
     primary = Purple40,
     secondary = PurpleGrey40,
     tertiary = Pink40,
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
   )
 
 @Composable
 fun MyApplicationTheme(
-  darkTheme: Boolean = isSystemInDarkTheme(),
-  // Dynamic color is available on Android 12+
-  dynamicColor: Boolean = true,
+  isAmoled: Boolean = true,
+  accentColor: String = "#38BDF8",
   content: @Composable () -> Unit,
 ) {
-  val colorScheme =
-    when {
-      dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-        val context = LocalContext.current
-        if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-      }
-
-      darkTheme -> DarkColorScheme
-      else -> LightColorScheme
-    }
+  val primaryColor = try { 
+    Color(android.graphics.Color.parseColor(accentColor)) 
+  } catch(e: Exception) { 
+    Color(0xFF38BDF8) 
+  }
+  
+  val backgroundColor = if (isAmoled) Color(0xFF000000) else Color(0xFF0F172A)
+  val surfaceColor = if (isAmoled) Color(0xFF0A0F1D) else Color(0xFF1E293B)
+  
+  val colorScheme = darkColorScheme(
+    primary = primaryColor,
+    onPrimary = Color.Black,
+    secondary = primaryColor.copy(alpha = 0.8f),
+    onSecondary = Color.Black,
+    background = backgroundColor,
+    onBackground = Color.White,
+    surface = surfaceColor,
+    onSurface = Color.White,
+    outline = Color(0xFF334155),
+    surfaceVariant = surfaceColor,
+    onSurfaceVariant = Color(0xFF94A3B8)
+  )
 
   MaterialTheme(colorScheme = colorScheme, typography = Typography, content = content)
 }

@@ -32,6 +32,24 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: BotRepository
     
+    // --- Persistence for App Style Themes ---
+    private val sharedPrefs = application.getSharedPreferences("app_theme_prefs", android.content.Context.MODE_PRIVATE)
+
+    private val _isAmoled = MutableStateFlow(sharedPrefs.getBoolean("is_amoled", true))
+    val isAmoled: StateFlow<Boolean> = _isAmoled.asStateFlow()
+
+    private val _accentColorHex = MutableStateFlow(sharedPrefs.getString("accent_color_hex", "#38BDF8") ?: "#38BDF8")
+    val accentColorHex: StateFlow<String> = _accentColorHex.asStateFlow()
+
+    fun updateTheme(amoled: Boolean, accentHex: String) {
+        _isAmoled.value = amoled
+        _accentColorHex.value = accentHex
+        sharedPrefs.edit()
+            .putBoolean("is_amoled", amoled)
+            .putString("accent_color_hex", accentHex)
+            .apply()
+    }
+    
     // --- Database Flows for UI ---
     val configState: StateFlow<BotConfigEntity?>
     val messagesState: StateFlow<List<BotMessageEntity>>
