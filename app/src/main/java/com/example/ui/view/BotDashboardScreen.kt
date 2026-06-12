@@ -6,6 +6,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -42,6 +44,13 @@ import com.example.ui.viewmodel.LogType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+data class DrawerItemData(
+    val index: Int,
+    val title: String,
+    val subText: String,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BotDashboardScreen(
@@ -57,8 +66,9 @@ fun BotDashboardScreen(
     val aiResponseCount by viewModel.aiResponsesState.collectAsStateWithLifecycle()
     val distinctChatsCount by viewModel.distinctChatsState.collectAsStateWithLifecycle()
 
-    var activeTab by remember { mutableStateOf(0) }
-    val tabTitles = listOf("Dashboard", "Console Logs", "Gmail Integrado", "Playground IA", "Configurar")
+    var activeTab by remember { mutableStateOf(3) } // Set default view to Playground / Chat as requested
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
 
     // Primary modern dark background gradient to give a beautiful futuristic server style
     val backgroundBrush = Brush.verticalGradient(
@@ -68,94 +78,182 @@ fun BotDashboardScreen(
         )
     )
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            text = "BOT TELEGRAM IA",
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = FontFamily.Monospace,
-                            color = Color(0xFF38BDF8), // Cyan 400
-                            letterSpacing = 1.5.sp,
-                            fontSize = 20.sp
-                        )
-                        Text(
-                            text = if (isRunning) "SERVIDOR ATIVO & ESCUTANDO" else "SERVIDOR DESCONECTADO",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Medium,
-                            fontFamily = FontFamily.Monospace,
-                            color = if (isRunning) Color(0xFF4ADE80) else Color(0xFF94A3B8)
-                        )
-                    }
-                },
-                navigationIcon = {
-                    Box(
-                        modifier = Modifier
-                            .padding(horizontal = 12.dp)
-                            .size(14.dp)
-                            .clip(CircleShape)
-                            .background(if (isRunning) Color(0xFF4ADE80) else Color(0xFFEF4444))
-                    )
-                },
-                actions = {
-                    IconButton(
-                        onClick = { viewModel.toggleServer() },
-                        modifier = Modifier.testTag("server_toggle_btn")
-                    ) {
-                        Icon(
-                            imageVector = if (isRunning) Icons.Default.Close else Icons.Default.PlayArrow,
-                            contentDescription = if (isRunning) "Parar Servidor" else "Iniciar Servidor",
-                            tint = if (isRunning) Color(0xFFEF4444) else Color(0xFF4ADE80),
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF0F172A),
-                    titleContentColor = Color.White
-                )
-            )
-        },
-        bottomBar = {
-            // High comfort standard M3 navigation aligned with edge-to-edge
-            NavigationBar(
-                containerColor = Color(0xFF0F172A),
-                tonalElevation = 8.dp,
-                windowInsets = WindowInsets.navigationBars
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet(
+                drawerContainerColor = Color(0xFF000000), // Super Black (#000000)
+                drawerContentColor = Color.White,
+                modifier = Modifier.width(300.dp)
             ) {
-                tabTitles.forEachIndexed { index, title ->
-                    val selected = activeTab == index
-                    NavigationBarItem(
-                        selected = selected,
-                        onClick = { activeTab = index },
-                        label = { Text(title, fontSize = 9.sp, fontWeight = FontWeight.Bold, maxLines = 1) },
-                        icon = {
-                            Icon(
-                                imageVector = when (index) {
-                                    0 -> Icons.Default.Info
-                                    1 -> Icons.Default.List
-                                    2 -> Icons.Default.Email
-                                    3 -> Icons.Default.Send
-                                    else -> Icons.Default.Settings
-                                },
-                                contentDescription = title
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(0xFF000000))
+                        .padding(top = 48.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
+                ) {
+                    // Drawer Header / Logo in elegant Slate
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 28.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color(0xFF1E293B)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("🤖", fontSize = 22.sp)
+                        }
+                        Column {
+                            Text(
+                                text = "CORE SYSTEM",
+                                fontWeight = FontWeight.Black,
+                                color = Color.White,
+                                fontSize = 16.sp,
+                                fontFamily = FontFamily.Monospace,
+                                letterSpacing = 1.sp
                             )
-                        },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Color(0xFF38BDF8),
-                            selectedTextColor = Color(0xFF38BDF8),
-                            indicatorColor = Color(0xFF1E293B),
-                            unselectedIconColor = Color(0xFF94A3B8),
-                            unselectedTextColor = Color(0xFF94A3B8)
-                        )
+                            Text(
+                                text = "Acesso & Painel de Controle",
+                                color = Color(0xFF94A3B8),
+                                fontSize = 11.sp
+                            )
+                        }
+                    }
+
+                    HorizontalDivider(color = Color(0xFF1E293B), modifier = Modifier.padding(bottom = 16.dp))
+
+                    // Dynamic Drawer Navigation Links as requested
+                    val menuOptions = listOf(
+                        DrawerItemData(3, "💬 Novo Chat / Conversas", "Aba de Sandbox com IA", Icons.Default.Send),
+                        DrawerItemData(4, "⚙️ Configurações (Ajustes)", "Chaves e Prompt do Sistema", Icons.Default.Settings),
+                        DrawerItemData(1, "🖥️ Terminal de Comandos", "Registros e logs em tempo real", Icons.Default.List),
+                        DrawerItemData(5, "🌐 Tradutor de Textos", "Mecanismo Tradutor IA", Icons.Default.Info),
+                        DrawerItemData(0, "📊 Painel Geral / Dashboard", "Status operacional do bot", Icons.Default.Home),
+                        DrawerItemData(2, "📧 Gmail Integrado", "Leitura e Envio de E-mails", Icons.Default.Email)
                     )
+
+                    menuOptions.forEach { option ->
+                        val isSelected = activeTab == option.index
+                        Card(
+                            onClick = {
+                                activeTab = option.index
+                                scope.launch { drawerState.close() }
+                            },
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (isSelected) Color(0xFF1E293B) else Color.Transparent
+                            ),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .border(
+                                    width = 1.dp,
+                                    color = if (isSelected) Color(0xFF38BDF8) else Color.Transparent,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(14.dp)
+                            ) {
+                                Icon(
+                                    imageVector = option.icon,
+                                    contentDescription = null,
+                                    tint = if (isSelected) Color(0xFF38BDF8) else Color(0xFF94A3B8),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Column {
+                                    Text(
+                                        text = option.title,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (isSelected) Color(0xFF38BDF8) else Color.White,
+                                        fontSize = 14.sp
+                                    )
+                                    Text(
+                                        text = option.subText,
+                                        color = Color(0xFF64748B),
+                                        fontSize = 10.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
-        },
-        modifier = modifier.fillMaxSize()
-    ) { innerPadding ->
+        }
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Box(
+                            modifier = Modifier.fillMaxWidth().padding(end = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = when (activeTab) {
+                                    0 -> "📊 PAINEL OPERACIONAL"
+                                    1 -> "🖥️ TERMINAL DE COMANDOS"
+                                    2 -> "📧 GMAIL INTEGRADO"
+                                    3 -> "💬 NOVO CHAT / CONVERSAS"
+                                    4 -> "⚙️ CONFIGURAÇÕES (AJUSTES)"
+                                    5 -> "🌐 TRADUTOR DE TEXTOS"
+                                    else -> "BOT TELEGRAM IA"
+                                },
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = FontFamily.Monospace,
+                                color = Color.White,
+                                fontSize = 15.sp,
+                                letterSpacing = 0.5.sp
+                            )
+                        }
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                            Icon(
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = "Menu Lateral",
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    },
+                    actions = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(end = 12.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(8.dp)
+                                    .clip(CircleShape)
+                                    .background(if (isRunning) Color(0xFF4ADE80) else Color(0xFFEF4444))
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = if (isRunning) "Online" else "Offline",
+                                color = if (isRunning) Color(0xFF4ADE80) else Color(0xFF94A3B8),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = FontFamily.Monospace
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color(0xFF0F172A),
+                        titleContentColor = Color.White
+                    )
+                )
+            },
+            modifier = modifier.fillMaxSize()
+        ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -213,10 +311,12 @@ fun BotDashboardScreen(
                             viewModel.updateTheme(amoled, accent)
                         }
                     )
+                    5 -> TranslatorTab(viewModel = viewModel)
                 }
             }
         }
     }
+}
 }
 
 @Composable
@@ -1709,6 +1809,164 @@ fun SettingsTab(
                             Spacer(modifier = Modifier.width(8.dp))
                             Text("Salvar Token & Ajustes", fontWeight = FontWeight.Black, color = Color(0xFF020617))
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun TranslatorTab(
+    viewModel: BotViewModel
+) {
+    val translatedText by viewModel.translatedText.collectAsStateWithLifecycle()
+    val isTranslating by viewModel.isTranslating.collectAsStateWithLifecycle()
+    var inputText by remember { mutableStateOf("") }
+    var selectedLanguage by remember { mutableStateOf("Inglês") }
+    var dropdownExpanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val languages = listOf("Inglês", "Espanhol", "Francês", "Alemão", "Italiano", "Japonês", "Mandarim", "Português")
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        Text(
+            text = "TRADUTOR IA MULTILÍNGUE",
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.Monospace,
+            color = Color(0xFF38BDF8),
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        Text(
+            text = "Traduza textos instantaneamente utilizando o mecanismo de inteligência artificial.",
+            fontSize = 12.sp,
+            color = Color(0xFF94A3B8),
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        Card(
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+            border = BorderStroke(1.dp, Color(0xFF334155)),
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "SELECIONE O IDIOMA DE DESTINO",
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF38BDF8),
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Button(
+                        onClick = { dropdownExpanded = true },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0F172A)),
+                        border = BorderStroke(1.dp, Color(0xFF334155)),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Traduzir para: $selectedLanguage", color = Color.White, fontSize = 14.sp)
+                            Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null, tint = Color.White)
+                        }
+                    }
+                    DropdownMenu(
+                        expanded = dropdownExpanded,
+                        onDismissRequest = { dropdownExpanded = false },
+                        modifier = Modifier.background(Color(0xFF0F172A)).border(1.dp, Color(0xFF334155))
+                    ) {
+                        languages.forEach { lang ->
+                            DropdownMenuItem(
+                                text = { Text(lang, color = Color.White) },
+                                onClick = {
+                                    selectedLanguage = lang
+                                    dropdownExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextField(
+                    value = inputText,
+                    onValueChange = { inputText = it },
+                    placeholder = { Text("Insira o texto para traduzir...", color = Color(0xFF64748B)) },
+                    modifier = Modifier.fillMaxWidth().height(120.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedBorderColor = Color(0xFF38BDF8),
+                        unfocusedBorderColor = Color(0xFF334155)
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        viewModel.translateText(inputText, selectedLanguage)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF38BDF8)),
+                    enabled = !isTranslating && inputText.isNotBlank(),
+                    modifier = Modifier.fillMaxWidth().height(50.dp),
+                    shape = RoundedCornerShape(24.dp)
+                ) {
+                    if (isTranslating) {
+                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color(0xFF020617))
+                    } else {
+                        Text("Realizar Tradução ✨", fontWeight = FontWeight.Bold, color = Color(0xFF020617))
+                    }
+                }
+            }
+        }
+
+        if (translatedText.isNotBlank()) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                border = BorderStroke(1.dp, Color(0xFF38BDF8)),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "TEXTO TRADUZIDO ($selectedLanguage)",
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF38BDF8),
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    Text(
+                        text = translatedText,
+                        color = Color.White,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+
+                    Button(
+                        onClick = {
+                            android.widget.Toast.makeText(context, "🔊 Reproduzindo áudio...", android.widget.Toast.LENGTH_SHORT).show()
+                        },
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF38BDF8)),
+                        border = BorderStroke(1.dp, Color(0xFF334155)),
+                        modifier = Modifier.align(Alignment.End),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("🔊 Ouvir", fontSize = 12.sp, color = Color(0xFF38BDF8))
                     }
                 }
             }

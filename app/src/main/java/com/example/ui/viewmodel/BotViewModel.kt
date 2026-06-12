@@ -705,6 +705,35 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
                "Monitore o status do envio na console de logs do seu aplicativo."
     }
 
+    private val _translatedText = MutableStateFlow("")
+    val translatedText: kotlinx.coroutines.flow.StateFlow<String> = _translatedText.asStateFlow()
+    
+    private val _isTranslating = MutableStateFlow(false)
+    val isTranslating: kotlinx.coroutines.flow.StateFlow<Boolean> = _isTranslating.asStateFlow()
+
+    fun translateText(text: String, targetLanguage: String) {
+        if (text.isBlank()) return
+        viewModelScope.launch {
+            _isTranslating.value = true
+            try {
+                val prompt = "Você é um tradutor profissional de IA de alta precisão. Traduza o texto fornecido pelo usuário para o idioma: $targetLanguage. Retorne somente a tradução exata final, sem nenhuns comentários externos prefixos ou explicações adicionais."
+                val response = repository.generateAiContent(
+                    userMessage = text,
+                    systemPrompt = prompt,
+                    temperature = 0.2f,
+                    chatId = 888888L
+                )
+                _translatedText.value = response.trim()
+                addLog("Tradução Realizada para $targetLanguage", LogType.INFO)
+            } catch (e: Exception) {
+                _translatedText.value = "Erro ao executar tradução: ${e.localizedMessage}"
+                addLog("Falha na Tradução: ${e.localizedMessage}", LogType.ERROR)
+            } finally {
+                _isTranslating.value = false
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         pollingJob?.cancel()

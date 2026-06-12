@@ -1054,6 +1054,114 @@
             justify-content: center;
             border: 1px solid rgba(56, 189, 248, 0.3);
         }
+
+        /* Oculta antiga barra horizontal de abas */
+        .tabs-container {
+            display: none !important;
+        }
+
+        /* Navigation Drawer Global Styles */
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.75);
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .drawer-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .drawer {
+            position: fixed;
+            top: 0;
+            left: -285px;
+            width: 285px;
+            height: 100%;
+            background-color: #000000;
+            border-right: 1px solid var(--border-color);
+            z-index: 10000;
+            transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            padding: calc(1.2rem + var(--safe-top)) 1.2rem 1.5rem;
+            box-sizing: border-box;
+        }
+        .drawer.open {
+            left: 0;
+        }
+        .drawer-header {
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .drawer-header .brand svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--primary);
+        }
+        .drawer-header .brand h1 {
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 0;
+            font-family: inherit;
+        }
+        .drawer-header .brand span {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .drawer-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .drawer-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+            font-weight: 600;
+            font-size: 0.92rem;
+            user-select: none;
+        }
+        .drawer-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+        }
+        .drawer-item.active {
+            background-color: rgba(56, 189, 248, 0.08);
+            color: var(--primary);
+            border: 1px solid rgba(56, 189, 248, 0.15);
+        }
+        .drawer-icon {
+            font-size: 1.25rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Ajuste fino do header principal */
+        header {
+            background-color: #000000 !important;
+            padding: calc(0.6rem + var(--safe-top)) 1.2rem 0.6rem !important;
+        }
     </style>
 </head>
 <body>
@@ -1145,19 +1253,52 @@
 
     <!-- Cabeçalho Fixo Nativo -->
     <header>
-        <div class="header-container">
+        <div class="header-container" style="display: flex; align-items: center; justify-content: space-between;">
+            <button id="menu-drawer-btn" onclick="toggleDrawer(true)" style="background: transparent; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; outline: none; margin-right: 15px;">
+                ☰
+            </button>
+            <h1 id="topbar-section-title" style="font-size: 1.05rem; font-weight: 700; text-align: center; margin: 0; flex: 1; color: var(--text-main);">💬 Novo Chat / Conversas</h1>
+            <div class="badge-live" style="margin: 0; min-width: 60px; text-align: right;">Online</div>
+        </div>
+    </header>
+
+    <!-- Navigation Drawer HTML -->
+    <div class="drawer-overlay" id="drawer-overlay" onclick="toggleDrawer(false)"></div>
+    <div class="drawer" id="drawer">
+        <div class="drawer-header">
             <div class="brand">
                 <svg viewBox="0 0 24 24">
                     <path d="M21 16.5C21 16.88 20.79 17.21 20.47 17.38L12.57 21.82C12.41 21.94 12.21 22 12 22C11.79 22 11.59 21.94 11.43 21.82L3.53 17.38C3.21 17.21 3 16.88 3 16.5V7.5C3 7.12 3.21 6.79 3.53 6.62L11.43 2.18C11.59 2.06 11.79 2 12 2C12.21 2 12.41 2.06 12.57 2.18L20.47 6.62C20.79 6.79 21 7.12 21 7.5V16.5M12 4.15L5 8.09L12 12.03L19 8.09L12 4.15M12 14.1L5.04 10.15V15.77L12 19.71V14.1M20.96 15.77V10.15L14 14.1V19.71L20.96 15.77Z"/>
                 </svg>
-                <h1>Core <span>System</span></h1>
+                <h1 style="color: #ffffff; font-size: 1.15rem; font-weight: bold; margin: 0;">Core <span style="color: var(--text-muted); font-weight: 500; font-size: 0.9rem;">System</span></h1>
             </div>
-            <div class="badge-live">Online</div>
         </div>
-    </header>
+        <ul class="drawer-menu">
+            <li class="drawer-item active" onclick="clickDrawerItem('tab-chat', '💬 Novo Chat / Conversas')">
+                <span class="drawer-icon">💬</span>
+                <span class="drawer-label">Novo Chat / Conversas</span>
+            </li>
+            <li class="drawer-item" onclick="clickDrawerItem('tab-config', '⚙️ Configurações (Ajustes)')">
+                <span class="drawer-icon">⚙️</span>
+                <span class="drawer-label">Configurações (Ajustes)</span>
+            </li>
+            <li class="drawer-item" onclick="clickDrawerItem('tab-logs', '🖥️ Terminal de Comandos')">
+                <span class="drawer-icon">🖥️</span>
+                <span class="drawer-label">Terminal de Comandos</span>
+            </li>
+            <li class="drawer-item" onclick="clickDrawerItem('tab-translator', '🌐 Tradutor de Textos')">
+                <span class="drawer-icon">🌐</span>
+                <span class="drawer-label">Tradutor de Textos</span>
+            </li>
+            <li class="drawer-item" onclick="clickDrawerItem('tab-gmail', '📧 Gmail Integrado')">
+                <span class="drawer-icon">📧</span>
+                <span class="drawer-label">Gmail Integrado</span>
+            </li>
+        </ul>
+    </div>
 
     <!-- Sistema de Abas no Topo -->
-    <nav class="tabs-container">
+    <nav class="tabs-container" style="display: none !important;">
         <button class="tab-btn active" id="btn-tab-chat" onclick="switchTab('tab-chat')">
             <span>💬</span><span>Chat</span>
         </button>
@@ -1740,6 +1881,33 @@ WITH CHECK (true);</code>
             try { if (navigator.vibrate) navigator.vibrate(15); } catch(e){}
         }
 
+        // --- Drawer Navigation Menu Helpers ---
+        function toggleDrawer(isOpen) {
+            triggerPulse();
+            const drawer = document.getElementById('drawer');
+            const overlay = document.getElementById('drawer-overlay');
+            if (isOpen) {
+                drawer.classList.add('open');
+                overlay.classList.add('open');
+            } else {
+                drawer.classList.remove('open');
+                overlay.classList.remove('open');
+            }
+        }
+
+        function clickDrawerItem(tabId, title) {
+            switchTab(tabId);
+            toggleDrawer(false);
+        }
+
+        const tabTitlesMap = {
+            'tab-chat': '💬 Novo Chat / Conversas',
+            'tab-config': '⚙️ Configurações (Ajustes)',
+            'tab-logs': '🖥️ Terminal de Comandos',
+            'tab-translator': '🌐 Tradutor de Textos',
+            'tab-gmail': '📧 Gmail Integrado'
+        };
+
         // --- 1. Navegação de Abas Fluida ---
         function switchTab(tabId) {
             triggerPulse();
@@ -1747,11 +1915,29 @@ WITH CHECK (true);</code>
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             
             document.getElementById(tabId).classList.add('active');
-            document.getElementById('btn-' + tabId).classList.add('active');
+            const btnEl = document.getElementById('btn-' + tabId);
+            if (btnEl) btnEl.classList.add('active');
             
+            // Atualiza título da Top Bar
+            const topTitleEl = document.getElementById('topbar-section-title');
+            if (topTitleEl) {
+                topTitleEl.textContent = tabTitlesMap[tabId] || 'Core System';
+            }
+
+            // Sincroniza classes do Drawer
+            document.querySelectorAll('.drawer-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(tabId)) {
+                    item.classList.add('active');
+                }
+            });
+
             // Foca o input caso volte para o chat
             if(tabId === 'tab-chat'){
-                setTimeout(() => document.getElementById('chat-input').focus(), 100);
+                setTimeout(() => {
+                    const inputEl = document.getElementById('chat-input');
+                    if(inputEl) inputEl.focus();
+                }, 100);
             }
             // Reseta para a tela de índice caso mude para configurações
             if(tabId === 'tab-config'){
