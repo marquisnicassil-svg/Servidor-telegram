@@ -1054,6 +1054,12 @@ fun SettingsTab(
                         onClick = { activeSettingsView = "appearance" }
                     )
                     SettingsMenuItem(
+                        icon = "🤖",
+                        title = "Conexão Bot do Telegram",
+                        subtitle = "Insira o token do BotFather e configure a integração do robô",
+                        onClick = { activeSettingsView = "telegram" }
+                    )
+                    SettingsMenuItem(
                         icon = "🧠",
                         title = "Motor de Inteligência Artificial",
                         subtitle = "Gerencie provedores como Gemini, OpenAI, Groq, chaves de API e prompts",
@@ -1676,20 +1682,20 @@ fun SettingsTab(
                     }
                 }
 
-                "account" -> {
+                "telegram" -> {
                     item {
                         Text(
-                            text = "👤 MINHA CONTA & SESSÃO",
+                            text = "🤖 CONEXÃO BOT DO TELEGRAM",
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp,
                             color = Color.White
                         )
                     }
 
-                    // Telegram Token Card
                     item {
+                        var isTokenVisible by remember { mutableStateOf(false) }
                         Card(
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF000000)), // Super Black (#000000)
                             shape = RoundedCornerShape(16.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -1697,7 +1703,7 @@ fun SettingsTab(
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(
-                                    text = "CREDENCIAS DO BOT TELEGRAM",
+                                    text = "🤖 Token do Bot (Telegram)",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 13.sp,
                                     color = Color.White
@@ -1708,12 +1714,18 @@ fun SettingsTab(
                                 OutlinedTextField(
                                     value = token,
                                     onValueChange = { token = it },
-                                    label = { Text("Token do Bot") },
+                                    placeholder = { Text("Insira o token gerado pelo @BotFather...", color = Color(0xFF475569)) },
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .testTag("settings_token_input"),
                                     shape = RoundedCornerShape(12.dp),
                                     singleLine = true,
+                                    visualTransformation = if (isTokenVisible) androidx.compose.ui.text.input.VisualTransformation.None else androidx.compose.ui.text.input.PasswordVisualTransformation(),
+                                    trailingIcon = {
+                                        IconButton(onClick = { isTokenVisible = !isTokenVisible }) {
+                                            Text(if (isTokenVisible) "🙈" else "👁️", fontSize = 16.sp)
+                                        }
+                                    },
                                     colors = OutlinedTextFieldDefaults.colors(
                                         focusedBorderColor = Color(0xFF38BDF8),
                                         unfocusedBorderColor = Color(0xFF334155),
@@ -1724,22 +1736,32 @@ fun SettingsTab(
                                     )
                                 )
 
-                                Spacer(modifier = Modifier.height(12.dp))
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Text(
+                                    text = "Insira o token gerado pelo @BotFather para ativar o Moreno no Telegram.",
+                                    fontSize = 11.sp,
+                                    color = Color(0xFF94A3B8)
+                                )
+
+                                Spacer(modifier = Modifier.height(16.dp))
 
                                 Button(
                                     onClick = { onVerifyToken(token) },
                                     modifier = Modifier
-                                        .align(Alignment.End)
+                                        .fillMaxWidth()
+                                        .height(48.dp)
                                         .testTag("settings_verify_btn"),
-                                    shape = RoundedCornerShape(10.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E293B)),
                                     border = BorderStroke(1.dp, Color(0xFF334155))
                                 ) {
                                     if (verificationStatus == "VERIFYING") {
                                         CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = Color(0xFF38BDF8))
                                         Spacer(modifier = Modifier.width(8.dp))
+                                    } else {
+                                        Text("🔄 Testar Conexão do Bot", color = Color(0xFF38BDF8), fontWeight = FontWeight.Bold, fontSize = 13.sp)
                                     }
-                                    Text("Validar Token", color = Color(0xFF38BDF8), fontWeight = FontWeight.Bold)
                                 }
 
                                 // Bot Credentials Indicator Card inside Token Config
@@ -1807,7 +1829,53 @@ fun SettingsTab(
                         ) {
                             Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = Color(0xFF020617))
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Salvar Token & Ajustes", fontWeight = FontWeight.Black, color = Color(0xFF020617))
+                            Text("Salvar Token", fontWeight = FontWeight.Black, color = Color(0xFF020617))
+                        }
+                    }
+                }
+
+                "account" -> {
+                    item {
+                        Text(
+                            text = "👤 MINHA CONTA & SESSÃO",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = Color.White
+                        )
+                    }
+
+                    item {
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    text = "🔑 Supabase Auth",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                    color = Color.White
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "Você não está autenticado. Para sincronizar o sistema e fazer backup de mensagens na nuvem, realize o login de segurança no portal inicial.",
+                                    fontSize = 12.sp,
+                                    color = Color(0xFF94A3B8)
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(
+                                    onClick = { /* Simulated auth check */ },
+                                    shape = RoundedCornerShape(10.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0F172A)),
+                                    border = BorderStroke(1.dp, Color(0xFF334155)),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text("🔑 Sessão Segura Ativa", color = Color(0xFF38BDF8), fontWeight = FontWeight.Bold)
+                                }
+                            }
                         }
                     }
                 }
