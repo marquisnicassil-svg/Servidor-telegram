@@ -281,13 +281,13 @@
         }
 
         .chat-message {
-            max-width: 88%;
-            padding: 12px 16px;
-            border-radius: 18px;
+            max-width: 85%;
+            padding: 10px 14px;
             font-size: 0.95rem;
             word-wrap: break-word;
             line-height: 1.4;
             flex-shrink: 0;
+            position: relative;
         }
 
         .chat-message.user {
@@ -295,6 +295,9 @@
             color: var(--bg-color); /* Contraste nativo */
             font-weight: 500;
             align-self: flex-end;
+            border-top-left-radius: 18px;
+            border-top-right-radius: 18px;
+            border-bottom-left-radius: 18px;
             border-bottom-right-radius: 4px;
         }
 
@@ -302,8 +305,12 @@
             background-color: var(--card-bg-secondary);
             color: var(--text-main);
             align-self: flex-start;
+            border-top-left-radius: 18px;
+            border-top-right-radius: 18px;
+            border-bottom-right-radius: 18px;
             border-bottom-left-radius: 4px;
             border: 1px solid var(--border-color);
+            padding-right: 36px;
         }
 
         /* Markdown Styles */
@@ -1258,7 +1265,12 @@
                 ☰
             </button>
             <h1 id="topbar-section-title" style="font-size: 1.05rem; font-weight: 700; text-align: center; margin: 0; flex: 1; color: var(--text-main);">💬 Novo Chat / Conversas</h1>
-            <div class="badge-live" style="margin: 0; min-width: 60px; text-align: right;">Online</div>
+            <div style="display: flex; align-items: center; gap: 12px; min-width: 60px; justify-content: flex-end;">
+                <button id="header-clear-chat-btn" onclick="clearChat()" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; outline: none; color: var(--text-muted); opacity: 0.8; transition: opacity 0.2s;" title="Apagar Conversa" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+                    🗑️
+                </button>
+                <div class="badge-live" style="margin: 0;">Online</div>
+            </div>
         </div>
     </header>
 
@@ -1322,26 +1334,17 @@
         <!-- ABA 1: CONSOLE DE CHAT (Playground) -->
         <section id="tab-chat" class="tab-section active">
             <div class="chat-wrapper">
-                <div class="section-header" style="justify-content: space-between; margin-bottom: 0.5rem; padding: 0 5px; flex-wrap: wrap; gap: 8px;">
-                    <h2 style="font-size: 1rem; color: var(--text-muted); margin: 0; display: flex; align-items: center; gap: 8px;">
-                        <span>Sessão de Memória</span>
-                        <span id="chat-cloud-indicator" style="font-size: 0.72rem; color: var(--text-muted); padding: 2px 8px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.02);">
-                            <span class="cloud-dot" style="width: 5px; height: 5px; background-color: #737373; border-radius: 50%; display: inline-block;"></span>
-                            <span class="cloud-text">Nuvem Inativa</span>
-                        </span>
-                    </h2>
-                    <button style="background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 8px; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="clearChat()">
-                        🗑️ Limpar
-                    </button>
-                </div>
                 <div class="chat-messages" id="chat-messages">
                     <div class="chat-message bot">
                         Estou conectado e com memória ativada.
+                        <button class="reader-btn" data-text="Estou conectado e com memória ativada." onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 10px; bottom: 8px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 4px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>
                     </div>
                 </div>
-                <div class="chat-input-area" style="align-items: center;">
-                    <button id="btn-mic" onclick="toggleMic()" style="background: transparent; border: none; font-size: 1.4rem; padding: 8px; cursor: pointer; flex-shrink: 0;" title="Ditado por Voz">🎤</button>
-                    <input type="text" id="chat-input" class="form-control" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
+                <div class="chat-input-area" style="align-items: center; gap: 10px; padding-top: 10px; padding-bottom: 10px;">
+                    <div style="position: relative; flex: 1; display: flex; align-items: center;">
+                        <button id="btn-mic" onclick="toggleMic()" style="position: absolute; left: 8px; background: transparent; border: none; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; color: var(--text-muted); outline: none; z-index: 5;" title="Ditado por Voz">🎤</button>
+                        <input type="text" id="chat-input" class="form-control" style="padding-left: 44px; padding-right: 18px; border-radius: 24px; background-color: #171719; border: 1px solid var(--border-color); height: 46px; color: #ffffff;" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
+                    </div>
                     <button class="chat-btn-send" onclick="sendMessage()">
                         <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                     </button>
@@ -1976,6 +1979,12 @@ WITH CHECK (true);</code>
                     item.classList.add('active');
                 }
             });
+
+            // Mostra/Oculta botão de apagar conversa no cabeçalho
+            const clearChatBtn = document.getElementById('header-clear-chat-btn');
+            if (clearChatBtn) {
+                clearChatBtn.style.display = (tabId === 'tab-chat') ? 'flex' : 'none';
+            }
 
             // Foca o input caso volte para o chat
             if(tabId === 'tab-chat'){
@@ -2798,7 +2807,7 @@ WITH CHECK (true);</code>
         function clearChat() {
             triggerPulse();
             chatHistoryObjects = [];
-            document.getElementById('chat-messages').innerHTML = '<div class="chat-message bot">Memória apagada. Sessão reiniciada.</div>';
+            document.getElementById('chat-messages').innerHTML = '<div class="chat-message bot">Memória apagada. Sessão reiniciada.<button class="reader-btn" data-text="Memória apagada. Sessão reiniciada." onclick="speakText(this.getAttribute(\'data-text\'))" style="position: absolute; right: 10px; bottom: 8px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 4px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity=\'1\'" onmouseout="this.style.opacity=\'0.7\'">🔊</button></div>';
             saveChatSession();
             addLog("Memória do chat apagada manualmente.", "info");
             
@@ -2925,7 +2934,7 @@ WITH CHECK (true);</code>
 
                 // Injeta bloco processamento e player de voz (TTS)
                 const escapedForSpeech = aiReply.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
-                const readerHtml = `<div class="action-bar" style="text-align: right; margin-top: 8px;"><button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size: 0.9em; padding: 4px;">🔊 Ouvir</button></div>`;
+                const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 10px; bottom: 8px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 4px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
                 
                 loader.innerHTML = formatAIResponse(aiReply) + readerHtml;
                 scrollToBottom();
