@@ -2640,6 +2640,7 @@ WITH CHECK (true);</code>
         // 8. Integração, Sincronização e Autenticação Supabase Cloud
         // ==========================================================================
         let supabaseSession = null;
+        let supabaseHasUserId = true;
         let authMode = "signin";
         let isAuthLoading = false;
 
@@ -2930,8 +2931,8 @@ WITH CHECK (true);</code>
                 settings_json: settingsData
             };
 
-            // Anexa o ID do usuário autenticado se a sessão estiver ativa para suporte fácil a RLS
-            if (supabaseSession && supabaseSession.user) {
+            // Anexa o ID do usuário autenticado se a sessão estiver ativa e a tabela tiver suporte para user_id
+            if (supabaseHasUserId && supabaseSession && supabaseSession.user) {
                 payload.user_id = supabaseSession.user.id;
             }
 
@@ -2973,10 +2974,14 @@ WITH CHECK (true);</code>
                 } else {
                     const errText = await response.text();
                     let isJwtExpired = false;
+                    let isMissingUserIdColumn = false;
                     try {
                         const parsed = JSON.parse(errText);
                         if (parsed.message && parsed.message.includes("JWT expired")) {
                             isJwtExpired = true;
+                        }
+                        if (parsed.code === "PGRST204" && parsed.message && parsed.message.includes("user_id")) {
+                            isMissingUserIdColumn = true;
                         }
                     } catch(e) {}
 
@@ -2990,6 +2995,10 @@ WITH CHECK (true);</code>
                         updateAuthUI();
                         
                         addLog("Sessão expirada limpa. Tentando retransmitir backup sob nível anônimo...", "info");
+                        supabaseSaveBackup(quiet);
+                    } else if (isMissingUserIdColumn) {
+                        addLog("Aviso de Schema: Coluna 'user_id' não encontrada na tabela do Supabase. Salvando backup global sem vincular ID de usuário.", "info");
+                        supabaseHasUserId = false;
                         supabaseSaveBackup(quiet);
                     } else {
                         updateCloudIndicators('error', 'Falha no Envio');
