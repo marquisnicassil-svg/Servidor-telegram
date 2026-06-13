@@ -338,6 +338,29 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
                                     val extractedUrl = incomingText.split("\\s+".toRegex()).firstOrNull { it.startsWith("http://") || it.startsWith("https://") } ?: incomingText
                                     // Process url extraction and reply asynchronously
                                     processContextUrl(extractedUrl, chatId = chatId)
+                                } else if (requiresRealTimeContext(incomingText)) {
+                                    val promptReply = "Qual o link para eu analisar agora?"
+                                    
+                                    // Send AI response back to user
+                                    addLog("Enviando solicitação de link para o Telegram...", LogType.INFO)
+                                    try {
+                                        val sent = repository.sendTelegramMessage(config.token, chatId, promptReply)
+                                        if (sent) {
+                                            // Save AI Reply in DB
+                                            val aiMessageEntity = BotMessageEntity(
+                                                chatId = chatId,
+                                                senderId = finalBotDetails.id,
+                                                senderName = finalBotDetails.firstName,
+                                                messageText = promptReply,
+                                                isBotReply = true
+                                            )
+                                            repository.insertMessage(aiMessageEntity)
+                                            addLog("Telegram OUT: Solicitado link de contexto.", LogType.TG_OUT)
+                                        }
+                                    } catch (err: Exception) {
+                                        val sendErr = err.localizedMessage ?: err.message ?: "Desconhecido"
+                                        addLog("Erro ao enviar pergunta para o Telegram: $sendErr", LogType.ERROR)
+                                    }
                                 } else {
                                     addLog("IA pensando para <$senderName>...", LogType.AI_SYS)
                                     val aiReply = try {
@@ -395,6 +418,18 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
         addLog("Servidor interrompido. Bot Offline.", LogType.WARNING)
     }
 
+    private fun requiresRealTimeContext(text: String): Boolean {
+        val lower = text.lowercase()
+        val keywords = listOf(
+            "notícia", "noticia", "notícias", "noticias", "futebol", "tempo real", 
+            "atual", "atuais", "campeonato", "brasileirão", "brasileirao", "jogo", 
+            "gols", "resultado", "novidade", "novidades", "news", "soccer", "football", 
+            "real-time", "current events", "latest", "acontecimentos", "rodada", "tabela",
+            "informações sobre eventos", "dados em tempo real"
+        )
+        return keywords.any { lower.contains(it) }
+    }
+
     // --- On Device Test Chat Actions ---
     fun sendLocalMockMessage(text: String) {
         if (text.isBlank()) return
@@ -402,6 +437,36 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
         val urlStr = text.split("\\s+".toRegex()).firstOrNull { it.startsWith("http://") || it.startsWith("https://") }
         if (urlStr != null) {
             processContextUrl(urlStr, chatId = 999999L)
+            return
+        }
+
+        if (requiresRealTimeContext(text)) {
+            viewModelScope.launch {
+                val userMsg = BotMessageEntity(
+                    chatId = 999999L,
+                    senderId = 1L,
+                    senderName = "Você (Teste)",
+                    messageText = text,
+                    isBotReply = false
+                )
+                repository.insertMessage(userMsg)
+                addLog("Mock Teste: $text", LogType.INFO)
+
+                _isAiThinkingLocal.value = true
+                kotlinx.coroutines.delay(600)
+
+                val promptReply = "Qual o link para eu analisar agora?"
+                val aiMsg = BotMessageEntity(
+                    chatId = 999999L,
+                    senderId = 999L,
+                    senderName = "IA Bot (Teste)",
+                    messageText = promptReply,
+                    isBotReply = true
+                )
+                repository.insertMessage(aiMsg)
+                _isAiThinkingLocal.value = false
+                addLog("Solicitado link de contexto em tempo real por ausência de URL.", LogType.WARNING)
+            }
             return
         }
 

@@ -2779,6 +2779,18 @@ WITH CHECK (true);</code>
             container.scrollTop = container.scrollHeight;
         }
 
+        function requiresRealTimeContext(text) {
+            const lower = text.toLowerCase();
+            const keywords = [
+                "notícia", "noticia", "notícias", "noticias", "futebol", "tempo real", 
+                "atual", "atuais", "campeonato", "brasileirão", "brasileirao", "jogo", 
+                "gols", "resultado", "novidade", "novidades", "news", "soccer", "football", 
+                "real-time", "current events", "latest", "acontecimentos", "rodada", "tabela",
+                "informações sobre eventos", "dados em tempo real"
+            ];
+            return keywords.some(kw => lower.includes(kw));
+        }
+
         async function sendMessage() {
             triggerPulse();
             const input = document.getElementById('chat-input');
@@ -2805,6 +2817,38 @@ WITH CHECK (true);</code>
             container.appendChild(loader);
             scrollToBottom();
             
+            // Check for URL or real-time query
+            const urlRegex = /(https?:\/\/[^\s]+)/gi;
+            const urlMatch = txt.match(urlRegex);
+            if (urlMatch) {
+                const extractedUrl = urlMatch[0];
+                const contextInputEl = document.getElementById('context-url-input');
+                if (contextInputEl) {
+                    contextInputEl.value = extractedUrl;
+                }
+                loader.remove();
+                addLog(`URL detectada no chat: ${extractedUrl}. Desviando para o Navegador de Contexto.`, "info");
+                processContextUrlWeb();
+                return;
+            }
+
+            if (requiresRealTimeContext(txt)) {
+                setTimeout(() => {
+                    const aiReply = "Qual o link para eu analisar agora?";
+                    chatHistoryObjects.push({ role: 'assistant', content: aiReply });
+                    
+                    const escapedForSpeech = aiReply.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
+                    const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
+                    
+                    loader.innerHTML = formatAIResponse(aiReply) + readerHtml;
+                    scrollToBottom();
+                    saveChatSession();
+                    triggerPulse();
+                    addLog(`Solicitado link de contexto em tempo real por ausência de URL.`, "warning");
+                }, 600);
+                return;
+            }
+
             // Dados da interface
             const key = document.getElementById('api-key').value.trim();
             const url = document.getElementById('base-url').value.trim();
