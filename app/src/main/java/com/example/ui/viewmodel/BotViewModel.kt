@@ -477,43 +477,48 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
             else if (isTech) category = "Tecnologia"
 
             try {
-                // Real HTML Fetch
-                val client = okhttp3.OkHttpClient.Builder()
-                    .connectTimeout(5, java.util.concurrent.TimeUnit.SECONDS)
-                    .readTimeout(5, java.util.concurrent.TimeUnit.SECONDS)
-                    .build()
-                val request = okhttp3.Request.Builder().url(url).build()
-                client.newCall(request).execute().use { response ->
-                    if (response.isSuccessful) {
-                        val body = response.body?.string() ?: ""
-                        if (body.isNotBlank()) {
-                            // Strip script, style, nav, footer, header tags
-                            var html = body
-                            val tagsToRemove = listOf("script", "style", "nav", "footer", "header")
-                            for (tag in tagsToRemove) {
-                                val regex = Regex("<$tag[^>]*?>[\\s\\S]*?<\\/$tag>", RegexOption.IGNORE_CASE)
-                                html = html.replace(regex, "")
-                            }
-                            // Strip remaining tags
-                            val tagRegex = Regex("<[^>]*?>")
-                            val textOnly = html.replace(tagRegex, " ")
-                            
-                            // Clean up spacing and HTML entities
-                            var cleaned = textOnly
-                                .replace("&amp;", "&")
-                                .replace("&lt;", "<")
-                                .replace("&gt;", ">")
-                                .replace("&quot;", "\"")
-                                .replace("&nbsp;", " ")
-                                .trim()
-                            
-                            // Remove empty lines and excessively long spaces
-                            cleaned = cleaned.replace(Regex("\\s+"), " ")
-                            if (cleaned.length > 50) {
-                                cleanText = cleaned.take(2000) // Keep reasonable length
-                                addLog("HTML de página real extraído e limpo com sucesso sem anúncios ou cabeçalhos.", LogType.SUCCESS)
-                            }
+                // Real HTML Fetch on Dispatchers.IO to prevent locking the main thread or NetworkOnMainThreadException
+                val fetchedBody = withContext(Dispatchers.IO) {
+                    val client = okhttp3.OkHttpClient.Builder()
+                        .connectTimeout(5, java.util.concurrent.TimeUnit.SECONDS)
+                        .readTimeout(5, java.util.concurrent.TimeUnit.SECONDS)
+                        .build()
+                    val request = okhttp3.Request.Builder().url(url).build()
+                    client.newCall(request).execute().use { response ->
+                        if (response.isSuccessful) {
+                            response.body?.string() ?: ""
+                        } else {
+                            ""
                         }
+                    }
+                }
+
+                if (fetchedBody.isNotBlank()) {
+                    // Strip script, style, nav, footer, header tags
+                    var html = fetchedBody
+                    val tagsToRemove = listOf("script", "style", "nav", "footer", "header")
+                    for (tag in tagsToRemove) {
+                        val regex = Regex("<$tag[^>]*?>[\\s\\S]*?<\\/$tag>", RegexOption.IGNORE_CASE)
+                        html = html.replace(regex, "")
+                    }
+                    // Strip remaining tags
+                    val tagRegex = Regex("<[^>]*?>")
+                    val textOnly = html.replace(tagRegex, " ")
+                    
+                    // Clean up spacing and HTML entities
+                    var cleaned = textOnly
+                        .replace("&amp;", "&")
+                        .replace("&lt;", "<")
+                        .replace("&gt;", ">")
+                        .replace("&quot;", "\"")
+                        .replace("&nbsp;", " ")
+                        .trim()
+                    
+                    // Remove empty lines and excessively long spaces
+                    cleaned = cleaned.replace(Regex("\\s+"), " ")
+                    if (cleaned.length > 50) {
+                        cleanText = cleaned.take(2000) // Keep reasonable length
+                        addLog("HTML de página real extraído e limpo com sucesso sem anúncios ou cabeçalhos.", LogType.SUCCESS)
                     }
                 }
             } catch (e: Exception) {
