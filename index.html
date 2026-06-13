@@ -2085,7 +2085,14 @@ WITH CHECK (true);</code>
 
                 // 1. Carrega configurações do LocalStorage (necessário para pegar as chaves do Supabase)
                 loadConfiguration();
-                initContextBrowser();
+                
+                // Inicialização robusta do Navegador de Contexto (Substituto do módulo Gmail anterior no menu lateral)
+                try {
+                    NavegadorDeContexto();
+                } catch (navError) {
+                    console.error("Falha ao inicializar NavegadorDeContexto:", navError);
+                    addLog("Falha no Navegador de Contexto. Ignorando e continuando inicialização...", "warning");
+                }
 
                 // 2. Tenta recuperar sessão do Supabase Auth
                 if (statusText) statusText.innerText = "Verificando sessão segura na nuvem...";
@@ -3984,7 +3991,23 @@ WITH CHECK (true);</code>
                     authGate.style.transform = 'scale(1.03)';
                     setTimeout(() => {
                         authGate.style.display = 'none';
-                           // ==========================================================================
+                    }, 400);
+                }
+            } else {
+                // Deslogado
+                formContainer.style.display = 'block';
+                userContainer.style.display = 'none';
+                if (loggedOutMsg) loggedOutMsg.style.display = 'block';
+                
+                if (authDot) authDot.style.backgroundColor = '#ef4444'; // red
+                if (authDesc) authDesc.innerText = 'Offline (Não autenticado)';
+                
+                // Exibe o gate se não autenticado
+                showAuthGateScreen();
+            }
+        }
+
+        // ==========================================================================
         // Lógica do Navegador de Contexto (Substituta do Gmail Integrado)
         // ==========================================================================
         function initContextBrowser() {
@@ -4002,6 +4025,16 @@ WITH CHECK (true);</code>
                 }
             } catch (e) {
                 console.error("Erro ao inicializar Navegador de Contexto:", e);
+            }
+        }
+
+        function NavegadorDeContexto() {
+            try {
+                // Atua apenas como um campo de input (text field) que armazena a URL no banco de dados, sem realizar requisições de e-mail.
+                initContextBrowser();
+            } catch (err) {
+                console.error("Erro interno no NavegadorDeContexto:", err);
+                throw err;
             }
         }
 
