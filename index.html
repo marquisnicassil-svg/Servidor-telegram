@@ -4201,7 +4201,7 @@ WITH CHECK (true);</code>
             const apiKey = document.getElementById('api-key').value.trim();
             const baseUrl = document.getElementById('base-url').value.trim();
             const modelName = document.getElementById('model-name').value.trim();
-            const systemPrompt = "Você é o Moreno, assistente de atendimento automatizado, um cara descontraído, informal e direto ao ponto. O usuário acabou de usar a ferramenta 'Navegador de Contexto' para extrair o texto de uma página. O conteúdo limpo (sem anúncios ou menus) está anexado. Escreva um resumo super informal, direto e dinâmico das informações, com foco total nos aspectos de tecnologia e futebol que encontrar no texto. Use uma linguagem foda, amigável e sem rodeios para explicar as novidades da página.";
+            const systemPrompt = "Você é um assistente cirúrgico e focado. O usuário acabou de usar a ferramenta 'Navegador de Contexto' para extrair o texto de uma página. Sua tarefa é extrair e responder estritamente ao tema solicitado. Ignore completamente quaisquer saudações, simpatias ou comentários genéricos, indo direto aos fatos. Foque unicamente em extrair dados, fatos concretos e informações técnicas que respondam diretamente ao tema. Apresente todo o resumo em tópicos (bullet points) diretos, curtos e ultra-precisos, baseando-se única e exclusivamente no conteúdo do link analisado.";
 
             setTimeout(async () => {
                 let summaryReply = "";
@@ -4220,7 +4220,7 @@ WITH CHECK (true);</code>
                                 contents: [
                                     {
                                         role: 'user',
-                                        parts: [{ text: `Conteúdo limpo extraído da página:\n\n${cleanText}\n\nPor favor, faça o seu resumo informal e direto focado em tecnologia e futebol!` }]
+                                        parts: [{ text: `Conteúdo limpo extraído da página:\n\n${cleanText}\n\nPor favor, faça a análise desse material. Ignore saudações, introduções ou comentários genéricos de chat. Extraia unicamente dados, fatos objetivos e informações técnicas. Apresente os resultados em tópicos (bullet points) diretos e precisos, limitando-se estritamente ao que está escrito no link analisado.` }]
                                     }
                                 ],
                                 generationConfig: { temperature: 0.8 },
@@ -4243,11 +4243,11 @@ WITH CHECK (true);</code>
                 // Resposta de Moreno (se API falhar ou estiver desativada)
                 if (!summaryReply) {
                     if (category === "Futebol") {
-                        summaryReply = `Fala meu parceiro! Rapaz, puxei as informações desse link e tirei toda aquela sujeira de anúncios chovendo na tela.\n\nO resumão é o seguinte: **tecnologia invadindo os gramados do Brasileirão de vez!** Os clubes de ponta, tipo Flamengo e Palmeiras, tão usando chip GPS vestível e Inteligência Artificial pra analisar o desgaste dos atletas e evitar lesão muscular. Reduziu em incríveis 35% as lesões recentes! É o futebol do futuro ficando cada vez mais dinâmico e científico, meu chapa. Muito massa!`;
+                        summaryReply = `• <strong>Monitoramento Físico GPS:</strong> Clubes nacionais pioneiros (Flamengo e Palmeiras) integrando chips GPS portáteis vestíveis de alto desempenho.<br>• <strong>Redução das Lesões Musculares:</strong> Softwares de IA preditiva analisaram stress fisiológico e reduziram lesões no elenco em até 35%.<br>• <strong>Armazenamento de Estatísticas:</strong> Armazenamento analítico estruturado e sincronizado localmente via tabelas Supabase para emissão de relatórios rápidos.`;
                     } else if (category === "Tecnologia") {
-                        summaryReply = `Opa! Olha só o que eu achei de relevante nesse link, limpando todos os menus chatos.\n\nA parada tá louca na **tecnologia/IA!** Agora estão desenvolvendo chips neurais fodas que rodam modelos de linguagem pesados diretamente no chip do celular, sem precisar de internet ou mandar seus dados pra nuvem. Google e Apple já vão colocar isso de fábrica. É inteligência artificial pesada rodando localmente em segundos! Segurança máxima e eficiência absurda pro nosso dia a dia.`;
+                        summaryReply = `• <strong>Hardware NPU Integrado:</strong> Novos processadores neurais de ultra-baixo consumo de energia viabilizam execução de LLMs localmente.<br>• <strong>Inteligência Artificial Offline:</strong> Modelos de nível Gemini e Llama processam localmente em dispositivos Android sem requisições na nuvem.<br>• <strong>Segurança e Privacidade Ampliadas:</strong> Google e Apple confirmaram suporte imediato a essas tecnologias nos próximos lançamentos de sistemas operacionais.`;
                     } else {
-                        summaryReply = `E aí, beleza? Analisei o link e a máquina de extração limpou todos os banners de anúncios pra nós.\n\nA grande sacada é que **Futebol e Tecnologia estão se fundindo** num nível absurdo! IAs estão prevendo táticas e lances de VAR em milissegundos com renderização tridimensional pra evitar aquelas polêmicas demoradas, e os torcedores estão recebendo resumos automáticos via chat nas transmissões esportivas. O negócio tá evoluindo rápido demais!`;
+                        summaryReply = `• <strong>VAR Tridimensional Semiautomático:</strong> Aplicação de análise de pose humana 3D para reduzir tempo de tomada de decisões de paralisação esportiva.<br>• <strong>Estatísticas Automatizadas via IA:</strong> Geração de gráficos, resumos e insights em tempo real enviados diretamente ao torcedor via canal de chat ativo.<br>• <strong>Sinergia Operacional:</strong> Startups do Vale do Silício firmam acordos tecnológicos com clubes europeus para maximizar analytics de alta precisão.`;
                     }
                 }
 
@@ -4258,7 +4258,32 @@ WITH CHECK (true);</code>
 
                 const botMsg = document.createElement('div');
                 botMsg.className = 'chat-message bot';
-                botMsg.innerHTML = summaryReply;
+                botMsg.innerHTML = formatAIResponse(summaryReply);
+                
+                // Botão "Abrir Página Original" logo abaixo do resumo gerado
+                const openBtn = document.createElement('a');
+                openBtn.href = urlVal;
+                openBtn.target = '_blank';
+                openBtn.className = 'btn-universal';
+                openBtn.style.display = 'inline-flex';
+                openBtn.style.alignItems = 'center';
+                openBtn.style.justifyContent = 'center';
+                openBtn.style.gap = '6px';
+                openBtn.style.marginTop = '12px';
+                openBtn.style.padding = '8px 16px';
+                openBtn.style.fontSize = '0.8rem';
+                openBtn.style.borderRadius = '8px';
+                openBtn.style.backgroundColor = 'var(--primary)';
+                openBtn.style.color = 'var(--bg-color)';
+                openBtn.style.border = 'none';
+                openBtn.style.fontWeight = 'bold';
+                openBtn.style.textDecoration = 'none';
+                openBtn.style.cursor = 'pointer';
+                openBtn.style.width = 'fit-content';
+                openBtn.innerHTML = '🔗 Abrir Página Original';
+                
+                botMsg.appendChild(document.createElement('br'));
+                botMsg.appendChild(openBtn);
                 
                 // Botão de leitura de texto
                 const speakButton = document.createElement('button');

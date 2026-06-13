@@ -823,6 +823,58 @@ fun PlaygroundTab(
                                         fontSize = 14.sp,
                                         color = if (isAI) Color.White else Color(0xFF0F172A)
                                     )
+
+                                    if (isAI) {
+                                        val currentIndex = messages.indexOf(message)
+                                        if (currentIndex > 0) {
+                                            val prevUserMsg = messages.take(currentIndex).lastOrNull { !it.isBotReply }
+                                            if (prevUserMsg != null) {
+                                                val hasContextKeyword = prevUserMsg.messageText.contains("Navegador de Contexto")
+                                                val regex = """https?://[^\s]+""".toRegex()
+                                                val match = regex.find(prevUserMsg.messageText)?.value
+                                                val urlToUse = if (hasContextKeyword && match != null) {
+                                                    match
+                                                } else if (hasContextKeyword) {
+                                                    val urlIndex = prevUserMsg.messageText.indexOf("de: ")
+                                                    if (urlIndex != -1) {
+                                                        prevUserMsg.messageText.substring(urlIndex + 4).trim()
+                                                    } else null
+                                                } else null
+
+                                                if (urlToUse != null && urlToUse.startsWith("http")) {
+                                                    Spacer(modifier = Modifier.height(8.dp))
+                                                    val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
+                                                    Button(
+                                                        onClick = {
+                                                            try {
+                                                                uriHandler.openUri(urlToUse)
+                                                            } catch (e: Exception) {
+                                                                // Ignore
+                                                            }
+                                                        },
+                                                        colors = ButtonDefaults.buttonColors(
+                                                            containerColor = Color(0xFF38BDF8),
+                                                            contentColor = Color(0xFF0F172A)
+                                                        ),
+                                                        shape = RoundedCornerShape(8.dp),
+                                                        modifier = Modifier.padding(top = 4.dp).testTag("open_original_page_button")
+                                                    ) {
+                                                        Icon(
+                                                            imageVector = Icons.Default.Info,
+                                                            contentDescription = null,
+                                                            modifier = Modifier.size(16.dp)
+                                                        )
+                                                        Spacer(modifier = Modifier.width(6.dp))
+                                                        Text(
+                                                            text = "Abrir Página Original",
+                                                            fontSize = 12.sp,
+                                                            fontWeight = FontWeight.Bold
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -2244,6 +2296,31 @@ fun ContextBrowserTab(
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold
                         )
+                    }
+
+                    if (contextUrl.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(14.dp))
+                        val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
+                        Button(
+                            onClick = {
+                                try {
+                                    uriHandler.openUri(contextUrl)
+                                } catch (e: Exception) {
+                                    // Ignore
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF0284C7),
+                                contentColor = Color.White
+                            ),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(38.dp)
+                                .testTag("open_original_url_tab_button")
+                        ) {
+                            Text("Abrir Página Original", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        }
                     }
                 }
             }
