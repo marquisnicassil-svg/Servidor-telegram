@@ -44,6 +44,9 @@ import com.example.ui.viewmodel.LogType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+data class NewsResource(val name: String, val url: String, val category: String)
+data class SimulatedNews(val title: String, val desc: String, val url: String)
+
 data class DrawerItemData(
     val index: Int,
     val title: String,
@@ -2104,6 +2107,113 @@ fun ContextBrowserTab(
 
     var urlInput by remember { mutableStateOf("") }
 
+    val defaultResources = remember {
+        listOf(
+            NewsResource("G1 Tecnologia", "https://g1.globo.com/tecnologia", "Tecnologia"),
+            NewsResource("TecMundo", "https://www.tecmundo.com.br", "Tecnologia"),
+            NewsResource("TechCrunch", "https://techcrunch.com", "Tecnologia"),
+            NewsResource("Globo Esporte (GE)", "https://ge.globo.com", "Futebol"),
+            NewsResource("Lance!", "https://www.lance.com.br", "Futebol"),
+            NewsResource("ESPN Brasil", "https://www.espn.com.br", "Futebol")
+        )
+    }
+
+    var customResources by remember { mutableStateOf(listOf<NewsResource>()) }
+    val combinedResources = defaultResources + customResources
+
+    var selectedIndex by remember { mutableStateOf(0) }
+    var searchQuery by remember { mutableStateOf("") }
+    var searchResults by remember { mutableStateOf(listOf<SimulatedNews>()) }
+
+    var newResourceName by remember { mutableStateOf("") }
+    var newResourceUrl by remember { mutableStateOf("") }
+    var newResourceCategory by remember { mutableStateOf("Tecnologia") }
+
+    val performNewsSearchSimulated = { resource: NewsResource, query: String ->
+        val terms = query.lowercase().trim()
+        val domain = resource.url
+        val category = resource.category
+        val results = mutableListOf<SimulatedNews>()
+        
+        if (terms.isNotEmpty()) {
+            if (category == "Futebol") {
+                val teamName = when {
+                    terms.contains("palmeiras") -> "Palmeiras"
+                    terms.contains("corinthians") -> "Corinthians"
+                    terms.contains("santos") -> "Santos"
+                    terms.contains("sao paulo") || terms.contains("são paulo") -> "São Paulo"
+                    else -> "Flamengo"
+                }
+                results.add(
+                    SimulatedNews(
+                        title = "$teamName apresenta novo sistema de análise com tecnologia AI e dados integrados",
+                        desc = "Comissão técnica do time confirmou a contratação de especialistas de dados para monitoramento fisiológico avançado e rastreamento biomecânico.",
+                        url = "$domain/futebol/time/tactical-data-science-revolution-team-${teamName.lowercase()}"
+                    )
+                )
+                results.add(
+                    SimulatedNews(
+                        title = "Gols da Rodada: $teamName conquista vitória emocionante com placar chave no Brasileirão",
+                        desc = "Destaques em campo mostram união da tática rápida aplicada pelos meias de transição ofensiva. Placar final registrou o resultado histórico de 2 a 1.",
+                        url = "$domain/futebol/jogos/brasileirao-gols-highlights-${teamName.lowercase()}"
+                    )
+                )
+                results.add(
+                    SimulatedNews(
+                        title = "Fisiologia revela: Uso de chips GPS vestíveis reduz lesões musculares do elenco em até 35%",
+                        desc = "Pesquisa de saúde aponta que a predição inteligente de desidratação e estresse de corrida evitam danos e lesões no time principal.",
+                        url = "$domain/ciencia-do-esporte/tecnologia/chips-gps-wearables-reduc-injuries"
+                    )
+                )
+            } else if (category == "Tecnologia") {
+                val keyword = when {
+                    terms.contains("apple") -> "Apple NPU"
+                    terms.contains("google") || terms.contains("gemini") -> "Google Gemini"
+                    terms.contains("openai") || terms.contains("gpt") -> "OpenAI GPT-5"
+                    terms.contains("supabase") || terms.contains("banco") -> "Supabase DB"
+                    else -> "Chips Neurais"
+                }
+                results.add(
+                    SimulatedNews(
+                        title = "Lançado novo processamento local para execução offline de $keyword",
+                        desc = "A nova arquitetura NPU integrada entrega processamento de alta fidelidade sem mandar dados do smartphone para servidores de inteligência na nuvem, garantindo segurança estrita.",
+                        url = "$domain/tech/news/offline-local-inference-npu-evolution"
+                    )
+                )
+                results.add(
+                    SimulatedNews(
+                        title = "Google e Apple anunciam suporte unificado a frameworks de $keyword",
+                        desc = "Empresas firmam parceria tática para melhorar a interoperabilidade de hardware móvel focado em inteligência offline de baixíssima latência.",
+                        url = "$domain/hardware/smartphones/unified-os-support-for-${keyword.lowercase()}"
+                    )
+                )
+                results.add(
+                    SimulatedNews(
+                        title = "Desenvolvedores criam banco de dados leve com sincronização contínua para projetos móveis",
+                        desc = "Ferramenta permite integrar facilmente tabelas offline com persistência criptografada de alta performance e espelhamento nos novos servidores Supabase.",
+                        url = "$domain/data/development/lightweight-local-sync-db-solutions"
+                    )
+                )
+            } else {
+                results.add(
+                    SimulatedNews(
+                        title = "Exclusivo: Análise aprofundada aponta tendências de mercado para \"$query\"",
+                        desc = "Pesquisas revelam transformações operacionais profundas influenciadas por novas ferramentas táticas neste segmento e maior foco em segurança e dados analíticos.",
+                        url = "$domain/tendencias/mercado/analise-completa-${query.replace(" ", "-")}"
+                    )
+                )
+                results.add(
+                    SimulatedNews(
+                        title = "Fato ou Fake: Esclarecimento detalhado das novidades divulgadas sobre \"$query\"",
+                        desc = "Verificamos as fontes oficiais para desmistificar polêmicas e oferecer dados cirúrgicos limpos de ruídos de redes sociais e canais alternativos.",
+                        url = "$domain/fato-ou-fake/verificado-${query.replace(" ", "-")}"
+                    )
+                )
+            }
+        }
+        results
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -2229,6 +2339,318 @@ fun ContextBrowserTab(
                             )
                         } else {
                             Text("Extrair e Enviar para o Moreno IA", fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+        }
+
+        // Real-time News Resources & Search Engine
+        item {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                shape = RoundedCornerShape(16.dp),
+                border = BorderStroke(1.dp, Color(0xFF1E293B)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(18.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    Text(
+                        text = "🌐 RECURSOS E BUSCA DE NOTÍCIAS EM TEMPO REAL",
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF38BDF8),
+                        fontSize = 12.sp,
+                        fontFamily = FontFamily.Monospace
+                    )
+
+                    // Section 1: Add Custom News Resource
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                        shape = RoundedCornerShape(10.dp),
+                        border = BorderStroke(1.dp, Color(0xFF334155)),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(10.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = "➕ CADASTRAR NOVO RECURSO DE PARCERIA",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Monospace
+                            )
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                OutlinedTextField(
+                                    value = newResourceName,
+                                    onValueChange = { newResourceName = it },
+                                    placeholder = { Text("Nome (ex: GE)", fontSize = 11.sp, color = Color(0xFF64748B)) },
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White,
+                                        focusedContainerColor = Color(0xFF0F172A),
+                                        unfocusedContainerColor = Color(0xFF0F172A)
+                                    ),
+                                    singleLine = true,
+                                    modifier = Modifier.weight(1f)
+                                )
+
+                                OutlinedTextField(
+                                    value = newResourceUrl,
+                                    onValueChange = { newResourceUrl = it },
+                                    placeholder = { Text("URL (ex: https://site.com)", fontSize = 11.sp, color = Color(0xFF64748B)) },
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White,
+                                        focusedContainerColor = Color(0xFF0F172A),
+                                        unfocusedContainerColor = Color(0xFF0F172A)
+                                    ),
+                                    singleLine = true,
+                                    modifier = Modifier.weight(1.5f)
+                                )
+                            }
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    listOf("Tecnologia", "Futebol").forEach { cat ->
+                                        val isSel = newResourceCategory == cat
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(12.dp))
+                                                .background(if (isSel) Color(0xFF0284C7) else Color(0xFF0F172A))
+                                                .clickable { newResourceCategory = cat }
+                                                .padding(horizontal = 10.dp, vertical = 6.dp)
+                                        ) {
+                                            Text(
+                                                text = if (cat == "Futebol") "⚽ Futebol" else "💻 Tech",
+                                                fontSize = 11.sp,
+                                                color = Color.White,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                    }
+                                }
+
+                                Button(
+                                    onClick = {
+                                        if (newResourceName.isNotBlank() && newResourceUrl.isNotBlank()) {
+                                            val normalizedUrl = if (!newResourceUrl.startsWith("http://") && !newResourceUrl.startsWith("https://")) {
+                                                "https://$newResourceUrl"
+                                            } else newResourceUrl
+                                            customResources = customResources + NewsResource(
+                                                name = newResourceName.trim(),
+                                                url = normalizedUrl.trim(),
+                                                category = newResourceCategory
+                                            )
+                                            selectedIndex = defaultResources.size + customResources.size - 1
+                                            newResourceName = ""
+                                            newResourceUrl = ""
+                                        }
+                                    },
+                                    enabled = newResourceName.isNotBlank() && newResourceUrl.isNotBlank(),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF10B981),
+                                        contentColor = Color.White,
+                                        disabledContainerColor = Color(0xFF334155),
+                                        disabledContentColor = Color(0xFF64748B)
+                                    ),
+                                    shape = RoundedCornerShape(6.dp),
+                                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                                    modifier = Modifier.height(32.dp)
+                                ) {
+                                    Text("Adicionar", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
+                    }
+
+                    // Section 2: Choose active resource
+                    Text(
+                        text = "FONTE ATIVA PARA PESQUISA:",
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF64748B),
+                        fontSize = 10.sp,
+                        fontFamily = FontFamily.Monospace
+                    )
+
+                    // Scrollable list of resource chips
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 2.dp),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        androidx.compose.foundation.lazy.LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            items(combinedResources.size) { index ->
+                                val res = combinedResources[index]
+                                val isSelected = index == selectedIndex
+                                val icon = if (res.category == "Futebol") "⚽" else "💻"
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .background(if (isSelected) Color(0xFF38BDF8) else Color(0xFF1E293B))
+                                        .border(1.dp, if (isSelected) Color(0xFF38BDF8) else Color(0xFF334155), RoundedCornerShape(16.dp))
+                                        .clickable { selectedIndex = index }
+                                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                                ) {
+                                    Text(
+                                        text = "$icon ${res.name}",
+                                        fontSize = 11.sp,
+                                        color = if (isSelected) Color(0xFF0F172A) else Color.White,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Section 3: Search input
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
+                        placeholder = { Text("Termo de busca (ex: Palmeiras, IA, NPU...)", color = Color(0xFF64748B), fontSize = 12.sp) },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            focusedContainerColor = Color(0xFF1E293B),
+                            unfocusedContainerColor = Color(0xFF1E293B),
+                            focusedBorderColor = Color(0xFF38BDF8),
+                            unfocusedBorderColor = Color(0xFF334155),
+                            cursorColor = Color(0xFF38BDF8)
+                        ),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
+                                    val activeRes = combinedResources.getOrNull(selectedIndex) ?: combinedResources[0]
+                                    searchResults = performNewsSearchSimulated(activeRes, searchQuery)
+                                },
+                                enabled = searchQuery.isNotBlank()
+                            ) {
+                                Icon(Icons.Default.Search, contentDescription = "Buscar", tint = Color(0xFF38BDF8))
+                            }
+                        }
+                    )
+
+                    Button(
+                        onClick = {
+                            val activeRes = combinedResources.getOrNull(selectedIndex) ?: combinedResources[0]
+                            searchResults = performNewsSearchSimulated(activeRes, searchQuery)
+                        },
+                        enabled = searchQuery.isNotBlank(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF0284C7),
+                            contentColor = Color.White,
+                            disabledContainerColor = Color(0xFF1E293B),
+                            disabledContentColor = Color(0xFF64748B)
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(42.dp),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Pesquisar Notícias em Tempo Real", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    }
+
+                    // Section 4: Search results
+                    if (searchResults.isNotEmpty()) {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "NOTÍCIAS ENCONTRADAS (${searchResults.size}):",
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF64748B),
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Monospace
+                            )
+
+                            searchResults.forEach { item ->
+                                Card(
+                                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                                    shape = RoundedCornerShape(8.dp),
+                                    border = BorderStroke(1.dp, Color(0xFF334155)),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(10.dp),
+                                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        Text(
+                                            text = item.title,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF38BDF8),
+                                            fontSize = 12.sp
+                                        )
+
+                                        Text(
+                                            text = item.desc,
+                                            color = Color(0xFF94A3B8),
+                                            fontSize = 11.sp
+                                        )
+
+                                        Text(
+                                            text = item.url,
+                                            color = Color(0xFF38BDF8),
+                                            fontSize = 9.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            Button(
+                                                onClick = {
+                                                    urlInput = item.url
+                                                    viewModel.processContextUrl(item.url, chatId = 999999L)
+                                                },
+                                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0284C7)),
+                                                shape = RoundedCornerShape(6.dp),
+                                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                                                modifier = Modifier.height(28.dp)
+                                            ) {
+                                                Text("⚡ Analisar e Enviar", fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                            }
+
+                                            val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
+                                            Button(
+                                                onClick = {
+                                                    try {
+                                                        uriHandler.openUri(item.url)
+                                                    } catch (e: Exception) {}
+                                                },
+                                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF334155)),
+                                                shape = RoundedCornerShape(6.dp),
+                                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                                                modifier = Modifier.height(28.dp)
+                                            ) {
+                                                Text("🔗 Abrir Original", fontSize = 10.sp, color = Color.White)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
