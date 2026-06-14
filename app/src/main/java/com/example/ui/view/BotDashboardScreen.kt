@@ -2521,10 +2521,18 @@ fun ContextBrowserTab(
                     }
 
                     // Section 3: Search input
+                    Text(
+                        text = "O QUE DESEJA PESQUISAR NESSA FONTE?",
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF64748B),
+                        fontSize = 11.sp,
+                        fontFamily = FontFamily.Monospace
+                    )
+
                     OutlinedTextField(
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
-                        placeholder = { Text("Termo de busca (ex: Palmeiras, IA, NPU...)", color = Color(0xFF64748B), fontSize = 12.sp) },
+                        placeholder = { Text("O que deseja pesquisar nessa fonte? (ex: Palmeiras, AI, NPU...)", color = Color(0xFF64748B), fontSize = 12.sp) },
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedTextColor = Color.White,
                             unfocusedTextColor = Color.White,
@@ -2535,13 +2543,14 @@ fun ContextBrowserTab(
                             cursorColor = Color(0xFF38BDF8)
                         ),
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag("news_search_query_input"),
                         shape = RoundedCornerShape(12.dp),
                         trailingIcon = {
                             IconButton(
                                 onClick = {
                                     val activeRes = combinedResources.getOrNull(selectedIndex) ?: combinedResources[0]
                                     searchResults = performNewsSearchSimulated(activeRes, searchQuery)
+                                    viewModel.searchAndSummarizeNews(activeRes.name, activeRes.url, activeRes.category, searchQuery, chatId = 999999L)
                                 },
                                 enabled = searchQuery.isNotBlank()
                             ) {
@@ -2554,8 +2563,9 @@ fun ContextBrowserTab(
                         onClick = {
                             val activeRes = combinedResources.getOrNull(selectedIndex) ?: combinedResources[0]
                             searchResults = performNewsSearchSimulated(activeRes, searchQuery)
+                            viewModel.searchAndSummarizeNews(activeRes.name, activeRes.url, activeRes.category, searchQuery, chatId = 999999L)
                         },
-                        enabled = searchQuery.isNotBlank(),
+                        enabled = searchQuery.isNotBlank() && !isProcessing,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF0284C7),
                             contentColor = Color.White,
@@ -2564,10 +2574,19 @@ fun ContextBrowserTab(
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(42.dp),
+                            .height(42.dp)
+                            .testTag("news_search_query_button"),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("Pesquisar Notícias em Tempo Real", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        if (isProcessing) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = Color.White,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text("Extrair e Resumir no Chat", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        }
                     }
 
                     // Section 4: Search results
