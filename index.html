@@ -6,8 +6,8 @@
     <meta name="theme-color" content="#000000" id="theme-color-meta">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="app/src/main/res/drawable/synapse_logo_1781452080476.jpg">
-    <link rel="icon" type="image/jpeg" href="app/src/main/res/drawable/synapse_logo_1781452080476.jpg">
+    <link rel="apple-touch-icon" href="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg">
+    <link rel="icon" type="image/jpeg" href="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg">
     <link rel="manifest" href="manifest.json">
     <title>Painel & Console IA</title>
     <style>
@@ -44,6 +44,7 @@
             --border-weight: 1px;
             --backdrop-filter: none;
             --global-saturation: 100%;
+            --global-brightness: 1;
         }
 
         /* Tema Cinza Escuro (Opção Alternativa Secundária) */
@@ -120,7 +121,7 @@
             user-select: none;
             -webkit-user-select: none;
             transition: background-color 0.3s;
-            filter: saturate(var(--global-saturation, 100%));
+            filter: saturate(var(--global-saturation, 100%)) brightness(var(--global-brightness, 1));
         }
 
         /* Permite copiar texto de partes essenciais */
@@ -1258,7 +1259,7 @@
     <div id="splash-screen">
         <div class="splash-content">
             <div class="splash-icon">
-                <img src="app/src/main/res/drawable/synapse_logo_1781452080476.jpg" alt="Core System Icon">
+                <img src="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg" alt="Core System Icon">
             </div>
             <div class="splash-title">Core System</div>
             <div class="splash-status" id="splash-status-text" style="color: var(--text-muted); font-size: 0.85rem; margin-top: 8px; font-family: monospace;">Iniciando sistema...</div>
@@ -1269,7 +1270,7 @@
     <div id="auth-gate-screen" style="display: none; opacity: 0; transform: scale(0.97);">
         <div class="auth-gate-wrapper">
             <div class="auth-gate-logo">
-                <img src="app/src/main/res/drawable/synapse_logo_1781452080476.jpg" alt="Core System Icon">
+                <img src="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg" alt="Core System Icon">
                 <h2>Portal de Acesso</h2>
                 <p>Para desbloquear o console de IA e sincronizar o histórico, conecte-se com sua conta segura.</p>
             </div>
@@ -2879,13 +2880,18 @@ WITH CHECK (true);</code>
         function applyColorSaturation(val) {
             selectedSaturation = parseInt(val);
             document.documentElement.style.setProperty('--global-saturation', `${val}%`);
+            
+            // Calculo para ajustar também o brilho, tornando tons menos saturados progressivamente mais escuros (evitando aparência lavada/esbranquiçada)
+            const brightness = 0.45 + 0.55 * (val / 100);
+            document.documentElement.style.setProperty('--global-brightness', brightness);
+
             const label = document.getElementById('config-color-saturation-val');
             if (label) label.textContent = `${val}%`;
             
             const slider = document.getElementById('config-color-saturation');
             if (slider) slider.value = val;
             
-            addLog(`Intensidade de saturação alterada para: ${val}%`, "info");
+            addLog(`Intensidade de saturação alterada para: ${val}% (Brilho associado: ${Math.round(brightness * 100)}%)`, "info");
         }
 
         // --- 2. Controle de Lógica Engine (Anteriormente parte das Seções de Botões e AMOLED) ---
@@ -3205,15 +3211,43 @@ WITH CHECK (true);</code>
         // Lógica de chamar o prompt nativo do celular
         async function installPWA() {
             if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    addLog("App instalado na tela principal do usuário.", "success");
-                    document.getElementById('btn-install').style.display = 'none';
+                try {
+                    addLog("Iniciando prompt de instalação do PWA...", "info");
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        addLog("App instalado na tela principal do usuário.", "success");
+                        const installBtn = document.getElementById('btn-install');
+                        if (installBtn) installBtn.style.display = 'none';
+                        showAppToast(currentLanguage === 'pt' ? "Instalação concluída com sucesso! ✓" : "Installation completed successfully! ✓", "success");
+                    } else {
+                        addLog("Instalação do PWA rejeitada pelo usuário.", "warning");
+                    }
+                } catch (err) {
+                    console.error("Falha no trigger do PWA:", err);
+                    addLog("Erro na instalação: " + err.message, "error");
+                    if (window.self !== window.top) {
+                        showAppToast(currentLanguage === 'pt' ? 
+                            "Atenção: Instalar aplicativos PWA é bloqueado dentro de iframes (como o assistente do AI Studio). Por favor, abra o link de desenvolvimento diretamente em uma nova aba do seu navegador para instalar o app com o novo ícone Synapse!" : 
+                            "Warning: PWA installation is blocked inside iframes. Please open the development URL directly in a new browser tab to install the app with the new Synapse icon!", "warning");
+                    } else {
+                        showAppToast(currentLanguage === 'pt' ? "Erro na instalação: " + err.message : "Installation error: " + err.message, "error");
+                    }
                 }
                 deferredPrompt = null;
             } else {
-                showAppToast("Para instalar direto no iOS/iPhone, toque em 'Compartilhar' e depois em 'Adicionar à Tela de Início'.", "info");
+                // Se não há prompt, mas o usuário chamou a função de instalar
+                if (window.self !== window.top) {
+                    addLog("PWA: Tentativa de instalação dentro de Iframe detectada.", "warning");
+                    showAppToast(currentLanguage === 'pt' ? 
+                        "Bloqueado em iframe! Abra o link do aplicativo diretamente no seu celular ou navegador em aba cheia para poder instalar o PWA." : 
+                        "Blocked in Iframe! Please open the app URL directly in fullscreen or on your mobile device to install the PWA.", "warning");
+                } else {
+                    addLog("Tentativa de instalação manual do PWA sem gatilho ativo.", "info");
+                    showAppToast(currentLanguage === 'pt' ? 
+                        "Se o botão não funcionar imediato, use o botão de 'Três Pontos' do navegador e selecione 'Instalar Aplicativo/Adicionar à Tela Inicial'." : 
+                        "If the button acts unresponsive, use the browser's 'Three Dots' menu and choose 'Install App' or 'Add to Home Screen'.", "info");
+                }
             }
         }
 
