@@ -43,6 +43,7 @@
             --glow-shadow: none;
             --border-weight: 1px;
             --backdrop-filter: none;
+            --global-saturation: 100%;
         }
 
         /* Tema Cinza Escuro (Opção Alternativa Secundária) */
@@ -119,6 +120,7 @@
             user-select: none;
             -webkit-user-select: none;
             transition: background-color 0.3s;
+            filter: saturate(var(--global-saturation, 100%));
         }
 
         /* Permite copiar texto de partes essenciais */
@@ -1338,23 +1340,23 @@
         <ul class="drawer-menu">
             <li class="drawer-item active" onclick="clickDrawerItem('tab-chat', '💬 Conversas')">
                 <span class="drawer-icon">💬</span>
-                <span class="drawer-label">Conversas</span>
+                <span class="drawer-label" data-i18n="conversas">Conversas</span>
             </li>
             <li class="drawer-item" onclick="clickDrawerItem('tab-config', '⚙️ Configurações (Ajustes)')">
                 <span class="drawer-icon">⚙️</span>
-                <span class="drawer-label">Configurações (Ajustes)</span>
+                <span class="drawer-label" data-i18n="configuracoes_ajustes">Configurações (Ajustes)</span>
             </li>
             <li class="drawer-item" onclick="clickDrawerItem('tab-logs', '🖥️ Terminal de Comandos')">
                 <span class="drawer-icon">🖥️</span>
-                <span class="drawer-label">Terminal de Comandos</span>
+                <span class="drawer-label" data-i18n="terminal_comandos">Terminal de Comandos</span>
             </li>
             <li class="drawer-item" onclick="clickDrawerItem('tab-translator', '🌐 Tradutor de Textos')">
                 <span class="drawer-icon">🌐</span>
-                <span class="drawer-label">Tradutor de Textos</span>
+                <span class="drawer-label" data-i18n="tradutor_textos">Tradutor de Textos</span>
             </li>
             <li class="drawer-item" onclick="clickDrawerItem('tab-context-browser', '🌐 Navegador de Contexto')">
                 <span class="drawer-icon">🌐</span>
-                <span class="drawer-label">Navegador de Contexto</span>
+                <span class="drawer-label" data-i18n="navegador_contexto">Navegador de Contexto</span>
             </li>
         </ul>
     </div>
@@ -1405,11 +1407,11 @@
         <!-- ABA TRADUTOR -->
         <section id="tab-translator" class="tab-section">
             <div class="section-header">
-                <h2>Tradutor IA</h2>
+                <h2 data-i18n="tab_translator_title">Tradutor IA</h2>
             </div>
             <div style="display: flex; flex-direction: column; gap: 15px;">
                 <div>
-                    <label style="display:block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Traduzir para:</label>
+                    <label style="display:block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;" data-i18n="transl_target_lbl">Traduzir para:</label>
                     <select id="transl-target-lang" class="form-control">
                         <option value="Português Brasileiro">Português</option>
                         <option value="Inglês">Inglês</option>
@@ -1422,14 +1424,14 @@
                     </select>
                 </div>
                 
-                <textarea id="transl-input" class="form-control" rows="4" placeholder="Cole aqui o texto original que deseja traduzir..."></textarea>
+                <textarea id="transl-input" class="form-control" rows="4" placeholder="Cole aqui o texto original que deseja traduzir..." data-i18n="transl_placeholder"></textarea>
                 
-                <button class="btn-universal" style="background-color: var(--primary); color: var(--bg-color); border: none; border-radius: 24px; padding: 14px; font-size: 0.95rem; font-weight: 600; cursor: pointer; text-align: center; display: block; width: 100%; transition: opacity 0.2s;" onclick="doTranslation()">Realizar Tradução ✨</button>
+                <button class="btn-universal" style="background-color: var(--primary); color: var(--bg-color); border: none; border-radius: 24px; padding: 14px; font-size: 0.95rem; font-weight: 600; cursor: pointer; text-align: center; display: block; width: 100%; transition: opacity 0.2s;" onclick="doTranslation()" data-i18n="transl_btn_exec">Realizar Tradução ✨</button>
                 
                 <div style="position: relative;">
-                    <textarea id="transl-output" class="form-control" rows="5" placeholder="A tradução aparecerá aqui..." readonly style="background-color: var(--card-bg-primary); padding-bottom: 50px;"></textarea>
+                    <textarea id="transl-output" class="form-control" rows="5" placeholder="A tradução aparecerá aqui..." readonly style="background-color: var(--card-bg-primary); padding-bottom: 50px;" data-i18n="transl_output_placeholder"></textarea>
                     
-                    <button class="reader-btn" onclick="speakText(document.getElementById('transl-output').value)" style="position: absolute; right: 10px; bottom: 10px; background: var(--card-bg-secondary); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 8px; padding: 6px 12px; cursor: pointer; transition: all 0.2s;" title="Ouvir Tradução">
+                    <button class="reader-btn" onclick="speakText(document.getElementById('transl-output').value)" style="position: absolute; right: 10px; bottom: 10px; background: var(--card-bg-secondary); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 8px; padding: 6px 12px; cursor: pointer; transition: all 0.2s;" title="Ouvir Tradução" data-i18n="transl_btn_listen">
                         🔊 Ouvir
                     </button>
                 </div>
@@ -1543,8 +1545,8 @@
             <!-- TELA DE ÍNDICE (Menu Principal de Ajustes) -->
             <div id="config-index-view">
                 <div class="section-header" style="margin-bottom: 20px; text-align: left;">
-                    <h2>⚙️ Ajustes do Sistema</h2>
-                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">Gerencie recursos visuais, inteligência e dados de nuvem</p>
+                    <h2 data-i18n="ajustes_sistema_titulo">⚙️ Ajustes do Sistema</h2>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;" data-i18n="ajustes_sistema_subtitle">Gerencie recursos visuais, inteligência e dados de nuvem</p>
                 </div>
 
                 <!-- Lista Minimalista / Menu de Lista com fundo Super Black -->
@@ -1555,8 +1557,8 @@
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
                             <span style="font-size: 1.5rem; line-height: 1;">🎨</span>
                             <div style="display: flex; flex-direction: column; gap: 2px;">
-                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;">Aparência e Temas</span>
-                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;">Modo AMOLED, cores de destaque e customização visual</span>
+                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;" data-i18n="aparencia_temas">Aparência e Temas</span>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;" data-i18n="aparencia_temas_desc">Modo AMOLED, cores de destaque e customização visual</span>
                             </div>
                         </div>
                         <span style="color: var(--text-muted); font-weight: bold; font-family: monospace; font-size: 1.1rem; padding-left: 10px;">&gt;</span>
@@ -1567,8 +1569,8 @@
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
                             <span style="font-size: 1.5rem; line-height: 1;">🤖</span>
                             <div style="display: flex; flex-direction: column; gap: 2px;">
-                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;">Conexão Bot do Telegram</span>
-                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;">Insira o token do BotFather e configure a integração do robô</span>
+                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;" data-i18n="conexao_telegram">Conexão Bot do Telegram</span>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;" data-i18n="conexao_telegram_desc">Insira o token do BotFather e configure a integração do robô</span>
                             </div>
                         </div>
                         <span style="color: var(--text-muted); font-weight: bold; font-family: monospace; font-size: 1.1rem; padding-left: 10px;">&gt;</span>
@@ -1579,8 +1581,8 @@
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
                             <span style="font-size: 1.5rem; line-height: 1;">🧠</span>
                             <div style="display: flex; flex-direction: column; gap: 2px;">
-                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;">Motor de Inteligência Artificial</span>
-                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;">Gerencie provedores como Gemini, OpenAI, Groq, chaves de API e prompts</span>
+                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;" data-i18n="motor_ai">Motor de Inteligência Artificial</span>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;" data-i18n="motor_ai_desc">Gerencie provedores como Gemini, OpenAI, Groq, chaves de API e prompts</span>
                             </div>
                         </div>
                         <span style="color: var(--text-muted); font-weight: bold; font-family: monospace; font-size: 1.1rem; padding-left: 10px;">&gt;</span>
@@ -1591,8 +1593,8 @@
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
                             <span style="font-size: 1.5rem; line-height: 1;">☁️</span>
                             <div style="display: flex; flex-direction: column; gap: 2px;">
-                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;">Conexão e Banco de Dados</span>
-                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;">Configurações do Supabase, URLs do projeto, tabelas e backups</span>
+                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;" data-i18n="banco_dados">Conexão e Banco de Dados</span>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;" data-i18n="banco_dados_desc">Configurações do Supabase, URLs do projeto, tabelas e backups</span>
                             </div>
                         </div>
                         <span style="color: var(--text-muted); font-weight: bold; font-family: monospace; font-size: 1.1rem; padding-left: 10px;">&gt;</span>
@@ -1603,8 +1605,8 @@
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
                             <span style="font-size: 1.5rem; line-height: 1;">🔊</span>
                             <div style="display: flex; flex-direction: column; gap: 2px;">
-                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;">Voz, Leitura e Acessibilidade</span>
-                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;">Ajuste velocidade de áudio, tom de voz, tamanho dos textos e animações</span>
+                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;" data-i18n="voz_acessibilidade">Voz, Leitura e Acessibilidade</span>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;" data-i18n="voz_acessibilidade_desc">Ajuste velocidade de áudio, tom de voz, tamanho dos textos e animações</span>
                             </div>
                         </div>
                         <span style="color: var(--text-muted); font-weight: bold; font-family: monospace; font-size: 1.1rem; padding-left: 10px;">&gt;</span>
@@ -1615,8 +1617,20 @@
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
                             <span style="font-size: 1.5rem; line-height: 1;">👤</span>
                             <div style="display: flex; flex-direction: column; gap: 2px;">
-                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;">Minha Conta & Sessão</span>
-                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;">Dados do usuário conectado, chaves de acesso e gerenciamento de login</span>
+                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;" data-i18n="minha_conta">Minha Conta & Sessão</span>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;" data-i18n="minha_conta_desc">Dados do usuário conectado, chaves de acesso e gerenciamento de login</span>
+                            </div>
+                        </div>
+                        <span style="color: var(--text-muted); font-weight: bold; font-family: monospace; font-size: 1.1rem; padding-left: 10px;">&gt;</span>
+                    </div>
+
+                    <!-- Opção Nova: Seleção de Idioma do Sistema -->
+                    <div class="config-index-item" onclick="openConfigSubView('languages')" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 14px; cursor: pointer; transition: background 0.2s; min-height: 72px;">
+                        <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
+                            <span style="font-size: 1.5rem; line-height: 1;">🌐</span>
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;" data-i18n="idioma_selector_title">Idioma do Sistema / Language</span>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;" data-i18n="idioma_selector_desc">Altere o idioma de toda a interface do aplicativo para PT, EN ou ES</span>
                             </div>
                         </div>
                         <span style="color: var(--text-muted); font-weight: bold; font-family: monospace; font-size: 1.1rem; padding-left: 10px;">&gt;</span>
@@ -1625,12 +1639,39 @@
                 </div>
 
                 <!-- Botões secundários que ficam no índice principal de ajustes -->
-                <button class="btn-universal btn-install" id="btn-install" onclick="installPWA()" style="display: none; margin-bottom: 12px;">
+                <button class="btn-universal btn-install" id="btn-install" onclick="installPWA()" style="display: none; margin-bottom: 12px;" data-i18n="baixar_pwa">
                     ⬇️ Baixar / Instalar App (PWA)
                 </button>
 
-                <button class="btn-universal" style="background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.4); color: #fbbf24; margin-top: 10px;" onclick="forceAppUpdateAndClearCache()">
+                <button class="btn-universal" style="background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.4); color: #fbbf24; margin-top: 10px;" onclick="forceAppUpdateAndClearCache()" data-i18n="limpar_cache">
                     🔄 Limpar Cache & Forçar Atualização
+                </button>
+            </div>
+
+            <!-- SUB-VIEW 7: SELEÇÃO DE IDIOMAS DO SISTEMA -->
+            <div id="config-subview-languages" class="config-subview" style="display: none;">
+                <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;" data-i18n="voltar_ajustes">⬅️ Voltar para Ajustes</button>
+                
+                <div class="section-header" style="text-align: left; margin-bottom: 12px;">
+                    <h2 data-i18n="idiomas_title">🌐 Idiomas do Sistema (System Languages)</h2>
+                    <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; line-height: 1.3;" data-i18n="idiomas_subtitle">Escolha o idioma de exibição do console, configurações, botões e controles nativos.</p>
+                </div>
+
+                <div class="supabase-card" style="margin-bottom: 20px; text-align: left; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px;">
+                    
+                    <div class="form-group">
+                        <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; color: #fff;" data-i18n="selecionar_idioma_lbl">Selecione seu Idioma / Select Language</label>
+                        <select id="app-language-select" class="form-control" style="background: var(--card-bg-secondary); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 44px; padding: 0 12px; cursor: pointer; font-weight: 600;" onchange="applyAppLanguage(this.value)">
+                            <option value="pt">🇧🇷 Português (Brasil)</option>
+                            <option value="en">🇺🇸 English (US)</option>
+                            <option value="es">🇪🇸 Español</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <button class="btn-universal" onclick="saveConfiguration()" data-i18n="aplicar_ajustes_conta">
+                    Aplicar Ajustes
                 </button>
             </div>
 
@@ -1683,6 +1724,16 @@
                             <span style="color: var(--text-muted); font-size: 0.70rem;">Pixels apagam em tons pretos absolutos</span>
                         </div>
                         <div class="toggle-switch on" id="amoled-switch"></div>
+                    </div>
+
+                    <!-- Filtro de Intensidade de Cores -->
+                    <div class="form-group" style="margin-top: 4px;">
+                        <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">🌈 Intensidade das Cores (Saturação)</label>
+                        <div style="display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); padding: 10px 12px; border-radius: 12px;">
+                            <input type="range" id="config-color-saturation" min="10" max="120" step="5" value="100" style="flex: 1; accent-color: var(--primary, #ffffff); cursor: pointer; height: 6px; border-radius: 3px; outline: none; background: #334155;" oninput="applyColorSaturation(this.value)">
+                            <span id="config-color-saturation-val" style="font-size: 0.82rem; color: #fff; font-family: 'JetBrains Mono', 'Courier New', monospace; font-weight: bold; min-width: 45px; text-align: right;">100%</span>
+                        </div>
+                        <span style="color: var(--text-muted); font-size: 0.70rem; display: block; margin-top: 4px;">Arraste para a esquerda para diminuir a vivacidade e intensidade das cores vibrantes ou tons de destaque forte.</span>
                     </div>
 
                     <!-- Picker Dinâmico Manual de Cor de Destaque -->
@@ -1914,7 +1965,7 @@ WITH CHECK (true);</code>
                     
                     <!-- Configuração 1: Velocidade de Voz -->
                     <div class="form-group">
-                        <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">⚡ Velocidade de Leitura por Voz (TTS)</label>
+                        <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;" data-i18n="speech_rate_lbl">⚡ Velocidade de Leitura por Voz (TTS)</label>
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <input type="range" id="speech-rate" min="0.5" max="2.0" step="0.1" value="1.0" style="flex: 1; accent-color: var(--primary); cursor: pointer;" oninput="document.getElementById('speech-rate-val').innerText = this.value + 'x';">
                             <span id="speech-rate-val" style="font-size: 0.85rem; color: var(--text-muted); font-family: monospace; min-width: 40px; text-align: right;">1.0x</span>
@@ -1923,21 +1974,30 @@ WITH CHECK (true);</code>
 
                     <!-- Configuração 2: Tom da Voz -->
                     <div class="form-group">
-                        <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">🎼 Tom de Voz da Narração</label>
+                        <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;" data-i18n="speech_pitch_lbl">🎼 Tom de Voz da Narração</label>
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <input type="range" id="speech-pitch" min="0.5" max="1.5" step="0.1" value="1.0" style="flex: 1; accent-color: var(--primary); cursor: pointer;" oninput="document.getElementById('speech-pitch-val').innerText = this.value;">
                             <span id="speech-pitch-val" style="font-size: 0.85rem; color: var(--text-muted); font-family: monospace; min-width: 40px; text-align: right;">1.0</span>
                         </div>
                     </div>
 
+                    <!-- Configuração Nova: Escolha do Modelo de Voz TTS -->
+                    <div class="form-group">
+                        <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;" data-i18n="tts_voice_lbl">🗣️ Modelo de Voz Narradora (Web Speech TTS)</label>
+                        <select id="speech-voice" class="form-control" style="background: rgba(255,255,255,0.03); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;">
+                            <option value="">Carregando vozes do sistema...</option>
+                        </select>
+                        <span style="color: var(--text-muted); font-size: 0.68rem; margin-top: 4px; display: block;" data-i18n="tts_voice_desc">Selecione um dos modelos de voz instalados no seu dispositivo/navegador.</span>
+                    </div>
+
                     <!-- Configuração 3: Tamanho de Texto do Chat -->
                     <div class="form-group">
-                        <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">🔎 Tamanho do Texto das Conversas</label>
+                        <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;" data-i18n="chat_font_size_lbl">🔎 Tamanho do Texto das Conversas</label>
                         <select id="chat-font-size" class="form-control" style="background: rgba(255,255,255,0.03); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="applyChatFontSize(this.value)">
-                            <option value="0.8rem">Pequeno (Compacto)</option>
-                            <option value="0.95rem" selected>Normal (Padrão)</option>
-                            <option value="1.1rem">Grande (Melhor Leitura)</option>
-                            <option value="1.25rem">Extra Grande (Alta Visibilidade)</option>
+                            <option value="0.8rem" data-i18n="chat_font_size_small">Pequeno (Compacto)</option>
+                            <option value="0.95rem" selected data-i18n="chat_font_size_normal">Normal (Padrão)</option>
+                            <option value="1.1rem" data-i18n="chat_font_size_large">Grande (Melhor Leitura)</option>
+                            <option value="1.25rem" data-i18n="chat_font_size_extra">Extra Grande (Alta Visibilidade)</option>
                         </select>
                     </div>
 
@@ -2230,10 +2290,240 @@ WITH CHECK (true);</code>
             document.getElementById('config-index-view').style.display = 'block';
         }
 
+        // --- 1B. Sistema de Idiomas e Dicionários (i18n) & Vozes TTS ---
+        let currentLanguage = 'pt';
+
+        const appTranslations = {
+            pt: {
+                "conversas": "💬 Conversas",
+                "configuracoes_ajustes": "⚙️ Configurações (Ajustes)",
+                "terminal_comandos": "🖥️ Terminal de Comandos",
+                "tradutor_textos": "🌐 Tradutor de Textos",
+                "navegador_contexto": "🌐 Navegador de Contexto",
+                "online": "Online",
+                "ajustes_sistema_titulo": "⚙️ Ajustes do Sistema",
+                "ajustes_sistema_subtitle": "Gerencie recursos visuais, inteligência e dados de nuvem",
+                "aparencia_temas": "Aparência e Temas",
+                "aparencia_temas_desc": "Modo AMOLED, cores de destaque e customização visual",
+                "conexao_telegram": "Conexão Bot do Telegram",
+                "conexao_telegram_desc": "Insira o token do BotFather e configure a integração do robô",
+                "motor_ai": "Motor de Inteligência Artificial",
+                "motor_ai_desc": "Gerencie provedores como Gemini, OpenAI, Groq, chaves de API e prompts",
+                "banco_dados": "Conexão e Banco de Dados",
+                "banco_dados_desc": "Configurações do Supabase, URLs do projeto, tabelas e backups",
+                "voz_acessibilidade": "Voz, Leitura e Acessibilidade",
+                "voz_acessibilidade_desc": "Ajuste velocidade de áudio, tom de voz, tamanho dos textos e animações",
+                "minha_conta": "Minha Conta & Sessão",
+                "minha_conta_desc": "Dados do usuário conectado, chaves de acesso e gerenciamento de login",
+                "idioma_selector_title": "Idioma do Sistema / Language",
+                "idioma_selector_desc": "Altere o idioma de toda a interface do aplicativo para PT, EN ou ES",
+                "baixar_pwa": "⬇️ Baixar / Instalar App (PWA)",
+                "limpar_cache": "🔄 Limpar Cache & Forçar Atualização",
+                "voltar_ajustes": "⬅️ Voltar para Ajustes",
+                "idiomas_title": "🌐 Idiomas do Sistema (System Languages)",
+                "idiomas_subtitle": "Escolha o idioma de exibição do console, configurações, botões e controles nativos.",
+                "selecionar_idioma_lbl": "Selecione seu Idioma / Select Language",
+                "speech_rate_lbl": "⚡ Velocidade de Leitura por Voz (TTS)",
+                "speech_pitch_lbl": "🎼 Tom de Voz da Narração",
+                "tts_voice_lbl": "🗣️ Modelo de Voz Narradora (Web Speech TTS)",
+                "tts_voice_desc": "Selecione um dos modelos de voz instalados no seu dispositivo/navegador.",
+                "chat_font_size_lbl": "🔎 Tamanho do Texto das Conversas",
+                "chat_font_size_small": "Pequeno (Compacto)",
+                "chat_font_size_normal": "Normal (Padrão)",
+                "chat_font_size_large": "Grande (Melhor Leitura)",
+                "chat_font_size_extra": "Extra Grande (Alta Visibilidade)",
+                "tab_translator_title": "Tradutor IA",
+                "transl_target_lbl": "Traduzir para:",
+                "transl_placeholder": "Cole aqui o texto original que deseja traduzir...",
+                "transl_btn_exec": "Realizar Tradução ✨",
+                "transl_output_placeholder": "A tradução aparecerá aqui...",
+                "transl_btn_listen": "🔊 Ouvir"
+            },
+            en: {
+                "conversas": "💬 Conversations",
+                "configuracoes_ajustes": "⚙️ Settings",
+                "terminal_comandos": "🖥️ Command Terminal",
+                "tradutor_textos": "🌐 Text Translator",
+                "navegador_contexto": "🌐 Context Browser",
+                "online": "Online",
+                "ajustes_sistema_titulo": "⚙️ System Configuration",
+                "ajustes_sistema_subtitle": "Manage visual themes, artificial logic, and databases",
+                "aparencia_temas": "Appearance & Themes",
+                "aparencia_temas_desc": "AMOLED mode, glowing accent colors and custom setups",
+                "conexao_telegram": "Telegram Bot Setup",
+                "conexao_telegram_desc": "Configure Telegram BotFather token to capture remote logs",
+                "motor_ai": "Artificial Intelligence",
+                "motor_ai_desc": "Manage API endpoints and credentials for Gemini, OpenAI and Groq",
+                "banco_dados": "Database & Cloud",
+                "banco_dados_desc": "Connect your private database using high-security Supabase",
+                "voz_acessibilidade": "Voice & Accessibility Services",
+                "voz_acessibilidade_desc": "Tweak TTS narration speed, acoustic pitch, and typography scale",
+                "minha_conta": "My Account Status",
+                "minha_conta_desc": "Review currently logged session details and credential safety",
+                "idioma_selector_title": "System Language / Idioma",
+                "idioma_selector_desc": "Migrate your workspace interface language instantly to EN, PT, or ES",
+                "baixar_pwa": "⬇️ Download App (PWA)",
+                "limpar_cache": "🔄 Force Update & Flush Local Storage",
+                "voltar_ajustes": "⬅️ Back to Settings",
+                "idiomas_title": "🌐 System Languages (Idioma)",
+                "idiomas_subtitle": "Configure interface tags, labels, and terminal outputs for your workspace.",
+                "selecionar_idioma_lbl": "Select workspace lang:",
+                "speech_rate_lbl": "⚡ Voice Reading Speed Rate (TTS)",
+                "speech_pitch_lbl": "🎼 Narration Pitch Tone",
+                "tts_voice_lbl": "🗣️ System Narration Speaker (Web TTS)",
+                "tts_voice_desc": "Select from available native speech synthesizer models detected by your device.",
+                "chat_font_size_lbl": "🔎 Conversation Typography Font Size",
+                "chat_font_size_small": "Compact Space (Small)",
+                "chat_font_size_normal": "Standard Space (Regular)",
+                "chat_font_size_large": "Comfortable Space (Large)",
+                "chat_font_size_extra": "High Visibility Layout (Extra)",
+                "tab_translator_title": "AI Translator",
+                "transl_target_lbl": "Translate to:",
+                "transl_placeholder": "Paste original paragraphs here...",
+                "transl_btn_exec": "Execute Translation ✨",
+                "transl_output_placeholder": "Translation will show up here...",
+                "transl_btn_listen": "🔊 Speak Output"
+            },
+            es: {
+                "conversas": "💬 Chat y Charlas",
+                "configuracoes_ajustes": "⚙️ Ajustes del Sistema",
+                "terminal_comandos": "🖥️ Línea de Comandos",
+                "tradutor_textos": "🌐 Traductor de Textos",
+                "navegador_contexto": "🌐 Navegador de Contexto",
+                "online": "En Línea",
+                "ajustes_sistema_titulo": "⚙️ Ajustes Generales",
+                "ajustes_sistema_subtitle": "Gestione características visuales, motores de IA y nube",
+                "aparencia_temas": "Temas y Apariencia",
+                "aparencia_temas_desc": "Modo AMOLED, tonos de color y moldes estéticos nativos",
+                "conexao_telegram": "Enlace de Telegram Bot",
+                "conexao_telegram_desc": "Ingrese el token de seguridad para vincular registros remotos",
+                "motor_ai": "Motores de Inteligencia",
+                "motor_ai_desc": "Establezca credenciales para Gemini, OpenAI o Groq en el sistema",
+                "banco_dados": "Nube y Bases de Datos",
+                "banco_dados_desc": "Sincronice copias de respaldo mediante un servidor Supabase",
+                "voz_acessibilidade": "Voz, Sonido y Accesos",
+                "voz_acessibilidade_desc": "Defina la agilidad de los diálogos, modulación de tonos y accesos",
+                "minha_conta": "Cuenta y Credenciales",
+                "minha_conta_desc": "Administre su perfil de acceso y su estado de la sesión Postgres",
+                "idioma_selector_title": "Idioma del Sistema / Language",
+                "idioma_selector_desc": "Actualizar el idioma visual de toda la plataforma a ES, PT o EN",
+                "baixar_pwa": "⬇️ Descargar Aplicativo (PWA)",
+                "limpar_cache": "🔄 Borrar Caché e Reiniciar Aplicación",
+                "voltar_ajustes": "⬅️ Volver a Ajustes",
+                "idiomas_title": "🌐 Idioma General del Sistema",
+                "idiomas_subtitle": "Defina el idioma para los textos, indicadores y avisos del aplicativo.",
+                "selecionar_idioma_lbl": "Seleccione su idioma actual:",
+                "speech_rate_lbl": "⚡ Agilidad de la Locución por Voz (TTS)",
+                "speech_pitch_lbl": "🎼 Modulación de Tono Hablado",
+                "tts_voice_lbl": "🗣️ Altavoz del Sintetizador local (TTS)",
+                "tts_voice_desc": "Escoja uno de los locutores interactivos preinstalados en su sistema.",
+                "chat_font_size_lbl": "🔎 Tamaño tipográfico de las Conversaciones",
+                "chat_font_size_small": "Compacto (Pequeño)",
+                "chat_font_size_normal": "Estándar (Regular)",
+                "chat_font_size_large": "Cómodo (Grande)",
+                "chat_font_size_extra": "Máxima Visibilidad (Extra)",
+                "tab_translator_title": "Traductor de IA",
+                "transl_target_lbl": "Traducir al:",
+                "transl_placeholder": "Pegue su texto original aquí...",
+                "transl_btn_exec": "Efectuar Traducción ✨",
+                "transl_output_placeholder": "La traducción aparecerá en esta caja...",
+                "transl_btn_listen": "🔊 Escuchar"
+            }
+        };
+
+        function i18n(key) {
+            const dict = appTranslations[currentLanguage] || appTranslations['pt'];
+            return dict[key] || key;
+        }
+
+        function updateAppLanguage(lang) {
+            currentLanguage = lang;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                const translation = i18n(key);
+                if (translation) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.setAttribute('placeholder', translation);
+                    } else {
+                        el.innerHTML = translation;
+                    }
+                }
+            });
+
+            // Update Tab Titles Mapping dynamically to reflect selected language!
+            if (typeof tabTitlesMap !== 'undefined') {
+                tabTitlesMap['tab-chat'] = i18n('conversas');
+                tabTitlesMap['tab-config'] = i18n('configuracoes_ajustes');
+                tabTitlesMap['tab-logs'] = i18n('terminal_comandos');
+                tabTitlesMap['tab-translator'] = i18n('tradutor_textos');
+                tabTitlesMap['tab-context-browser'] = i18n('navegador_contexto');
+
+                // Update current top bar title if active
+                const topTitleEl = document.getElementById('topbar-section-title');
+                const activeTab = document.querySelector('.tab-section.active');
+                if (topTitleEl && activeTab) {
+                    topTitleEl.textContent = tabTitlesMap[activeTab.id] || 'Core System';
+                }
+            }
+        }
+
+        function applyAppLanguage(lang) {
+            triggerPulse();
+            updateAppLanguage(lang);
+            showAppToast(lang === 'pt' ? 'Idioma atualizado com sucesso!' : lang === 'en' ? 'System language updated!' : '¡Idioma actualizado correctamente!', 'success');
+        }
+
+        function populateVoices() {
+            if (typeof window === 'undefined' || !window.speechSynthesis) return;
+            const select = document.getElementById('speech-voice');
+            if (!select) return;
+
+            const voices = window.speechSynthesis.getVoices();
+            select.innerHTML = '';
+
+            if (voices.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = 'Carregando vozes...';
+                if (currentLanguage === 'en') opt.textContent = 'Loading system voices...';
+                if (currentLanguage === 'es') opt.textContent = 'Cargando voces del sistema...';
+                select.appendChild(opt);
+                return;
+            }
+
+            voices.forEach((voice) => {
+                const opt = document.createElement('option');
+                opt.value = voice.name;
+                opt.textContent = `${voice.name} (${voice.lang})${voice.default ? ' [Padrão]' : ''}`;
+                select.appendChild(opt);
+            });
+
+            // Restore previously saved voice selection
+            try {
+                const saved = localStorage.getItem('ai_console_settings');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    if (data.speechVoice) {
+                        select.value = data.speechVoice;
+                    }
+                }
+            } catch (err) {
+                console.error("Falha ao sincronizar voz de restauração:", err);
+            }
+        }
+
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                populateVoices();
+            };
+            setTimeout(populateVoices, 100);
+        }
+
         // --- 1C. Galeria de Temas e Customização Estética ---
         let selectedThemeId = 'superblack';
         let selectedBorders = 'rounded';
         let selectedFinish = 'flat';
+        let selectedSaturation = 100;
 
         const availableThemes = {
             superblack: {
@@ -2586,6 +2876,18 @@ WITH CHECK (true);</code>
             addLog(`Acabamento decorativo alterado para: ${finishKey}`, "info");
         }
 
+        function applyColorSaturation(val) {
+            selectedSaturation = parseInt(val);
+            document.documentElement.style.setProperty('--global-saturation', `${val}%`);
+            const label = document.getElementById('config-color-saturation-val');
+            if (label) label.textContent = `${val}%`;
+            
+            const slider = document.getElementById('config-color-saturation');
+            if (slider) slider.value = val;
+            
+            addLog(`Intensidade de saturação alterada para: ${val}%`, "info");
+        }
+
         // --- 2. Controle de Lógica Engine (Anteriormente parte das Seções de Botões e AMOLED) ---
         let apiType = "GEMINI";
 
@@ -2806,6 +3108,20 @@ WITH CHECK (true);</code>
                     }
                     applyTransitionsState();
 
+                    // Restaura idioma e voz
+                    if (data.currentLanguage !== undefined) {
+                        currentLanguage = data.currentLanguage;
+                        const appLangSel = document.getElementById('app-language-select');
+                        if (appLangSel) appLangSel.value = currentLanguage;
+                        updateAppLanguage(currentLanguage);
+                    } else {
+                        updateAppLanguage('pt');
+                    }
+                    if (data.speechVoice !== undefined) {
+                        const sv = document.getElementById('speech-voice');
+                        if (sv) sv.value = data.speechVoice;
+                    }
+
                     // Se temos dados válidos, testa conexão e atualiza indicadores em background após o boot
                     setTimeout(() => {
                         testSupabaseConnection();
@@ -2823,6 +3139,7 @@ WITH CHECK (true);</code>
                     // Defaults de Acessibilidade de segurança ao reiniciar sem dados
                     applyChatFontSize('0.95rem');
                     applyTransitionsState();
+                    updateAppLanguage('pt');
                     
                     // Roda um teste inicial automático de conexão em background
                     setTimeout(() => {
@@ -2852,10 +3169,16 @@ WITH CHECK (true);</code>
                     } else {
                         applyVisualFinish('flat');
                     }
+                    if (data.selectedSaturation !== undefined) {
+                        applyColorSaturation(data.selectedSaturation);
+                    } else {
+                        applyColorSaturation(100);
+                    }
                 } else {
                     applyThemePreset('superblack');
                     applyBordersStyle('rounded');
                     applyVisualFinish('flat');
+                    applyColorSaturation(100);
                 }
                 renderThemesGrid();
 
@@ -3298,11 +3621,14 @@ WITH CHECK (true);</code>
                 chatFontSize: document.getElementById('chat-font-size').value,
                 hapticsOn: document.getElementById('haptic-switch').classList.contains('on'),
                 transitionsOn: document.getElementById('transitions-switch').classList.contains('on'),
+                currentLanguage: currentLanguage,
+                speechVoice: document.getElementById('speech-voice')?.value || '',
 
                 // Parâmetros estéticos persistidos
                 selectedThemeId: selectedThemeId,
                 selectedBorders: selectedBorders,
-                selectedFinish: selectedFinish
+                selectedFinish: selectedFinish,
+                selectedSaturation: selectedSaturation
             };
             
             localStorage.setItem('ai_console_settings', JSON.stringify(data));
@@ -3311,16 +3637,31 @@ WITH CHECK (true);</code>
             applyChatFontSize(data.chatFontSize);
             applyTransitionsState();
             
-            addLog("As configurações foram persistidas localmente de forma segura.", "success");
+            if (currentLanguage === 'pt') {
+                addLog("As configurações foram persistidas localmente de forma segura.", "success");
+            } else if (currentLanguage === 'en') {
+                addLog("System settings have been securely saved to local storage.", "success");
+            } else {
+                addLog("Los ajustes se han guardado de forma segura en el almacenamiento local.", "success");
+            }
             
             // Testa conexão se os campos forem editados
             testSupabaseConnection();
             
-            // UX Nativa Feedback rápido
-            const btn = document.querySelector('.btn-universal');
-            const originalText = btn.innerText;
-            btn.innerText = "Salvo com sucesso ✓";
-            setTimeout(() => btn.innerText = originalText, 2000);
+            // UX Nativa Feedback rápido para o subview ativo
+            let btn = null;
+            const activeSubView = Array.from(document.querySelectorAll('.config-subview')).find(el => el.style.display === 'block');
+            if (activeSubView) {
+                btn = activeSubView.querySelector('.btn-universal');
+            }
+            if (!btn) {
+                btn = document.querySelector('#config-index-view .btn-universal') || document.querySelector('.btn-universal');
+            }
+            if (btn) {
+                const originalText = btn.innerText;
+                btn.innerText = currentLanguage === 'pt' ? "Salvo com sucesso ✓" : currentLanguage === 'en' ? "Successfully Saved ✓" : "¡Guardado con éxito! ✓";
+                setTimeout(() => btn.innerText = originalText, 2000);
+            }
         }
 
         async function testTelegramConnection() {
