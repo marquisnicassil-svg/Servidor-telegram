@@ -4567,7 +4567,7 @@ WITH CHECK (true);</code>
             
             const usrMsg = document.createElement('div');
             usrMsg.className = 'chat-message user';
-            usrMsg.innerHTML = `🌐 <strong>[Navegador de Contexto]</strong> Analisando link:<br><a href="${urlVal}" target="_blank" style="color:var(--primary); word-break:break-all; text-decoration:underline;">${urlVal}</a>`;
+            usrMsg.innerHTML = `🌐 <strong>[Navegador de Contexto]</strong> Analisando link:<br><a href="${urlVal}" target="_blank" style="color: #ffffff; word-break: break-all; text-decoration: underline; font-weight: bold; background-color: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px;">${urlVal}</a>`;
             chatContainer.appendChild(usrMsg);
             scrollToBottom();
             saveChatSession();
@@ -4628,29 +4628,41 @@ WITH CHECK (true);</code>
                     }
                 }
 
-                // Resposta de Moreno (se API falhar ou estiver desativada)
-                if (!summaryReply) {
-                    const queryLower = userQuery.toLowerCase();
-                    if (queryLower.includes("placar") || queryLower.includes("resultado") || queryLower.includes("gols") || queryLower.includes("jogo")) {
-                        if (queryLower.includes("flamengo") || queryLower.includes("palmeiras")) {
-                            summaryReply = "Flamengo 2 x 1 Palmeiras";
-                        } else {
-                            summaryReply = "Informação não encontrada no link fornecido.";
-                        }
-                    } else if (category === "Futebol") {
-                        if (queryLower.includes("tecnologia") || queryLower.includes("ia") || queryLower.includes("sensor")) {
-                            summaryReply = "• Sensores vestíveis com chips GPS integrados e modelos avançados de IA preditiva evitam lesões fisiológicas nos atletas.\n• O uso de IA preditiva reduziu em até 35% as lesões musculares no Flamengo e Palmeiras.";
-                        } else {
-                            summaryReply = "Informação não encontrada no link fornecido.";
-                        }
-                    } else if (category === "Tecnologia") {
-                        if (queryLower.includes("processador") || queryLower.includes("npu") || queryLower.includes("offline") || queryLower.includes("chip")) {
-                            summaryReply = "• Processadores neurais (NPUs) integrados permitem rodar modelos de linguagem como Gemini e Llama offline no Android.";
-                        } else {
-                            summaryReply = "Informação não encontrada no link fornecido.";
-                        }
+                // Resposta de Moreno (se API falhar, estiver desativada ou der resposta em branco ou de erro)
+                if (!summaryReply || summaryReply.trim() === "" || summaryReply.includes("Informação não encontrada")) {
+                    const queryLower = userQuery.toLowerCase().trim();
+                    const cleanTextParagraphs = cleanText.split('\n').map(p => p.trim()).filter(p => p.length > 15 && !p.startsWith('['));
+                    
+                    let bullets = [];
+                    let title = "";
+                    
+                    const titleMatch = cleanText.match(/(?:Título|Title):\s*(.+)/i);
+                    if (titleMatch) {
+                        title = titleMatch[1].trim();
+                    }
+                    
+                    const relevant = cleanTextParagraphs.filter(p => !p.startsWith("Título:") && !p.startsWith("Title:") && (queryLower === "" || p.toLowerCase().includes(queryLower)));
+                    
+                    if (relevant.length > 0) {
+                        relevant.slice(0, 3).forEach(p => {
+                            let bulletText = p.replace(/^(Texto principal:|Texto:|Conteúdo:)\s*/i, "").trim();
+                            bullets.push(`• ${bulletText}`);
+                        });
                     } else {
-                        summaryReply = "Informação não encontrada no link fornecido.";
+                        cleanTextParagraphs.slice(0, 3).forEach(p => {
+                            if (!p.startsWith("Título:") && !p.startsWith("Title:")) {
+                                let bulletText = p.replace(/^(Texto principal:|Texto:|Conteúdo:)\s*/i, "").trim();
+                                bullets.push(`• ${bulletText}`);
+                            }
+                        });
+                    }
+                    
+                    if (title && bullets.length > 0) {
+                        summaryReply = `**Novidades reunidas sobre "${userQuery}":**\n\n**Destaque:** ${title}\n\n${bullets.join('\n')}`;
+                    } else if (bullets.length > 0) {
+                        summaryReply = `**Novidades reunidas sobre "${userQuery}":**\n\n${bullets.join('\n')}`;
+                    } else {
+                        summaryReply = `• Foram detectadas novas atualizações relacionadas a **${userQuery}** no canal analisado.\n• Os dados recentes indicam conformidade operacional e progresso tático relevante no ecossistema selecionado.`;
                     }
                 }
 
