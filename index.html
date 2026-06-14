@@ -35,6 +35,14 @@
             /* Safe area insets (Notch de iPhone/Android nativo) */
             --safe-top: env(safe-area-inset-top, 0px);
             --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+            /* Parâmetros de customização estética */
+            --btn-border-radius: 16px;
+            --card-border-radius: 20px;
+            --input-border-radius: 12px;
+            --glow-shadow: none;
+            --border-weight: 1px;
+            --backdrop-filter: none;
         }
 
         /* Tema Cinza Escuro (Opção Alternativa Secundária) */
@@ -43,6 +51,50 @@
             --card-bg-primary: #161920;
             --card-bg-secondary: #20242d;
             --border-color: #2b303b;
+        }
+
+        /* Classes de herança estética global para alteração instantânea */
+        .supabase-card, .config-subview-card, .config-subview .supabase-card {
+            border-radius: var(--card-border-radius) !important;
+            border: var(--border-weight) solid var(--border-color) !important;
+            box-shadow: var(--glow-shadow) !important;
+            backdrop-filter: var(--backdrop-filter) !important;
+            -webkit-backdrop-filter: var(--backdrop-filter) !important;
+        }
+        
+        .btn-supabase-action {
+            border-radius: var(--input-border-radius) !important;
+            border: var(--border-weight) solid var(--border-color) !important;
+        }
+        
+        .selector-btn {
+            border-radius: var(--btn-border-radius) !important;
+            border: var(--border-weight) solid var(--border-color) !important;
+        }
+        
+        .btn-universal {
+            border-radius: var(--btn-border-radius) !important;
+            box-shadow: var(--glow-shadow) !important;
+        }
+        
+        .form-control, input, textarea, select {
+            border-radius: var(--input-border-radius) !important;
+            border: var(--border-weight) solid var(--border-color) !important;
+        }
+        
+        .theme-toggle {
+            border-radius: var(--input-border-radius) !important;
+            border: var(--border-weight) solid var(--border-color) !important;
+        }
+        
+        .config-index-item {
+            border-radius: var(--card-border-radius) !important;
+            border: var(--border-weight) solid var(--border-color) !important;
+            box-shadow: var(--glow-shadow) !important;
+        }
+
+        .chat-message {
+            border-radius: var(--input-border-radius) !important;
         }
 
         * {
@@ -1586,37 +1638,70 @@
             <div id="config-subview-appearance" class="config-subview" style="display: none;">
                 <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;">⬅️ Voltar para Ajustes</button>
                 
-                <div class="section-header" style="text-align: left;">
-                    <h2>🎨 Aparência e Temas</h2>
+                <div class="section-header" style="text-align: left; margin-bottom: 12px;">
+                    <h2>🎨 Galeria de Temas do Sistema</h2>
+                    <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; line-height: 1.3;">Selecione um tema exclusivo para alterar instantaneamente toda a identidade visual, cores e tipografia da plataforma.</p>
                 </div>
-                
-                <div class="form-group" style="background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 14px; padding: 14px; margin-bottom: 15px;">
-                    <div class="theme-toggle" onclick="toggleAmoled()">
+
+                <!-- Lista de Temas Dinâmicos (Grid Rápido) -->
+                <div id="themes-grid-container" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
+                    <!-- Preenchido dinamicamente via Javascript -->
+                </div>
+
+                <div class="section-header" style="text-align: left; margin-bottom: 12px; border-top: 1px solid var(--border-color); padding-top: 18px;">
+                    <h2>📐 Personalização Estilo-Estética</h2>
+                    <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; line-height: 1.3;">Ajuste o acabamento visual dos botões, inputs, painéis e bordas para moldar a interface.</p>
+                </div>
+
+                <div class="supabase-card" style="margin-bottom: 20px; text-align: left; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 14px;">
+                    
+                    <!-- Configuração de Bordas -->
+                    <div class="form-group">
+                        <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">🔳 Formato dos Elementos (Bordas)</label>
+                        <select id="config-border-radius" class="form-control" style="background: var(--card-bg-secondary); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="applyBordersStyle(this.value)">
+                            <option value="sharp">Retilíneo & Retro (Hacker / Terminal - 0px)</option>
+                            <option value="minimalist">Suave Compacto (Sutil - 8px)</option>
+                            <option value="rounded" selected>Moderno Curvado (Padrão Sleek - 14px)</option>
+                            <option value="capsule">Totalmente Arredondado (Orgânico / Capsule - 24px)</option>
+                        </select>
+                    </div>
+
+                    <!-- Acabamento Visual Avançado -->
+                    <div class="form-group">
+                        <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">✨ Acabamentos de Superfície & Luz</label>
+                        <select id="config-visual-finish" class="form-control" style="background: var(--card-bg-secondary); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="applyVisualFinish(this.value)">
+                            <option value="flat" selected>Amoled Flat (Contraste Infinito & Economia Máxima)</option>
+                            <option value="glow">High-Glow Neon (Efeito Neon Brilhante nas Bordas Ativas)</option>
+                            <option value="glass">Glassmorphism (Painéis Translúcidos de Vidro Fosco)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Fundo Super Black Toggle -->
+                    <div class="theme-toggle" onclick="toggleAmoled()" style="padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
                         <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
-                            <span style="font-weight: 600; display: block; font-size: 0.9rem; color: #fff;">Fundo Super Black (AMOLED)</span>
-                            <span style="color: var(--text-muted); font-size: 0.72rem;">Economize bateria com pretos extremamente profundos</span>
+                            <span style="font-weight: 600; display: block; font-size: 0.82rem; color: #fff;">Modo AMOLED Super Black</span>
+                            <span style="color: var(--text-muted); font-size: 0.70rem;">Pixels apagam em tons pretos absolutos</span>
                         </div>
                         <div class="toggle-switch on" id="amoled-switch"></div>
                     </div>
-                </div>
 
-                <div class="form-group" style="background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 14px; padding: 14px; margin-bottom: 15px;">
-                    <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Cor de Destaque Nativa</label>
-                    <div class="color-picker-grid" style="margin-top: 8px; margin-bottom: 4px;">
-                        <span class="color-circle" style="background-color: #ffffff;" onclick="setAccent('#ffffff', this)" title="Branco Minimalista"></span>
-                        <span class="color-circle" style="background-color: #10b981;" onclick="setAccent('#10b981', this)" title="Verde Esmeralda"></span>
-                        <span class="color-circle" style="background-color: #f59e0b;" onclick="setAccent('#f59e0b', this)" title="Laranja Âmbar"></span>
-                        <span class="color-circle" style="background-color: #ef4444;" onclick="setAccent('#ef4444', this)" title="Vermelho Carmesim"></span>
-                        <span class="color-circle" style="background-color: #8b5cf6;" onclick="setAccent('#8b5cf6', this)" title="Roxo Cósmico"></span>
+                    <!-- Picker Dinâmico Manual de Cor de Destaque -->
+                    <div class="form-group" style="margin-top: 4px;">
+                        <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">🎨 Ajuste Fino: Cor Personalizada (Destaque)</label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input type="color" id="manual-accent-picker" style="width: 48px; height: 40px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="setAccent(this.value, null)">
+                            <span style="font-size: 0.78rem; color: var(--text-muted);">Adora uma cor específica? Escolha manualmente seu destaque preferido.</span>
+                        </div>
                     </div>
+
                 </div>
 
                 <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; font-size: 0.8rem; color: var(--text-muted); text-align: left; line-height: 1.4; margin-bottom: 24px;">
-                    💡 <b>Dica de Design:</b> Combine qualquer Cor de Destaque com o modo AMOLED ativo para um visual minimalista e de altíssimo contraste, ou desative o AMOLED para um tom suave de cinza-slate clássico.
+                    💡 <b>Consistência Estética:</b> Os estilos operam de forma transparente em todas as telas, guias de comando, caixas de diálogo, notificações de sistema (toasts) e logs de terminal!
                 </div>
 
                 <button class="btn-universal" onclick="saveConfiguration()">
-                    Aplicar Ajustes
+                    Aplicar Ajustes Visuais
                 </button>
             </div>
 
@@ -2145,86 +2230,363 @@ WITH CHECK (true);</code>
             document.getElementById('config-index-view').style.display = 'block';
         }
 
-        // --- 1C. Aplicação de Temas Prontos ---
-        function applyPresetTheme(accentColor, amoledOn) {
-            triggerPulse();
-            
-            // Set AMOLED Switch status and configure body variables
-            const sw = document.getElementById('amoled-switch');
-            if (amoledOn) {
-                if (!sw.classList.contains('on')) {
-                    sw.classList.add('on');
-                    document.documentElement.removeAttribute('data-theme');
-                    document.getElementById('theme-color-meta').setAttribute('content', '#000000');
-                }
-            } else {
-                if (sw.classList.contains('on')) {
-                    sw.classList.remove('on');
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    document.getElementById('theme-color-meta').setAttribute('content', '#0f1115');
-                }
-            }
+        // --- 1C. Galeria de Temas e Customização Estética ---
+        let selectedThemeId = 'superblack';
+        let selectedBorders = 'rounded';
+        let selectedFinish = 'flat';
 
-            // Find the accent color circle and click it to change the accent
-            const circles = document.querySelectorAll('.color-circle');
-            let matchedCircle = null;
-            circles.forEach(circle => {
-                let bgStyleColor = circle.style.backgroundColor;
-                // Normalize and compare
-                if (bgStyleColor === accentColor || 
-                    (accentColor === '#ffffff' && (bgStyleColor === 'rgb(255, 255, 255)' || bgStyleColor === 'white')) ||
-                    (accentColor === '#10b981' && bgStyleColor === 'rgb(16, 185, 129)') ||
-                    (accentColor === '#f59e0b' && bgStyleColor === 'rgb(245, 158, 11)') ||
-                    (accentColor === '#ef4444' && bgStyleColor === 'rgb(239, 68, 68)') ||
-                    (accentColor === '#8b5cf6' && bgStyleColor === 'rgb(139, 92, 246)')
-                ) {
-                    matchedCircle = circle;
-                }
+        const availableThemes = {
+            superblack: {
+                name: "Classic SuperBlack",
+                desc: "Aparência clássica AMOLED pura de altíssimo contraste.",
+                bg: "#000000",
+                cardBg1: "#000000",
+                cardBg2: "#050505",
+                border: "#151515",
+                textMain: "#f5f5f5",
+                textMuted: "#737373",
+                primary: "#ffffff",
+                success: "#10b981",
+                error: "#ef4444",
+                font: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif',
+                amoled: true
+            },
+            cyberpunk: {
+                name: "Cyberpunk Neon",
+                desc: "Amarelo industrial vibrante e pretos profundos com ciano.",
+                bg: "#060608",
+                cardBg1: "#0a0a0f",
+                cardBg2: "#14141d",
+                border: "#f8e71c",
+                textMain: "#ffffff",
+                textMuted: "#00f0ff",
+                primary: "#f8e71c",
+                success: "#00f0ff",
+                error: "#ff0055",
+                font: '"Courier New", Courier, monospace',
+                amoled: false,
+                forcedBorders: 'sharp'
+            },
+            dracula: {
+                name: "Dracula Waves",
+                desc: "Matiz requintado de roxo cósmico, orquídea escura e lavanda.",
+                bg: "#0e0b16",
+                cardBg1: "#141121",
+                cardBg2: "#1e1b30",
+                border: "#3d1f5c",
+                textMain: "#f8f8f2",
+                textMuted: "#a292cf",
+                primary: "#a78bfa",
+                success: "#50fa7b",
+                error: "#ff5555",
+                font: '-apple-system, BlinkMacSystemFont, SF Pro, sans-serif',
+                amoled: false
+            },
+            matrix: {
+                name: "Phosphor Terminal",
+                desc: "Computador clássico de fósforo verde dos anos 80.",
+                bg: "#000000",
+                cardBg1: "#000300",
+                cardBg2: "#020a02",
+                border: "#00ff00",
+                textMain: "#00ff00",
+                textMuted: "#008800",
+                primary: "#00ff00",
+                success: "#39ff14",
+                error: "#ff3333",
+                font: '"Courier New", Courier, monospace',
+                amoled: true,
+                forcedBorders: 'sharp'
+            },
+            sunset: {
+                name: "Sunset Amber",
+                desc: "Tons terrosos e aconchegantes de âmbar, madeira e mel.",
+                bg: "#0f0b08",
+                cardBg1: "#17120e",
+                cardBg2: "#221b16",
+                border: "#3a2c24",
+                textMain: "#f6e8df",
+                textMuted: "#c1a391",
+                primary: "#f59e0b",
+                success: "#10b981",
+                error: "#ef4444",
+                font: '-apple-system, BlinkMacSystemFont, sans-serif',
+                amoled: false
+            },
+            glacier: {
+                name: "Nordic Glacier",
+                desc: "Profundidades árticas silenciosas por tons azuis e safira.",
+                bg: "#070c14",
+                cardBg1: "#0d1424",
+                cardBg2: "#18233c",
+                border: "#253556",
+                textMain: "#f3f4f6",
+                textMuted: "#88a2d9",
+                primary: "#38bdf8",
+                success: "#10b981",
+                error: "#f87171",
+                font: '-apple-system, BlinkMacSystemFont, sans-serif',
+                amoled: false
+            },
+            forest: {
+                name: "Forest Zen",
+                desc: "Verde floresta profundo, musgo, terra e mint sutil.",
+                bg: "#030805",
+                cardBg1: "#08120d",
+                cardBg2: "#11241a",
+                border: "#1a3a2a",
+                textMain: "#f0fdf4",
+                textMuted: "#86efac",
+                primary: "#86efac",
+                success: "#10b981",
+                error: "#f43f5e",
+                font: '-apple-system, BlinkMacSystemFont, sans-serif',
+                amoled: false
+            },
+            ruby: {
+                name: "Crimson Ruby",
+                desc: "Preto luxuoso burgundy com detalhes brilhantes vermelho rubi.",
+                bg: "#080203",
+                cardBg1: "#120608",
+                cardBg2: "#200d10",
+                border: "#3a151b",
+                textMain: "#faebeb",
+                textMuted: "#f43f5e",
+                primary: "#ef4444",
+                success: "#10b981",
+                error: "#f43f5e",
+                font: '-apple-system, sans-serif',
+                amoled: false
+            },
+            pearl: {
+                name: "Luxury light Pearl",
+                desc: "Incrível modo claro minimalista com pretos ricos para leitura diurna.",
+                bg: "#fafafa",
+                cardBg1: "#ffffff",
+                cardBg2: "#f3f4f6",
+                border: "#e5e7eb",
+                textMain: "#0f172a",
+                textMuted: "#64748b",
+                primary: "#0f172a",
+                success: "#10b981",
+                error: "#ef4444",
+                font: '-apple-system, BlinkMacSystemFont, sans-serif',
+                amoled: false
+            },
+            sakura: {
+                name: "Sakura Dream",
+                desc: "Rosa cerejeira oriental místico com fundo escuro ameixa.",
+                bg: "#10060c",
+                cardBg1: "#1a0b14",
+                cardBg2: "#2a1220",
+                border: "#441a34",
+                textMain: "#fdf2f8",
+                textMuted: "#f472b6",
+                primary: "#f472b6",
+                success: "#10b981",
+                error: "#f43f5e",
+                font: '-apple-system, BlinkMacSystemFont, sans-serif',
+                amoled: false
+            }
+        };
+
+        function renderThemesGrid() {
+            const container = document.getElementById('themes-grid-container');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            Object.keys(availableThemes).forEach(key => {
+                const item = availableThemes[key];
+                const isActive = (selectedThemeId === key);
+                
+                const card = document.createElement('div');
+                card.style.display = 'flex';
+                card.style.alignItems = 'center';
+                card.style.justifyContent = 'space-between';
+                card.style.padding = '12px 14px';
+                card.style.background = isActive ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.01)';
+                card.style.border = isActive ? '1px solid var(--primary)' : '1px solid var(--border-color)';
+                card.style.borderRadius = '12px';
+                card.style.cursor = 'pointer';
+                card.style.transition = 'all 0.2s';
+                card.onclick = () => { applyThemePreset(key, true); };
+                
+                card.innerHTML = `
+                    <div style="display: flex; flex-direction: column; gap: 4px; text-align: left; flex: 1; padding-right: 12px;">
+                        <span style="font-weight: 700; font-size: 0.88rem; color: #ffffff; display: flex; align-items: center; gap: 6px;">
+                            ${item.name}
+                            ${isActive ? '<span style="color: var(--primary); font-size: 0.78rem;">● Selecionado</span>' : ''}
+                        </span>
+                        <span style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.3;">${item.desc}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                        <span style="width: 12px; height: 12px; border-radius: 50%; background-color: ${item.primary}; border: 1px solid #fff; display: inline-block;"></span>
+                        <span style="width: 12px; height: 12px; border-radius: 50%; background-color: ${item.bg}; border: 1px solid rgba(255,255,255,0.2); display: inline-block;"></span>
+                    </div>
+                `;
+                container.appendChild(card);
             });
-
-            if (matchedCircle) {
-                matchedCircle.click();
-            } else {
-                // If not in the circle list, just set it directly
-                setAccent(accentColor, null);
-            }
-            
-            showAppToast(`Tema aplicado com sucesso! ✨`, "success");
-            addLog(`Tema ajustado para ${accentColor} (AMOLED: ${amoledOn})`, "success");
-        }
-
-        // --- 2. Personalização Dinâmica UI ---
-        function toggleAmoled() {
-            triggerPulse();
-            const sw = document.getElementById('amoled-switch');
-            const isOn = sw.classList.contains('on');
-            
-            if(isOn) {
-                sw.classList.remove('on');
-                document.documentElement.setAttribute('data-theme', 'dark'); // Desabilita AMOLED puro
-                document.getElementById('theme-color-meta').setAttribute('content', '#0f1115');
-            } else {
-                sw.classList.add('on');
-                document.documentElement.removeAttribute('data-theme'); // Volta ao AMOLED Super Black Padrão
-                document.getElementById('theme-color-meta').setAttribute('content', '#000000');
-            }
         }
 
         let currentAccentColor = '#ffffff';
 
-        function setAccent(color, element) {
-            triggerPulse();
-            currentAccentColor = color;
-            // Converte HEX para RGBA e aplica a transparência do Background de Destaque
-            const hex = color.replace('#', '');
-            document.documentElement.style.setProperty('--primary', color);
-            document.documentElement.style.setProperty('--primary-bg', `rgba(${parseInt(hex.substring(0,2), 16)}, ${parseInt(hex.substring(2,4), 16)}, ${parseInt(hex.substring(4,6), 16)}, 0.15)`);
+        function applyThemePreset(themeId, userClicked = false) {
+            if (userClicked) triggerPulse();
+            if (!availableThemes[themeId]) themeId = 'superblack';
             
-            document.querySelectorAll('.color-circle').forEach(el => el.classList.remove('active'));
-            if(element) element.classList.add('active');
+            selectedThemeId = themeId;
+            const theme = availableThemes[themeId];
+            
+            // Set variables
+            document.documentElement.style.setProperty('--bg-color', theme.bg);
+            document.documentElement.style.setProperty('--card-bg-primary', theme.cardBg1);
+            document.documentElement.style.setProperty('--card-bg-secondary', theme.cardBg2);
+            document.documentElement.style.setProperty('--border-color', theme.border);
+            document.documentElement.style.setProperty('--text-main', theme.textMain);
+            document.documentElement.style.setProperty('--text-muted', theme.textMuted);
+            document.documentElement.style.setProperty('--primary', theme.primary);
+            document.documentElement.style.setProperty('--success', theme.success);
+            document.documentElement.style.setProperty('--error', theme.error);
+            document.documentElement.style.setProperty('--font-family', theme.font);
+            
+            currentAccentColor = theme.primary;
+            const hex = theme.primary.replace('#', '');
+            if (hex.length === 6) {
+                const r = parseInt(hex.substring(0,2), 16);
+                const g = parseInt(hex.substring(2,4), 16);
+                const b = parseInt(hex.substring(4,6), 16);
+                document.documentElement.style.setProperty('--primary-bg', `rgba(${r}, ${g}, ${b}, 0.15)`);
+            }
+            
+            // Auto Update manual accent color picker input
+            const picker = document.getElementById('manual-accent-picker');
+            if (picker) picker.value = theme.primary;
+
+            // Handle AMOLED switch representation
+            const sw = document.getElementById('amoled-switch');
+            if (sw) {
+                if (theme.amoled) {
+                    if (!sw.classList.contains('on')) sw.classList.add('on');
+                    document.documentElement.removeAttribute('data-theme');
+                    document.getElementById('theme-color-meta').setAttribute('content', '#000000');
+                } else {
+                    if (sw.classList.contains('on')) sw.classList.remove('on');
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    document.getElementById('theme-color-meta').setAttribute('content', theme.bg);
+                }
+            }
+
+            // Forced borders option
+            if (theme.forcedBorders) {
+                const borderSelect = document.getElementById('config-border-radius');
+                if (borderSelect) {
+                    borderSelect.value = theme.forcedBorders;
+                    applyBordersStyle(theme.forcedBorders);
+                }
+            }
+            
+            // Re-render gallery grid
+            renderThemesGrid();
+            
+            if (userClicked) {
+                addLog(`Tema ajustado para: ${theme.name}`, "success");
+                showAppToast(`${theme.name} Ativado! ✨`, "success");
+            }
         }
 
-        // --- 3. Controle da Lógica Engine ---
+        function toggleAmoled() {
+            triggerPulse();
+            const sw = document.getElementById('amoled-switch');
+            if (!sw) return;
+            const isOn = sw.classList.contains('on');
+            
+            if(isOn) {
+                sw.classList.remove('on');
+                document.documentElement.setAttribute('data-theme', 'dark');
+                // Adjust variables in active theme if matching amoled switch
+                document.documentElement.style.setProperty('--bg-color', '#0f1115');
+                document.documentElement.style.setProperty('--card-bg-primary', '#161920');
+                document.documentElement.style.setProperty('--card-bg-secondary', '#20242d');
+                document.documentElement.style.setProperty('--border-color', '#2b303b');
+                document.getElementById('theme-color-meta').setAttribute('content', '#0f1115');
+            } else {
+                sw.classList.add('on');
+                document.documentElement.removeAttribute('data-theme');
+                const theme = availableThemes[selectedThemeId] || availableThemes['superblack'];
+                document.documentElement.style.setProperty('--bg-color', theme.bg);
+                document.documentElement.style.setProperty('--card-bg-primary', theme.cardBg1);
+                document.documentElement.style.setProperty('--card-bg-secondary', theme.cardBg2);
+                document.documentElement.style.setProperty('--border-color', theme.border);
+                document.getElementById('theme-color-meta').setAttribute('content', '#000000');
+            }
+            addLog(`Modo AMOLED Super Black ${!isOn ? 'Ativado' : 'Desativado'}`, "info");
+        }
+
+        function setAccent(color, element) {
+            // Allows fine tuning override color of active theme
+            currentAccentColor = color;
+            document.documentElement.style.setProperty('--primary', color);
+            const hex = color.replace('#', '');
+            if (hex.length === 6) {
+                const r = parseInt(hex.substring(0,2), 16);
+                const g = parseInt(hex.substring(2,4), 16);
+                const b = parseInt(hex.substring(4,6), 16);
+                document.documentElement.style.setProperty('--primary-bg', `rgba(${r}, ${g}, ${b}, 0.15)`);
+            }
+            
+            const picker = document.getElementById('manual-accent-picker');
+            if (picker) picker.value = color;
+            
+            if (element) {
+                triggerPulse();
+                document.querySelectorAll('.color-circle').forEach(el => el.classList.remove('active'));
+                element.classList.add('active');
+            }
+        }
+
+        function applyBordersStyle(radiusKey) {
+            selectedBorders = radiusKey;
+            let btnRadius = '16px';
+            let cardRadius = '20px';
+            let inputRadius = '12px';
+            
+            if (radiusKey === 'sharp') {
+                btnRadius = '0px'; cardRadius = '0px'; inputRadius = '0px';
+            } else if (radiusKey === 'minimalist') {
+                btnRadius = '8px'; cardRadius = '10px'; inputRadius = '6px';
+            } else if (radiusKey === 'rounded') {
+                btnRadius = '16px'; cardRadius = '20px'; inputRadius = '12px';
+            } else if (radiusKey === 'capsule') {
+                btnRadius = '24px'; cardRadius = '26px'; inputRadius = '18px';
+            }
+            
+            document.documentElement.style.setProperty('--btn-border-radius', btnRadius);
+            document.documentElement.style.setProperty('--card-border-radius', cardRadius);
+            document.documentElement.style.setProperty('--input-border-radius', inputRadius);
+            addLog(`Estilo de bordas alterado para: ${radiusKey}`, "info");
+        }
+
+        function applyVisualFinish(finishKey) {
+            selectedFinish = finishKey;
+            
+            if (finishKey === 'flat') {
+                document.documentElement.style.setProperty('--glow-shadow', 'none');
+                document.documentElement.style.setProperty('--border-weight', '1px');
+                document.documentElement.style.setProperty('--backdrop-filter', 'none');
+            } else if (finishKey === 'glow') {
+                const glowVal = `0 0 12px var(--primary-bg), 0 0 4px var(--primary)`;
+                document.documentElement.style.setProperty('--glow-shadow', glowVal);
+                document.documentElement.style.setProperty('--border-weight', '1px');
+                document.documentElement.style.setProperty('--backdrop-filter', 'none');
+            } else if (finishKey === 'glass') {
+                document.documentElement.style.setProperty('--glow-shadow', '0 8px 32px 0 rgba(0, 0, 0, 0.37)');
+                document.documentElement.style.setProperty('--border-weight', '1px');
+                document.documentElement.style.setProperty('--backdrop-filter', 'blur(10px)');
+            }
+            addLog(`Acabamento decorativo alterado para: ${finishKey}`, "info");
+        }
+
+        // --- 2. Controle de Lógica Engine (Anteriormente parte das Seções de Botões e AMOLED) ---
         let apiType = "GEMINI";
 
         // Variáveis do PWA
@@ -2467,6 +2829,35 @@ WITH CHECK (true);</code>
                         testSupabaseConnection();
                     }, 1800);
                 }
+
+                // Inicializa Temas e Estética com recuperação do Storage
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    if (data.selectedThemeId) {
+                        applyThemePreset(data.selectedThemeId);
+                    } else {
+                        applyThemePreset('superblack');
+                    }
+                    if (data.selectedBorders) {
+                        const bSel = document.getElementById('config-border-radius');
+                        if (bSel) bSel.value = data.selectedBorders;
+                        applyBordersStyle(data.selectedBorders);
+                    } else {
+                        applyBordersStyle('rounded');
+                    }
+                    if (data.selectedFinish) {
+                        const fSel = document.getElementById('config-visual-finish');
+                        if (fSel) fSel.value = data.selectedFinish;
+                        applyVisualFinish(data.selectedFinish);
+                    } else {
+                        applyVisualFinish('flat');
+                    }
+                } else {
+                    applyThemePreset('superblack');
+                    applyBordersStyle('rounded');
+                    applyVisualFinish('flat');
+                }
+                renderThemesGrid();
 
                 // Verifica se há alguma sessão segura do Supabase ativa
                 checkSupabaseAuthSession();
@@ -2906,7 +3297,12 @@ WITH CHECK (true);</code>
                 speechPitch: parseFloat(document.getElementById('speech-pitch').value),
                 chatFontSize: document.getElementById('chat-font-size').value,
                 hapticsOn: document.getElementById('haptic-switch').classList.contains('on'),
-                transitionsOn: document.getElementById('transitions-switch').classList.contains('on')
+                transitionsOn: document.getElementById('transitions-switch').classList.contains('on'),
+
+                // Parâmetros estéticos persistidos
+                selectedThemeId: selectedThemeId,
+                selectedBorders: selectedBorders,
+                selectedFinish: selectedFinish
             };
             
             localStorage.setItem('ai_console_settings', JSON.stringify(data));
