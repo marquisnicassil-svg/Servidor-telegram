@@ -1,6 +1,7 @@
 {
-  "name": "Core System",
-  "short_name": "Core System",
+  "id": "synapse-console-pwa",
+  "name": "Synapse Console",
+  "short_name": "Synapse",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",

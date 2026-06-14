@@ -1,5 +1,5 @@
 {
-  "name": "AI Telegram Bot Server",
+  "name": "Synapse Console",
   "description": "Android application that runs an autonomous Telegram Bot server powered by Gemini AI, featuring active polling, live chat tracking, customizable prompt templates, and direct interactions.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

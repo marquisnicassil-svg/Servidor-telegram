@@ -1259,9 +1259,9 @@
     <div id="splash-screen">
         <div class="splash-content">
             <div class="splash-icon">
-                <img src="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg" alt="Core System Icon">
+                <img src="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg" alt="Synapse Console Icon">
             </div>
-            <div class="splash-title">Core System</div>
+            <div class="splash-title">Synapse Console</div>
             <div class="splash-status" id="splash-status-text" style="color: var(--text-muted); font-size: 0.85rem; margin-top: 8px; font-family: monospace;">Iniciando sistema...</div>
         </div>
     </div>
@@ -1270,7 +1270,7 @@
     <div id="auth-gate-screen" style="display: none; opacity: 0; transform: scale(0.97);">
         <div class="auth-gate-wrapper">
             <div class="auth-gate-logo">
-                <img src="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg" alt="Core System Icon">
+                <img src="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg" alt="Synapse Console Icon">
                 <h2>Portal de Acesso</h2>
                 <p>Para desbloquear o console de IA e sincronizar o histórico, conecte-se com sua conta segura.</p>
             </div>
@@ -2247,7 +2247,7 @@ WITH CHECK (true);</code>
             // Atualiza título da Top Bar
             const topTitleEl = document.getElementById('topbar-section-title');
             if (topTitleEl) {
-                topTitleEl.textContent = tabTitlesMap[tabId] || 'Core System';
+                topTitleEl.textContent = tabTitlesMap[tabId] || 'Synapse Console';
             }
 
             // Sincroniza classes do Drawer
@@ -2463,7 +2463,7 @@ WITH CHECK (true);</code>
                 const topTitleEl = document.getElementById('topbar-section-title');
                 const activeTab = document.querySelector('.tab-section.active');
                 if (topTitleEl && activeTab) {
-                    topTitleEl.textContent = tabTitlesMap[activeTab.id] || 'Core System';
+                    topTitleEl.textContent = tabTitlesMap[activeTab.id] || 'Synapse Console';
                 }
             }
         }
@@ -2912,7 +2912,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=4')
+                navigator.serviceWorker.register('./sw.js?v=5')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
