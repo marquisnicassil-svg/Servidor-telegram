@@ -3,7 +3,7 @@ const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
-  'https://img.icons8.com/nolan/512/artificial-intelligence.png'
+  './app/src/main/res/drawable/synapse_logo_1781452080476.jpg'
 ];
 
 self.addEventListener('install', event => {
