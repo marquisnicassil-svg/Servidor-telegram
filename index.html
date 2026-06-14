@@ -121,7 +121,6 @@
             user-select: none;
             -webkit-user-select: none;
             transition: background-color 0.3s;
-            filter: saturate(var(--global-saturation, 100%)) brightness(var(--global-brightness, 1));
         }
 
         /* Permite copiar texto de partes essenciais */
@@ -2721,6 +2720,79 @@ WITH CHECK (true);</code>
 
         let currentAccentColor = '#ffffff';
 
+        // Funções utilitárias de cores para alterar a intensidade/saturação matematicamente (sem filtros CSS bugados na body)
+        function hexToHsl(hex) {
+            try {
+                hex = hex.replace('#', '');
+                if (hex.length === 3) {
+                    hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+                }
+                let r = parseInt(hex.substring(0, 2), 16) / 255;
+                let g = parseInt(hex.substring(2, 4), 16) / 255;
+                let b = parseInt(hex.substring(4, 6), 16) / 255;
+
+                let max = Math.max(r, g, b), min = Math.min(r, g, b);
+                let h, s, l = (max + min) / 2;
+
+                if (max === min) {
+                    h = s = 0; // acromático
+                } else {
+                    let d = max - min;
+                    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                    switch (max) {
+                        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                        case g: h = (b - r) / d + 2; break;
+                        case b: h = (r - g) / d + 4; break;
+                    }
+                    h /= 6;
+                }
+                return { h: h * 360, s: s * 100, l: l * 100 };
+            } catch (e) {
+                return { h: 0, s: 0, l: 100 };
+            }
+        }
+
+        function hslToHex(h, s, l) {
+            try {
+                s /= 100;
+                l /= 100;
+                let c = (1 - Math.abs(2 * l - 1)) * s;
+                let x = c * (1 - Math.abs((h / 60) % 2 - 1));
+                let m = l - c / 2;
+                let r = 0, g = 0, b = 0;
+
+                if (0 <= h && h < 60) { r = c; g = x; b = 0; }
+                else if (60 <= h && h < 120) { r = x; g = c; b = 0; }
+                else if (120 <= h && h < 180) { r = 0; g = c; b = x; }
+                else if (180 <= h && h < 240) { r = 0; g = x; b = c; }
+                else if (240 <= h && h < 300) { r = x; g = 0; b = c; }
+                else if (300 <= h && h < 360) { r = c; g = 0; b = x; }
+
+                let rHex = Math.round((r + m) * 255).toString(16).padStart(2, '0');
+                let gHex = Math.round((g + m) * 255).toString(16).padStart(2, '0');
+                let bHex = Math.round((b + m) * 255).toString(16).padStart(2, '0');
+
+                return `#${rHex}${gHex}${bHex}`;
+            } catch (e) {
+                return '#ffffff';
+            }
+        }
+
+        function adjustColorIntensity(hex, satPercent) {
+            try {
+                if (!hex || hex.indexOf('#') !== 0) return hex;
+                let hsl = hexToHsl(hex);
+                // Ajusta saturação
+                let newS = Math.min(100, Math.max(0, hsl.s * (satPercent / 100)));
+                // Ajusta brilho proporcionalmente p/ não lavar a cor
+                let brightnessFactor = 0.45 + 0.55 * (satPercent / 100);
+                let newL = Math.min(100, Math.max(0, hsl.l * brightnessFactor));
+                return hslToHex(hsl.h, newS, newL);
+            } catch (e) {
+                return hex;
+            }
+        }
+
         function applyThemePreset(themeId, userClicked = false) {
             if (userClicked) triggerPulse();
             if (!availableThemes[themeId]) themeId = 'superblack';
@@ -2728,6 +2800,12 @@ WITH CHECK (true);</code>
             selectedThemeId = themeId;
             const theme = availableThemes[themeId];
             
+            // Get adjusted colors based on selectedSaturation
+            const satVal = selectedSaturation || 100;
+            const adjustedPrimary = adjustColorIntensity(theme.primary, satVal);
+            const adjustedSuccess = adjustColorIntensity(theme.success, satVal);
+            const adjustedError = adjustColorIntensity(theme.error, satVal);
+
             // Set variables
             document.documentElement.style.setProperty('--bg-color', theme.bg);
             document.documentElement.style.setProperty('--card-bg-primary', theme.cardBg1);
@@ -2735,13 +2813,13 @@ WITH CHECK (true);</code>
             document.documentElement.style.setProperty('--border-color', theme.border);
             document.documentElement.style.setProperty('--text-main', theme.textMain);
             document.documentElement.style.setProperty('--text-muted', theme.textMuted);
-            document.documentElement.style.setProperty('--primary', theme.primary);
-            document.documentElement.style.setProperty('--success', theme.success);
-            document.documentElement.style.setProperty('--error', theme.error);
+            document.documentElement.style.setProperty('--primary', adjustedPrimary);
+            document.documentElement.style.setProperty('--success', adjustedSuccess);
+            document.documentElement.style.setProperty('--error', adjustedError);
             document.documentElement.style.setProperty('--font-family', theme.font);
             
             currentAccentColor = theme.primary;
-            const hex = theme.primary.replace('#', '');
+            const hex = adjustedPrimary.replace('#', '');
             if (hex.length === 6) {
                 const r = parseInt(hex.substring(0,2), 16);
                 const g = parseInt(hex.substring(2,4), 16);
@@ -2816,8 +2894,11 @@ WITH CHECK (true);</code>
         function setAccent(color, element) {
             // Allows fine tuning override color of active theme
             currentAccentColor = color;
-            document.documentElement.style.setProperty('--primary', color);
-            const hex = color.replace('#', '');
+            const satVal = selectedSaturation || 100;
+            const adjustedColor = adjustColorIntensity(color, satVal);
+            
+            document.documentElement.style.setProperty('--primary', adjustedColor);
+            const hex = adjustedColor.replace('#', '');
             if (hex.length === 6) {
                 const r = parseInt(hex.substring(0,2), 16);
                 const g = parseInt(hex.substring(2,4), 16);
@@ -2890,8 +2971,21 @@ WITH CHECK (true);</code>
             
             const slider = document.getElementById('config-color-saturation');
             if (slider) slider.value = val;
+
+            // Re-aplica cores matematicamente sem precisar de filtros pesados e bugados
+            if (currentAccentColor) {
+                setAccent(currentAccentColor);
+            }
+            if (selectedThemeId) {
+                const savedAccent = currentAccentColor;
+                applyThemePreset(selectedThemeId);
+                const theme = availableThemes[selectedThemeId];
+                if (theme && theme.primary !== savedAccent) {
+                    setAccent(savedAccent);
+                }
+            }
             
-            addLog(`Intensidade de saturação alterada para: ${val}% (Brilho associado: ${Math.round(brightness * 100)}%)`, "info");
+            addLog(`Intensidade de saturação otimizada fisicamente para: ${val}%`, "info");
         }
 
         // --- 2. Controle de Lógica Engine (Anteriormente parte das Seções de Botões e AMOLED) ---
@@ -4441,6 +4535,46 @@ WITH CHECK (true);</code>
             }
         }
 
+        async function refreshSupabaseToken() {
+            try {
+                const url = document.getElementById('supabase-url').value.trim();
+                const key = document.getElementById('supabase-key').value.trim();
+                if (!url || !key || !supabaseSession || !supabaseSession.refresh_token) {
+                    return false;
+                }
+                const cleanUrl = url.endsWith('/') ? url : url + '/';
+                addLog("Iniciando renovação automática de token Supabase (refresh_token)...", "info");
+                
+                const response = await fetch(`${cleanUrl}auth/v1/token?grant_type=refresh_token`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': key,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        refresh_token: supabaseSession.refresh_token
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    supabaseSession = data;
+                    localStorage.setItem('supabase_auth_session', JSON.stringify(supabaseSession));
+                    updateAuthUI();
+                    addLog("Token Supabase renovado com sucesso! Sessão reestabelecida.", "success");
+                    return true;
+                } else {
+                    const errorText = await response.text();
+                    addLog("Falha ao renovar token Supabase: " + errorText, "error");
+                    return false;
+                }
+            } catch (err) {
+                console.error("Erro na renovação de token:", err);
+                addLog("Erro de rede na tentativa de renovar token: " + err.message, "error");
+                return false;
+            }
+        }
+
         async function testSupabaseConnection() {
             updateCloudIndicators('syncing', 'Testando...');
             addLog("Iniciando ping de verificação ao banco Supabase...", "sys");
@@ -4489,17 +4623,21 @@ WITH CHECK (true);</code>
                             addLog(`Supabase Conectado, mas tabela "${table}" não existe na DB. Use as instruções SQL para criá-la.`, "error");
                         } else if (parsed.message && parsed.message.includes("JWT expired")) {
                             updateCloudIndicators('error', 'Token Expirado');
-                            addLog("Sessão do Supabase expirada de forma natural (JWT Expirado). Renovando permissões locais...", "warning");
+                            addLog("Tempo limite da sessão atingido (JWT Expirado). Tentando renovação automática de credenciais...", "warning");
                             
-                            // Remove a sessão do supabase localmente
-                            supabaseSession = null;
-                            localStorage.removeItem('supabase_auth_session');
-                            updateAuthUI();
-                            
-                            addLog("Credenciais locais de usuário expiradas limpas. Reconectando sob nível Anônimo automaticamente...", "info");
-                            
-                            // Re-testa a conexão depois de 200 milissegundos usando a chave anônima default
-                            setTimeout(() => testSupabaseConnection(), 200);
+                            // Tenta renovar o token automaticamente
+                            const refreshed = await refreshSupabaseToken();
+                            if (refreshed) {
+                                // Se renovou, re-testa a conexão imediatamente e retorna seu resultado
+                                return await testSupabaseConnection();
+                            } else {
+                                // Se falhou, remove a sessão
+                                supabaseSession = null;
+                                localStorage.removeItem('supabase_auth_session');
+                                updateAuthUI();
+                                addLog("Credenciais locais de usuário expiradas limpas. Reconectando sob nível Anônimo automaticamente...", "info");
+                                setTimeout(() => testSupabaseConnection(), 200);
+                            }
                         } else {
                             updateCloudIndicators('error', `Falha (${response.status})`);
                             addLog(`Erro de autorização no Supabase: ${parsed.message || errorText}`, "error");
@@ -4608,15 +4746,20 @@ WITH CHECK (true);</code>
 
                     if (isJwtExpired) {
                         updateCloudIndicators('error', 'Token Expirado');
-                        addLog("Erro ao salvar backup: Token expirado (JWT Expired). Renovando status local de credenciais...", "warning");
+                        addLog("Erro ao salvar backup: Tempo limite da sessão atingido (JWT Expired). Tentando renovação automática...", "warning");
                         
-                        // Reseta a sessão local
-                        supabaseSession = null;
-                        localStorage.removeItem('supabase_auth_session');
-                        updateAuthUI();
-                        
-                        addLog("Sessão expirada limpa. Tentando retransmitir backup sob nível anônimo...", "info");
-                        supabaseSaveBackup(quiet);
+                        const refreshed = await refreshSupabaseToken();
+                        if (refreshed) {
+                            addLog("Token renovado com sucesso! Retransmitindo seu backup...", "info");
+                            supabaseSaveBackup(quiet);
+                        } else {
+                            // Reseta a sessão local apenas se falhou ao renovar
+                            supabaseSession = null;
+                            localStorage.removeItem('supabase_auth_session');
+                            updateAuthUI();
+                            addLog("Tempo limite excedido permanentemente. Tentando salvar backup sob nível anônimo...", "info");
+                            supabaseSaveBackup(quiet);
+                        }
                     } else if (isMissingUserIdColumn) {
                         addLog("Aviso de Schema: Coluna 'user_id' não encontrada na tabela do Supabase. Salvando backup global sem vincular ID de usuário.", "info");
                         supabaseHasUserId = false;
@@ -4726,15 +4869,20 @@ WITH CHECK (true);</code>
 
                         if (isJwtExpired) {
                             updateCloudIndicators('error', 'Token Expirado');
-                            addLog("Erro ao baixar backup: Token expirado (JWT Expired). Renovando credenciais locais...", "warning");
+                            addLog("Erro ao baixar backup: Tempo limite da sessão atingido (JWT Expired). Tentando renovação automática...", "warning");
                             
-                            // Reseta a sessão local
-                            supabaseSession = null;
-                            localStorage.removeItem('supabase_auth_session');
-                            updateAuthUI();
-                            
-                            addLog("Sessão expirada limpa. Tentando re-sincronizar download sob nível anônimo...", "info");
-                            supabaseRestoreBackup();
+                            const refreshed = await refreshSupabaseToken();
+                            if (refreshed) {
+                                addLog("Token renovado com sucesso! Baixando backup novamente...", "info");
+                                supabaseRestoreBackup();
+                            } else {
+                                // Reseta a sessão local apenas se falhou ao renovar
+                                supabaseSession = null;
+                                localStorage.removeItem('supabase_auth_session');
+                                updateAuthUI();
+                                addLog("Tempo limite excedido permanentemente. Tentando re-sincronizar download sob nível anônimo...", "info");
+                                supabaseRestoreBackup();
+                            }
                         } else {
                             updateCloudIndicators('error', 'Erro de Download');
                             addLog(`Consulte as regras de RLS do seu Supabase. Erro: ${response.status} - ${errText}`, "error");
