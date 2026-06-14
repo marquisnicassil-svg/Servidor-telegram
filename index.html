@@ -1442,9 +1442,18 @@
                     <!-- Barra de busca no recurso -->
                     <div>
                         <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 6px;">O que deseja pesquisar nessa fonte?</label>
-                        <div style="display: flex; gap: 8px;">
-                            <input type="text" id="news-search-query" class="form-control" placeholder="Digite palavras-chave (ex: Flamengo, Inteligência Artificial, Gols, VAR...)" style="border-radius: 8px; padding: 10px; font-size: 0.85rem; flex: 1;">
-                            <button class="btn-universal" onclick="performNewsSearchWeb()" style="background-color: var(--primary); color: var(--bg-color); padding: 0 16px; border-radius: 8px; font-size: 0.85rem; font-weight: bold; border: none; cursor: pointer;">
+                        <div style="display: flex; gap: 8px; position: relative; z-index: 10;">
+                            <input type="text" 
+                                   id="news-search-query" 
+                                   class="form-control" 
+                                   placeholder="Digite palavras-chave (ex: Flamengo, Inteligência Artificial, Gols, VAR...)" 
+                                   style="border-radius: 8px; padding: 14px 12px; font-size: 0.9rem; flex: 1; background-color: var(--card-bg-primary); border: 2px solid var(--border-color); color: #fff; pointer-events: auto !important; -webkit-user-select: text !important; user-select: text !important; -webkit-tap-highlight-color: rgba(56, 189, 248, 0.2); position: relative; z-index: 15; cursor: text;"
+                                   onclick="this.focus(); this.select(); event.stopPropagation();"
+                                   ontouchstart="this.focus(); event.stopPropagation();"
+                                   onfocus="this.style.borderColor='var(--primary)';" 
+                                   onblur="this.style.borderColor='var(--border-color)';"
+                                   autocomplete="off">
+                            <button class="btn-universal" onclick="performNewsSearchWeb()" style="background-color: var(--primary); color: var(--bg-color); padding: 0 16px; border-radius: 8px; font-size: 0.85rem; font-weight: bold; border: none; cursor: pointer; position: relative; z-index: 15;">
                                 🔍 Buscar
                             </button>
                         </div>
