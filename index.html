@@ -283,7 +283,7 @@
         .chat-message {
             max-width: 85%;
             padding: 10px 14px;
-            font-size: 0.95rem;
+            font-size: var(--chat-font-size, 0.95rem);
             word-wrap: break-word;
             line-height: 1.4;
             flex-shrink: 0;
@@ -1546,6 +1546,18 @@
                         <span style="color: var(--text-muted); font-weight: bold; font-family: monospace; font-size: 1.1rem; padding-left: 10px;">&gt;</span>
                     </div>
 
+                    <!-- Opção Nova: Acessibilidade, Voz e Leitura -->
+                    <div class="config-index-item" onclick="openConfigSubView('accessibility')" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 14px; cursor: pointer; transition: background 0.2s; min-height: 72px;">
+                        <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
+                            <span style="font-size: 1.5rem; line-height: 1;">🔊</span>
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;">Voz, Leitura e Acessibilidade</span>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;">Ajuste velocidade de áudio, tom de voz, tamanho dos textos e animações</span>
+                            </div>
+                        </div>
+                        <span style="color: var(--text-muted); font-weight: bold; font-family: monospace; font-size: 1.1rem; padding-left: 10px;">&gt;</span>
+                    </div>
+
                     <!-- Opção 4: Minha Conta & Sessão -->
                     <div class="config-index-item" onclick="openConfigSubView('account')" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 14px; cursor: pointer; transition: background 0.2s; min-height: 72px;">
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
@@ -1805,6 +1817,74 @@ WITH CHECK (true);</code>
                 </button>
             </div>
 
+            <!-- SUB-VIEW 5: ACESSIBILIDADE, VOZ E LEITURA -->
+            <div id="config-subview-accessibility" class="config-subview" style="display: none;">
+                <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;">⬅️ Voltar para Ajustes</button>
+                
+                <div class="section-header" style="text-align: left;">
+                    <h2>🔊 Voz, Leitura e Acessibilidade</h2>
+                </div>
+
+                <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: #000000; border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 16px;">
+                    
+                    <!-- Configuração 1: Velocidade de Voz -->
+                    <div class="form-group">
+                        <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">⚡ Velocidade de Leitura por Voz (TTS)</label>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <input type="range" id="speech-rate" min="0.5" max="2.0" step="0.1" value="1.0" style="flex: 1; accent-color: var(--primary); cursor: pointer;" oninput="document.getElementById('speech-rate-val').innerText = this.value + 'x';">
+                            <span id="speech-rate-val" style="font-size: 0.85rem; color: var(--text-muted); font-family: monospace; min-width: 40px; text-align: right;">1.0x</span>
+                        </div>
+                    </div>
+
+                    <!-- Configuração 2: Tom da Voz -->
+                    <div class="form-group">
+                        <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">🎼 Tom de Voz da Narração</label>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <input type="range" id="speech-pitch" min="0.5" max="1.5" step="0.1" value="1.0" style="flex: 1; accent-color: var(--primary); cursor: pointer;" oninput="document.getElementById('speech-pitch-val').innerText = this.value;">
+                            <span id="speech-pitch-val" style="font-size: 0.85rem; color: var(--text-muted); font-family: monospace; min-width: 40px; text-align: right;">1.0</span>
+                        </div>
+                    </div>
+
+                    <!-- Configuração 3: Tamanho de Texto do Chat -->
+                    <div class="form-group">
+                        <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">🔎 Tamanho do Texto das Conversas</label>
+                        <select id="chat-font-size" class="form-control" style="background: rgba(255,255,255,0.03); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="applyChatFontSize(this.value)">
+                            <option value="0.8rem">Pequeno (Compacto)</option>
+                            <option value="0.95rem" selected>Normal (Padrão)</option>
+                            <option value="1.1rem">Grande (Melhor Leitura)</option>
+                            <option value="1.25rem">Extra Grande (Alta Visibilidade)</option>
+                        </select>
+                    </div>
+
+                    <!-- Configuração 4: Vibração e Haptics -->
+                    <div class="theme-toggle" style="padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px dashed var(--border-color); display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleHaptics()">
+                        <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
+                            <span style="font-weight: 600; display: block; font-size: 0.85rem; color: #fff;">Resposta Vibratória (Háptica)</span>
+                            <span style="color: var(--text-muted); font-size: 0.7rem;">Vibrar levemente ao tocar botões nativos</span>
+                        </div>
+                        <div class="toggle-switch on" id="haptic-switch"></div>
+                    </div>
+
+                    <!-- Configuração 5: Animações e Transições -->
+                    <div class="theme-toggle" style="padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px dashed var(--border-color); display: flex; justify-content: space-between; align-items: center; margin-top: 4px; cursor: pointer;" onclick="toggleTransitions()">
+                        <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
+                            <span style="font-weight: 600; display: block; font-size: 0.85rem; color: #fff;">Efeitos de Transição Visual</span>
+                            <span style="color: var(--text-muted); font-size: 0.7rem;">Suavizar alterações de telas e menus</span>
+                        </div>
+                        <div class="toggle-switch on" id="transitions-switch"></div>
+                    </div>
+
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; font-size: 0.8rem; color: var(--text-muted); text-align: left; line-height: 1.4; margin-bottom: 24px;">
+                    💡 <b>Dica de Acessibilidade:</b> Se o seu dispositivo for mais antigo ou estiver lento, desative os <i>Efeitos de Transição Visual</i> para navegação instantânea e economia imediata de bateria!
+                </div>
+
+                <button class="btn-universal" onclick="saveConfiguration()">
+                    Aplicar Ajustes de Aprimoramentos
+                </button>
+            </div>
+
             <!-- SUB-VIEW 4: MINHA CONTA & SESSÃO -->
             <div id="config-subview-account" class="config-subview" style="display: none;">
                 <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;">⬅️ Voltar para Ajustes</button>
@@ -1921,7 +2001,64 @@ WITH CHECK (true);</code>
     <script>
         // --- Haptic Feedback Nativo ---
         function triggerPulse() {
-            try { if (navigator.vibrate) navigator.vibrate(15); } catch(e){}
+            try { 
+                const sw = document.getElementById('haptic-switch');
+                if (sw && !sw.classList.contains('on')) {
+                    return; // Retorna silenciosamente se o feedback háptico estiver desativado
+                }
+                if (navigator.vibrate) navigator.vibrate(15); 
+            } catch(e){}
+        }
+
+        // --- Funções de Acessibilidade, Voz e Leitura ---
+        function toggleHaptics() {
+            const sw = document.getElementById('haptic-switch');
+            if (sw) {
+                sw.classList.toggle('on');
+                const isOn = sw.classList.contains('on');
+                triggerPulse();
+                addLog(`Resposta vibratória (háptica) ${isOn ? 'ativada' : 'desativada'}.`, "info");
+            }
+        }
+
+        function toggleTransitions() {
+            const sw = document.getElementById('transitions-switch');
+            if (sw) {
+                sw.classList.toggle('on');
+                triggerPulse();
+                applyTransitionsState();
+            }
+        }
+
+        function applyTransitionsState() {
+            const sw = document.getElementById('transitions-switch');
+            if (sw && !sw.classList.contains('on')) {
+                if (!document.getElementById('no-transitions-style')) {
+                    const style = document.createElement('style');
+                    style.id = 'no-transitions-style';
+                    style.innerHTML = `
+                        * {
+                            transition: none !important;
+                            animation: none !important;
+                            transition-duration: 0s !important;
+                            animation-duration: 0s !important;
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+                addLog("Efeitos de transição visual desabilitados globalmente.", "info");
+            } else {
+                const style = document.getElementById('no-transitions-style');
+                if (style) {
+                    style.remove();
+                }
+                addLog("Efeitos de transição visual habilitados.", "info");
+            }
+        }
+
+        function applyChatFontSize(fontSize) {
+            document.documentElement.style.setProperty('--chat-font-size', fontSize);
+            addLog(`Tamanho do texto das conversas definido para ${fontSize}.`, "info");
         }
 
         // --- Drawer Navigation Menu Helpers ---
@@ -2278,6 +2415,35 @@ WITH CHECK (true);</code>
                         }
                     }
 
+                    // Restaura parâmetros de Acessibilidade se houver
+                    if (data.speechRate !== undefined) {
+                        document.getElementById('speech-rate').value = data.speechRate;
+                        document.getElementById('speech-rate-val').innerText = data.speechRate + 'x';
+                    }
+                    if (data.speechPitch !== undefined) {
+                        document.getElementById('speech-pitch').value = data.speechPitch;
+                        document.getElementById('speech-pitch-val').innerText = data.speechPitch;
+                    }
+                    if (data.chatFontSize !== undefined) {
+                        document.getElementById('chat-font-size').value = data.chatFontSize;
+                        applyChatFontSize(data.chatFontSize);
+                    } else {
+                        applyChatFontSize('0.95rem');
+                    }
+                    if (data.hapticsOn === false) {
+                        const hSw = document.getElementById('haptic-switch');
+                        if (hSw && hSw.classList.contains('on')) {
+                            hSw.classList.remove('on');
+                        }
+                    }
+                    if (data.transitionsOn === false) {
+                        const tSw = document.getElementById('transitions-switch');
+                        if (tSw && tSw.classList.contains('on')) {
+                            tSw.classList.remove('on');
+                        }
+                    }
+                    applyTransitionsState();
+
                     // Se temos dados válidos, testa conexão e atualiza indicadores em background após o boot
                     setTimeout(() => {
                         testSupabaseConnection();
@@ -2291,6 +2457,10 @@ WITH CHECK (true);</code>
                     document.getElementById('supabase-url').value = 'https://hqnlyksuprjdabcgpqdl.supabase.co';
                     document.getElementById('supabase-key').value = 'sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa';
                     document.getElementById('supabase-table').value = 'chat_backups';
+
+                    // Defaults de Acessibilidade de segurança ao reiniciar sem dados
+                    applyChatFontSize('0.95rem');
+                    applyTransitionsState();
                     
                     // Roda um teste inicial automático de conexão em background
                     setTimeout(() => {
@@ -2729,12 +2899,23 @@ WITH CHECK (true);</code>
                 supabaseUrl: document.getElementById('supabase-url').value.trim(),
                 supabaseKey: document.getElementById('supabase-key').value.trim(),
                 supabaseTable: document.getElementById('supabase-table').value.trim(),
-                supabaseAuto: document.getElementById('supabase-auto-switch').classList.contains('on')
+                supabaseAuto: document.getElementById('supabase-auto-switch').classList.contains('on'),
+
+                // Ajustes de Voz & Acessibilidade
+                speechRate: parseFloat(document.getElementById('speech-rate').value),
+                speechPitch: parseFloat(document.getElementById('speech-pitch').value),
+                chatFontSize: document.getElementById('chat-font-size').value,
+                hapticsOn: document.getElementById('haptic-switch').classList.contains('on'),
+                transitionsOn: document.getElementById('transitions-switch').classList.contains('on')
             };
             
             localStorage.setItem('ai_console_settings', JSON.stringify(data));
             
-            addLog("As configurações (incluindo Supabase e Telegram) foram persistidas localmente.", "success");
+            // Aplica os novos ajustes no ecossistema atual
+            applyChatFontSize(data.chatFontSize);
+            applyTransitionsState();
+            
+            addLog("As configurações foram persistidas localmente de forma segura.", "success");
             
             // Testa conexão se os campos forem editados
             testSupabaseConnection();
@@ -3018,9 +3199,15 @@ WITH CHECK (true);</code>
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel(); // Para fala atual
                 const utterance = new SpeechSynthesisUtterance(text);
-                utterance.rate = 1.05;
+                
+                // Extrai velocidade e tom de voz configurados em tempo real ou assume o padrão estrito
+                const inputRate = document.getElementById('speech-rate');
+                const inputPitch = document.getElementById('speech-pitch');
+                utterance.rate = inputRate ? parseFloat(inputRate.value) : 1.05;
+                utterance.pitch = inputPitch ? parseFloat(inputPitch.value) : 1.0;
+                
                 window.speechSynthesis.speak(utterance);
-                addLog("Leitura por voz ativada.", "info");
+                addLog(`Leitura por voz ativada. (Velocidade: ${utterance.rate}x, Tom: ${utterance.pitch})`, "info");
             } else {
                 addLog("API de voz não suportada neste navegador.", "error");
                 showAppToast("Seu navegador não suporta leitura de voz embutida.", "error");
