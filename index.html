@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg">
     <link rel="icon" type="image/jpeg" href="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="./manifest.json?v=6">
     <title>Painel & Console IA</title>
     <style>
         /* ==========================================================================
@@ -2912,7 +2912,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=5')
+                navigator.serviceWorker.register('./sw.js?v=6')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
