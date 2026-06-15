@@ -129,7 +129,10 @@
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent; /* Remove pisca azul no toque (Nativo) */
-            overscroll-behavior-y: none; /* Previne "puxar" a página nos limites */
+        }
+
+        html, body {
+            overscroll-behavior-y: none; /* Previne "puxar" a página nos limites apenas na raiz */
         }
 
         body {
@@ -305,6 +308,7 @@
             display: none;
             flex: 1;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             padding: 1.2rem;
             padding-bottom: calc(1.5rem + var(--safe-bottom));
         }
@@ -352,6 +356,7 @@
         .chat-messages {
             flex: 1;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             display: flex;
             flex-direction: column;
             gap: 16px;
@@ -892,6 +897,7 @@
             padding: 12px !important; /* Mais largo, dando mais espaço para as mensagens */
             flex: 1;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
             font-size: 0.82rem;
             color: #d1d5db;
@@ -1050,6 +1056,7 @@
             align-items: center;
             padding: 24px calc(24px + var(--safe-top));
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             transition: opacity 0.4s ease, transform 0.4s ease;
         }
         .auth-gate-wrapper {
