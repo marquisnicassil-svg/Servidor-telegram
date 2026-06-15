@@ -10,6 +10,31 @@
     <link rel="icon" type="image/jpeg" href="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg">
     <link rel="manifest" href="./manifest.json?v=6">
     <title>Painel & Console IA</title>
+    <script>
+        // Safety Fallback Barrier to guarantee loader is dismissed if any script errors out
+        window.addEventListener('error', function(e) {
+            console.error("Safety System Alert: unhandled exception caught: ", e.message, e.filename, e.lineno);
+            setTimeout(function() {
+                const splash = document.getElementById('splash-screen');
+                if (splash) {
+                    splash.style.opacity = '0';
+                    splash.style.transition = 'opacity 0.25s ease-out';
+                    setTimeout(function() { splash.remove(); }, 260);
+                }
+            }, 500);
+        });
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error("Safety System Alert: unhandled rejection caught: ", e.reason);
+            setTimeout(function() {
+                const splash = document.getElementById('splash-screen');
+                if (splash) {
+                    splash.style.opacity = '0';
+                    splash.style.transition = 'opacity 0.25s ease-out';
+                    setTimeout(function() { splash.remove(); }, 260);
+                }
+            }, 500);
+        });
+    </script>
     <style>
         /* ==========================================================================
            1. Variáveis Nativas & CSS Reset
@@ -3306,7 +3331,11 @@ WITH CHECK (true);</code>
 
         // Init Flow
         window.onload = async () => {
-            loadChatSession(); // Restaura memoria do chat
+            try {
+                loadChatSession(); // Restaura memoria do chat
+            } catch (chatSessionErr) {
+                console.error("Erro ao carregar sessão anterior de chat:", chatSessionErr);
+            }
 
             addLog("Terminal boot sequencial iniciado.", "info");
             setTimeout(() => addLog("Camada de Interface Nativa (SuperBlack) anexada.", "success"), 250);
@@ -3370,8 +3399,10 @@ WITH CHECK (true);</code>
                 if (statusText) statusText.innerText = "Verificando sessão segura na nuvem...";
                 checkSupabaseAuthSession();
 
-                const url = document.getElementById('supabase-url').value.trim();
-                const key = document.getElementById('supabase-key').value.trim();
+                const supabaseUrlEl = document.getElementById('supabase-url');
+                const supabaseKeyEl = document.getElementById('supabase-key');
+                const url = supabaseUrlEl ? supabaseUrlEl.value.trim() : '';
+                const key = supabaseKeyEl ? supabaseKeyEl.value.trim() : '';
 
                 if (url && key) {
                     // Nós envolvemos o ping/teste de conexão em um limite de tempo (timeout de 1.8 segundos)
@@ -3438,6 +3469,16 @@ WITH CHECK (true);</code>
 
         function loadConfiguration() {
             try {
+                // Auxiliares internos para evitar crashes caso IDs não existam no DOM
+                const safeSetVal = (id, val) => {
+                    const el = document.getElementById(id);
+                    if (el && val !== undefined && val !== null) el.value = val;
+                };
+                const safeSetText = (id, text) => {
+                    const el = document.getElementById(id);
+                    if (el && text !== undefined && text !== null) el.innerText = text;
+                };
+
                 const saved = localStorage.getItem('ai_console_settings');
                 if (saved) {
                     const data = JSON.parse(saved);
@@ -3447,25 +3488,17 @@ WITH CHECK (true);</code>
                     } else {
                         setApiType('GEMINI', true);
                     }
-                    if (data.apiKey !== undefined) document.getElementById('api-key').value = data.apiKey;
-                    if (data.telegramToken !== undefined) {
-                        document.getElementById('telegram-token').value = data.telegramToken;
-                    } else {
-                        document.getElementById('telegram-token').value = "";
-                    }
-                    if (data.telegramWebhook !== undefined) {
-                        document.getElementById('telegram-webhook').value = data.telegramWebhook;
-                    } else {
-                        document.getElementById('telegram-webhook').value = "";
-                    }
-                    if (data.baseUrl) document.getElementById('base-url').value = data.baseUrl;
-                    if (data.modelName) document.getElementById('model-name').value = data.modelName;
-                    if (data.systemPrompt) document.getElementById('system-prompt').value = data.systemPrompt;
+                    safeSetVal('api-key', data.apiKey !== undefined ? data.apiKey : '');
+                    safeSetVal('telegram-token', data.telegramToken !== undefined ? data.telegramToken : '');
+                    safeSetVal('telegram-webhook', data.telegramWebhook !== undefined ? data.telegramWebhook : '');
+                    if (data.baseUrl) safeSetVal('base-url', data.baseUrl);
+                    if (data.modelName) safeSetVal('model-name', data.modelName);
+                    if (data.systemPrompt) safeSetVal('system-prompt', data.systemPrompt);
                     
                     // Restaura estado do Switch AMOLED
                     if (data.isAmoled === false) {
                         const sw = document.getElementById('amoled-switch');
-                        if (sw.classList.contains('on')) {
+                        if (sw && sw.classList.contains('on')) {
                             toggleAmoled(); // Desliga se estiver on
                         }
                     }
@@ -3475,7 +3508,7 @@ WITH CHECK (true);</code>
                         let matchedEl = null;
                         const circles = document.querySelectorAll('.color-circle');
                         circles.forEach(c => {
-                            if(c.getAttribute('style').includes(data.accentColor)) {
+                            if(c.getAttribute('style') && c.getAttribute('style').includes(data.accentColor)) {
                                 matchedEl = c;
                             }
                         });
@@ -3483,9 +3516,9 @@ WITH CHECK (true);</code>
                     }
 
                     // Restaura Supabase Fields
-                    document.getElementById('supabase-url').value = data.supabaseUrl !== undefined ? data.supabaseUrl : 'https://hqnlyksuprjdabcgpqdl.supabase.co';
-                    document.getElementById('supabase-key').value = data.supabaseKey !== undefined ? data.supabaseKey : 'sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa';
-                    document.getElementById('supabase-table').value = data.supabaseTable !== undefined ? data.supabaseTable : 'chat_backups';
+                    safeSetVal('supabase-url', data.supabaseUrl !== undefined ? data.supabaseUrl : 'https://hqnlyksuprjdabcgpqdl.supabase.co');
+                    safeSetVal('supabase-key', data.supabaseKey !== undefined ? data.supabaseKey : 'sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa');
+                    safeSetVal('supabase-table', data.supabaseTable !== undefined ? data.supabaseTable : 'chat_backups');
                     
                     const autoSw = document.getElementById('supabase-auto-switch');
                     if (data.supabaseAuto) {
@@ -3500,15 +3533,15 @@ WITH CHECK (true);</code>
 
                     // Restaura parâmetros de Acessibilidade se houver
                     if (data.speechRate !== undefined) {
-                        document.getElementById('speech-rate').value = data.speechRate;
-                        document.getElementById('speech-rate-val').innerText = data.speechRate + 'x';
+                        safeSetVal('speech-rate', data.speechRate);
+                        safeSetText('speech-rate-val', data.speechRate + 'x');
                     }
                     if (data.speechPitch !== undefined) {
-                        document.getElementById('speech-pitch').value = data.speechPitch;
-                        document.getElementById('speech-pitch-val').innerText = data.speechPitch;
+                        safeSetVal('speech-pitch', data.speechPitch);
+                        safeSetText('speech-pitch-val', data.speechPitch);
                     }
                     if (data.chatFontSize !== undefined) {
-                        document.getElementById('chat-font-size').value = data.chatFontSize;
+                        safeSetVal('chat-font-size', data.chatFontSize);
                         applyChatFontSize(data.chatFontSize);
                     } else {
                         applyChatFontSize('0.95rem');
@@ -3537,8 +3570,7 @@ WITH CHECK (true);</code>
                         updateAppLanguage('pt');
                     }
                     if (data.speechVoice !== undefined) {
-                        const sv = document.getElementById('speech-voice');
-                        if (sv) sv.value = data.speechVoice;
+                        safeSetVal('speech-voice', data.speechVoice);
                     }
 
                     // Se temos dados válidos, testa conexão e atualiza indicadores em background após o boot
@@ -3551,9 +3583,9 @@ WITH CHECK (true);</code>
                     setApiType('GEMINI', true);
                     
                     // Preenche valores padrão de Supabase fornecidos pelo usuário
-                    document.getElementById('supabase-url').value = 'https://hqnlyksuprjdabcgpqdl.supabase.co';
-                    document.getElementById('supabase-key').value = 'sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa';
-                    document.getElementById('supabase-table').value = 'chat_backups';
+                    safeSetVal('supabase-url', 'https://hqnlyksuprjdabcgpqdl.supabase.co');
+                    safeSetVal('supabase-key', 'sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa');
+                    safeSetVal('supabase-table', 'chat_backups');
 
                     // Defaults de Acessibilidade de segurança ao reiniciar sem dados
                     applyChatFontSize('0.95rem');
@@ -4243,7 +4275,17 @@ WITH CHECK (true);</code>
         let selectedAssistantId = 'geral';
 
         function getAllAgents() {
-            const custom = JSON.parse(localStorage.getItem('synapse_custom_agents') || '[]');
+            let custom = [];
+            try {
+                const raw = localStorage.getItem('synapse_custom_agents');
+                if (raw) {
+                    custom = JSON.parse(raw);
+                    if (!Array.isArray(custom)) custom = [];
+                }
+            } catch (e) {
+                console.error("Erro ao fazer parse dos agentes customizados:", e);
+                custom = [];
+            }
             const defaultsMapped = smartAssistants.map(a => {
                 const name = typeof a.names === 'string' ? a.names : (a.names[currentLanguage] || a.names['pt'] || '');
                 const description = typeof a.roles === 'string' ? a.roles : (a.roles[currentLanguage] || a.roles['pt'] || '');
