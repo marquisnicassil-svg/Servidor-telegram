@@ -1342,6 +1342,10 @@
                 <span class="drawer-icon">💬</span>
                 <span class="drawer-label" data-i18n="conversas">Conversas</span>
             </li>
+            <li class="drawer-item" onclick="clickDrawerItem('tab-workspace', '💼 Workspace')" id="drawer-tab-workspace">
+                <span class="drawer-icon">💼</span>
+                <span class="drawer-label" data-i18n="workspace">Workspace</span>
+            </li>
             <li class="drawer-item" onclick="clickDrawerItem('tab-config', '⚙️ Configurações (Ajustes)')">
                 <span class="drawer-icon">⚙️</span>
                 <span class="drawer-label" data-i18n="configuracoes_ajustes">Configurações (Ajustes)</span>
@@ -1365,6 +1369,9 @@
     <nav class="tabs-container" style="display: none !important;">
         <button class="tab-btn active" id="btn-tab-chat" onclick="switchTab('tab-chat')">
             <span>💬</span><span>Chat</span>
+        </button>
+        <button class="tab-btn" id="btn-tab-workspace" onclick="switchTab('tab-workspace')">
+            <span>💼</span><span>Workspace</span>
         </button>
         <button class="tab-btn" id="btn-tab-context-browser" onclick="switchTab('tab-context-browser')">
             <span>🌐</span><span>Navegador</span>
@@ -1401,6 +1408,94 @@
                         <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                     </button>
                 </div>
+            </div>
+        </section>
+
+        <!-- ABA WORKSPACE (CENTRAL INTELIGENTE DE PRODUTIVIDADE) -->
+        <section id="tab-workspace" class="tab-section" style="padding-bottom: 80px;">
+            <div class="section-header" style="margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px;">
+                <h2 style="display: flex; align-items: center; gap: 10px; font-weight: 800; color: #fff; margin: 0; font-size: 1.45rem;">
+                    <span>💼</span>
+                    <span data-i18n="ws_main_title">Central Workspace</span>
+                </h2>
+                <p style="color: var(--text-muted); font-size: 0.8rem; margin: 4px 0 0 0; line-height: 1.45;" data-i18n="ws_main_subtitle">
+                    Central inteligente de conhecimento. Organize conversas, salve arquivos, gerencie links analisados e controle memórias da IA.
+                </p>
+            </div>
+
+            <!-- 1. PAINEL DE ESTATÍSTICAS E RENDIMENTO (CARDS ORGANIZADOS) -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px;" id="ws-stats-container">
+                <div class="ws-stat-card" onclick="filterWorkspaceByCategory('conversa')" style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px; text-align: left; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='rgba(255,255,255,0.01)'; this.style.borderColor='var(--border-color)';">
+                    <div style="font-size: 1.15rem; margin-bottom: 4px;">💬</div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Conversas</div>
+                    <div id="ws-count-conversas" style="font-size: 1.3rem; font-weight: bold; color: #fff; margin-top: 2px;">0</div>
+                </div>
+                <div class="ws-stat-card" onclick="filterWorkspaceByCategory('arquivo')" style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px; text-align: left; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='rgba(255,255,255,0.01)'; this.style.borderColor='var(--border-color)';">
+                    <div style="font-size: 1.15rem; margin-bottom: 4px;">📁</div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Arquivos</div>
+                    <div id="ws-count-arquivos" style="font-size: 1.3rem; font-weight: bold; color: #fff; margin-top: 2px;">0</div>
+                </div>
+                <div class="ws-stat-card" onclick="filterWorkspaceByCategory('link')" style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px; text-align: left; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='rgba(255,255,255,0.01)'; this.style.borderColor='var(--border-color)';">
+                    <div style="font-size: 1.15rem; margin-bottom: 4px;">🔗</div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Analisados</div>
+                    <div id="ws-count-links" style="font-size: 1.3rem; font-weight: bold; color: #fff; margin-top: 2px;">0</div>
+                </div>
+                <div class="ws-stat-card" onclick="filterWorkspaceByCategory('memoria')" style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px; text-align: left; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='rgba(255,255,255,0.01)'; this.style.borderColor='var(--border-color)';">
+                    <div style="font-size: 1.15rem; margin-bottom: 4px;">🧠</div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Memórias</div>
+                    <div id="ws-count-memorias" style="font-size: 1.3rem; font-weight: bold; color: #fff; margin-top: 2px;">0</div>
+                </div>
+                <div class="ws-stat-card" onclick="filterWorkspaceByCategory('fav')" style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px; text-align: left; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='rgba(255,255,255,0.01)'; this.style.borderColor='var(--border-color)';">
+                    <div style="font-size: 1.15rem; margin-bottom: 4px;">⭐</div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Favoritos</div>
+                    <div id="ws-count-favoritos" style="font-size: 1.3rem; font-weight: bold; color: #fff; margin-top: 2px;">0</div>
+                </div>
+                <div class="ws-stat-card" style="background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 14px; padding: 12px; text-align: left; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Armazenamento</div>
+                    <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary); margin-bottom: 4px;">48.5 KB / 10MB</div>
+                    <div style="height: 4px; background: #222; border-radius: 2px; overflow: hidden; width: 100%;">
+                        <div style="width: 2.5%; height: 100%; background: var(--primary);"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. BARRA DE PESQUISA RÁPIDA E CONTROLE DE RECURSOS -->
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; background: rgba(255,255,255,0.015); border: 1px solid var(--border-color); padding: 12px; border-radius: 16px;">
+                <!-- Campo de Busca -->
+                <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                    <span style="position: absolute; left: 14px; font-size: 1rem; color: var(--text-muted); pointer-events: none;">🔍</span>
+                    <input type="text" id="ws-search-input" class="form-control" placeholder="Pesquisar conversas, arquivos, links ou memórias..." style="padding-left: 40px; padding-right: 12px; height: 42px; border-radius: 12px; background: #111; width: 100%; font-size: 0.85rem;" oninput="onWorkspaceSearch(this.value)">
+                </div>
+
+                <!-- Botões Rápidos de Cadastro Inline -->
+                <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px;" id="ws-filter-pills-row">
+                        <button class="ws-filter-pill active" onclick="setWorkspaceFilter('all', this)" style="background: var(--primary); color: var(--bg-color); border: none; border-radius: 20px; padding: 6px 14px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">🏷️ Todos</button>
+                        <button class="ws-filter-pill" onclick="setWorkspaceFilter('conversa', this)" style="background: rgba(255,255,255,0.03); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 14px; font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.2s;">💬 Conversas</button>
+                        <button class="ws-filter-pill" onclick="setWorkspaceFilter('arquivo', this)" style="background: rgba(255,255,255,0.03); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 14px; font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.2s;">📁 Arquivos</button>
+                        <button class="ws-filter-pill" onclick="setWorkspaceFilter('link', this)" style="background: rgba(255,255,255,0.03); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 14px; font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.2s;">🔗 Links</button>
+                        <button class="ws-filter-pill" onclick="setWorkspaceFilter('memoria', this)" style="background: rgba(255,255,255,0.03); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 14px; font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.2s;">🧠 Memória</button>
+                        <button class="ws-filter-pill" onclick="setWorkspaceFilter('fav', this)" style="background: rgba(255,255,255,0.03); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 14px; font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.2s;">⭐ Favoritos</button>
+                    </div>
+
+                    <div style="display: flex; gap: 6px;">
+                        <button onclick="openAddWorkspaceItemModal()" class="btn-universal" style="background: var(--primary-bg, rgba(255,255,255,0.1)); border: 1px solid var(--primary); color: #fff; padding: 6px 12px; border-radius: 12px; font-size: 0.78rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s;" onmouseover="this.style.background='var(--primary)'; this.style.color='var(--bg-color)';" onmouseout="this.style.background='var(--primary-bg, rgba(255,255,255,0.1))'; this.style.color='#fff';">
+                            <span>➕</span> <span data-i18n="ws_btn_add">Novo Dado</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTAINER PARA EXIBIÇÃO DE ITEM / RESULTADO (CARDS MODERNOS DA LISTA) -->
+            <div id="workspace-items-grid" style="display: flex; flex-direction: column; gap: 12px;">
+                <!-- Gerado de forma ultra dinâmica via JavaScript -->
+            </div>
+
+            <!-- EMPTY STATE PARA FILTROS OU BUSCAS SEM RESULTADOS -->
+            <div id="workspace-empty-state" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 48px 24px; text-align: center; border: 1px dashed var(--border-color); border-radius: 18px; margin-top: 12px;">
+                <span style="font-size: 2.5rem; margin-bottom: 12px; filter: grayscale(0.5);">🗃️</span>
+                <h4 style="color: #fff; margin: 0 0 4px 0; font-size: 1rem;" data-i18n="ws_empty_title">Workspace Vazio ou Sem Correspondências</h4>
+                <p style="color: var(--text-muted); font-size: 0.8rem; max-width: 280px; margin: 0; line-height: 1.45;" id="ws-empty-text">Cadastre novos dados ou limpe os filtros rápidos de busca para retornar os itens.</p>
             </div>
         </section>
 
@@ -2227,6 +2322,7 @@ WITH CHECK (true);</code>
 
         const tabTitlesMap = {
             'tab-chat': '💬 Conversas',
+            'tab-workspace': '💼 Workspace',
             'tab-config': '⚙️ Configurações (Ajustes)',
             'tab-logs': '🖥️ Terminal de Comandos',
             'tab-translator': '🌐 Tradutor de Textos',
@@ -2273,6 +2369,11 @@ WITH CHECK (true);</code>
             // Reseta para a tela de índice caso mude para configurações
             if(tabId === 'tab-config'){
                 showConfigIndex();
+            }
+            // Sincroniza dados do Workspace
+            if(tabId === 'tab-workspace'){
+                if (typeof syncConversasFromChatHistory === 'function') syncConversasFromChatHistory();
+                if (typeof renderWorkspace === 'function') renderWorkspace();
             }
         }
 
@@ -2337,7 +2438,12 @@ WITH CHECK (true);</code>
                 "transl_placeholder": "Cole aqui o texto original que deseja traduzir...",
                 "transl_btn_exec": "Realizar Tradução ✨",
                 "transl_output_placeholder": "A tradução aparecerá aqui...",
-                "transl_btn_listen": "🔊 Ouvir"
+                "transl_btn_listen": "🔊 Ouvir",
+                "workspace": "💼 Workspace",
+                "ws_main_title": "Central Workspace",
+                "ws_main_subtitle": "Central inteligente de conhecimento. Organize conversas, salve arquivos, gerencie links analisados e controle memórias da IA.",
+                "ws_btn_add": "Novo Dado",
+                "ws_empty_title": "Workspace Vazio ou Sem Correspondências"
             },
             en: {
                 "conversas": "💬 Conversations",
@@ -2382,7 +2488,12 @@ WITH CHECK (true);</code>
                 "transl_placeholder": "Paste original paragraphs here...",
                 "transl_btn_exec": "Execute Translation ✨",
                 "transl_output_placeholder": "Translation will show up here...",
-                "transl_btn_listen": "🔊 Speak Output"
+                "transl_btn_listen": "🔊 Speak Output",
+                "workspace": "💼 Workspace",
+                "ws_main_title": "Workspace Hub",
+                "ws_main_subtitle": "Intelligent productivity workspace. Keep chats, save custom files, coordinate analyzed URLs, and manage AI context memories.",
+                "ws_btn_add": "New Entry",
+                "ws_empty_title": "Workspace is Empty"
             },
             es: {
                 "conversas": "💬 Chat y Charlas",
@@ -2427,7 +2538,12 @@ WITH CHECK (true);</code>
                 "transl_placeholder": "Pegue su texto original aquí...",
                 "transl_btn_exec": "Efectuar Traducción ✨",
                 "transl_output_placeholder": "La traducción aparecerá en esta caja...",
-                "transl_btn_listen": "🔊 Escuchar"
+                "transl_btn_listen": "🔊 Escuchar",
+                "workspace": "💼 Workspace",
+                "ws_main_title": "Consola del Workspace",
+                "ws_main_subtitle": "Central inteligente de conocimiento. Organice chats de sandbox, guarde ficheros, enlace recursos analizados y module memorias de IA.",
+                "ws_btn_add": "Nuevo Registro",
+                "ws_empty_title": "Workspace Vacío"
             }
         };
 
@@ -2453,6 +2569,7 @@ WITH CHECK (true);</code>
             // Update Tab Titles Mapping dynamically to reflect selected language!
             if (typeof tabTitlesMap !== 'undefined') {
                 tabTitlesMap['tab-chat'] = i18n('conversas');
+                tabTitlesMap['tab-workspace'] = i18n('workspace') || '💼 Workspace';
                 tabTitlesMap['tab-config'] = i18n('configuracoes_ajustes');
                 tabTitlesMap['tab-logs'] = i18n('terminal_comandos');
                 tabTitlesMap['tab-translator'] = i18n('tradutor_textos');
@@ -3114,6 +3231,11 @@ WITH CHECK (true);</code>
                 console.error("Falha ao dispensar splash screen:", splashErr);
                 const splash = document.getElementById('splash-screen');
                 if (splash) splash.remove();
+            }
+
+            // Inicializa módulo inteligente do Workspace do Synapse
+            if (typeof initWorkspace === 'function') {
+                initWorkspace();
             }
         }
 
@@ -3866,6 +3988,1001 @@ WITH CHECK (true);</code>
                     chatHistoryObjects = JSON.parse(savedHistory);
                 } catch(e) { chatHistoryObjects = []; }
             }
+        }
+
+        }
+
+        // ==========================================================================
+        // WORKSPACE INTELIGENTE - CORE MOTOR & STATE ENGINE
+        // ==========================================================================
+        let workspaceData = {
+            conversas: [],
+            arquivos: [],
+            links: [],
+            memorias: []
+        };
+
+        let currentWorkspaceFilter = 'all';
+        let currentWorkspaceSearch = '';
+
+        function initWorkspace() {
+            const saved = localStorage.getItem('synapse_workspace');
+            if (saved) {
+                try {
+                    workspaceData = JSON.parse(saved);
+                } catch (e) {
+                    console.error("Falha ao analisar JSON do Workspace:", e);
+                }
+            } else {
+                // Seed initial high quality content
+                workspaceData = {
+                    conversas: [
+                        { id: "c-1", title: "Refatoração de API em Node.js", snippet: "Discussão sobre endpoints assíncronos e tratamento de erros no barramento do console.", date: "14/06/2026", favorite: true },
+                        { id: "c-2", title: "Otimização SQL em PostgreSQL", snippet: "Criar índices parciais e analisar tabelas hash no ambiente de produção.", date: "15/06/2026", favorite: false }
+                    ],
+                    arquivos: [
+                        { id: "f-1", name: "especificacao_arquitetura_v3.pdf", desc: "Regras de isolamento de rede VPC, segurança e rotas do gateway.", type: "PDF", date: "13/06/2026", size: "1.8 MB", content: "VPC CIDR: 10.0.0.0/16. Bancos de dados isolados na sub-rede privada conector AWS.", favorite: true },
+                        { id: "f-2", name: "performance_cluster_dashboard.png", desc: "Gráfico mostrando a latência média despencando com a nova API.", type: "Imagem", date: "14/06/2026", size: "840 KB", content: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop", favorite: false },
+                        { id: "f-3", name: "instrucoes_de_deploy_producao.md", desc: "Anotações e precauções para submissão contínua PWA / Gradle.", type: "Documento", date: "15/06/2026", size: "12 KB", content: "- Executar sempre compile_applet para verificar integridade física.\n- Certificar que o Supabase está com RLS ligado.\n- Injetar o token JWT correto.", favorite: false }
+                    ],
+                    links: [
+                        { id: "l-1", title: "Console Supabase - Admin", url: "https://supabase.com/dashboard", desc: "Atalho rápido para gerenciar as permissões e visualizar a tabela chat_backups.", date: "14/06/2026", favorite: true },
+                        { id: "l-2", title: "Documentação Oficial do Jetpack Compose", url: "https://developer.android.com/compose", desc: "Guia de componentes Material 3 e boas práticas para gerenciamento de estados no Synapse.", date: "15/06/2026", favorite: false }
+                    ],
+                    memorias: [
+                        { id: "m-1", fact: "Injetar automaticamente credenciais do banco Supabase em modo persistente de backup incremental.", date: "14/06/2026", favorite: true },
+                        { id: "m-2", fact: "O usuário Nicassil usa o motor Gemini API para extrações e traduções profundas e limpas de artigos científicos.", date: "15/06/2026", favorite: false }
+                    ]
+                };
+                saveWorkspaceToStorage();
+            }
+            syncConversasFromChatHistory();
+            renderWorkspace();
+        }
+
+        function saveWorkspaceToStorage() {
+            localStorage.setItem('synapse_workspace', JSON.stringify(workspaceData));
+        }
+
+        function syncConversasFromChatHistory() {
+            const savedHistory = localStorage.getItem('ai_console_chat_history');
+            if (savedHistory) {
+                try {
+                    const parsed = JSON.parse(savedHistory);
+                    if (parsed && parsed.length > 0) {
+                        const userMsgs = parsed.filter(m => m.role === 'user' || m.sender === 'user' || (m.style && m.style.includes('user')));
+                        if (userMsgs.length > 0) {
+                            const titleText = userMsgs[0].content || userMsgs[0].text || "Conversa do Console";
+                            const cleanTitle = titleText.substring(0, 35) + (titleText.length > 35 ? "..." : "");
+                            
+                            const lastMsg = parsed[parsed.length - 1];
+                            const snippetText = lastMsg.content || lastMsg.text || "";
+                            const cleanSnippet = snippetText.substring(0, 80) + (snippetText.length > 80 ? "..." : "");
+                            
+                            // Cria ou atualiza a conversa dinâmica
+                            const index = workspaceData.conversas.findIndex(c => c.id === 'c-dynamic');
+                            if (index !== -1) {
+                                workspaceData.conversas[index].title = cleanTitle;
+                                workspaceData.conversas[index].snippet = cleanSnippet;
+                                workspaceData.conversas[index].date = new Date().toLocaleDateString('pt-BR');
+                            } else {
+                                workspaceData.conversas.unshift({
+                                    id: 'c-dynamic',
+                                    title: cleanTitle,
+                                    snippet: cleanSnippet,
+                                    date: new Date().toLocaleDateString('pt-BR'),
+                                    favorite: false
+                                });
+                            }
+                            saveWorkspaceToStorage();
+                        }
+                    }
+                } catch(e) { console.error("Falha ao sincronizar conversas do histórico:", e); }
+            }
+        }
+
+        // Adiciona um link analisado pelo Navegador de Contexto automaticamente ao Workspace
+        function registerAnalyzedLinkInWorkspace(title, url, desc) {
+            if (!url) return;
+            // Evita duplicatas de URL no banco de links
+            const exists = workspaceData.links.some(l => l.url.toLowerCase() === url.toLowerCase());
+            if (exists) return;
+
+            const newLink = {
+                id: 'l-' + Date.now(),
+                title: title || "Link Analisado",
+                url: url,
+                desc: desc || "Link extraído e analisado usando o decodificador inteligente do Navegador de Contexto.",
+                date: new Date().toLocaleDateString('pt-BR'),
+                favorite: false
+            };
+            workspaceData.links.unshift(newLink);
+            saveWorkspaceToStorage();
+            renderWorkspace(currentWorkspaceFilter, currentWorkspaceSearch);
+            addLog(`Link adicionado automaticamente ao Workspace: ${newLink.title}`, "success");
+        }
+
+        function filterWorkspaceByCategory(category) {
+            currentWorkspaceFilter = category;
+            
+            // Sincroniza visual das pílulas de filtro
+            const row = document.getElementById('ws-filter-pills-row');
+            if (row) {
+                const buttons = row.querySelectorAll('button');
+                buttons.forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.style.background = 'rgba(255,255,255,0.03)';
+                    btn.style.color = 'var(--text-main)';
+                    btn.style.border = '1px solid var(--border-color)';
+                });
+
+                // Seleciona o correspondente
+                let targetIdx = 0;
+                if (category === 'conversa') targetIdx = 1;
+                else if (category === 'arquivo') targetIdx = 2;
+                else if (category === 'link') targetIdx = 3;
+                else if (category === 'memoria') targetIdx = 4;
+                else if (category === 'fav') targetIdx = 5;
+
+                const activeBtn = buttons[targetIdx];
+                if (activeBtn) {
+                    activeBtn.classList.add('active');
+                    activeBtn.style.background = 'var(--primary)';
+                    activeBtn.style.color = 'var(--bg-color)';
+                    activeBtn.style.border = 'none';
+                }
+            }
+
+            renderWorkspace(category, currentWorkspaceSearch);
+        }
+
+        function setWorkspaceFilter(category, btnEl) {
+            triggerPulse();
+            currentWorkspaceFilter = category;
+            
+            // Remove active style from all pills
+            const pills = document.querySelectorAll('.ws-filter-pill');
+            pills.forEach(p => {
+                p.classList.remove('active');
+                p.style.background = 'rgba(255,255,255,0.03)';
+                p.style.color = 'var(--text-main)';
+                p.style.border = '1px solid var(--border-color)';
+            });
+
+            // Set active style to clicked pill
+            if (btnEl) {
+                btnEl.classList.add('active');
+                btnEl.style.background = 'var(--primary)';
+                btnEl.style.color = 'var(--bg-color)';
+                btnEl.style.border = 'none';
+            }
+
+            renderWorkspace(category, currentWorkspaceSearch);
+        }
+
+        function onWorkspaceSearch(query) {
+            currentWorkspaceSearch = query.trim().toLowerCase();
+            renderWorkspace(currentWorkspaceFilter, currentWorkspaceSearch);
+        }
+
+        function renderWorkspace(filter = 'all', search = '') {
+            const grid = document.getElementById('workspace-items-grid');
+            const emptyState = document.getElementById('workspace-empty-state');
+            if (!grid) return;
+
+            grid.innerHTML = '';
+
+            // 1. Atualizar contadores das estatísticas
+            let countChats = workspaceData.conversas ? workspaceData.conversas.length : 0;
+            let countFiles = workspaceData.arquivos ? workspaceData.arquivos.length : 0;
+            let countLinks = workspaceData.links ? workspaceData.links.length : 0;
+            let countMems = workspaceData.memorias ? workspaceData.memorias.length : 0;
+            
+            // Calcula total de favoritos
+            let favsCount = 0;
+            if (workspaceData.conversas) favsCount += workspaceData.conversas.filter(c => c.favorite).length;
+            if (workspaceData.arquivos) favsCount += workspaceData.arquivos.filter(a => a.favorite).length;
+            if (workspaceData.links) favsCount += workspaceData.links.filter(l => l.favorite).length;
+            if (workspaceData.memorias) favsCount += workspaceData.memorias.filter(m => m.favorite).length;
+
+            const countConversasEl = document.getElementById('ws-count-conversas');
+            const countArquivosEl = document.getElementById('ws-count-arquivos');
+            const countLinksEl = document.getElementById('ws-count-links');
+            const countMemoriasEl = document.getElementById('ws-count-memorias');
+            const countFavoritosEl = document.getElementById('ws-count-favoritos');
+
+            if (countConversasEl) countConversasEl.textContent = countChats;
+            if (countArquivosEl) countArquivosEl.textContent = countFiles;
+            if (countLinksEl) countLinksEl.textContent = countLinks;
+            if (countMemoriasEl) countMemoriasEl.textContent = countMems;
+            if (countFavoritosEl) countFavoritosEl.textContent = favsCount;
+
+            // 2. Reunir todos os itens mapeados por tipo
+            let items = [];
+
+            if (filter === 'all' || filter === 'conversa') {
+                if (workspaceData.conversas) workspaceData.conversas.forEach(c => items.push({ ...c, sys_type: 'conversa', sys_icon: '💬', badge: 'Chat' }));
+            }
+            if (filter === 'all' || filter === 'arquivo') {
+                if (workspaceData.arquivos) workspaceData.arquivos.forEach(a => items.push({ ...a, sys_type: 'arquivo', sys_icon: '📁', badge: a.type || 'Ficheiro' }));
+            }
+            if (filter === 'all' || filter === 'link') {
+                if (workspaceData.links) workspaceData.links.forEach(l => items.push({ ...l, sys_type: 'link', sys_icon: '🔗', badge: 'Link' }));
+            }
+            if (filter === 'all' || filter === 'memoria') {
+                if (workspaceData.memorias) workspaceData.memorias.forEach(m => items.push({ ...m, sys_type: 'memoria', sys_icon: '🧠', badge: 'Memória' }));
+            }
+
+            // Filtro especial de Favoritos
+            if (filter === 'fav') {
+                if (workspaceData.conversas) workspaceData.conversas.filter(c => c.favorite).forEach(c => items.push({ ...c, sys_type: 'conversa', sys_icon: '💬', badge: 'Chat' }));
+                if (workspaceData.arquivos) workspaceData.arquivos.filter(a => a.favorite).forEach(a => items.push({ ...a, sys_type: 'arquivo', sys_icon: '📁', badge: a.type || 'Ficheiro' }));
+                if (workspaceData.links) workspaceData.links.filter(l => l.favorite).forEach(l => items.push({ ...l, sys_type: 'link', sys_icon: '🔗', badge: 'Link' }));
+                if (workspaceData.memorias) workspaceData.memorias.filter(m => m.favorite).forEach(m => items.push({ ...m, sys_type: 'memoria', sys_icon: '🧠', badge: 'Memória' }));
+            }
+
+            // 3. Filtrar de acordo com a pesquisa
+            if (search) {
+                items = items.filter(item => {
+                    const titleText = (item.title || item.name || item.fact || '').toLowerCase();
+                    const bodyText = (item.snippet || item.desc || item.content || '').toLowerCase();
+                    const urlText = (item.url || '').toLowerCase();
+                    return titleText.includes(search) || bodyText.includes(search) || urlText.includes(search);
+                });
+            }
+
+            // 4. Se não houver itens, mostra o empty state
+            if (items.length === 0) {
+                emptyState.style.display = 'flex';
+                grid.style.display = 'none';
+                return;
+            } else {
+                emptyState.style.display = 'none';
+                grid.style.display = 'flex';
+            }
+
+            // 5. Renderizar cada item como um card requintado
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.id = `ws-item-${item.id}`;
+                card.style.background = 'rgba(255,255,255,0.015)';
+                card.style.border = '1px solid var(--border-color)';
+                card.style.borderRadius = '16px';
+                card.style.padding = '14px';
+                card.style.display = 'flex';
+                card.style.flexDirection = 'column';
+                card.style.gap = '8px';
+                card.style.transition = 'all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)';
+                card.classList.add('fadeInNative');
+
+                // Cabeçalho do Card
+                const header = document.createElement('div');
+                header.style.display = 'flex';
+                header.style.justifyContent = 'space-between';
+                header.style.alignItems = 'center';
+
+                // Tipo Badge
+                const typeWrapper = document.createElement('div');
+                typeWrapper.style.display = 'flex';
+                typeWrapper.style.alignItems = 'center';
+                typeWrapper.style.gap = '6px';
+
+                const iconSpan = document.createElement('span');
+                iconSpan.textContent = item.sys_icon;
+                iconSpan.style.fontSize = '1.05rem';
+
+                const badge = document.createElement('span');
+                badge.textContent = item.badge;
+                badge.style.fontSize = '0.62rem';
+                badge.style.background = item.sys_type === 'conversa' ? 'rgba(59, 130, 246, 0.12)' : 
+                                         item.sys_type === 'arquivo' ? 'rgba(16, 185, 129, 0.12)' : 
+                                         item.sys_type === 'link' ? 'rgba(245, 158, 11, 0.12)' : 'rgba(139, 92, 246, 0.12)';
+                badge.style.color = item.sys_type === 'conversa' ? '#3b82f6' : 
+                                    item.sys_type === 'arquivo' ? '#10b981' : 
+                                    item.sys_type === 'link' ? '#f59e0b' : '#8b5cf6';
+                badge.style.fontWeight = 'bold';
+                badge.style.textTransform = 'uppercase';
+                badge.style.padding = '3px 8px';
+                badge.style.borderRadius = '20px';
+
+                typeWrapper.appendChild(iconSpan);
+                typeWrapper.appendChild(badge);
+
+                // Botão Fav
+                const favBtn = document.createElement('button');
+                favBtn.innerHTML = item.favorite ? '★' : '☆';
+                favBtn.style.background = 'none';
+                favBtn.style.border = 'none';
+                favBtn.style.fontSize = '1.25rem';
+                favBtn.style.color = item.favorite ? 'var(--primary)' : 'var(--text-muted)';
+                favBtn.style.cursor = 'pointer';
+                favBtn.style.padding = '2px 6px';
+                favBtn.style.display = 'flex';
+                favBtn.style.alignItems = 'center';
+                favBtn.title = item.favorite ? 'Desfavoritar' : 'Favoritar';
+                favBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    toggleWorkspaceFavorite(item.id, item.sys_type);
+                };
+
+                header.appendChild(typeWrapper);
+                header.appendChild(favBtn);
+
+                // Título e subtexto
+                const titleEl = document.createElement('h3');
+                titleEl.textContent = item.title || item.name || (item.fact ? item.fact.substring(0, 45) + (item.fact.length > 45 ? "..." : "") : "Sem título");
+                titleEl.style.margin = '4px 0 0 0';
+                titleEl.style.fontSize = '0.90rem';
+                titleEl.style.color = '#fff';
+                titleEl.style.fontWeight = '700';
+
+                const descEl = document.createElement('p');
+                descEl.textContent = item.snippet || item.desc || item.fact || "Nenhuma descrição fornecida.";
+                descEl.style.margin = '0';
+                descEl.style.fontSize = '0.78rem';
+                descEl.style.color = 'var(--text-muted)';
+                descEl.style.lineHeight = '1.4';
+
+                // Corpo de Meta Detalhes
+                const metaRow = document.createElement('div');
+                metaRow.style.display = 'flex';
+                metaRow.style.justifyContent = 'space-between';
+                metaRow.style.alignItems = 'center';
+                metaRow.style.fontSize = '0.68rem';
+                metaRow.style.color = 'rgba(255,255,255,0.25)';
+                metaRow.style.marginTop = '4px';
+
+                const dateSpan = document.createElement('span');
+                dateSpan.textContent = `Salvo em ${item.date}`;
+                
+                const rightMeta = document.createElement('span');
+                rightMeta.textContent = item.size ? `Tamanho: ${item.size}` : (item.url ? item.url : '');
+                rightMeta.style.textOverflow = 'ellipsis';
+                rightMeta.style.overflow = 'hidden';
+                rightMeta.style.whiteSpace = 'nowrap';
+                rightMeta.style.maxWidth = '180px';
+
+                metaRow.appendChild(dateSpan);
+                metaRow.appendChild(rightMeta);
+
+                // Content Panel expandível para detalhes
+                const expandPanel = document.createElement('div');
+                expandPanel.id = `ws-expand-${item.sys_type}-${item.id}`;
+                expandPanel.style.display = 'none';
+                expandPanel.style.marginTop = '10px';
+                expandPanel.style.padding = '10px';
+                expandPanel.style.borderRadius = '10px';
+                expandPanel.style.background = 'rgba(255,255,255,0.015)';
+                expandPanel.style.border = '1px solid rgba(255,255,255,0.03)';
+                expandPanel.style.fontSize = '0.8rem';
+                expandPanel.style.color = 'var(--text-main)';
+                expandPanel.style.lineHeight = '1.45';
+
+                // Se houver uma imagem real anexada
+                if (item.sys_type === 'arquivo' && item.type === 'Imagem' && item.content && item.content.startsWith('http')) {
+                    const img = document.createElement('img');
+                    img.src = item.content;
+                    img.style.width = '100%';
+                    img.style.maxHeight = '200px';
+                    img.style.objectFit = 'cover';
+                    img.style.borderRadius = '8px';
+                    img.style.marginTop = '6px';
+                    img.style.border = '1px solid var(--border-color)';
+                    expandPanel.appendChild(img);
+                } else if (item.content) {
+                    const txt = document.createElement('pre');
+                    txt.style.whiteSpace = 'pre-wrap';
+                    txt.style.fontFamily = 'monospace';
+                    txt.style.fontSize = '0.75rem';
+                    txt.style.margin = '4px 0 0 0';
+                    txt.style.color = 'var(--text-muted)';
+                    txt.textContent = item.content;
+                    expandPanel.appendChild(txt);
+                }
+
+                // Ações do rodapé do card
+                const footerActions = document.createElement('div');
+                footerActions.style.display = 'flex';
+                footerActions.style.justifyContent = 'flex-end';
+                footerActions.style.gap = '8px';
+                footerActions.style.marginTop = '10px';
+                footerActions.style.borderTop = '1px solid rgba(255,255,255,0.03)';
+                footerActions.style.paddingTop = '8px';
+
+                // Ver Detalhes Toggle Button
+                const btnExpand = document.createElement('button');
+                btnExpand.textContent = "Ver Detalhes ⌄";
+                btnExpand.style.background = 'none';
+                btnExpand.style.border = 'none';
+                btnExpand.style.color = 'var(--text-muted)';
+                btnExpand.style.fontSize = '0.72rem';
+                btnExpand.style.cursor = 'pointer';
+                btnExpand.style.marginRight = 'auto';
+                btnExpand.onclick = (e) => {
+                    e.stopPropagation();
+                    const p = document.getElementById(`ws-expand-${item.sys_type}-${item.id}`);
+                    if (p.style.display === 'none') {
+                        p.style.display = 'block';
+                        btnExpand.textContent = "Recolher Detalhes ⌃";
+                        card.style.background = 'rgba(255,255,255,0.025)';
+                    } else {
+                        p.style.display = 'none';
+                        btnExpand.textContent = "Ver Detalhes ⌄";
+                        card.style.background = 'rgba(255,255,255,0.015)';
+                    }
+                };
+
+                // Ação Primária dependendo do tipo
+                if (item.sys_type === 'link' && item.url) {
+                    const btnOpen = document.createElement('button');
+                    btnOpen.textContent = "Analisar Link 🌐";
+                    btnOpen.style.background = 'rgba(245, 158, 11, 0.15)';
+                    btnOpen.style.color = '#f59e0b';
+                    btnOpen.style.border = 'none';
+                    btnOpen.style.borderRadius = '8px';
+                    btnOpen.style.padding = '4px 10px';
+                    btnOpen.style.fontSize = '0.68rem';
+                    btnOpen.style.fontWeight = 'bold';
+                    btnOpen.style.cursor = 'pointer';
+                    btnOpen.onclick = (e) => {
+                        e.stopPropagation();
+                        const browserInput = document.getElementById('context-url-input');
+                        if (browserInput) browserInput.value = item.url;
+                        switchTab('tab-context-browser');
+                        setTimeout(() => { if (typeof processContextUrlWeb === 'function') processContextUrlWeb(); }, 200);
+                    };
+                    footerActions.appendChild(btnOpen);
+                }
+
+                if (item.sys_type === 'conversa') {
+                    const btnChat = document.createElement('button');
+                    btnChat.textContent = "Abrir no Chat 💬";
+                    btnChat.style.background = 'rgba(59, 130, 246, 0.15)';
+                    btnChat.style.color = '#3b82f6';
+                    btnChat.style.border = 'none';
+                    btnChat.style.borderRadius = '8px';
+                    btnChat.style.padding = '4px 10px';
+                    btnChat.style.fontSize = '0.68rem';
+                    btnChat.style.fontWeight = 'bold';
+                    btnChat.style.cursor = 'pointer';
+                    btnChat.onclick = (e) => {
+                        e.stopPropagation();
+                        // Restaura conversas e navega para Chat
+                        switchTab('tab-chat');
+                    };
+                    footerActions.appendChild(btnChat);
+                }
+
+                // Botão Editar
+                const btnEdit = document.createElement('button');
+                btnEdit.textContent = "Editar ✏️";
+                btnEdit.style.background = 'rgba(255,255,255,0.03)';
+                btnEdit.style.color = 'var(--text-main)';
+                btnEdit.style.border = '1px solid var(--border-color)';
+                btnEdit.style.borderRadius = '8px';
+                btnEdit.style.padding = '4px 10px';
+                btnEdit.style.fontSize = '0.68rem';
+                btnEdit.style.cursor = 'pointer';
+                btnEdit.onclick = (e) => {
+                    e.stopPropagation();
+                    editWorkspaceItem(item.id, item.sys_type);
+                };
+
+                // Botão Excluir
+                const btnDel = document.createElement('button');
+                btnDel.textContent = "Excluir 🗑️";
+                btnDel.style.background = 'rgba(239, 68, 68, 0.12)';
+                btnDel.style.color = '#ef4444';
+                btnDel.style.border = 'none';
+                btnDel.style.borderRadius = '8px';
+                btnDel.style.padding = '4px 10px';
+                btnDel.style.fontSize = '0.68rem';
+                btnDel.style.fontWeight = 'bold';
+                btnDel.style.cursor = 'pointer';
+                btnDel.onclick = (e) => {
+                    e.stopPropagation();
+                    deleteWorkspaceItem(item.id, item.sys_type);
+                };
+
+                footerActions.appendChild(btnEdit);
+                footerActions.appendChild(btnDel);
+
+                // Monta estrutura do card
+                card.appendChild(header);
+                card.appendChild(titleEl);
+                card.appendChild(descEl);
+                card.appendChild(metaRow);
+                card.appendChild(expandPanel);
+                card.appendChild(footerActions);
+
+                grid.appendChild(card);
+            });
+        }
+
+        function toggleWorkspaceFavorite(id, category) {
+            triggerPulse();
+            let key = category + 's';
+            if (category === 'memoria') key = 'memorias';
+            
+            const arr = workspaceData[key];
+            if (arr) {
+                const item = arr.find(i => i.id === id);
+                if (item) {
+                    item.favorite = !item.favorite;
+                    saveWorkspaceToStorage();
+                    renderWorkspace(currentWorkspaceFilter, currentWorkspaceSearch);
+                    showAppToast(item.favorite ? 'Adicionado aos Favoritos ★' : 'Removido dos Favoritos ☆', 'info');
+                }
+            }
+        }
+
+        async function deleteWorkspaceItem(id, category) {
+            triggerPulse();
+            // Evita erros de confirm usando o confirm customizado do Synapse!
+            const msgConfirm = currentLanguage === 'en' ? "Are you sure you want to delete this item permanently?" : "Tem certeza de que deseja excluir este item permanentemente do Workspace?";
+            const yes = await showCustomConfirm(msgConfirm);
+            if (!yes) return;
+
+            let key = category + 's';
+            if (category === 'memoria') key = 'memorias';
+
+            const arr = workspaceData[key];
+            if (arr) {
+                const index = arr.findIndex(i => i.id === id);
+                if (index !== -1) {
+                    arr.splice(index, 1);
+                    saveWorkspaceToStorage();
+                    renderWorkspace(currentWorkspaceFilter, currentWorkspaceSearch);
+                    showAppToast("Item excluído com sucesso do Workspace.", "success");
+                    addLog(`Item do Workspace excluído: ID ${id}, Categoria ${category}`, "info");
+                }
+            }
+        }
+
+        // Modal para Editar dados Inline
+        function editWorkspaceItem(id, category) {
+            triggerPulse();
+            let key = category + 's';
+            if (category === 'memoria') key = 'memorias';
+
+            const arr = workspaceData[key];
+            if (!arr) return;
+            const item = arr.find(i => i.id === id);
+            if (!item) return;
+
+            // Cria um modal dinâmico elegante para edição
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100vw';
+            modal.style.height = '100vh';
+            modal.style.background = 'rgba(0,0,0,0.85)';
+            modal.style.backdropFilter = 'blur(10px)';
+            modal.style.zIndex = '100000';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.style.padding = '20px';
+
+            const card = document.createElement('div');
+            card.style.background = '#0a0a0f';
+            card.style.border = '1px solid var(--border-color)';
+            card.style.borderRadius = '20px';
+            card.style.width = '100%';
+            card.style.maxWidth = '460px';
+            card.style.padding = '20px';
+            card.style.display = 'flex';
+            card.style.flexDirection = 'column';
+            card.style.gap = '14px';
+
+            const title = document.createElement('h3');
+            title.textContent = `Editar Item - ${category.toUpperCase()}`;
+            title.style.margin = '0';
+            title.style.color = '#fff';
+            title.style.fontWeight = '800';
+
+            // HTML dos inputs dependendo do tipo de dados
+            const fieldsContainer = document.createElement('div');
+            fieldsContainer.style.display = 'flex';
+            fieldsContainer.style.flexDirection = 'column';
+            fieldsContainer.style.gap = '10px';
+
+            if (category === 'memoria') {
+                const labelFact = document.createElement('label');
+                labelFact.textContent = "Fato Registrado na Memória da IA:";
+                labelFact.style.fontSize = '0.75rem';
+                labelFact.style.color = 'var(--text-muted)';
+                labelFact.style.fontWeight = 'bold';
+
+                const inputFact = document.createElement('textarea');
+                inputFact.className = 'form-control';
+                inputFact.rows = 4;
+                inputFact.value = item.fact;
+                inputFact.style.borderRadius = '10px';
+                inputFact.style.fontSize = '0.85rem';
+
+                fieldsContainer.appendChild(labelFact);
+                fieldsContainer.appendChild(inputFact);
+
+                card.appendChild(title);
+                card.appendChild(fieldsContainer);
+
+                // Botão salvar
+                const btnSave = document.createElement('button');
+                btnSave.className = 'btn-universal';
+                btnSave.textContent = "Salvar Alterações ✨";
+                btnSave.style.background = 'var(--primary)';
+                btnSave.style.color = 'var(--bg-color)';
+                btnSave.onclick = () => {
+                    const txt = inputFact.value.trim();
+                    if (!txt) return;
+                    item.fact = txt;
+                    saveWorkspaceToStorage();
+                    renderWorkspace(currentWorkspaceFilter, currentWorkspaceSearch);
+                    modal.remove();
+                    showAppToast("Memória atualizada com sucesso!", "success");
+                };
+                card.appendChild(btnSave);
+            } else if (category === 'link') {
+                const labelTitle = document.createElement('label');
+                labelTitle.textContent = "Título do Link:";
+                labelTitle.style.fontSize = '0.75rem';
+                labelTitle.style.color = 'var(--text-muted)';
+
+                const inputTitle = document.createElement('input');
+                inputTitle.className = 'form-control';
+                inputTitle.type = 'text';
+                inputTitle.value = item.title;
+
+                const labelUrl = document.createElement('label');
+                labelUrl.textContent = "URL do Recurso:";
+                labelUrl.style.fontSize = '0.75rem';
+
+                const inputUrl = document.createElement('input');
+                inputUrl.className = 'form-control';
+                inputUrl.type = 'text';
+                inputUrl.value = item.url;
+
+                const labelDesc = document.createElement('label');
+                labelDesc.textContent = "Descrição/Anotações:";
+                labelDesc.style.fontSize = '0.75rem';
+
+                const inputDesc = document.createElement('textarea');
+                inputDesc.className = 'form-control';
+                inputDesc.rows = 3;
+                inputDesc.value = item.desc;
+
+                fieldsContainer.appendChild(labelTitle);
+                fieldsContainer.appendChild(inputTitle);
+                fieldsContainer.appendChild(labelUrl);
+                fieldsContainer.appendChild(inputUrl);
+                fieldsContainer.appendChild(labelDesc);
+                fieldsContainer.appendChild(inputDesc);
+
+                card.appendChild(title);
+                card.appendChild(fieldsContainer);
+
+                const btnSave = document.createElement('button');
+                btnSave.className = 'btn-universal';
+                btnSave.textContent = "Salvar Link 🔗";
+                btnSave.style.background = 'var(--primary)';
+                btnSave.style.color = 'var(--bg-color)';
+                btnSave.onclick = () => {
+                    const t = inputTitle.value.trim();
+                    const u = inputUrl.value.trim();
+                    if (!t || !u) return;
+                    item.title = t;
+                    item.url = u;
+                    item.desc = inputDesc.value.trim();
+                    saveWorkspaceToStorage();
+                    renderWorkspace(currentWorkspaceFilter, currentWorkspaceSearch);
+                    modal.remove();
+                    showAppToast("Link atualizado com sucesso!", "success");
+                };
+                card.appendChild(btnSave);
+            } else {
+                // Arquivo ou outro tipo genérico
+                const labelName = document.createElement('label');
+                labelName.textContent = "Nome do Arquivo:";
+                labelName.style.fontSize = '0.75rem';
+
+                const inputName = document.createElement('input');
+                inputName.className = 'form-control';
+                inputName.value = item.name || item.title || '';
+
+                const labelDesc = document.createElement('label');
+                labelDesc.textContent = "Descrição:";
+                labelDesc.style.fontSize = '0.75rem';
+
+                const inputDesc = document.createElement('input');
+                inputDesc.className = 'form-control';
+                inputDesc.value = item.desc || item.snippet || '';
+
+                const labelContent = document.createElement('label');
+                labelContent.textContent = "Conteúdo Textual / URL de Mídia:";
+                labelContent.style.fontSize = '0.75rem';
+
+                const inputContent = document.createElement('textarea');
+                inputContent.className = 'form-control';
+                inputContent.rows = 4;
+                inputContent.value = item.content || '';
+
+                fieldsContainer.appendChild(labelName);
+                fieldsContainer.appendChild(inputName);
+                fieldsContainer.appendChild(labelDesc);
+                fieldsContainer.appendChild(inputDesc);
+                fieldsContainer.appendChild(labelContent);
+                fieldsContainer.appendChild(inputContent);
+
+                card.appendChild(title);
+                card.appendChild(fieldsContainer);
+
+                const btnSave = document.createElement('button');
+                btnSave.className = 'btn-universal';
+                btnSave.textContent = "Salvar Dados 📁";
+                btnSave.style.background = 'var(--primary)';
+                btnSave.style.color = 'var(--bg-color)';
+                btnSave.onclick = () => {
+                    const n = inputName.value.trim();
+                    if (!n) return;
+                    if (item.name) item.name = n;
+                    else item.title = n;
+                    item.desc = inputDesc.value.trim();
+                    item.content = inputContent.value;
+                    saveWorkspaceToStorage();
+                    renderWorkspace(currentWorkspaceFilter, currentWorkspaceSearch);
+                    modal.remove();
+                    showAppToast("Arquivo atualizado com sucesso!", "success");
+                };
+                card.appendChild(btnSave);
+            }
+
+            // Botão fechar
+            const btnClose = document.createElement('button');
+            btnClose.textContent = "Cancelar ✕";
+            btnClose.style.background = 'none';
+            btnClose.style.border = 'none';
+            btnClose.style.color = 'rgba(255,255,255,0.4)';
+            btnClose.style.fontSize = '0.8rem';
+            btnClose.style.cursor = 'pointer';
+            btnClose.style.padding = '8px';
+            btnClose.onclick = () => modal.remove();
+            card.appendChild(btnClose);
+
+            modal.appendChild(card);
+            document.body.appendChild(modal);
+        }
+
+        // Modal para Adicionar Dados do Workspace
+        function openAddWorkspaceItemModal() {
+            triggerPulse();
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100vw';
+            modal.style.height = '100vh';
+            modal.style.background = 'rgba(0,0,0,0.85)';
+            modal.style.backdropFilter = 'blur(10px)';
+            modal.style.zIndex = '100000';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.style.padding = '20px';
+
+            const card = document.createElement('div');
+            card.style.background = '#0a0a0f';
+            card.style.border = '1px solid var(--border-color)';
+            card.style.borderRadius = '20px';
+            card.style.width = '100%';
+            card.style.maxWidth = '460px';
+            card.style.padding = '20px';
+            card.style.display = 'flex';
+            card.style.flexDirection = 'column';
+            card.style.gap = '14px';
+
+            const title = document.createElement('h3');
+            title.textContent = "Adicionar Novo Registro";
+            title.style.margin = '0';
+            title.style.color = '#fff';
+            title.style.fontWeight = '800';
+
+            const labelType = document.createElement('label');
+            labelType.textContent = "Tipo de Item:";
+            labelType.style.fontSize = '0.75rem';
+            labelType.style.color = 'var(--text-muted)';
+            labelType.style.fontWeight = 'bold';
+
+            const selectType = document.createElement('select');
+            selectType.className = 'form-control';
+            selectType.innerHTML = `
+                <option value="arquivo-pdf" selected>📁 Arquivo (PDF)</option>
+                <option value="arquivo-md">📁 Arquivo (Documento .md)</option>
+                <option value="arquivo-img">📁 Arquivo (Imagem URL)</option>
+                <option value="link">🔗 Link Analisável</option>
+                <option value="memoria">🧠 Memória da IA</option>
+            `;
+            selectType.style.borderRadius = '10px';
+
+            const fieldsContainer = document.createElement('div');
+            fieldsContainer.style.display = 'flex';
+            fieldsContainer.style.flexDirection = 'column';
+            fieldsContainer.style.gap = '10px';
+
+            // Carrega dinamicamente os inputs apropriados
+            function updateAddForm(selectedVal) {
+                fieldsContainer.innerHTML = '';
+
+                if (selectedVal.startsWith('arquivo')) {
+                    const lName = document.createElement('label');
+                    lName.textContent = "Nome do Arquivo:";
+                    lName.style.fontSize = '0.75rem';
+                    const iName = document.createElement('input');
+                    iName.className = 'form-control';
+                    iName.id = 'ws-add-arg1';
+                    iName.placeholder = selectedVal.includes('pdf') ? 'esquema_bancario_anexo.pdf' : selectedVal.includes('md') ? 'readme.md' : 'foto_painel.png';
+
+                    const lDesc = document.createElement('label');
+                    lDesc.textContent = "Descrição/Anotações:";
+                    lDesc.style.fontSize = '0.75rem';
+                    const iDesc = document.createElement('input');
+                    iDesc.className = 'form-control';
+                    iDesc.id = 'ws-add-arg2';
+                    iDesc.placeholder = 'Detalhes rápidos sobre o arquivo...';
+
+                    const lContent = document.createElement('label');
+                    lContent.textContent = selectedVal.includes('img') ? "URL da Imagem:" : "Conteúdo Textual Interno:";
+                    lContent.style.fontSize = '0.75rem';
+                    const iContent = document.createElement('textarea');
+                    iContent.className = 'form-control';
+                    iContent.rows = 4;
+                    iContent.id = 'ws-add-arg3';
+                    iContent.placeholder = selectedVal.includes('img') ? 'https://images.unsplash.com/...' : 'Escreva ou cole as regras de texto internas de persistência aqui...';
+
+                    fieldsContainer.appendChild(lName);
+                    fieldsContainer.appendChild(iName);
+                    fieldsContainer.appendChild(lDesc);
+                    fieldsContainer.appendChild(iDesc);
+                    fieldsContainer.appendChild(lContent);
+                    fieldsContainer.appendChild(iContent);
+                } else if (selectedVal === 'link') {
+                    const lTitle = document.createElement('label');
+                    lTitle.textContent = "Título do Link:";
+                    lTitle.style.fontSize = '0.75rem';
+                    const iTitle = document.createElement('input');
+                    iTitle.className = 'form-control';
+                    iTitle.id = 'ws-add-arg1';
+                    iTitle.placeholder = 'Artigo de IA - Medium';
+
+                    const lUrl = document.createElement('label');
+                    lUrl.textContent = "URL do Recurso:";
+                    lUrl.style.fontSize = '0.75rem';
+                    const iUrl = document.createElement('input');
+                    iUrl.className = 'form-control';
+                    iUrl.id = 'ws-add-arg2';
+                    iUrl.placeholder = 'https://medium.com/some-post';
+
+                    const lDesc = document.createElement('label');
+                    lDesc.textContent = "Descrição de Análise:";
+                    lDesc.style.fontSize = '0.75rem';
+                    const iDesc = document.createElement('textarea');
+                    iDesc.className = 'form-control';
+                    iDesc.rows = 3;
+                    iDesc.id = 'ws-add-arg3';
+                    iDesc.placeholder = 'Digite uma nota pré-análise do link...';
+
+                    fieldsContainer.appendChild(lTitle);
+                    fieldsContainer.appendChild(iTitle);
+                    fieldsContainer.appendChild(lUrl);
+                    fieldsContainer.appendChild(iUrl);
+                    fieldsContainer.appendChild(lDesc);
+                    fieldsContainer.appendChild(iDesc);
+                } else if (selectedVal === 'memoria') {
+                    const lFact = document.createElement('label');
+                    lFact.textContent = "Fato que a IA deve lembrar sempre:";
+                    lFact.style.fontSize = '0.75rem';
+                    const iFact = document.createElement('textarea');
+                    iFact.className = 'form-control';
+                    iFact.rows = 4;
+                    iFact.id = 'ws-add-arg1';
+                    iFact.placeholder = 'O usuário está trabalhando em rotinas TypeScript e prefere explicações densas e diretas ao ponto.';
+
+                    fieldsContainer.appendChild(lFact);
+                    fieldsContainer.appendChild(iFact);
+                }
+            }
+
+            selectType.onchange = (e) => updateAddForm(e.target.value);
+            updateAddForm('arquivo-pdf'); // default
+
+            card.appendChild(title);
+            card.appendChild(labelType);
+            card.appendChild(selectType);
+            card.appendChild(fieldsContainer);
+
+            // Botão Adicionar
+            const btnAdd = document.createElement('button');
+            btnAdd.className = 'btn-universal';
+            btnAdd.textContent = "Registrar Recursos ✨";
+            btnAdd.style.background = 'var(--primary)';
+            btnAdd.style.color = 'var(--bg-color)';
+            btnAdd.onclick = () => {
+                const type = selectType.value;
+                
+                if (type.startsWith('arquivo')) {
+                    const arg1 = document.getElementById('ws-add-arg1').value.trim();
+                    const arg2 = document.getElementById('ws-add-arg2').value.trim();
+                    const arg3 = document.getElementById('ws-add-arg3').value;
+
+                    if (!arg1) return;
+                    
+                    const subType = type === 'arquivo-pdf' ? 'PDF' : type === 'arquivo-md' ? 'Documento' : 'Imagem';
+                    const sizeText = type === 'arquivo-pdf' ? '420 KB' : type === 'arquivo-md' ? '6 KB' : '1.2 MB';
+
+                    const newItem = {
+                        id: 'f-' + Date.now(),
+                        name: arg1,
+                        desc: arg2 || 'Arquivo de produtividade adicionado localmente.',
+                        type: subType,
+                        date: new Date().toLocaleDateString('pt-BR'),
+                        size: sizeText,
+                        content: arg3,
+                        favorite: false
+                    };
+                    workspaceData.arquivos.unshift(newItem);
+                    showAppToast("Arquivo salvo com sucesso no Workspace!", "success");
+                } else if (type === 'link') {
+                    const arg1 = document.getElementById('ws-add-arg1').value.trim();
+                    const arg2 = document.getElementById('ws-add-arg2').value.trim();
+                    const arg3 = document.getElementById('ws-add-arg3').value.trim();
+
+                    if (!arg1 || !arg2) return;
+
+                    const newItem = {
+                        id: 'l-' + Date.now(),
+                        title: arg1,
+                        url: arg2,
+                        desc: arg3 || 'Link registrado no ecossistema.',
+                        date: new Date().toLocaleDateString('pt-BR'),
+                        favorite: false
+                    };
+                    workspaceData.links.unshift(newItem);
+                    showAppToast("Link salvo com sucesso no Workspace!", "success");
+                } else if (type === 'memoria') {
+                    const arg1 = document.getElementById('ws-add-arg1').value.trim();
+                    if (!arg1) return;
+
+                    const newItem = {
+                        id: 'm-' + Date.now(),
+                        fact: arg1,
+                        date: new Date().toLocaleDateString('pt-BR'),
+                        favorite: false
+                    };
+                    workspaceData.memorias.unshift(newItem);
+                    showAppToast("Nova memória injetada no sistema com sucesso!", "success");
+                }
+
+                saveWorkspaceToStorage();
+                renderWorkspace(currentWorkspaceFilter, currentWorkspaceSearch);
+                modal.remove();
+            };
+
+            const btnCancel = document.createElement('button');
+            btnCancel.textContent = "Cancelar ✕";
+            btnCancel.style.background = 'none';
+            btnCancel.style.border = 'none';
+            btnCancel.style.color = 'rgba(255,255,255,0.4)';
+            btnCancel.style.fontSize = '0.8rem';
+            btnCancel.style.cursor = 'pointer';
+            btnCancel.style.padding = '8px';
+            btnCancel.onclick = () => modal.remove();
+
+            card.appendChild(btnAdd);
+            card.appendChild(btnCancel);
+
+            modal.appendChild(card);
+            document.body.appendChild(modal);
         }
 
         function clearChat() {
