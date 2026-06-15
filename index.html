@@ -4580,17 +4580,6 @@ WITH CHECK (true);</code>
             } else {
                 return `¡Hola! Soy el agente **${name}** ${icon} (Simulado).\n\nMis instrucciones personalizadas completas:\n*"${target ? target.prompt : ''}"*\n\nActualmente, no hay clave de API configurada. Introduzca una en Ajustes para activar mi pleno rendimiento.`;
             }
-        }ine. To cross-reference scientific hypotheses, synthesize research data, and retrieve historical records precisely, we need to activate the API connector in Settings.",
-                    es: "Modo **[INVESTIGADOR]** (Simulado) inicializado. 🔍\n\nEstamos ejecutando sin conexión. Para contrastar hipótesis científicas, sintetizar datos de investigación y recuperar registros históricos del ecosistema de manera precisa, necesitamos activar el conector de API en Ajustes."
-                },
-                analista: {
-                    pt: "Análise estratégica interrompida: Modo **[ANALISTA]** (Simulado). 📊\n\nMapeamento de riscos e diagramação de oportunidades táticas indisponíveis offline. Recomendo inserir as credenciais nos Ajustes para que o algoritmo de descontrução lógica de problemas seja acionado.",
-                    en: "Strategic analysis suspended: **[ANALYST]** mode (Simulated). 📊\n\nRisk mapping and tactical opportunity forecasting are unavailable offline. I recommend inserting credentials under Settings to trigger the problem-deconstruction algorithm.",
-                    es: "Análisis estratégico suspendido: Modo **[ANALISTA]** (Simulado). 📊\n\nEl mapeo de riesgos y los diagramas de oportunidades tácticas no están disponibles sin conexión. Recomiendo insertar las credenciales en Ajustes para activar el algoritmo de deconstrucción de problemas."
-                }
-            };
-            const group = replies[id] || replies['geral'];
-            return group[lang] || group['pt'];
         }
 
         // --- 4. Motor de Requisição de Chat ---
