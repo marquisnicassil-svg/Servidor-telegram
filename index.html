@@ -4182,6 +4182,48 @@ WITH CHECK (true);</code>
             return `${assistant.prompt}\n\nMantenha também as seguintes diretrizes gerais do sistema:\n${basePrompt}`;
         }
 
+        function getSimulationReplyByAssistant(id, lang) {
+            const replies = {
+                geral: {
+                    pt: "Esta é uma resposta de simulação do núcleo geral do Synapse. Atualmente, nenhuma chave de API está configurada. Cole uma chave nos Ajustes para habilitar a inteligência neural completa.",
+                    en: "This is a simulation response from the Synapse general core. Currently, no API key is configured. Paste a key under Settings to enable full neural intelligence.",
+                    es: "Esta es una respuesta de simulación del núcleo general de Synapse. Actualmente, no hay ninguna clave de API configurada. Pegue una clave en Ajustes para habilitar la inteligencia neural completa."
+                },
+                programador: {
+                    pt: "Consola Synapse em modo **[PROGRAMADOR]** (Simulado). 💻\n\n```javascript\n// Sem chave de API válida configurada nos Ajustes\nfunction carregarInteligencia() {\n    console.log(\"Consigo simular saídas estruturadas, mas insira um token real para compilar reflexões profundas.\");\n}\ncarregarInteligencia();\n```",
+                    en: "Synapse Console in **[PROGRAMMER]** mode (Simulated). 💻\n\n```javascript\n// No valid API key configured in Settings\nfunction loadIntelligence() {\n    console.log(\"I can simulate structured outputs, but enter a real token to compile deep reflections.\");\n}\nloadIntelligence();\n```",
+                    es: "Consola Synapse en modo **[PROGRAMADOR]** (Simulado). 💻\n\n```javascript\n// Sin clave de API válida configurada en Ajustes\nfunction cargarInteligencia() {\n    console.log(\"Puedo simular salidas estructuradas, pero inserte un token real para compilar reflexiones profundas.\");\n}\ncargarInteligencia();\n```"
+                },
+                professor: {
+                    pt: "Olá, estudante! Estou no modo **[PROFESSOR]** (Simulado). 🎓\n\nPara explicarmos conceitos complexos e realizarmos analogias ricas, precisamos de conexão ativa.\n\n*Lembrete pedagógico:* Insira sua chave de API nos Ajustes para iniciarmos nossas lições profundas passo a passo!",
+                    en: "Hello, student! I am in **[TEACHER] mode** (Simulated). 🎓\n\nTo explain complex concepts and construct rich analogies, we need active connection.\n\n*Pedagogical reminder:* Insert your API key in Settings to start our deep step-by-step lessons!",
+                    es: "¡Hola, estudiante! Estoy en modo **[PROFESOR]** (Simulado). 🎓\n\nPara explicar conceptos complejos y formular ricas analogías, necesitamos conexión activa.\n\n*Recordatorio pedagógico:* ¡Inserte su clave de API en Ajustes para comenzar nuestras lecciones profundas paso a paso!"
+                },
+                tradutor: {
+                    pt: "Modo **[TRADUTOR]** (Simulado) ativo. 🗣️\n\nNenhuma chave de API detectada. Para traduções polidirecionais precisas e análise de nuances semânticas de alta fidelidade cultural, configure sua API Key em Ajustes.",
+                    en: "**[TRANSLATOR]** mode (Simulated) active. 🗣️\n\nNo API key detected. For precise poly-directional translations and high-fidelity cultural semantic analysis, configure your API Key in Settings.",
+                    es: "Modo **[TRADUCTOR]** (Simulado) activo. 🗣️\n\nNinguna clave de API detectada. Para traducciones polidireccionales precisas y análisis de matices semánticos de alta fidelidad cultural, configure su API Key en Ajustes."
+                },
+                escritor: {
+                    pt: "Iniciando rascunhos criativos... Modo **[ESCRITOR]** (Simulado). ✍️\n\n*A caneta flutua no vazio digital...*\n\nPara prosseguirmos com histórias ricas, redações persuasivas e roteiros envolventes, por favor dê vida ao meu cérebro adicionando uma chave de API nos Ajustes.",
+                    en: "Starting creative drafts... **[WRITER]** mode (Simulated). ✍️\n\n*The pen floats in the digital void...*\n\nTo proceed with rich stories, persuasive essays, and engaging scripts, please breathe life into my brain by adding an API key under Settings.",
+                    es: "Iniciando borradores creativos... Modo **[ESCRITOR]** (Simulado). ✍️\n\n*La pluma flota en el vacío digital...*\n\nPara continuar con historias ricas, ensayos persuasivos y guiones envolventes, por favor dé vida a mi cerebro agregando una clave de API en Ajustes."
+                },
+                pesquisador: {
+                    pt: "Modo **[PESQUISADOR]** (Simulado) inicializado. 🔍\n\nEstamos rodando offline. Para cruzar hipóteses científicas, sintetizar dados de bases de pesquisa e resgatar registros históricos precisos, precisamos ativar o conector de API nos Ajustes.",
+                    en: "**[RESEARCHER]** mode (Simulated) initialized. 🔍\n\nWe are running offline. To cross-reference scientific hypotheses, synthesize research data, and retrieve historical records precisely, we need to activate the API connector in Settings.",
+                    es: "Modo **[INVESTIGADOR]** (Simulado) inicializado. 🔍\n\nEstamos ejecutando sin conexión. Para contrastar hipótesis científicas, sintetizar datos de investigación y recuperar registros históricos del ecosistema de manera precisa, necesitamos activar el conector de API en Ajustes."
+                },
+                analista: {
+                    pt: "Análise estratégica interrompida: Modo **[ANALISTA]** (Simulado). 📊\n\nMapeamento de riscos e diagramação de oportunidades táticas indisponíveis offline. Recomendo inserir as credenciais nos Ajustes para que o algoritmo de descontrução lógica de problemas seja acionado.",
+                    en: "Strategic analysis suspended: **[ANALYST]** mode (Simulated). 📊\n\nRisk mapping and tactical opportunity forecasting are unavailable offline. I recommend inserting credentials under Settings to trigger the problem-deconstruction algorithm.",
+                    es: "Análisis estratégico suspendido: Modo **[ANALISTA]** (Simulado). 📊\n\nEl mapeo de riesgos y los diagramas de oportunidades tácticas no están disponibles sin conexión. Recomiendo insertar las credenciales en Ajustes para activar el algoritmo de deconstrucción de problemas."
+                }
+            };
+            const group = replies[id] || replies['geral'];
+            return group[lang] || group['pt'];
+        }
+
         // --- 4. Motor de Requisição de Chat ---
         function formatAIResponse(text) {
             // Escapar HTML básico
@@ -5314,7 +5356,7 @@ WITH CHECK (true);</code>
                 let aiReply = "";
                 
                 if (!key) {
-                    aiReply = "Esta é uma resposta local nativa de simulação. Para que eu seja hiper-inteligente, cole uma Chave de API na aba Ajustes.";
+                    aiReply = getSimulationReplyByAssistant(selectedAssistantId, currentLanguage);
                 } else {
                     try {
                         if (apiType === "GEMINI") {
