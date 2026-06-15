@@ -1244,6 +1244,54 @@
             align-items: center;
             justify-content: center;
         }
+
+        /* Estilos dos Assistentes Inteligentes */
+        .assistants-panel {
+            background: rgba(255, 255, 255, 0.015);
+            border-bottom: 1px solid var(--border-color);
+            padding: 8px 14px 6px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .assistants-tags {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding: 2px 0;
+        }
+        .assistants-tags::-webkit-scrollbar {
+            display: none;
+        }
+        .assistant-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 5px 11px;
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .assistant-chip:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.12);
+            color: var(--text-main);
+        }
+        .assistant-chip.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--bg-color) !important;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.08);
+        }
         
         /* Ajuste fino do header principal */
         header {
@@ -1393,6 +1441,17 @@
         <!-- ABA 1: CONSOLE DE CHAT (Playground) -->
         <section id="tab-chat" class="tab-section active">
             <div class="chat-wrapper">
+                <!-- Painel de Seleção de Assistentes Inteligentes -->
+                <div class="assistants-panel" id="assistants-panel">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                        <span style="font-size: 0.65rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.8px; color: var(--text-muted); opacity: 0.85;" id="assistant-label-title" data-i18n="assistants_title">Especialistas IA • Synapse</span>
+                        <span id="active-assistant-badge" style="font-size: 0.68rem; color: var(--primary); font-weight: 700; background: rgba(255,255,255,0.01); padding: 2px 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02)">Geral 🧠</span>
+                    </div>
+                    <div class="assistants-tags" id="assistants-tags">
+                        <!-- Loaded dynamically by Javascript -->
+                    </div>
+                </div>
+
                 <div class="chat-messages" id="chat-messages">
                     <div class="chat-message bot">
                         Estou conectado e com memória ativada.
@@ -2443,7 +2502,8 @@ WITH CHECK (true);</code>
                 "ws_main_title": "Central Workspace",
                 "ws_main_subtitle": "Central inteligente de conhecimento. Organize conversas, salve arquivos, gerencie links analisados e controle memórias da IA.",
                 "ws_btn_add": "Novo Dado",
-                "ws_empty_title": "Workspace Vazio ou Sem Correspondências"
+                "ws_empty_title": "Workspace Vazio ou Sem Correspondências",
+                "assistants_title": "Especialistas IA • Synapse"
             },
             en: {
                 "conversas": "💬 Conversations",
@@ -2493,7 +2553,8 @@ WITH CHECK (true);</code>
                 "ws_main_title": "Workspace Hub",
                 "ws_main_subtitle": "Intelligent productivity workspace. Keep chats, save custom files, coordinate analyzed URLs, and manage AI context memories.",
                 "ws_btn_add": "New Entry",
-                "ws_empty_title": "Workspace is Empty"
+                "ws_empty_title": "Workspace is Empty",
+                "assistants_title": "AI Specialists • Synapse"
             },
             es: {
                 "conversas": "💬 Chat y Charlas",
@@ -2543,7 +2604,8 @@ WITH CHECK (true);</code>
                 "ws_main_title": "Consola del Workspace",
                 "ws_main_subtitle": "Central inteligente de conocimiento. Organice chats de sandbox, guarde ficheros, enlace recursos analizados y module memorias de IA.",
                 "ws_btn_add": "Nuevo Registro",
-                "ws_empty_title": "Workspace Vacío"
+                "ws_empty_title": "Workspace Vacío",
+                "assistants_title": "Especialistas de IA • Synapse"
             }
         };
 
@@ -2581,6 +2643,9 @@ WITH CHECK (true);</code>
                 if (topTitleEl && activeTab) {
                     topTitleEl.textContent = tabTitlesMap[activeTab.id] || 'Synapse Console';
                 }
+            }
+            if (typeof renderAssistants === 'function') {
+                renderAssistants();
             }
         }
 
@@ -3236,6 +3301,10 @@ WITH CHECK (true);</code>
             // Inicializa módulo inteligente do Workspace do Synapse
             if (typeof initWorkspace === 'function') {
                 initWorkspace();
+            }
+            // Inicializa o sistema de Assistentes Inteligentes
+            if (typeof initAssistants === 'function') {
+                initAssistants();
             }
         }
 
@@ -3951,6 +4020,166 @@ WITH CHECK (true);</code>
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }
+        }
+
+        // ==========================================================================
+        // SISTEMA DE ASSISTENTES INTELIGENTES (ESPECIALISTAS)
+        // ==========================================================================
+        const smartAssistants = [
+            {
+                id: 'geral',
+                icon: '🧠',
+                names: { pt: 'Geral', en: 'General', es: 'General' },
+                roles: {
+                    pt: 'Núcleo de inteligência geral Synapse.',
+                    en: 'Synapse general intelligence core.',
+                    es: 'Núcleo de inteligencia general Synapse.'
+                },
+                prompt: ''
+            },
+            {
+                id: 'programador',
+                icon: '💻',
+                names: { pt: 'Programador', en: 'Programmer', es: 'Programador' },
+                roles: {
+                    pt: 'Especialista em software e refatoração de código limpo.',
+                    en: 'Software expert and clean code refactoring.',
+                    es: 'Especialista en software y refactorización de código limpio.'
+                },
+                prompt: 'Você é um Programador Sênior altamente pragmático. Escreva códigos extremamente robustos, modulares, limpos e otimizados utilizando os melhores padrões de projeto. Ao explicar ideias, seja conciso, direto e conceitualmente preciso.'
+            },
+            {
+                id: 'professor',
+                icon: '🎓',
+                names: { pt: 'Professor', en: 'Teacher', es: 'Profesor' },
+                roles: {
+                    pt: 'Didático, explicativo e focado no aprendizado.',
+                    en: 'Didactic, explanatory, and focused on learning.',
+                    es: 'Didáctico, explicativo y centrado en el aprendizaje.'
+                },
+                prompt: 'Você é um Professor paciente, didático e empático. Explique conceitos complexos de forma simples e acessível utilizando analogias ricas e guias estruturados passo a passo.'
+            },
+            {
+                id: 'tradutor',
+                icon: '🗣️',
+                names: { pt: 'Tradutor', en: 'Translator', es: 'Traductor' },
+                roles: {
+                    pt: 'Linguística, termos técnicos e nuances idiomáticas.',
+                    en: 'Linguistics, technical terms, and idioms.',
+                    es: 'Lingüística, términos técnicos y modismos.'
+                },
+                prompt: 'Você é um Tradutor Poliglota especialista em nuances semânticas e linguísticas. Traduza considerando contextos culturais e preserve fielmente o tom original, explicando sutilmente termos complexos.'
+            },
+            {
+                id: 'escritor',
+                icon: '✍️',
+                names: { pt: 'Escritor', en: 'Writer', es: 'Escritor' },
+                roles: {
+                    pt: 'Textos criativos, roteiros e copywriting impactante.',
+                    en: 'Creative texts, scripts, and impactful copywriting.',
+                    es: 'Textos creativos, guiones y redacción de impacto.'
+                },
+                prompt: 'Você é um Escritor e Copywriter criativo e cativante. Utilize vocabulário rico, figuras de linguagem elegantes e estruturas narrativas envolventes que prendam a atenção do leitor.'
+            },
+            {
+                id: 'pesquisador',
+                icon: '🔍',
+                names: { pt: 'Pesquisador', en: 'Researcher', es: 'Investigador' },
+                roles: {
+                    pt: 'Análise rigorosa, fatos históricos e síntese acadêmica.',
+                    en: 'Rigorous analysis, historical facts, and academic synthesis.',
+                    es: 'Análisis riguroso, hechos históricos y síntesis académica.'
+                },
+                prompt: 'Você é um Cientista e Pesquisador rigoroso. Analise temas de forma fria, objetiva e baseada em dados reais, apresentando argumentos equilibrados e citando fontes estruturais.'
+            },
+            {
+                id: 'analista',
+                icon: '📊',
+                names: { pt: 'Analista', en: 'Analyst', es: 'Analista' },
+                roles: {
+                    pt: 'Mapeamento de riscos, processos e lógica estratégica.',
+                    en: 'Risk mapping, processes, and strategic logic.',
+                    es: 'Mapeo de riesgos, procesos y lógica estratégica.'
+                },
+                prompt: 'Você é um Analista Estratégico. Decomponha os problemas de maneira cirúrgica, identificando padrões, vulnerabilidades de processo, riscos e oportunidades críticas do ecossistema.'
+            }
+        ];
+
+        let selectedAssistantId = 'geral';
+
+        function initAssistants() {
+            const saved = localStorage.getItem('synapse_active_assistant');
+            if (saved && smartAssistants.some(a => a.id === saved)) {
+                selectedAssistantId = saved;
+            } else {
+                selectedAssistantId = 'geral';
+            }
+            renderAssistants();
+        }
+
+        function renderAssistants() {
+            const tagsContainer = document.getElementById('assistants-tags');
+            if (!tagsContainer) return;
+            
+            tagsContainer.innerHTML = '';
+            
+            smartAssistants.forEach(assistant => {
+                const chip = document.createElement('div');
+                chip.className = `assistant-chip ${assistant.id === selectedAssistantId ? 'active' : ''}`;
+                
+                const localizedName = assistant.names[currentLanguage] || assistant.names['pt'];
+                const localizedRole = assistant.roles[currentLanguage] || assistant.roles['pt'];
+                
+                chip.title = localizedRole;
+                chip.innerHTML = `<span>${assistant.icon}</span> <span>${localizedName}</span>`;
+                chip.onclick = () => setAssistant(assistant.id);
+                
+                tagsContainer.appendChild(chip);
+            });
+            
+            // Atualiza o crachá visual superior do assistente ativo
+            const activeBadge = document.getElementById('active-assistant-badge');
+            if (activeBadge) {
+                const activeAssis = smartAssistants.find(a => a.id === selectedAssistantId) || smartAssistants[0];
+                const activeName = activeAssis.names[currentLanguage] || activeAssis.names['pt'];
+                activeBadge.innerHTML = `${activeName} ${activeAssis.icon}`;
+            }
+        }
+
+        function setAssistant(id) {
+            triggerPulse();
+            if (selectedAssistantId === id) return;
+            
+            selectedAssistantId = id;
+            localStorage.setItem('synapse_active_assistant', id);
+            
+            renderAssistants();
+            
+            // Dispara um feedback fônico e visual indicando mudança de especialidade
+            const activeAssis = smartAssistants.find(a => a.id === id);
+            const activeName = activeAssis.names[currentLanguage] || activeAssis.names['pt'];
+            
+            if (currentLanguage === 'pt') {
+                addLog(`Console em Modo Especialista: ${activeName} ativado ✓`, "success");
+                showAppToast(`${activeName} assumiu as respostas neurais.`, "success");
+            } else if (currentLanguage === 'en') {
+                addLog(`Console in Specialist Mode: ${activeName} activated ✓`, "success");
+                showAppToast(`${activeName} is now handling neural responses.`, "success");
+            } else {
+                addLog(`Consola en Modo Especialista: ${activeName} activado ✓`, "success");
+                showAppToast(`${activeName} ha asumido las respuestas neuronales.`, "success");
+            }
+        }
+
+        function getEffectiveSystemPrompt() {
+            const basePrompt = document.getElementById('system-prompt')?.value || 'Você é uma Inteligência Artificial direta e precisa.';
+            if (selectedAssistantId === 'geral') {
+                return basePrompt;
+            }
+            const assistant = smartAssistants.find(a => a.id === selectedAssistantId);
+            if (!assistant) return basePrompt;
+            
+            return `${assistant.prompt}\n\nMantenha também as seguintes diretrizes gerais do sistema:\n${basePrompt}`;
         }
 
         // --- 4. Motor de Requisição de Chat ---
@@ -5075,9 +5304,11 @@ WITH CHECK (true);</code>
             const key = document.getElementById('api-key').value.trim();
             const url = document.getElementById('base-url').value.trim();
             const model = document.getElementById('model-name').value.trim();
-            const prompt = document.getElementById('system-prompt').value;
+            const prompt = getEffectiveSystemPrompt();
 
-            addLog(`Abertura de request para endpoint modelo ${model}...`, "info");
+            const activeAssis = smartAssistants.find(a => a.id === selectedAssistantId) || smartAssistants[0];
+            const activeName = activeAssis.names[currentLanguage] || activeAssis.names['pt'];
+            addLog(`Abertura de request para modelo ${model} (Especialista: ${activeName})...`, "info");
 
             setTimeout(async () => {
                 let aiReply = "";
