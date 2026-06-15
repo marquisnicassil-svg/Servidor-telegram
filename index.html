@@ -1245,52 +1245,65 @@
             justify-content: center;
         }
 
-        /* Estilos dos Assistentes Inteligentes */
-        .assistants-panel {
+        /* Estilos do Gerenciador de Agentes Autônomos */
+        .agent-card {
             background: rgba(255, 255, 255, 0.015);
-            border-bottom: 1px solid var(--border-color);
-            padding: 8px 14px 6px;
-            flex-shrink: 0;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 14px;
+            transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
         }
-        .assistants-tags {
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            padding: 2px 0;
+        .agent-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         }
-        .assistants-tags::-webkit-scrollbar {
-            display: none;
+        .agent-card.active {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.03);
+            box-shadow: 0 0 16px rgba(255, 255, 255, 0.05), inset 0 0 10px rgba(255, 255, 255, 0.02);
         }
-        .assistant-chip {
+        .agent-card-header {
             display: flex;
             align-items: center;
-            gap: 6px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 20px;
-            padding: 5px 11px;
-            font-size: 0.76rem;
-            color: var(--text-muted);
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+            gap: 14px;
         }
-        .assistant-chip:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(255, 255, 255, 0.12);
-            color: var(--text-main);
+        .agent-card-icon {
+            font-size: 1.8rem;
+            width: 48px;
+            height: 48px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
         }
-        .assistant-chip.active {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: var(--bg-color) !important;
-            font-weight: bold;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.08);
+        .agent-card:hover .agent-card-icon {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.12);
+        }
+        .agent-card-active-tag {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: var(--primary);
+            background: rgba(255,255,255,0.02);
+            padding: 3px 8px;
+            border-radius: 8px;
+            border: 1px solid var(--primary);
         }
         
         /* Ajuste fino do header principal */
@@ -1390,6 +1403,10 @@
                 <span class="drawer-icon">💬</span>
                 <span class="drawer-label" data-i18n="conversas">Conversas</span>
             </li>
+            <li class="drawer-item" onclick="clickDrawerItem('tab-agents', '🤖 Agents')">
+                <span class="drawer-icon">🤖</span>
+                <span class="drawer-label" data-i18n="agents_menu">Agents</span>
+            </li>
             <li class="drawer-item" onclick="clickDrawerItem('tab-workspace', '💼 Workspace')" id="drawer-tab-workspace">
                 <span class="drawer-icon">💼</span>
                 <span class="drawer-label" data-i18n="workspace">Workspace</span>
@@ -1441,17 +1458,6 @@
         <!-- ABA 1: CONSOLE DE CHAT (Playground) -->
         <section id="tab-chat" class="tab-section active">
             <div class="chat-wrapper">
-                <!-- Painel de Seleção de Assistentes Inteligentes -->
-                <div class="assistants-panel" id="assistants-panel">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
-                        <span style="font-size: 0.65rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.8px; color: var(--text-muted); opacity: 0.85;" id="assistant-label-title" data-i18n="assistants_title">Especialistas IA • Synapse</span>
-                        <span id="active-assistant-badge" style="font-size: 0.68rem; color: var(--primary); font-weight: 700; background: rgba(255,255,255,0.01); padding: 2px 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02)">Geral 🧠</span>
-                    </div>
-                    <div class="assistants-tags" id="assistants-tags">
-                        <!-- Loaded dynamically by Javascript -->
-                    </div>
-                </div>
-
                 <div class="chat-messages" id="chat-messages">
                     <div class="chat-message bot">
                         Estou conectado e com memória ativada.
@@ -1467,6 +1473,72 @@
                         <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                     </button>
                 </div>
+            </div>
+        </section>
+
+        <!-- ABA: PERSONALIDADE & ASSISTENTES (AGENTS) -->
+        <section id="tab-agents" class="tab-section" style="padding: 18px 14px 80px; display: none;">
+            <div class="section-header" style="margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                <div>
+                    <h2 style="display: flex; align-items: center; gap: 10px; font-weight: 800; color: #fff; margin: 0; font-size: 1.45rem;">
+                        <span>🤖</span>
+                        <span data-i18n="agents_section_title">Gerenciador de Agentes</span>
+                    </h2>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin: 4px 0 0 0; line-height: 1.45;" data-i18n="agents_section_subtitle">
+                        Selecione, personalize ou crie especialistas de Inteligência Artificial autônomos.
+                    </p>
+                </div>
+                <button class="btn-universal" style="background-color: var(--primary); color: var(--bg-color); border: none; border-radius: 20px; padding: 8px 16px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="toggleAgentForm(true)">
+                    <span>➕</span> <span data-i18n="agents_new_btn">Novo Agente</span>
+                </button>
+            </div>
+
+            <!-- Formulário para Criar/Editar Agente (Oculto por padrão) -->
+            <div id="agent-form-container" style="display: none; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                <h3 id="agent-form-title" style="margin: 0 0 16px 0; font-size: 1.15rem; color: #fff; font-weight: 700;" data-i18n="agent_form_title_new">🤖 Criar Agente Personalizado</h3>
+                <input type="hidden" id="agent-edit-id" value="">
+                
+                <div style="display: flex; flex-direction: column; gap: 14px;">
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 180px;">
+                            <label style="display: block; font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 6px;" data-i18n="agent_lbl_name">Nome do Agente</label>
+                            <input type="text" id="agent-name" class="form-control" style="background: rgba(0,0,0,0.2);" placeholder="Ex: Analista de Investimentos">
+                        </div>
+                        <div style="width: 80px;">
+                            <label style="display: block; font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 6px;" data-i18n="agent_lbl_icon">Ícone / Emoji</label>
+                            <input type="text" id="agent-icon" class="form-control" style="background: rgba(0,0,0,0.2); text-align: center; font-size: 1.3rem; padding: 6px;" placeholder="💸" maxlength="4">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style="display: block; font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 6px;" data-i18n="agent_lbl_desc">Descrição Curta</label>
+                        <input type="text" id="agent-desc" class="form-control" style="background: rgba(0,0,0,0.2);" placeholder="Ex: Conselheiro estratégico para finanças pessoais e mercado de ações.">
+                    </div>
+
+                    <div>
+                        <label style="display: block; font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 6px;" data-i18n="agent_lbl_prompt">Instruções / Diretrizes (System Prompt)</label>
+                        <textarea id="agent-prompt" class="form-control" rows="4" style="background: rgba(0,0,0,0.2); font-family: monospace; font-size: 0.8rem;" placeholder="Você é especialista em finanças... Redija suas análises pontuando riscos estruturais, use termos técnicos financeiros e termine com conselhos pragmáticos."></textarea>
+                    </div>
+
+                    <div>
+                        <label style="display: block; font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 6px;" data-i18n="agent_lbl_welcome">Mensagem de Boas-Vindas (Saudação Dinâmica)</label>
+                        <textarea id="agent-welcome" class="form-control" rows="2" style="background: rgba(0,0,0,0.2); font-size: 0.82rem;" placeholder="Ex: Olá! Analista de Investimentos pronto para mapear seus riscos e portfólio. Qual análise realizaremos hoje?"></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button class="btn-universal" style="background-color: var(--primary); color: var(--bg-color); border: none; border-radius: 20px; padding: 10px 20px; font-weight: bold; cursor: pointer; flex: 1;" onclick="saveAgent()" data-i18n="agent_btn_save">
+                            Salvar Agente ✓
+                        </button>
+                        <button class="btn-universal" style="background-color: rgba(255,255,255,0.06); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 20px; padding: 10px 20px; font-weight: bold; cursor: pointer;" onclick="toggleAgentForm(false)" data-i18n="btn_cancel">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid de Agentes -->
+            <div id="agents-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
+                <!-- Carregado via Javascript dinamicamente -->
             </div>
         </section>
 
@@ -2381,6 +2453,7 @@ WITH CHECK (true);</code>
 
         const tabTitlesMap = {
             'tab-chat': '💬 Conversas',
+            'tab-agents': '🤖 Agents',
             'tab-workspace': '💼 Workspace',
             'tab-config': '⚙️ Configurações (Ajustes)',
             'tab-logs': '🖥️ Terminal de Comandos',
@@ -2398,10 +2471,17 @@ WITH CHECK (true);</code>
             const btnEl = document.getElementById('btn-' + tabId);
             if (btnEl) btnEl.classList.add('active');
             
-            // Atualiza título da Top Bar
+            // Atualiza título da Top Bar dinamicamente
             const topTitleEl = document.getElementById('topbar-section-title');
             if (topTitleEl) {
-                topTitleEl.textContent = tabTitlesMap[tabId] || 'Synapse Console';
+                if (tabId === 'tab-chat') {
+                    const all = getAllAgents();
+                    const activeAssis = all.find(a => a.id === selectedAssistantId) || all[0];
+                    const activeName = activeAssis.name || 'Geral';
+                    topTitleEl.innerText = `${activeAssis.icon || '💬'} ${activeName}`;
+                } else {
+                    topTitleEl.textContent = tabTitlesMap[tabId] || 'Synapse Console';
+                }
             }
 
             // Sincroniza classes do Drawer
@@ -2424,6 +2504,10 @@ WITH CHECK (true);</code>
                     const inputEl = document.getElementById('chat-input');
                     if(inputEl) inputEl.focus();
                 }, 100);
+            }
+            // Inicializa ou renderiza visual do gerenciador de agentes
+            if(tabId === 'tab-agents'){
+                if (typeof renderAgentsList === 'function') renderAgentsList();
             }
             // Reseta para a tela de índice caso mude para configurações
             if(tabId === 'tab-config'){
@@ -2503,7 +2587,19 @@ WITH CHECK (true);</code>
                 "ws_main_subtitle": "Central inteligente de conhecimento. Organize conversas, salve arquivos, gerencie links analisados e controle memórias da IA.",
                 "ws_btn_add": "Novo Dado",
                 "ws_empty_title": "Workspace Vazio ou Sem Correspondências",
-                "assistants_title": "Especialistas IA • Synapse"
+                "assistants_title": "Especialistas IA • Synapse",
+                "agents_menu": "🤖 Agents",
+                "agents_section_title": "Gerenciador de Agentes",
+                "agents_section_subtitle": "Selecione, personalize ou crie especialistas de Inteligência Artificial autônomos.",
+                "agents_new_btn": "Novo Agente",
+                "agent_form_title_new": "🤖 Criar Agente Personalizado",
+                "agent_lbl_name": "Nome do Agente",
+                "agent_lbl_icon": "Ícone / Emoji",
+                "agent_lbl_desc": "Descrição Curta",
+                "agent_lbl_prompt": "Instruções / Diretrizes (System Prompt)",
+                "agent_lbl_welcome": "Mensagem de Boas-Vindas (Saudação Dinâmica)",
+                "agent_btn_save": "Salvar Agente ✓",
+                "btn_cancel": "Cancelar"
             },
             en: {
                 "conversas": "💬 Conversations",
@@ -2554,7 +2650,19 @@ WITH CHECK (true);</code>
                 "ws_main_subtitle": "Intelligent productivity workspace. Keep chats, save custom files, coordinate analyzed URLs, and manage AI context memories.",
                 "ws_btn_add": "New Entry",
                 "ws_empty_title": "Workspace is Empty",
-                "assistants_title": "AI Specialists • Synapse"
+                "assistants_title": "AI Specialists • Synapse",
+                "agents_menu": "🤖 Agents",
+                "agents_section_title": "Agent Manager",
+                "agents_section_subtitle": "Select, customize or build autonomous AI specialists.",
+                "agents_new_btn": "New Agent",
+                "agent_form_title_new": "🤖 Create Custom Agent",
+                "agent_lbl_name": "Agent Name",
+                "agent_lbl_icon": "Icon / Emoji",
+                "agent_lbl_desc": "Short Description",
+                "agent_lbl_prompt": "Instructions / Guidelines (System Prompt)",
+                "agent_lbl_welcome": "Welcome Message (Dynamic Greeting)",
+                "agent_btn_save": "Save Agent ✓",
+                "btn_cancel": "Cancel"
             },
             es: {
                 "conversas": "💬 Chat y Charlas",
@@ -2582,7 +2690,7 @@ WITH CHECK (true);</code>
                 "baixar_pwa": "⬇️ Descargar Aplicativo (PWA)",
                 "limpar_cache": "🔄 Borrar Caché e Reiniciar Aplicación",
                 "voltar_ajustes": "⬅️ Volver a Ajustes",
-                "idiomas_title": "🌐 Idioma General del Sistema",
+                "idiomas_title": "🌐 Idiama General del Sistema",
                 "idiomas_subtitle": "Defina el idioma para los textos, indicadores y avisos del aplicativo.",
                 "selecionar_idioma_lbl": "Seleccione su idioma actual:",
                 "speech_rate_lbl": "⚡ Agilidad de la Locución por Voz (TTS)",
@@ -2605,7 +2713,19 @@ WITH CHECK (true);</code>
                 "ws_main_subtitle": "Central inteligente de conocimiento. Organice chats de sandbox, guarde ficheros, enlace recursos analizados y module memorias de IA.",
                 "ws_btn_add": "Nuevo Registro",
                 "ws_empty_title": "Workspace Vacío",
-                "assistants_title": "Especialistas de IA • Synapse"
+                "assistants_title": "Especialistas de IA • Synapse",
+                "agents_menu": "🤖 Agentes",
+                "agents_section_title": "Gestor de Agentes",
+                "agents_section_subtitle": "Seleccione, personalice o cree especialistas de Inteligencia Artificial autónomos.",
+                "agents_new_btn": "Nuevo Agente",
+                "agent_form_title_new": "🤖 Crear Agente Personalizado",
+                "agent_lbl_name": "Nombre del Agente",
+                "agent_lbl_icon": "Icono / Emoji",
+                "agent_lbl_desc": "Descripción Corta",
+                "agent_lbl_prompt": "Instrucciones / Directrices (System Prompt)",
+                "agent_lbl_welcome": "Mensaje de Bienvenida (Saludo Dinámico)",
+                "agent_btn_save": "Guardar Agente ✓",
+                "btn_cancel": "Cancelar"
             }
         };
 
@@ -2631,6 +2751,7 @@ WITH CHECK (true);</code>
             // Update Tab Titles Mapping dynamically to reflect selected language!
             if (typeof tabTitlesMap !== 'undefined') {
                 tabTitlesMap['tab-chat'] = i18n('conversas');
+                tabTitlesMap['tab-agents'] = i18n('agents_menu') || '🤖 Agents';
                 tabTitlesMap['tab-workspace'] = i18n('workspace') || '💼 Workspace';
                 tabTitlesMap['tab-config'] = i18n('configuracoes_ajustes');
                 tabTitlesMap['tab-logs'] = i18n('terminal_comandos');
@@ -2641,11 +2762,18 @@ WITH CHECK (true);</code>
                 const topTitleEl = document.getElementById('topbar-section-title');
                 const activeTab = document.querySelector('.tab-section.active');
                 if (topTitleEl && activeTab) {
-                    topTitleEl.textContent = tabTitlesMap[activeTab.id] || 'Synapse Console';
+                    if (activeTab.id === 'tab-chat') {
+                        const all = getAllAgents();
+                        const activeAssis = all.find(a => a.id === selectedAssistantId) || all[0];
+                        const activeName = activeAssis.name || 'Geral';
+                        topTitleEl.innerText = `${activeAssis.icon || '💬'} ${activeName}`;
+                    } else {
+                        topTitleEl.textContent = tabTitlesMap[activeTab.id] || 'Synapse Console';
+                    }
                 }
             }
-            if (typeof renderAssistants === 'function') {
-                renderAssistants();
+            if (typeof renderAgentsList === 'function') {
+                renderAgentsList();
             }
         }
 
@@ -4023,7 +4151,7 @@ WITH CHECK (true);</code>
         }
 
         // ==========================================================================
-        // SISTEMA DE ASSISTENTES INTELIGENTES (ESPECIALISTAS)
+        // SISTEMA DE AGENTES AUTÔNOMOS E PERSONALIZÁVEIS
         // ==========================================================================
         const smartAssistants = [
             {
@@ -4035,7 +4163,8 @@ WITH CHECK (true);</code>
                     en: 'Synapse general intelligence core.',
                     es: 'Núcleo de inteligencia general Synapse.'
                 },
-                prompt: ''
+                prompt: '',
+                welcome: 'Olá! Bem-vindo de volta ao Synapse. Sou seu núcleo de inteligência geral pronto para auxiliá-lo em qualquer raciocínio ou tarefa complexa.'
             },
             {
                 id: 'programador',
@@ -4046,7 +4175,8 @@ WITH CHECK (true);</code>
                     en: 'Software expert and clean code refactoring.',
                     es: 'Especialista en software y refactorización de código limpio.'
                 },
-                prompt: 'Você é um Programador Sênior altamente pragmático. Escreva códigos extremamente robustos, modulares, limpos e otimizados utilizando os melhores padrões de projeto. Ao explicar ideias, seja conciso, direto e conceitualmente preciso.'
+                prompt: 'Você é um Programador Sênior altamente pragmático. Escreva códigos extremamente robustos, modulares, limpos e otimizados utilizando os melhores padrões de projeto. Ao explicar ideias, seja conciso, direto e conceitualmente preciso.',
+                welcome: 'Olá! Consola Synapse em Modo Programador Sênior habilitada. Traga seus fragmentos de código, bugs ou prospecções arquiteturais. Qual desafio de software venceremos hoje?'
             },
             {
                 id: 'professor',
@@ -4057,7 +4187,8 @@ WITH CHECK (true);</code>
                     en: 'Didactic, explanatory, and focused on learning.',
                     es: 'Didáctico, explicativo y centrado en el aprendizaje.'
                 },
-                prompt: 'Você é um Professor paciente, didático e empático. Explique conceitos complexos de forma simples e acessível utilizando analogias ricas e guias estruturados passo a passo.'
+                prompt: 'Você é um Professor paciente, didático e empático. Explique conceitos complexos de forma simples e acessível utilizando analogias ricas e guias estruturados passo a passo.',
+                welcome: 'Olá! Sou seu professor e mentor dedicado. Estou pronto para explicar lições estruturadas, debulhar conceitos áridos e guiar sua jornada de conhecimento passo a passo. O que quer aprender agora?'
             },
             {
                 id: 'tradutor',
@@ -4068,7 +4199,8 @@ WITH CHECK (true);</code>
                     en: 'Linguistics, technical terms, and idioms.',
                     es: 'Lingüística, términos técnicos y modismos.'
                 },
-                prompt: 'Você é um Tradutor Poliglota especialista em nuances semânticas e linguísticas. Traduza considerando contextos culturais e preserve fielmente o tom original, explicando sutilmente termos complexos.'
+                prompt: 'Você é um Tradutor Poliglota especialista em nuances semânticas e linguísticas. Traduza considerando contextos culturais e preserve fielmente o tom original, explicando sutilmente termos complexos.',
+                welcome: 'Olá! Saudações linguísticas do seu Tradutor Poliglota de alta fidelidade semântica. Digite expressões, textos literários ou termos técnicos que deseja moldar e adaptar.'
             },
             {
                 id: 'escritor',
@@ -4079,7 +4211,8 @@ WITH CHECK (true);</code>
                     en: 'Creative texts, scripts, and impactful copywriting.',
                     es: 'Textos creativos, guiones y redacción de impacto.'
                 },
-                prompt: 'Você é um Escritor e Copywriter criativo e cativante. Utilize vocabulário rico, figuras de linguagem elegantes e estruturas narrativas envolventes que prendam a atenção do leitor.'
+                prompt: 'Você é um Escritor e Copywriter criativo e cativante. Utilize vocabulário rico, figuras de linguagem elegantes e estruturas narrativas envolventes que prendam a atenção do leitor.',
+                welcome: 'Olá! Sua oficina criativa de escrita está aberta. Roteiros, ensaios estruturados ou peças persuasivas — como daremos vida e ritmo às suas ideias hoje?'
             },
             {
                 id: 'pesquisador',
@@ -4088,9 +4221,10 @@ WITH CHECK (true);</code>
                 roles: {
                     pt: 'Análise rigorosa, fatos históricos e síntese acadêmica.',
                     en: 'Rigorous analysis, historical facts, and academic synthesis.',
-                    es: 'Análisis riguroso, hechos históricos y síntesis académica.'
+                    es: 'Análisis rigoroso, hechos históricos y síntesis académica.'
                 },
-                prompt: 'Você é um Cientista e Pesquisador rigoroso. Analise temas de forma fria, objetiva e baseada em dados reais, apresentando argumentos equilibrados e citando fontes estruturais.'
+                prompt: 'Você é um Cientista e Pesquisador rigoroso. Analise temas de forma fria, objetiva e baseada em dados reais, apresentando argumentos equilibrados e citando fontes estruturais.',
+                welcome: 'Saudações. Meus algoritmos de Pesquisa Científica e Acadêmica estão calibrados para frieza analítica, dados reais e fontes estruturais. Qual hipótese iremos provar ou catalogar?'
             },
             {
                 id: 'analista',
@@ -4101,88 +4235,299 @@ WITH CHECK (true);</code>
                     en: 'Risk mapping, processes, and strategic logic.',
                     es: 'Mapeo de riesgos, procesos y lógica estratégica.'
                 },
-                prompt: 'Você é um Analista Estratégico. Decomponha os problemas de maneira cirúrgica, identificando padrões, vulnerabilidades de processo, riscos e oportunidades críticas do ecossistema.'
+                prompt: 'Você é um Analista Estratégico. Decomponha os problemas de maneira cirúrgica, identificando padrões, vulnerabilidades de processo, riscos e oportunidades críticas do ecossistema.',
+                welcome: 'Olá. Central de Análise de Riscos e Oportunidades táticas operacional. Forneça o processo, deponha o problema e decomporemos seus fluxos em busca de vulnerabilidades.'
             }
         ];
 
         let selectedAssistantId = 'geral';
 
-        function initAssistants() {
+        function getAllAgents() {
+            const custom = JSON.parse(localStorage.getItem('synapse_custom_agents') || '[]');
+            const defaultsMapped = smartAssistants.map(a => {
+                const name = typeof a.names === 'string' ? a.names : (a.names[currentLanguage] || a.names['pt'] || '');
+                const description = typeof a.roles === 'string' ? a.roles : (a.roles[currentLanguage] || a.roles['pt'] || '');
+                return {
+                    id: a.id,
+                    icon: a.icon,
+                    name: name,
+                    description: description,
+                    prompt: a.prompt,
+                    welcome: a.welcome,
+                    isCustom: false
+                };
+            });
+            return [...defaultsMapped, ...custom];
+        }
+
+        function initAgents() {
             const saved = localStorage.getItem('synapse_active_assistant');
-            if (saved && smartAssistants.some(a => a.id === saved)) {
+            const all = getAllAgents();
+            if (saved && all.some(a => a.id === saved)) {
                 selectedAssistantId = saved;
             } else {
                 selectedAssistantId = 'geral';
             }
-            renderAssistants();
+            renderAgentsList();
+        }
+
+        // Retrocompatibilidade de ganchos de inicialização
+        function initAssistants() {
+            initAgents();
         }
 
         function renderAssistants() {
-            const tagsContainer = document.getElementById('assistants-tags');
-            if (!tagsContainer) return;
+            renderAgentsList();
+        }
+
+        function toggleAgentForm(show) {
+            const form = document.getElementById('agent-form-container');
+            if (!form) return;
+            form.style.display = show ? 'block' : 'none';
             
-            tagsContainer.innerHTML = '';
-            
-            smartAssistants.forEach(assistant => {
-                const chip = document.createElement('div');
-                chip.className = `assistant-chip ${assistant.id === selectedAssistantId ? 'active' : ''}`;
-                
-                const localizedName = assistant.names[currentLanguage] || assistant.names['pt'];
-                const localizedRole = assistant.roles[currentLanguage] || assistant.roles['pt'];
-                
-                chip.title = localizedRole;
-                chip.innerHTML = `<span>${assistant.icon}</span> <span>${localizedName}</span>`;
-                chip.onclick = () => setAssistant(assistant.id);
-                
-                tagsContainer.appendChild(chip);
-            });
-            
-            // Atualiza o crachá visual superior do assistente ativo
-            const activeBadge = document.getElementById('active-assistant-badge');
-            if (activeBadge) {
-                const activeAssis = smartAssistants.find(a => a.id === selectedAssistantId) || smartAssistants[0];
-                const activeName = activeAssis.names[currentLanguage] || activeAssis.names['pt'];
-                activeBadge.innerHTML = `${activeName} ${activeAssis.icon}`;
+            if (show) {
+                // Scroll suave até o formulário
+                form.scrollIntoView({ behavior: 'smooth' });
+                // Reset campos
+                document.getElementById('agent-edit-id').value = '';
+                document.getElementById('agent-name').value = '';
+                document.getElementById('agent-icon').value = '🤖';
+                document.getElementById('agent-desc').value = '';
+                document.getElementById('agent-prompt').value = '';
+                document.getElementById('agent-welcome').value = '';
+                document.getElementById('agent-form-title').innerText = i18n('agent_form_title_new') || '🤖 Criar Agente Personalizado';
             }
         }
 
-        function setAssistant(id) {
+        function saveAgent() {
             triggerPulse();
-            if (selectedAssistantId === id) return;
+            const editId = document.getElementById('agent-edit-id').value;
+            const name = document.getElementById('agent-name').value.trim();
+            const icon = document.getElementById('agent-icon').value.trim() || '🤖';
+            const desc = document.getElementById('agent-desc').value.trim();
+            const prompt = document.getElementById('agent-prompt').value.trim();
+            const welcome = document.getElementById('agent-welcome').value.trim();
+
+            if (!name) {
+                const errorMsg = currentLanguage === 'pt' ? 'Por favor, insira o nome do agente.' : (currentLanguage === 'en' ? 'Please enter the agent name.' : 'Por favor, ingrese el nombre del agente.');
+                showAppToast(errorMsg, "error");
+                return;
+            }
+
+            let customAgents = JSON.parse(localStorage.getItem('synapse_custom_agents') || '[]');
+
+            let agentId = editId;
+            let isNew = false;
+            if (!agentId) {
+                agentId = 'agent_' + Date.now();
+                isNew = true;
+            }
+
+            const newAgent = {
+                id: agentId,
+                icon: icon,
+                name: name,
+                description: desc,
+                prompt: prompt,
+                welcome: welcome,
+                isCustom: true
+            };
+
+            if (isNew) {
+                customAgents.push(newAgent);
+            } else {
+                const idx = customAgents.findIndex(a => a.id === agentId);
+                if (idx !== -1) {
+                    customAgents[idx] = newAgent;
+                } else {
+                    customAgents.push(newAgent);
+                }
+            }
+
+            localStorage.setItem('synapse_custom_agents', JSON.stringify(customAgents));
+            toggleAgentForm(false);
+            renderAgentsList();
+
+            const successMsg = isNew ? 
+                (currentLanguage === 'pt' ? 'Agente criado com sucesso!' : (currentLanguage === 'en' ? 'Agent created successfully!' : '¡Agente creado con éxito!')) :
+                (currentLanguage === 'pt' ? 'Agente editado com sucesso!' : (currentLanguage === 'en' ? 'Agent updated successfully!' : '¡Agente editado con éxito!'));
+                
+            showAppToast(successMsg, "success");
             
+            // Ativa automaticamente o agente criado/editado e dispara as boas vindas!
+            selectAgent(agentId, false);
+        }
+
+        function editAgent(id) {
+            const customAgents = JSON.parse(localStorage.getItem('synapse_custom_agents') || '[]');
+            const agent = customAgents.find(a => a.id === id);
+            if (!agent) return;
+            
+            toggleAgentForm(true);
+            
+            document.getElementById('agent-edit-id').value = agent.id;
+            document.getElementById('agent-name').value = agent.name;
+            document.getElementById('agent-icon').value = agent.icon || '🤖';
+            document.getElementById('agent-desc').value = agent.description || '';
+            document.getElementById('agent-prompt').value = agent.prompt || '';
+            document.getElementById('agent-welcome').value = agent.welcome || '';
+            
+            document.getElementById('agent-form-title').innerText = currentLanguage === 'pt' ? '✏️ Editar Agente' : (currentLanguage === 'en' ? '✏️ Edit Agent' : '✏️ Editar Agente');
+            
+            setTimeout(() => {
+                document.getElementById('agent-name').focus();
+            }, 100);
+        }
+
+        function deleteAgent(id) {
+            triggerPulse();
+            const confirmMsg = currentLanguage === 'pt' ? 'Tem certeza que deseja excluir este agente?' : (currentLanguage === 'en' ? 'Are you sure you want to delete this agent?' : '¿Está seguro de que desea eliminar este agente?');
+            if (!confirm(confirmMsg)) return;
+
+            let customAgents = JSON.parse(localStorage.getItem('synapse_custom_agents') || '[]');
+            customAgents = customAgents.filter(a => a.id !== id);
+            localStorage.setItem('synapse_custom_agents', JSON.stringify(customAgents));
+
+            renderAgentsList();
+
+            const deletedMsg = currentLanguage === 'pt' ? 'Agente excluído com sucesso.' : (currentLanguage === 'en' ? 'Agent deleted successfully.' : 'Agent eliminado con éxito.');
+            showAppToast(deletedMsg, "success");
+
+            if (selectedAssistantId === id) {
+                selectAgent('geral', true);
+            }
+        }
+
+        function selectAgent(id, preventGreeting = false) {
+            triggerPulse();
             selectedAssistantId = id;
             localStorage.setItem('synapse_active_assistant', id);
             
-            renderAssistants();
-            
-            // Dispara um feedback fônico e visual indicando mudança de especialidade
-            const activeAssis = smartAssistants.find(a => a.id === id);
-            const activeName = activeAssis.names[currentLanguage] || activeAssis.names['pt'];
-            
+            const allAgents = getAllAgents();
+            const activeAssis = allAgents.find(a => a.id === id) || allAgents[0];
+            const activeName = activeAssis.name;
+            const activeIcon = activeAssis.icon || '🤖';
+            const welcomeMsg = activeAssis.welcome || `Olá! Sou seu assistente ${activeName}. Como posso ajudar hoje?`;
+
             if (currentLanguage === 'pt') {
-                addLog(`Console em Modo Especialista: ${activeName} ativado ✓`, "success");
-                showAppToast(`${activeName} assumiu as respostas neurais.`, "success");
+                addLog(`Agente Ativo: ${activeIcon} ${activeName} ✓`, "success");
+                showAppToast(`${activeName} assumiu o terminal neural.`, "success");
             } else if (currentLanguage === 'en') {
-                addLog(`Console in Specialist Mode: ${activeName} activated ✓`, "success");
-                showAppToast(`${activeName} is now handling neural responses.`, "success");
+                addLog(`Active Agent: ${activeIcon} ${activeName} ✓`, "success");
+                showAppToast(`${activeName} is now active.`, "success");
             } else {
-                addLog(`Consola en Modo Especialista: ${activeName} activado ✓`, "success");
-                showAppToast(`${activeName} ha asumido las respuestas neuronales.`, "success");
+                addLog(`Agente Activo: ${activeIcon} ${activeName} ✓`, "success");
+                showAppToast(`${activeName} ha asumido el canal neuro.`, "success");
             }
+
+            const topTitleEl = document.getElementById('topbar-section-title');
+            if (topTitleEl) {
+                topTitleEl.innerText = `${activeIcon} ${activeName}`;
+            }
+
+            renderAgentsList();
+
+            if (!preventGreeting) {
+                switchTab('tab-chat');
+
+                const container = document.getElementById('chat-messages');
+                if (container) {
+                    chatHistoryObjects = [];
+                    chatHistoryObjects.push({ role: 'assistant', content: welcomeMsg });
+                    
+                    const escapedForSpeech = welcomeMsg.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
+                    const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
+                    
+                    container.innerHTML = `<div class="chat-message bot">${formatAIResponse(welcomeMsg)}${readerHtml}</div>`;
+                    scrollToBottom();
+                    saveChatSession();
+                }
+
+                speakText(welcomeMsg);
+            }
+        }
+
+        // Retrocompatibilidade
+        function setAssistant(id) {
+            selectAgent(id, true);
+        }
+
+        function renderAgentsList() {
+            const grid = document.getElementById('agents-grid');
+            if (!grid) return;
+            
+            grid.innerHTML = '';
+            const allAgents = getAllAgents();
+            
+            allAgents.forEach(agent => {
+                const card = document.createElement('div');
+                card.className = `agent-card ${agent.id === selectedAssistantId ? 'active' : ''}`;
+                
+                let activeTag = '';
+                if (agent.id === selectedAssistantId) {
+                    activeTag = `<span class="agent-card-active-tag">${currentLanguage === 'pt' ? 'Ativo' : (currentLanguage === 'en' ? 'Active' : 'Activo')}</span>`;
+                }
+                
+                let actionBtnHtml = '';
+                if (agent.isCustom) {
+                    actionBtnHtml = `
+                        <div style="display: flex; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.04);">
+                            <button class="btn-universal" style="flex: 1; font-size: 0.75rem; background: var(--primary); color: var(--bg-color); border: none; padding: 6px 12px; border-radius: 12px;" onclick="event.stopPropagation(); selectAgent('${agent.id}')">
+                                ${currentLanguage === 'pt' ? 'Ativar ⚡' : (currentLanguage === 'en' ? 'Activate ⚡' : 'Activar ⚡')}
+                            </button>
+                            <button class="btn-universal" style="background: rgba(255,255,255,0.04); font-size: 0.75rem; border: 1px solid var(--border-color); padding: 6px 10px; border-radius: 12px;" onclick="event.stopPropagation(); editAgent('${agent.id}')">
+                                ✏️
+                            </button>
+                            <button class="btn-universal" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.75rem; padding: 6px 10px; border-radius: 12px;" onclick="event.stopPropagation(); deleteAgent('${agent.id}')">
+                                🗑️
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    actionBtnHtml = `
+                        <div style="display: flex; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.04);">
+                            <button class="btn-universal" style="flex: 1; font-size: 0.75rem; background: var(--primary); color: var(--bg-color); border: none; padding: 6px 12px; border-radius: 12px;" onclick="event.stopPropagation(); selectAgent('${agent.id}')">
+                                ${currentLanguage === 'pt' ? 'Ativar ⚡' : (currentLanguage === 'en' ? 'Activate ⚡' : 'Activar ⚡')}
+                            </button>
+                        </div>
+                    `;
+                }
+                
+                card.innerHTML = `
+                    ${activeTag}
+                    <div class="agent-card-header">
+                        <div class="agent-card-icon">${agent.icon || '🤖'}</div>
+                        <div>
+                            <h4 style="margin: 0; color: #fff; font-size: 1.05rem; font-weight: 700;">${agent.name}</h4>
+                            <span style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px;">
+                                ${agent.isCustom ? (currentLanguage === 'pt' ? 'Personalizado' : (currentLanguage === 'en' ? 'Custom Agent' : 'Personalizado')) : (currentLanguage === 'pt' ? 'Padrão' : (currentLanguage === 'en' ? 'Default' : 'Estándar'))}
+                            </span>
+                        </div>
+                    </div>
+                    <p style="margin: 8px 0 12px 0; font-size: 0.78rem; color: var(--text-muted); line-height: 1.45; min-height: 48px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                        ${agent.description || (currentLanguage === 'pt' ? 'Sem descrição cadastrada.' : 'No description provided.')}
+                    </p>
+                    ${actionBtnHtml}
+                `;
+                
+                card.onclick = () => selectAgent(agent.id);
+                grid.appendChild(card);
+            });
         }
 
         function getEffectiveSystemPrompt() {
             const basePrompt = document.getElementById('system-prompt')?.value || 'Você é uma Inteligência Artificial direta e precisa.';
-            if (selectedAssistantId === 'geral') {
-                return basePrompt;
-            }
-            const assistant = smartAssistants.find(a => a.id === selectedAssistantId);
-            if (!assistant) return basePrompt;
+            const allAgents = getAllAgents();
+            const agent = allAgents.find(a => a.id === selectedAssistantId);
+            if (!agent || !agent.prompt) return basePrompt;
             
-            return `${assistant.prompt}\n\nMantenha também as seguintes diretrizes gerais do sistema:\n${basePrompt}`;
+            return `${agent.prompt}\n\nMantenha também as seguintes diretrizes gerais do sistema:\n${basePrompt}`;
         }
 
         function getSimulationReplyByAssistant(id, lang) {
+            const allAgents = getAllAgents();
+            const target = allAgents.find(a => a.id === id);
+            
             const replies = {
                 geral: {
                     pt: "Esta é uma resposta de simulação do núcleo geral do Synapse. Atualmente, nenhuma chave de API está configurada. Cole uma chave nos Ajustes para habilitar a inteligência neural completa.",
@@ -4197,7 +4542,7 @@ WITH CHECK (true);</code>
                 professor: {
                     pt: "Olá, estudante! Estou no modo **[PROFESSOR]** (Simulado). 🎓\n\nPara explicarmos conceitos complexos e realizarmos analogias ricas, precisamos de conexão ativa.\n\n*Lembrete pedagógico:* Insira sua chave de API nos Ajustes para iniciarmos nossas lições profundas passo a passo!",
                     en: "Hello, student! I am in **[TEACHER] mode** (Simulated). 🎓\n\nTo explain complex concepts and construct rich analogies, we need active connection.\n\n*Pedagogical reminder:* Insert your API key in Settings to start our deep step-by-step lessons!",
-                    es: "¡Hola, estudiante! Estoy en modo **[PROFESOR]** (Simulado). 🎓\n\nPara explicar conceptos complejos y formular ricas analogías, necesitamos conexión activa.\n\n*Recordatorio pedagógico:* ¡Inserte su clave de API en Ajustes para comenzar nuestras lecciones profundas paso a paso!"
+                    es: "¡Hola, estudiante! Estoy en modo **[PROFESSOR]** (Simulado). 🎓\n\nPara explicar conceptos complejos y formular ricas analogías, necesitamos conexión activa.\n\n*Recordatorio pedagógico:* ¡Inserte su clave de API en Ajustes para comenzar nuestras lecciones profundas paso a paso!"
                 },
                 tradutor: {
                     pt: "Modo **[TRADUTOR]** (Simulado) ativo. 🗣️\n\nNenhuma chave de API detectada. Para traduções polidirecionais precisas e análise de nuances semânticas de alta fidelidade cultural, configure sua API Key em Ajustes.",
@@ -4212,6 +4557,30 @@ WITH CHECK (true);</code>
                 pesquisador: {
                     pt: "Modo **[PESQUISADOR]** (Simulado) inicializado. 🔍\n\nEstamos rodando offline. Para cruzar hipóteses científicas, sintetizar dados de bases de pesquisa e resgatar registros históricos precisos, precisamos ativar o conector de API nos Ajustes.",
                     en: "**[RESEARCHER]** mode (Simulated) initialized. 🔍\n\nWe are running offline. To cross-reference scientific hypotheses, synthesize research data, and retrieve historical records precisely, we need to activate the API connector in Settings.",
+                    es: "Modo **[INVESTIGADOR]** (Simulado) inicializado. 🔍\n\nEstamos ejecutando sin conexión. Para contrastar hipótesis científicas, sintetizar datos de investigación y recuperar registros históricos del ecosistema de manera precisa, necesitamos activar el conector de API en Ajustes."
+                },
+                analista: {
+                    pt: "Análise estratégica interrompida: Modo **[ANALISTA]** (Simulado). 📊\n\nMapeamento de riscos e diagramação de oportunidades táticas indisponíveis offline. Recomendo inserir as credenciais nos Ajustes para que o algoritmo de descontrução lógica de problemas seja acionado.",
+                    en: "Strategic analysis suspended: **[ANALYST]** mode (Simulated). 📊\n\nRisk mapping and tactical opportunity forecasting are unavailable offline. I recommend inserting credentials under Settings to trigger the problem-deconstruction algorithm.",
+                    es: "Análisis estratégico suspendido: Modo **[ANALISTA]** (Simulado). 📊\n\nEl mapeo de riesgos y los diagramas de oportunidades tácticas no están disponibles sin conexão. Recomiendo insertar las credenciales en Ajustes para activar el algoritmo de deconstrucción de problemas."
+                }
+            };
+
+            const group = replies[id] || (target ? null : replies['geral']);
+            if (group) {
+                return group[lang] || group['pt'];
+            }
+
+            const name = target ? target.name : 'Agente';
+            const icon = target ? target.icon : '🤖';
+            if (lang === 'pt') {
+                return `Olá! Sou o agente **${name}** ${icon} (Simulado).\n\nMinhas instruções comportamentais personalizadas dizem:\n*"${target ? target.prompt : ''}"*\n\nAtualmente, nenhuma chave de API está configurada no console. Configure sua API Key nos Ajustes e poderei responder de modo inteligente e totalmente funcional!`;
+            } else if (lang === 'en') {
+                return `Hello! I am agent **${name}** ${icon} (Simulated).\n\nMy custom guidelines:\n*"${target ? target.prompt : ''}"*\n\nCurrently, no API Key is configured. Add one in Settings to activate my full neural performance.`;
+            } else {
+                return `¡Hola! Soy el agente **${name}** ${icon} (Simulado).\n\nMis instrucciones personalizadas completas:\n*"${target ? target.prompt : ''}"*\n\nActualmente, no hay clave de API configurada. Introduzca una en Ajustes para activar mi pleno rendimiento.`;
+            }
+        }ine. To cross-reference scientific hypotheses, synthesize research data, and retrieve historical records precisely, we need to activate the API connector in Settings.",
                     es: "Modo **[INVESTIGADOR]** (Simulado) inicializado. 🔍\n\nEstamos ejecutando sin conexión. Para contrastar hipótesis científicas, sintetizar datos de investigación y recuperar registros históricos del ecosistema de manera precisa, necesitamos activar el conector de API en Ajustes."
                 },
                 analista: {
