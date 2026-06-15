@@ -1463,6 +1463,10 @@
                 <span class="drawer-icon">🌐</span>
                 <span class="drawer-label" data-i18n="navegador_contexto">Navegador de Contexto</span>
             </li>
+            <li class="drawer-item" onclick="clickDrawerItem('tab-admin', '🛡️ Painel Admin')">
+                <span class="drawer-icon">🛡️</span>
+                <span class="drawer-label">Painel Admin</span>
+            </li>
         </ul>
     </div>
 
@@ -2244,6 +2248,163 @@
             </div>
         </section>
 
+        <!-- ABA PAINEL ADMIN -->
+        <section id="tab-admin" class="tab-section" style="padding: 18px 14px 80px; display: none;">
+            <div class="section-header">
+                <h2>🛡️ Painel Administrador (Moderação de Contas)</h2>
+                <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">Gerencie acessos de usuários, monitore o histórico de atividades e defina banimentos sem precisar acessar os painéis do banco diretamente.</p>
+            </div>
+
+            <!-- GATILHO DE AUTENTICAÇÃO / LOGIN ADMIN -->
+            <div id="admin-security-gate" class="supabase-card" style="margin-top: 20px; text-align: center; max-width: 500px; margin-left: auto; margin-right: auto; padding: 30px 20px;">
+                <div style="font-size: 3rem; margin-bottom: 15px;">🔒</div>
+                <h3 style="color: var(--primary); font-size: 1.25rem; font-weight: bold; margin-bottom: 8px;">Acesso Restrito ao Proprietário</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; margin-bottom: 20px;">
+                    Este é o painel de moderação para gerenciamento de contas e atividades. Insira sua Senha de Administrador para desbloquear.
+                </p>
+                <div style="text-align: left; margin-bottom: 15px;">
+                    <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 6px;">Senha / PIN de Administrador</label>
+                    <input type="password" id="admin-pin-input" class="form-control" style="border-radius: 10px; padding: 12px; font-size: 0.95rem; text-align: center; letter-spacing: 4px;" placeholder="••••••" onkeydown="if(event.key === 'Enter') tryUnlockAdminPanel()">
+                </div>
+                <button class="btn-universal" onclick="tryUnlockAdminPanel()" style="background-color: var(--primary); color: var(--bg-color); border: none; font-weight: bold; border-radius: 12px; height: 48px; width: 100%; cursor: pointer;">
+                    🔓 Desbloquear Painel
+                </button>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 15px; line-height: 1.4;">
+                    *Nota: Se você estiver conectado na conta do e-mail administrador (whitelist), o painel será liberado automaticamente.
+                </div>
+            </div>
+
+            <!-- CONTEÚDO DO PAINEL PRINCIPAL (Inicialmente Oculto) -->
+            <div id="admin-main-panel" style="display: none; flex-direction: column; gap: 20px;">
+                
+                <!-- CARD DE RESUMO E STATS -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div class="supabase-card" style="margin-bottom: 0; padding: 15px; gap: 8px;">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Usuários Registrados</span>
+                        <div style="display: flex; align-items: baseline; gap: 8px;">
+                            <span id="admin-stat-users-count" style="font-size: 1.8rem; font-weight: bold; color: var(--primary);">0</span>
+                            <span style="font-size: 0.75rem; color: #4ade80;">Ativos 🟢</span>
+                        </div>
+                    </div>
+                    <div class="supabase-card" style="margin-bottom: 0; padding: 15px; gap: 8px;">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Ações Executadas (Histórico)</span>
+                        <div style="display: flex; align-items: baseline; gap: 8px;">
+                            <span id="admin-stat-actions-count" style="font-size: 1.8rem; font-weight: bold; color: #38bdf8;">0</span>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">requisições</span>
+                        </div>
+                    </div>
+                    <div class="supabase-card" style="margin-bottom: 0; padding: 15px; gap: 8px;">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Contas Suspensas</span>
+                        <div style="display: flex; align-items: baseline; gap: 8px;">
+                            <span id="admin-stat-banned-count" style="font-size: 1.8rem; font-weight: bold; color: #ef4444;">0</span>
+                            <span style="font-size: 0.75rem; color: #ef4444;">restritos 🚫</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LISTA DE USUÁRIOS COMPLETA -->
+                <div class="supabase-card" style="margin-bottom: 0;">
+                    <div class="supabase-card-header">
+                        <span class="supabase-card-title">👥 Usuários Cadastrados & Moderação</span>
+                        <span class="supabase-status-badge" style="color: #4ade80; border-color: rgba(74,222,128,0.2);">Acesso Direto</span>
+                    </div>
+                    <div style="overflow-x: auto; margin-top: 10px;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; color: var(--text-main);">
+                            <thead>
+                                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-weight: bold;">
+                                    <th style="padding: 10px 8px;">Usuário / E-mail</th>
+                                    <th style="padding: 10px 8px;">Registrado em</th>
+                                    <th style="padding: 10px 8px; text-align: center;">Usos</th>
+                                    <th style="padding: 10px 8px;">Serviço Mais Ativo</th>
+                                    <th style="padding: 10px 8px;">Status</th>
+                                    <th style="padding: 10px 8px; text-align: right;">Ações de Moderação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-users-table-body">
+                                <!-- Preenchido dinamicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- MONITOR DE ATIVIDADES DE USUÁRIOS -->
+                <div class="supabase-card" style="margin-bottom: 0;">
+                    <div class="supabase-card-header">
+                        <span class="supabase-card-title">🖥️ Histórico de Atividades Recentes</span>
+                        <button class="btn-universal" onclick="clearAdminLogs()" style="padding: 4px 10px; font-size: 0.75rem; height: auto; background-color: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444;">Limpar Histórico Local</button>
+                    </div>
+                    <div style="max-height: 250px; overflow-y: auto; margin-top: 10px; font-family: monospace; font-size: 0.8rem; background: rgba(0,0,0,0.2); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px;" id="admin-activity-logs-container">
+                        <!-- Preenchido dinamicamente -->
+                    </div>
+                </div>
+
+                <!-- CONFIGURAÇÕES DE MODERAÇÃO E INSTRUÇÕES SQL -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+                    <!-- Ajustes Admin -->
+                    <div class="supabase-card" style="margin-bottom: 0;">
+                        <div class="supabase-card-header">
+                            <span class="supabase-card-title">⚙️ Ajustes de Dono do Console</span>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+                            <div>
+                                <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">E-mail Administrador Whitelist</label>
+                                <input type="email" id="admin-settings-email" class="form-control" placeholder="nicassil2017@gmail.com" onchange="saveAdminConfigSettings()">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">Nova Senha do Painel</label>
+                                <input type="password" id="admin-settings-pass" class="form-control" placeholder="Senha do painel" onchange="saveAdminConfigSettings()">
+                            </div>
+                            <div style="display: flex; gap: 10px; margin-top: 5px;">
+                                <button class="btn-universal" onclick="saveAdminConfigSettings(true)" style="background-color: var(--primary); color: var(--bg-color); height: 38px; font-size: 0.8rem; border-radius: 8px;">Salvar Ajustes</button>
+                                <button class="btn-universal" onclick="lockAdminSession()" style="background-color: transparent; border: 1px solid var(--border-color); color: var(--text-muted); height: 38px; font-size: 0.8rem; border-radius: 8px;">Bloquear Painel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Instruções SQL -->
+                    <div class="supabase-card" style="margin-bottom: 0;">
+                        <div class="supabase-card-header">
+                            <span class="supabase-card-title">🗄️ Integração Real no Supabase SQL</span>
+                        </div>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin: 4px 0;">Para centralizar e ver usuários cadastrados de forma real sem precisar de login no console do Supabase, crie as tabelas abaixo colando este SQL no SQL Editor do seu projeto Supabase:</p>
+                        <div style="position: relative; margin-top: 6px;">
+                            <textarea readonly class="form-control" style="font-family: monospace; font-size: 0.72rem; height: 110px; background-color: rgba(0,0,0,0.4); border-radius: 10px; padding: 8px;" id="admin-sql-instructions">
+-- Criação das tabelas de auditoria do Synapse Console
+CREATE TABLE IF NOT EXISTS public.synapse_users (
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    email TEXT UNIQUE NOT NULL,
+    display_name TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    banned_until TIMESTAMP WITH TIME ZONE,
+    usage_count INTEGER DEFAULT 1,
+    most_used_feature TEXT DEFAULT 'Chat Neural'
+);
+
+CREATE TABLE IF NOT EXISTS public.synapse_activity_logs (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    user_email TEXT NOT NULL,
+    action TEXT NOT NULL,
+    target TEXT,
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Ativar RLS para segurança ou políticas para leitura do Admin
+ALTER TABLE public.synapse_users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.synapse_activity_logs ENABLE ROW LEVEL SECURITY;
+
+-- Exemplo de política de leitura e escrita livre (ou restrita ao admin):
+CREATE POLICY "Permitir leitura global" ON public.synapse_users FOR SELECT USING (true);
+CREATE POLICY "Permitir inserções de log" ON public.synapse_activity_logs FOR INSERT WITH CHECK (true);
+CREATE POLICY "Permitir leitura de logs" ON public.synapse_activity_logs FOR SELECT USING (true);
+                            </textarea>
+                            <button class="btn-universal" onclick="copyAdminSQLToClipboard()" style="position: absolute; right: 10px; bottom: 10px; padding: 4px 8px; font-size: 0.7rem; height: auto;">📋 Copiar SQL</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
         <!-- ABA 2: CONFIGURAÇÕES E PERSONALIZAÇÃO -->
         <section id="tab-config" class="tab-section">
             
@@ -2938,7 +3099,8 @@ WITH CHECK (true);</code>
             'tab-config': '⚙️ Configurações (Ajustes)',
             'tab-logs': '🖥️ Terminal de Comandos',
             'tab-translator': '🌐 Tradutor de Textos',
-            'tab-context-browser': '🌐 Navegador de Contexto'
+            'tab-context-browser': '🌐 Navegador de Contexto',
+            'tab-admin': '🛡️ Painel Admin'
         };
 
         // --- 1. Navegação de Abas Fluida ---
@@ -3000,6 +3162,9 @@ WITH CHECK (true);</code>
             }
             if(tabId === 'tab-resume-builder'){
                 if (typeof initResumeBuilder === 'function') initResumeBuilder();
+            }
+            if(tabId === 'tab-admin'){
+                if (typeof updateAdminPanel === 'function') updateAdminPanel();
             }
         }
 
@@ -6156,6 +6321,31 @@ WITH CHECK (true);</code>
             const txt = input.value.trim();
             if (!txt) return;
 
+            // Check if user is banned
+            const userEmail = (supabaseSession && supabaseSession.user) ? supabaseSession.user.email : null;
+            const banStatus = typeof isUserBanned === 'function' ? isUserBanned(userEmail) : null;
+            if (banStatus && banStatus.isBanned) {
+                input.value = "";
+                showAppToast("Sua conta está suspensa pelo administrador!", "error");
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'chat-message bot';
+                errorMsg.style.borderColor = '#ef4444';
+                
+                const expDate = new Date(banStatus.until);
+                const diffMs = expDate - new Date();
+                const diffMin = Math.ceil(diffMs / 60000);
+                
+                errorMsg.innerHTML = `⚠️ <b>Acesso Recusado:</b> Sua conta está suspensa temporariamente pelo administrador do sistema.<br><br><b>Tempo Restante:</b> ${diffMin} minuto(s) (Expiração: ${expDate.toLocaleTimeString()}).`;
+                container.appendChild(errorMsg);
+                scrollToBottom();
+                return;
+            }
+
+            // Registra atividade no log administrativo
+            if (typeof logAdminActivity === 'function') {
+                logAdminActivity(userEmail || "usuario-local", "Mensagem de Chat", txt);
+            }
+
             // Memória: adiciona input do usuário
             chatHistoryObjects.push({ role: 'user', content: txt });
 
@@ -6390,6 +6580,20 @@ WITH CHECK (true);</code>
             if (!inputTxt) {
                 showAppToast("Por favor, cole um texto para ser traduzido.", "warning");
                 return;
+            }
+
+            // Check if user is banned
+            const userEmail = (supabaseSession && supabaseSession.user) ? supabaseSession.user.email : null;
+            const banStatus = typeof isUserBanned === 'function' ? isUserBanned(userEmail) : null;
+            if (banStatus && banStatus.isBanned) {
+                showAppToast("Sua conta está suspensa pelo administrador!", "error");
+                outputBox.value = `❌ Acesso Negado: Sua conta foi temporariamente suspensa pelo administrador de sistema.\n\nTempo restante: ${Math.ceil((new Date(banStatus.until) - new Date()) / 60000)} minuto(s) (Expiração: ${new Date(banStatus.until).toLocaleTimeString()}).`;
+                return;
+            }
+
+            // Registra atividade no log administrativo
+            if (typeof logAdminActivity === 'function') {
+                logAdminActivity(userEmail || "usuario-local", "Tradução de Texto", `Idioma-alvo: ${targetLang} | Trecho: ${inputTxt.substring(0, 30)}...`);
             }
 
             outputBox.value = "Aguarde... Conectando à IA para tradução...";
@@ -6936,6 +7140,20 @@ WITH CHECK (true);</code>
             if (!userPrompt) {
                 showAppToast("Descreva sobre você no prompt para criarmos!", "warning");
                 return;
+            }
+
+            // Check if user is banned
+            const userEmail = (supabaseSession && supabaseSession.user) ? supabaseSession.user.email : null;
+            const banStatus = typeof isUserBanned === 'function' ? isUserBanned(userEmail) : null;
+            if (banStatus && banStatus.isBanned) {
+                showAppToast("Sua conta está suspensa pelo administrador!", "error");
+                addLog(`Tentativa bloqueada: Usuário suspenso tentou gerar currículo.`, "warning");
+                return;
+            }
+
+            // Registra atividade no log administrativo
+            if (typeof logAdminActivity === 'function') {
+                logAdminActivity(userEmail || "usuario-local", "Currículo Gerado", `Nível: ${expLevel} | Prompt inicial: ${userPrompt.substring(0, 30)}...`);
             }
 
             addLog("Gerando novo currículo inteligente com IA - Processando...", "info");
@@ -8181,11 +8399,25 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                         updateAuthUI();
                         addLog(`Conta criada e autenticada com sucesso como ${email}!`, "success");
                         const displayName = getDisplayName(supabaseSession);
+                        
+                        // Registra usuário no painel do administrador
+                        if (typeof registerAdminUser === 'function') {
+                            registerAdminUser(email, displayName || username || email.split('@')[0], (data.user && data.user.id) || (data.session && data.session.user && data.session.user.id) || "usr-" + Date.now());
+                            logAdminActivity(email, "Cadastro Efetuado", "Conta criada e autenticada automaticamente");
+                        }
+
                         if (displayName) {
                             greetUserAfterLogin(displayName);
                         }
                     } else {
                         addLog(`Inscrição enviada para ${email}! Verifique seu e-mail para confirmação se necessário.`, "success");
+                        
+                        // Registra usuário no painel do administrador
+                        if (typeof registerAdminUser === 'function') {
+                            registerAdminUser(email, username || email.split('@')[0], "pending-" + Date.now());
+                            logAdminActivity(email, "Inscrição Pendente", "Cadastro submetido (Aguardando e-mail)");
+                        }
+
                         showAppToast("Inscrição efetuada com sucesso! Caso o seu Supabase exija confirmação de e-mail, verifique sua caixa de entrada; caso contrário, você já pode fazer login na conta.", "success");
                         setAuthTab('signin');
                     }
@@ -8239,6 +8471,13 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                     addLog(`Sessão carregada com sucesso! Usuário autenticado como: ${email}`, "success");
                     
                     const displayName = getDisplayName(supabaseSession);
+                    
+                    // Registra no painel do administrador
+                    if (typeof registerAdminUser === 'function') {
+                        registerAdminUser(email, displayName || email.split('@')[0], (data.user && data.user.id) || "usr-" + Date.now());
+                        logAdminActivity(email, "Login Efetuado", "Sessão iniciada na plataforma");
+                    }
+
                     if (displayName) {
                         greetUserAfterLogin(displayName);
                     }
@@ -9026,6 +9265,408 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                     supabaseSaveBackup(true);
                 }
             }, 800);
+        }
+
+        // ==========================================================================
+        // 8B. Moderação de Contas & Administração (Painel Admin)
+        // ==========================================================================
+        let adminLocalUsers = [];
+        let adminLocalLogs = [];
+        let isAdminActiveSession = false;
+
+        // Seção Seeding Inicial e Carregamento Local
+        function loadAdminPersistence() {
+            try {
+                // Configurações Globais Admin
+                if (!localStorage.getItem('synapse_admin_email')) {
+                    localStorage.setItem('synapse_admin_email', 'nicassil2017@gmail.com');
+                }
+                if (!localStorage.getItem('synapse_admin_pin')) {
+                    localStorage.setItem('synapse_admin_pin', '123456');
+                }
+
+                adminLocalUsers = JSON.parse(localStorage.getItem('synapse_admin_users')) || [];
+                adminLocalLogs = JSON.parse(localStorage.getItem('synapse_admin_logs')) || [];
+
+                // Seeding de demonstração realista para engrandecer a interface inicial
+                if (adminLocalUsers.length === 0) {
+                    adminLocalUsers = [
+                        { id: "usr-001", email: "gabriel.santos@exemplo.com", display_name: "Gabriel Santos", created_at: new Date(Date.now() - 3 * 24 * 3600 * 1000).toISOString(), usage_count: 54, most_used_feature: "📄 Currículo IA", banned_until: null },
+                        { id: "usr-002", email: "ana.recrutadora@exemplo.com", display_name: "Ana Recrutadora", created_at: new Date(Date.now() - 5 * 24 * 3600 * 1000).toISOString(), usage_count: 120, most_used_feature: "💬 Chat Neural", banned_until: null },
+                        { id: "usr-003", email: "lucas.developer@exemplo.com", display_name: "Lucas Dev", created_at: new Date(Date.now() - 1 * 24 * 3600 * 1000).toISOString(), usage_count: 15, most_used_feature: "🌐 Tradutor", banned_until: null }
+                    ];
+                    localStorage.setItem('synapse_admin_users', JSON.stringify(adminLocalUsers));
+                }
+
+                if (adminLocalLogs.length === 0) {
+                    adminLocalLogs = [
+                        { id: "log-001", user_email: "gabriel.santos@exemplo.com", action: "Currículo Gerado", target: "Modelo Moderno (PDF)", timestamp: new Date(Date.now() - 25 * 60 * 1000).toISOString() },
+                        { id: "log-002", user_email: "ana.recrutadora@exemplo.com", action: "Mensagem de Chat", target: "Agent RH Sênior", timestamp: new Date(Date.now() - 50 * 60 * 1000).toISOString() },
+                        { id: "log-003", user_email: "lucas.developer@exemplo.com", action: "Tradução de Texto", target: "Inglês -> Português", timestamp: new Date(Date.now() - 3 * 3600 * 1000).toISOString() }
+                    ];
+                    localStorage.setItem('synapse_admin_logs', JSON.stringify(adminLocalLogs));
+                }
+            } catch (err) {
+                console.error("Erro na persistência do Admin:", err);
+            }
+        }
+
+        // Verifica status de banimento do usuário
+        function isUserBanned(email) {
+            if (!email) return false;
+            
+            // Administrador nunca pode ser banido
+            const adminEmail = localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com";
+            if (email.toLowerCase() === adminEmail.toLowerCase()) return false;
+
+            loadAdminPersistence(); // Garante leitura atualizada
+            const matched = adminLocalUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+            if (matched && matched.banned_until) {
+                const bannedTime = new Date(matched.banned_until);
+                if (bannedTime > new Date()) {
+                    return {
+                        isBanned: true,
+                        until: bannedTime,
+                        reason: matched.ban_reason || "Suspensão temporária determinada pelo administrador."
+                    };
+                }
+            }
+            return false;
+        }
+
+        // Registra novos usuários na lista administrativa de moderação
+        function registerAdminUser(email, displayName, id) {
+            if (!email) return;
+            loadAdminPersistence();
+
+            const index = adminLocalUsers.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+            if (index === -1) {
+                adminLocalUsers.push({
+                    id: id || "usr-" + Date.now(),
+                    email: email,
+                    display_name: displayName || email.split('@')[0],
+                    created_at: new Date().toISOString(),
+                    usage_count: 1,
+                    most_used_feature: "Acesso Principal",
+                    banned_until: null
+                });
+            } else {
+                adminLocalUsers[index].usage_count = (adminLocalUsers[index].usage_count || 1) + 1;
+                if (id && adminLocalUsers[index].id.startsWith("pending-")) {
+                    adminLocalUsers[index].id = id; // Atualiza ID real após confirmação do Supabase
+                }
+            }
+            localStorage.setItem('synapse_admin_users', JSON.stringify(adminLocalUsers));
+        }
+
+        // Registra uma atividade no log de moderação
+        function logAdminActivity(email, action, target) {
+            loadAdminPersistence();
+            const logId = "log-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
+            
+            adminLocalLogs.unshift({
+                id: logId,
+                user_email: email || "usuario-local",
+                action: action,
+                target: target || "Nenhuma especificação",
+                timestamp: new Date().toISOString()
+            });
+
+            // Mantém no máximo 150 registros para polimento de performance
+            if (adminLocalLogs.length > 150) {
+                adminLocalLogs = adminLocalLogs.slice(0, 150);
+            }
+            localStorage.setItem('synapse_admin_logs', JSON.stringify(adminLocalLogs));
+
+            // Atualiza estatísticas de tipo de funcionalidade mais usada
+            const index = adminLocalUsers.findIndex(u => u.email.toLowerCase() === (email || "").toLowerCase());
+            if (index !== -1) {
+                adminLocalUsers[index].usage_count = (adminLocalUsers[index].usage_count || 0) + 1;
+                if (action === "Mensagem de Chat") {
+                    adminLocalUsers[index].most_used_feature = "💬 Chat Neural";
+                } else if (action === "Tradução de Texto") {
+                    adminLocalUsers[index].most_used_feature = "🌐 Tradutor";
+                } else if (action === "Currículo Gerado") {
+                    adminLocalUsers[index].most_used_feature = "📄 Currículo IA";
+                }
+                localStorage.setItem('synapse_admin_users', JSON.stringify(adminLocalUsers));
+            }
+
+            // Opcional: Se as credenciais do Supabase estão configuradas nas conexões, persistir de forma real
+            const url = document.getElementById('supabase-url').value.trim();
+            const key = document.getElementById('supabase-key').value.trim();
+            if (url && key) {
+                const cleanUrl = url.endsWith('/') ? url : url + '/';
+                const headers = {
+                    'apikey': key,
+                    'Content-Type': 'application/json'
+                };
+                if (supabaseSession && supabaseSession.access_token) {
+                    headers['Authorization'] = `Bearer ${supabaseSession.access_token}`;
+                }
+
+                // Push silencioso ao banco na nuvem na tabela synapse_activity_logs (suporta RLS)
+                fetch(`${cleanUrl}rest/v1/synapse_activity_logs`, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({
+                        user_email: email || "usuario-local",
+                        action: action,
+                        target: target || ""
+                    })
+                }).catch(() => {}); // Falhas silenciosas se as tabelas ainda não forem criadas
+
+                // Push silencioso ao banco na nuvem na tabela synapse_users (suporta RLS)
+                if (index !== -1) {
+                    const u = adminLocalUsers[index];
+                    fetch(`${cleanUrl}rest/v1/synapse_users`, {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify({
+                            id: u.id,
+                            email: u.email,
+                            display_name: u.display_name,
+                            usage_count: u.usage_count,
+                            most_used_feature: u.most_used_feature
+                        })
+                    }).catch(() => {});
+                }
+            }
+        }
+
+        // Destrava sessão e valida o Gate de Segurança
+        function tryUnlockAdminPanel() {
+            const inputField = document.getElementById('admin-pin-input');
+            const pinEntered = inputField.value.trim();
+            const actualPin = localStorage.getItem('synapse_admin_pin') || "123456";
+
+            if (pinEntered === actualPin) {
+                inputField.value = "";
+                isAdminActiveSession = true;
+                showAppToast("Acesso administrativo desbloqueado com sucesso!", "success");
+                addLog("Acesso liberado para a Área Administrativa Limitada.", "success");
+                updateAdminPanel();
+            } else {
+                showAppToast("Senha ou PIN incorreto! Tente novamente.", "error");
+                addLog("Tentativa falha de login no console administrativo restrito.", "warning");
+                inputField.focus();
+                inputField.select();
+            }
+        }
+
+        // Bypassa o teclado se o e-mail atual estiver logado e cadastrado como whitelist
+        function checkAdminAutoLogin() {
+            const adminEmail = localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com";
+            if (supabaseSession && supabaseSession.user && supabaseSession.user.email.toLowerCase() === adminEmail.toLowerCase()) {
+                isAdminActiveSession = true;
+                return true;
+            }
+            return false;
+        }
+
+        // Atualiza a visualização da tela
+        function updateAdminPanel() {
+            loadAdminPersistence();
+            const gate = document.getElementById('admin-security-gate');
+            const mainView = document.getElementById('admin-main-panel');
+
+            // Verifica login automático antes
+            const isAutoIn = checkAdminAutoLogin();
+
+            if (!isAdminActiveSession && !isAutoIn) {
+                gate.style.display = "block";
+                mainView.style.display = "none";
+                return;
+            }
+
+            gate.style.display = "none";
+            mainView.style.display = "flex";
+
+            // Preenche paineis de controle
+            document.getElementById('admin-settings-email').value = localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com";
+            document.getElementById('admin-settings-pass').value = localStorage.getItem('synapse_admin_pin') || "123456";
+
+            // Computa estatísticas do painel
+            let totalUsers = adminLocalUsers.length;
+            let totalActions = adminLocalLogs.length;
+            let activeBans = adminLocalUsers.filter(u => {
+                if (!u.banned_until) return false;
+                return new Date(u.banned_until) > new Date();
+            }).length;
+
+            document.getElementById('admin-stat-users-count').innerText = totalUsers;
+            document.getElementById('admin-stat-actions-count').innerText = totalActions;
+            document.getElementById('admin-stat-banned-count').innerText = activeBans;
+
+            // Renderiza tabela de usuários
+            const tBody = document.getElementById('admin-users-table-body');
+            tBody.innerHTML = "";
+
+            if (adminLocalUsers.length === 0) {
+                tBody.innerHTML = `<tr><td colspan="6" style="padding:20px; text-align:center; color:var(--text-muted);">Nenhum usuário cadastrado se conectou.</td></tr>`;
+            } else {
+                adminLocalUsers.forEach(u => {
+                    const registryDate = u.created_at ? new Date(u.created_at).toLocaleDateString() : "Sem registro";
+                    
+                    // Verifica status de banimento
+                    let statusLabel = `<span style="color:#4ade80; display:flex; align-items:center; gap:4px;">Ativo 🟢</span>`;
+                    let banActionHtml = ``;
+                    
+                    if (u.banned_until && new Date(u.banned_until) > new Date()) {
+                        const banExp = new Date(u.banned_until);
+                        statusLabel = `<span style="color:#f87171; display:flex; align-items:center; gap:4px; font-weight:bold;" title="Expira em ${banExp.toLocaleString()}">Suspenso 🚫</span>`;
+                        banActionHtml = `<button class="btn-universal" onclick="unbanUser('${u.id}')" style="padding:4px 8px; font-size:0.75rem; height:auto; background-color:#10b981; color:#fff; border-radius:6px; margin-left:4px;">Ativar Conta</button>`;
+                    } else {
+                        banActionHtml = `
+                            <select class="form-control" style="font-size:0.75rem; width:110px; display:inline-block; padding:4px 6px; height:28px;" onchange="if(this.value) banUser('${u.id}', this.value); this.value=''">
+                                <option value="">Suspender...</option>
+                                <option value="20">20 minutos</option>
+                                <option value="60">1 hora</option>
+                                <option value="1440">24 horas</option>
+                                <option value="10080">1 semana</option>
+                            </select>
+                        `;
+                    }
+
+                    const emailStyle = u.email.toLowerCase() === (localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com").toLowerCase() 
+                        ? "color: var(--primary); font-weight:bold;" : "color: #fff;";
+
+                    const emailDisplay = u.email.toLowerCase() === (localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com").toLowerCase()
+                        ? `${u.email} <span style="font-size:0.65rem; background-color:rgba(124,58,237,0.2); border:1px solid var(--primary); color:var(--primary); padding:2px 4px; border-radius:4px; margin-left:4px;">Proprietário</span>`
+                        : u.email;
+
+                    tBody.innerHTML += `
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.04); transition: background-color 0.2s;">
+                            <td style="padding:12px 8px; text-align:left;">
+                                <div style="font-weight:bold; color:#fff;">${u.display_name}</div>
+                                <div style="font-size:0.75rem; ${emailStyle}">${emailDisplay}</div>
+                            </td>
+                            <td style="padding:12px 8px; color:var(--text-muted);">${registryDate}</td>
+                            <td style="padding:12px 8px; text-align:center; font-weight:bold; color:#38bdf8;">${u.usage_count || 1}</td>
+                            <td style="padding:12px 8px; color:var(--text-muted);">${u.most_used_feature || "Chat Neural"}</td>
+                            <td style="padding:12px 8px;">${statusLabel}</td>
+                            <td style="padding:12px 8px; text-align:right;">${banActionHtml}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Renderiza painel de logs de atividades
+            const logsContainer = document.getElementById('admin-activity-logs-container');
+            logsContainer.innerHTML = "";
+
+            if (adminLocalLogs.length === 0) {
+                logsContainer.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:15px;">Nenhum evento registrado ainda.</div>`;
+            } else {
+                adminLocalLogs.forEach(lg => {
+                    const timeStr = lg.timestamp ? new Date(lg.timestamp).toLocaleTimeString() : "--:--:--";
+                    const emailBold = lg.user_email === (localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com")
+                        ? `<span style="color:var(--primary); font-weight:bold;">${lg.user_email}</span>`
+                        : `<span style="color:#fff;">${lg.user_email}</span>`;
+
+                    logsContainer.innerHTML += `
+                        <div style="border-bottom:1px solid rgba(255,255,255,0.03); padding-bottom:4px; line-height:1.4;">
+                            <span style="color:#38bdf8;">[${timeStr}]</span> ${emailBold} 
+                            <span style="color:#e2e8f0;">executou</span> <strong style="color:var(--primary); font-family:sans-serif;">${lg.action}</strong>: 
+                            <span style="color:var(--text-muted);">${lg.target}</span>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        // Bloqueia usuário por N minutos
+        function banUser(userId, minutes) {
+            userId = String(userId);
+            loadAdminPersistence();
+            const index = adminLocalUsers.findIndex(u => String(u.id) === userId);
+            
+            if (index !== -1) {
+                const user = adminLocalUsers[index];
+                
+                // Evita banir o próprio admin
+                const adminEmail = localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com";
+                if (user.email.toLowerCase() === adminEmail.toLowerCase()) {
+                    showAppToast("Operação Recusada: Você não pode auto-suspender sua conta de dono!", "warning");
+                    return;
+                }
+
+                const blockDurationMs = parseInt(minutes) * 60 * 1000;
+                const expirationDate = new Date(Date.now() + blockDurationMs);
+                
+                adminLocalUsers[index].banned_until = expirationDate.toISOString();
+                localStorage.setItem('synapse_admin_users', JSON.stringify(adminLocalUsers));
+                
+                showAppToast(`Usuário ${user.display_name} suspenso por ${minutes} minutos.`, "error");
+                logAdminActivity(adminEmail, "Auditoria Admin (Block)", `Suspensão aplicada a ${user.email} por ${minutes} minutos.`);
+                
+                updateAdminPanel();
+            }
+        }
+
+        // Reverte banamento do usuário
+        function unbanUser(userId) {
+            userId = String(userId);
+            loadAdminPersistence();
+            const index = adminLocalUsers.findIndex(u => String(u.id) === userId);
+            
+            if (index !== -1) {
+                const user = adminLocalUsers[index];
+                adminLocalUsers[index].banned_until = null;
+                localStorage.setItem('synapse_admin_users', JSON.stringify(adminLocalUsers));
+                
+                const adminEmail = localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com";
+                showAppToast(`Conta de ${user.display_name} liberada com sucesso!`, "success");
+                logAdminActivity(adminEmail, "Auditoria Admin (Liberar)", `Suspensão anulada para ${user.email}`);
+                
+                updateAdminPanel();
+            }
+        }
+
+        // Limpa o cache de logs locais
+        function clearAdminLogs() {
+            showAppConfirm("Tem certeza de que deseja expurgar os logs do painel local? Isso não afetará os dados no Supabase.", () => {
+                adminLocalLogs = [];
+                localStorage.setItem('synapse_admin_logs', JSON.stringify([]));
+                showAppToast("Logs de atividade locais excluídos com sucesso.", "info");
+                updateAdminPanel();
+            });
+        }
+
+        // Bloqueia a sessão do administrador
+        function lockAdminSession() {
+            isAdminActiveSession = false;
+            showAppToast("Sessão administrativa bloqueada por segurança.", "info");
+            updateAdminPanel();
+        }
+
+        // Salva novas definições para Admin
+        function saveAdminConfigSettings(showToast = false) {
+            const adminEmailInput = document.getElementById('admin-settings-email').value.trim();
+            const adminPinInput = document.getElementById('admin-settings-pass').value.trim();
+
+            if (adminEmailInput && adminPinInput) {
+                localStorage.setItem('synapse_admin_email', adminEmailInput);
+                localStorage.setItem('synapse_admin_pin', adminPinInput);
+                
+                if (showToast) {
+                    showAppToast("Definições de segurança salvas!", "success");
+                    addLog("Credenciais e whitelist de administrador atualizados com êxito.", "success");
+                }
+                updateAdminPanel();
+            } else {
+                showAppToast("Insira e-mail e nova senha válidos para as definições de dono.", "warning");
+            }
+        }
+
+        // Copia Snippet SQL
+        function copyAdminSQLToClipboard() {
+            const el = document.getElementById('admin-sql-instructions');
+            if (el) {
+                el.select();
+                document.execCommand('copy');
+                showAppToast("SQL copiado para a Área de Transferência! Cole no seu Supabase.", "success");
+            }
         }
     </script>
 </body>
