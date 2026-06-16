@@ -2710,18 +2710,26 @@ CREATE POLICY "Permitir leitura de logs" ON public.synapse_activity_logs FOR SEL
                     <h2>🧠 Motor de Inteligência Artificial</h2>
                 </div>
 
-                <div class="api-selector-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom: 16px;">
+                <div class="api-selector-grid" style="grid-template-columns: repeat(auto-fit, minmax(95px, 1fr)); gap: 8px; margin-bottom: 16px;">
                     <div class="selector-btn active" id="btn-gemini" onclick="setApiType('GEMINI')">
                         <span>♊</span>
-                        <span>Gemini</span>
+                        <span style="font-size: 0.75rem;">Gemini</span>
                     </div>
                     <div class="selector-btn" id="btn-openai" onclick="setApiType('OPENAI')">
                         <span>🌐</span>
-                        <span>OpenAI</span>
+                        <span style="font-size: 0.75rem;">OpenAI</span>
                     </div>
                     <div class="selector-btn" id="btn-groq" onclick="setApiType('GROQ')">
                         <span>⚡</span>
-                        <span>Groq</span>
+                        <span style="font-size: 0.75rem;">Groq</span>
+                    </div>
+                    <div class="selector-btn" id="btn-openrouter" onclick="setApiType('OPENROUTER')">
+                        <span>🌀</span>
+                        <span style="font-size: 0.75rem;">OpenRouter</span>
+                    </div>
+                    <div class="selector-btn" id="btn-custom" onclick="setApiType('CUSTOM')">
+                        <span>⚙️</span>
+                        <span style="font-size: 0.75rem;">Outros</span>
                     </div>
                 </div>
 
@@ -4368,6 +4376,8 @@ WITH CHECK (true);</code>
             document.getElementById('btn-gemini')?.classList.toggle('active', type === "GEMINI");
             document.getElementById('btn-openai')?.classList.toggle('active', type === "OPENAI");
             document.getElementById('btn-groq')?.classList.toggle('active', type === "GROQ");
+            document.getElementById('btn-openrouter')?.classList.toggle('active', type === "OPENROUTER");
+            document.getElementById('btn-custom')?.classList.toggle('active', type === "CUSTOM");
 
             const modelSelect = document.getElementById('model-name');
             if (modelSelect) {
@@ -4377,6 +4387,10 @@ WITH CHECK (true);</code>
                     options = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.0-pro"];
                 } else if (type === "GROQ") {
                     options = ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "mixtral-8x7b-32768", "gemma2-9b-it"];
+                } else if (type === "OPENROUTER") {
+                    options = ["google/gemini-2.5-flash", "google/gemini-2.5-pro", "anthropic/claude-3.5-sonnet", "meta-llama/llama-3.3-70b-instruct", "deepseek/deepseek-chat"];
+                } else if (type === "CUSTOM") {
+                    options = ["custom-model-1", "custom-model-2"];
                 } else {
                     options = ["gpt-4o", "gpt-4o-mini", "gpt-4", "gpt-3.5-turbo"];
                 }
@@ -4386,6 +4400,15 @@ WITH CHECK (true);</code>
                     optionEl.innerText = opt;
                     modelSelect.appendChild(optionEl);
                 });
+                
+                if (type === "CUSTOM" && !initLoad) {
+                    const customModel = prompt("Insira o nome do modelo da API customizada (ex: mistral-large):") || "custom-model";
+                    modelSelect.innerHTML = '';
+                    const optionEl = document.createElement('option');
+                    optionEl.value = customModel;
+                    optionEl.innerText = customModel;
+                    modelSelect.appendChild(optionEl);
+                }
             }
             
             if (!initLoad) { // Ao clicar mudar motor na hora, sobrescreve defaults
@@ -4398,6 +4421,12 @@ WITH CHECK (true);</code>
                 } else if (type === "GROQ") {
                     baseUrl.value = "https://api.groq.com/openai/v1/";
                     model.value = "llama-3.1-8b-instant";
+                } else if (type === "OPENROUTER") {
+                    baseUrl.value = "https://openrouter.ai/api/v1/";
+                    model.value = "google/gemini-2.5-flash";
+                } else if (type === "CUSTOM") {
+                    baseUrl.value = "https://api.provider.com/v1/";
+                    model.value = "custom-model";
                 } else {
                     baseUrl.value = "https://api.openai.com/v1/";
                     model.value = "gpt-4o";
@@ -6377,6 +6406,26 @@ WITH CHECK (true);</code>
                 return;
             }
 
+            // Check if user is muted (silenciado)
+            const muteStatus = typeof isUserMuted === 'function' ? isUserMuted(userEmail) : null;
+            if (muteStatus && muteStatus.isMuted) {
+                input.value = "";
+                showAppToast("Seu chat está silenciado pelo administrador!", "warning");
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'chat-message bot';
+                errorMsg.style.borderColor = '#f59e0b';
+                
+                const expDate = new Date(muteStatus.until);
+                const diffMs = expDate - new Date();
+                const diffMin = Math.ceil(diffMs / 60000);
+                const displayTime = isFinite(diffMin) && diffMin < 1000000 ? `${diffMin} minuto(s)` : "Tempo Indeterminado 🔒";
+                
+                errorMsg.innerHTML = `🔕 <b>Chat Silenciado:</b> O administrador bloqueou temporariamente sua permissão de enviar mensagens no chat.<br><br><b>Tempo Restante:</b> ${displayTime} (Expiração: ${expDate.toLocaleString()}).`;
+                container.appendChild(errorMsg);
+                scrollToBottom();
+                return;
+            }
+
             // Registra atividade no log administrativo
             if (typeof logAdminActivity === 'function') {
                 logAdminActivity(userEmail || "usuario-local", "Mensagem de Chat", txt);
@@ -6488,12 +6537,18 @@ WITH CHECK (true);</code>
                                 });
                             });
 
+                            const headers = {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${key}`
+                            };
+                            if (activeApiType === "OPENROUTER") {
+                                headers['HTTP-Referer'] = window.location.origin;
+                                headers['X-Title'] = 'Synapse AI';
+                            }
+
                             const response = await fetch(fetchUrl, {
                                 method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${key}`
-                                },
+                                headers: headers,
                                 body: JSON.stringify({
                                     model: model,
                                     messages: openAiMessages,
@@ -9353,6 +9408,28 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                         isBanned: true,
                         until: bannedTime,
                         reason: matched.ban_reason || "Suspensão temporária determinada pelo administrador."
+                    };
+                }
+            }
+            return false;
+        }
+
+        // Verifica status de silêncio (mute) do usuário
+        function isUserMuted(email) {
+            if (!email) return false;
+            
+            // Administrador nunca pode ser silenciado
+            const adminEmail = localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com";
+            if (email.toLowerCase() === adminEmail.toLowerCase()) return false;
+
+            loadAdminPersistence(); // Garante leitura atualizada
+            const matched = adminLocalUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+            if (matched && matched.muted_until) {
+                const mutedTime = new Date(matched.muted_until);
+                if (mutedTime > new Date()) {
+                    return {
+                        isMuted: true,
+                        until: mutedTime
                     };
                 }
             }
