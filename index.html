@@ -6664,7 +6664,12 @@ WITH CHECK (true);</code>
                                 'Authorization': `Bearer ${key}`
                             };
                             if (activeApiType === "OPENROUTER") {
-                                headers['HTTP-Referer'] = window.location.origin;
+                                try {
+                                    // Utiliza try-catch pois alguns navegadores móveis barram a alteração ou envio do Referer e quebram a chamada como "Failed to fetch"
+                                    headers['HTTP-Referer'] = window.location.origin;
+                                } catch(e) {
+                                    console.warn("Não foi possível registrar o HTTP-Referer:", e);
+                                }
                                 headers['X-Title'] = 'Synapse AI';
                             }
 
@@ -10540,7 +10545,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                                     setupInteractiveCustomSelect('admin-master-type', 'Moderação: Tipo da API Mestre', [
                                         { value: 'GEMINI', label: 'Google Gemini API', icon: '♊' },
                                         { value: 'OPENAI', label: 'OpenAI / Compatível', icon: '⚡' },
-                                        { value: 'GROQ', label: 'Groq Cloud API', icon: '🔥' }
+                                        { value: 'GROQ', label: 'Groq Cloud API', icon: '🔥' },
+                                        { value: 'OPENROUTER', label: 'OpenRouter (Open-Routing)', icon: '🪐' },
+                                        { value: 'CUSTOM', label: 'Provedor Customizado', icon: '🔧' }
                                     ]);
                                 } catch(e){}
                             }

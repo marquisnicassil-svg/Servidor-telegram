@@ -30,7 +30,12 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  // Network-first strategy
+  // Ignora chamadas de API externas e requisições que não sejam GET para evitar erros de CORS ou rede (ex: "Failed to fetch")
+  if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) {
+    return;
+  }
+  
+  // Network-first strategy para recursos locais estáticos
   event.respondWith(
     fetch(event.request).catch(() => caches.match(event.request))
   );
