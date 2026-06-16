@@ -2403,7 +2403,7 @@
                             </div>
                             <div>
                                 <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">Tipo da API</label>
-                                <select id="admin-master-type" class="form-control" onchange="saveAdminMasterApiSettings()" style="border-radius: 8px;">
+                                <select id="admin-master-type" class="form-control" onchange="onAdminMasterTypeChange()" style="border-radius: 8px;">
                                     <option value="GEMINI">Google Gemini API</option>
                                     <option value="OPENAI">OpenAI / Compatível</option>
                                     <option value="GROQ">Groq Cloud API</option>
@@ -10379,6 +10379,33 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                 document.execCommand('copy');
                 showAppToast("SQL copiado para a Área de Transferência! Cole no seu Supabase.", "success");
             }
+        }
+
+        // Altera automaticamente a URL Base e o modelo quando o tipo de API Mestre é alterado
+        function onAdminMasterTypeChange() {
+            const typeVal = document.getElementById('admin-master-type').value;
+            const urlInput = document.getElementById('admin-master-url');
+            const modelInput = document.getElementById('admin-master-model');
+
+            if (urlInput && modelInput) {
+                if (typeVal === "GEMINI") {
+                    urlInput.value = "https://generativelanguage.googleapis.com/";
+                    modelInput.value = "gemini-1.5-flash";
+                } else if (typeVal === "GROQ") {
+                    urlInput.value = "https://api.groq.com/openai/v1/";
+                    modelInput.value = "llama-3.1-8b-instant";
+                } else if (typeVal === "OPENROUTER") {
+                    urlInput.value = "https://openrouter.ai/api/v1/";
+                    modelInput.value = "google/gemini-2.5-flash";
+                } else if (typeVal === "OPENAI") {
+                    urlInput.value = "https://api.openai.com/v1/";
+                    modelInput.value = "gpt-4o";
+                } else if (typeVal === "CUSTOM") {
+                    urlInput.value = "https://api.provider.com/v1/";
+                    modelInput.value = "custom-model";
+                }
+            }
+            saveAdminMasterApiSettings();
         }
 
         // Salva configurações da API Mestre e envia para o Supabase para sincronizar todos os celulares em tempo real
