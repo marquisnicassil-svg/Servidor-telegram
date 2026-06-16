@@ -2417,7 +2417,10 @@
                             </div>
                             <div>
                                 <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">Modelo Padrão da API</label>
-                                <input type="text" id="admin-master-model" class="form-control" placeholder="gemini-1.5-flash" onchange="saveAdminMasterApiSettings()" style="border-radius: 8px;">
+                                <select id="admin-master-model-select" class="form-control" onchange="onAdminMasterModelSelectChange()" style="border-radius: 8px; margin-bottom: 8px;">
+                                    <!-- Populated dynamically based on provider -->
+                                </select>
+                                <input type="text" id="admin-master-model" class="form-control" placeholder="gemini-1.5-flash" onchange="saveAdminMasterApiSettings()" style="border-radius: 8px; display: none;">
                             </div>
                         </div>
                     </div>
@@ -6688,7 +6691,7 @@ WITH CHECK (true);</code>
                                 aiReply = data.choices?.[0]?.message?.content || "Mudo.";
                             } else {
                                 const err = await response.text();
-                                aiReply = `Erro OpenAI: ${err}`;
+                                aiReply = `Erro [${activeApiType}]: ${err}`;
                             }
                         }
                     } catch (e) {
@@ -9935,6 +9938,11 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             if (masterUrlInput) masterUrlInput.value = localStorage.getItem('synapse_admin_master_url') || 'https://generativelanguage.googleapis.com/';
             if (masterModelInput) masterModelInput.value = localStorage.getItem('synapse_admin_master_model') || 'gemini-1.5-flash';
 
+            // Carrega e preenche o seletor de modelos da API Mestre
+            const currentType = masterTypeInput ? masterTypeInput.value : 'GEMINI';
+            const currentModel = masterModelInput ? masterModelInput.value : 'gemini-1.5-flash';
+            updateAdminMasterModelOptions(currentType, currentModel);
+
             // Sincroniza widgets de seleção customizados para as definições de teste do administrador
             setupInteractiveCustomSelect('admin-master-active', 'Modo da Chave de Testes', [
                 { value: 'false', label: '🔴 Desativado (Pedir chave do usuário)', icon: '🔒' },
@@ -10387,25 +10395,125 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             const urlInput = document.getElementById('admin-master-url');
             const modelInput = document.getElementById('admin-master-model');
 
-            if (urlInput && modelInput) {
+            let defaultModel = "gemini-1.5-flash";
+            if (urlInput) {
                 if (typeVal === "GEMINI") {
                     urlInput.value = "https://generativelanguage.googleapis.com/";
-                    modelInput.value = "gemini-1.5-flash";
+                    defaultModel = "gemini-1.5-flash";
                 } else if (typeVal === "GROQ") {
                     urlInput.value = "https://api.groq.com/openai/v1/";
-                    modelInput.value = "llama-3.1-8b-instant";
+                    defaultModel = "llama-3.1-8b-instant";
                 } else if (typeVal === "OPENROUTER") {
                     urlInput.value = "https://openrouter.ai/api/v1/";
-                    modelInput.value = "google/gemini-2.5-flash";
+                    defaultModel = "google/gemini-2.5-flash";
                 } else if (typeVal === "OPENAI") {
                     urlInput.value = "https://api.openai.com/v1/";
-                    modelInput.value = "gpt-4o";
+                    defaultModel = "gpt-4o-mini";
                 } else if (typeVal === "CUSTOM") {
                     urlInput.value = "https://api.provider.com/v1/";
-                    modelInput.value = "custom-model";
+                    defaultModel = "custom-model";
                 }
             }
+            if (modelInput) {
+                modelInput.value = defaultModel;
+            }
+
+            // Atualiza as opções do model-select com o default correspondente
+            updateAdminMasterModelOptions(typeVal, defaultModel);
+            
             saveAdminMasterApiSettings();
+        }
+
+        // Atualiza a lista de opções para o seletor de modelos da API Mestre
+        function updateAdminMasterModelOptions(typeVal, currentSavedModel) {
+            const selectEl = document.getElementById('admin-master-model-select');
+            const inputEl = document.getElementById('admin-master-model');
+            if (!selectEl || !inputEl) return;
+
+            // Limpa as opções
+            selectEl.innerHTML = '';
+
+            let optionsList = [];
+            if (typeVal === "GEMINI") {
+                optionsList = [
+                    { value: "gemini-1.5-flash", label: "gemini-1.5-flash (Ideal p/ Chat)" },
+                    { value: "gemini-1.5-pro", label: "gemini-1.5-pro (Raciocínio Avançado)" },
+                    { value: "gemini-2.0-flash-exp", label: "gemini-2.0-flash (Mais Rápido)" },
+                    { value: "gemini-1.0-pro", label: "gemini-1.0-pro" }
+                ];
+            } else if (typeVal === "GROQ") {
+                optionsList = [
+                    { value: "llama-3.1-8b-instant", label: "llama-3.1-8b-instant" },
+                    { value: "llama-3.3-70b-versatile", label: "llama-3.3-70b-versatile" },
+                    { value: "mixtral-8x7b-32768", label: "mixtral-8x7b-32768" },
+                    { value: "gemma2-9b-it", label: "gemma2-9b-it" }
+                ];
+            } else if (typeVal === "OPENROUTER") {
+                optionsList = [
+                    { value: "google/gemini-2.5-flash", label: "google/gemini-2.5-flash" },
+                    { value: "google/gemini-2.5-pro", label: "google/gemini-2.5-pro" },
+                    { value: "anthropic/claude-3.5-sonnet", label: "anthropic/claude-3.5-sonnet" },
+                    { value: "meta-llama/llama-3.3-70b-instruct", label: "meta-llama/llama-3.3-70b-instruct" },
+                    { value: "deepseek/deepseek-chat", label: "deepseek/deepseek-chat" }
+                ];
+            } else if (typeVal === "OPENAI") {
+                optionsList = [
+                    { value: "gpt-4o-mini", label: "gpt-4o-mini" },
+                    { value: "gpt-4o", label: "gpt-4o" },
+                    { value: "gpt-4", label: "gpt-4" },
+                    { value: "gpt-3.5-turbo", label: "gpt-3.5-turbo" }
+                ];
+            } else {
+                optionsList = [
+                    { value: "custom-model", label: "Modelo Customizado" }
+                ];
+            }
+
+            // Sempre oferece a opção de digitar modelo personalizado manualmente
+            optionsList.push({ value: "CUSTOM_VALUE", label: "✍️ Digitar modelo customizado..." });
+
+            // Renderiza as options dentro do combo nativo
+            optionsList.forEach(opt => {
+                const optEl = document.createElement('option');
+                optEl.value = opt.value;
+                optEl.innerText = opt.label;
+                selectEl.appendChild(optEl);
+            });
+
+            // Sincroniza se o modelo atual está dentre os presets
+            const hasMatch = optionsList.some(o => o.value === currentSavedModel);
+            if (hasMatch) {
+                selectEl.value = currentSavedModel;
+                inputEl.value = currentSavedModel;
+                inputEl.style.display = 'none';
+            } else {
+                selectEl.value = "CUSTOM_VALUE";
+                inputEl.value = currentSavedModel || '';
+                inputEl.style.display = 'block';
+            }
+
+            // Transforma o select do modelo em componente interativo e estilizado modernamente
+            setupInteractiveCustomSelect('admin-master-model-select', 'Moderação: Modelo Mestre', optionsList.map(o => ({
+                value: o.value,
+                label: o.label,
+                icon: '♊'
+            })), true);
+        }
+
+        // Callback invocado quando o modelo mestre em dropdown muda
+        function onAdminMasterModelSelectChange() {
+            const selectEl = document.getElementById('admin-master-model-select');
+            const inputEl = document.getElementById('admin-master-model');
+            if (!selectEl || !inputEl) return;
+
+            if (selectEl.value === "CUSTOM_VALUE") {
+                inputEl.style.display = 'block';
+                inputEl.focus();
+            } else {
+                inputEl.style.display = 'none';
+                inputEl.value = selectEl.value;
+                saveAdminMasterApiSettings();
+            }
         }
 
         // Salva configurações da API Mestre e envia para o Supabase para sincronizar todos os celulares em tempo real
@@ -10576,6 +10684,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                                         { value: 'OPENROUTER', label: 'OpenRouter (Open-Routing)', icon: '🪐' },
                                         { value: 'CUSTOM', label: 'Provedor Customizado', icon: '🔧' }
                                     ]);
+                                    
+                                    // Sincroniza e reconstrói o drop-down do modelo Mestre
+                                    updateAdminMasterModelOptions(config.type || 'GEMINI', config.model || 'gemini-1.5-flash');
                                 } catch(e){}
                             }
                             addLog("Configurações da API Mestre sincronizadas do banco Supabase com sucesso!", "success");
