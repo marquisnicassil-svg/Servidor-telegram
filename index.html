@@ -8378,6 +8378,10 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                 if (response.ok) {
                     updateCloudIndicators('active', 'Conectado');
                     addLog("Conexão ao Supabase estabelecida com sucesso!", "success");
+                    // Sincroniza configurações da API Mestre em tempo real da nuvem
+                    if (typeof syncMasterApiSettingsFromSupabase === 'function') {
+                        syncMasterApiSettingsFromSupabase();
+                    }
                     return true;
                 } else {
                     const errorText = await response.text();
@@ -10372,8 +10376,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             }
         }
 
-        // Salva configurações da API Mestre
-        function saveAdminMasterApiSettings() {
+        // Salva configurações da API Mestre e envia para o Supabase para sincronizar todos os celulares em tempo real
+        async function saveAdminMasterApiSettings() {
             const activeVal = document.getElementById('admin-master-active').value;
             const keyVal = document.getElementById('admin-master-key').value.trim();
             const urlVal = document.getElementById('admin-master-url').value.trim() || 'https://generativelanguage.googleapis.com/';
@@ -10386,8 +10390,67 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             localStorage.setItem('synapse_admin_master_model', modelVal);
             localStorage.setItem('synapse_admin_master_type', typeVal);
             
-            showAppToast("Configurações da API Mestre salvas!", "success");
-            addLog(`API Mestre atualizada. Ativo: ${activeVal} | Modelo: ${modelVal}`, "info");
+            showAppToast("Configurações da API Mestre salvas localmente!", "success");
+            addLog(`API Mestre atualizada localmente. Ativo: ${activeVal} | Modelo: ${modelVal}`, "info");
+
+            // Envia para o Supabase
+            const url = document.getElementById('supabase-url').value.trim();
+            const key = document.getElementById('supabase-key').value.trim();
+            const table = document.getElementById('supabase-table').value.trim();
+
+            if (url && key && table) {
+                try {
+                    addLog("Sincronizando novas configurações de API Mestre com a nuvem do Supabase...", "sys");
+                    const cleanUrl = url.endsWith('/') ? url : url + '/';
+                    const fetchUrl = `${cleanUrl}rest/v1/${table}`;
+
+                    const headers = {
+                        'apikey': key,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    };
+                    if (supabaseSession && supabaseSession.access_token) {
+                        headers['Authorization'] = `Bearer ${supabaseSession.access_token}`;
+                    } else {
+                        headers['Authorization'] = `Bearer ${key}`;
+                    }
+
+                    const payload = {
+                        role: 'master_api_config',
+                        content: JSON.stringify({
+                            active: activeVal,
+                            key: keyVal,
+                            url: urlVal,
+                            model: modelVal,
+                            type: typeVal
+                        }),
+                        settings_json: {
+                            active: activeVal,
+                            key: keyVal,
+                            url: urlVal,
+                            model: modelVal,
+                            type: typeVal
+                        }
+                    };
+
+                    const response = await fetch(fetchUrl, {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) {
+                        addLog("API Mestre persistida e propagada para todos os usuários com sucesso!", "success");
+                        showAppToast("Sincronizado com a nuvem com sucesso!", "success");
+                    } else {
+                        const errTxt = await response.text();
+                        addLog(`Falha ao propagar API Mestre na nuvem: ${errTxt}`, "warning");
+                    }
+                } catch (e) {
+                    console.error("Erro ao sincronizar API Mestre com o banco:", e);
+                    addLog(`Erro de rede ao salvar API Mestre no Supabase: ${e.message}`, "error");
+                }
+            }
         }
 
         // Resolve credenciais ativas da API com inteligência de Fallback do Dono
@@ -10408,6 +10471,86 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             }
             
             return { key, url, model, type };
+        }
+
+        // Sincroniza em tempo real a Chave e modelo Mestre da nuvem Supabase
+        async function syncMasterApiSettingsFromSupabase() {
+            const url = document.getElementById('supabase-url').value.trim();
+            const key = document.getElementById('supabase-key').value.trim();
+            const table = document.getElementById('supabase-table').value.trim();
+
+            if (!url || !key || !table) return;
+
+            try {
+                const cleanUrl = url.endsWith('/') ? url : url + '/';
+                const fetchUrl = `${cleanUrl}rest/v1/${table}?role=eq.master_api_config&order=id.desc&limit=1`;
+
+                const headers = {
+                    'apikey': key
+                };
+                if (supabaseSession && supabaseSession.access_token) {
+                    headers['Authorization'] = `Bearer ${supabaseSession.access_token}`;
+                } else {
+                    headers['Authorization'] = `Bearer ${key}`;
+                }
+
+                const response = await fetch(fetchUrl, {
+                    method: 'GET',
+                    headers: headers
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.length > 0) {
+                        const row = data[0];
+                        let config = null;
+                        if (row.settings_json) {
+                            config = typeof row.settings_json === 'string' ? JSON.parse(row.settings_json) : row.settings_json;
+                        } else if (row.content) {
+                            config = JSON.parse(row.content);
+                        }
+                        
+                        if (config) {
+                            localStorage.setItem('synapse_admin_master_active', config.active !== undefined ? String(config.active) : 'true');
+                            localStorage.setItem('synapse_admin_master_key', config.key || '');
+                            localStorage.setItem('synapse_admin_master_url', config.url || 'https://generativelanguage.googleapis.com/');
+                            localStorage.setItem('synapse_admin_master_model', config.model || 'gemini-1.5-flash');
+                            localStorage.setItem('synapse_admin_master_type', config.type || 'GEMINI');
+                            
+                            // Também sincroniza os inputs visuais caso o admin esteja na tela de configurações administrativas nesse momento
+                            const masterActiveInput = document.getElementById('admin-master-active');
+                            const masterKeyInput = document.getElementById('admin-master-key');
+                            const masterTypeInput = document.getElementById('admin-master-type');
+                            const masterUrlInput = document.getElementById('admin-master-url');
+                            const masterModelInput = document.getElementById('admin-master-model');
+
+                            if (masterActiveInput) masterActiveInput.value = config.active !== undefined ? String(config.active) : 'true';
+                            if (masterKeyInput) masterKeyInput.value = config.key || '';
+                            if (masterTypeInput) masterTypeInput.value = config.type || 'GEMINI';
+                            if (masterUrlInput) masterUrlInput.value = config.url || 'https://generativelanguage.googleapis.com/';
+                            if (masterModelInput) masterModelInput.value = config.model || 'gemini-1.5-flash';
+                            
+                            // Recarrega custom selects interativos se existirem
+                            if (typeof setupInteractiveCustomSelect === 'function') {
+                                try {
+                                    setupInteractiveCustomSelect('admin-master-active', 'Modo da Chave de Testes', [
+                                        { value: 'false', label: '🔴 Desativado (Pedir chave do usuário)', icon: '🔒' },
+                                        { value: 'true', label: '🟢 Ativado (Usar Chave do Dono como Fallback)', icon: '🌍' }
+                                    ]);
+                                    setupInteractiveCustomSelect('admin-master-type', 'Moderação: Tipo da API Mestre', [
+                                        { value: 'GEMINI', label: 'Google Gemini API', icon: '♊' },
+                                        { value: 'OPENAI', label: 'OpenAI / Compatível', icon: '⚡' },
+                                        { value: 'GROQ', label: 'Groq Cloud API', icon: '🔥' }
+                                    ]);
+                                } catch(e){}
+                            }
+                            addLog("Configurações da API Mestre sincronizadas do banco Supabase com sucesso!", "success");
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Erro ao sincronizar API Mestre do Supabase:", err);
+            }
         }
     </script>
 </body>
