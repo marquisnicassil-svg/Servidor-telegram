@@ -99,6 +99,28 @@
             border: var(--border-weight) solid var(--border-color) !important;
         }
         
+        .admin-user-row {
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .admin-user-row:hover {
+            background-color: rgba(255, 255, 255, 0.03) !important;
+        }
+        .admin-user-row:active {
+            background-color: rgba(255, 255, 255, 0.06) !important;
+            transform: scale(0.985);
+        }
+        .custom-select-trigger {
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .custom-select-trigger:hover {
+            background-color: rgba(255, 255, 255, 0.06) !important;
+            border-color: rgba(255, 255, 255, 0.15) !important;
+        }
+        .custom-select-trigger:active {
+            transform: scale(0.97) !important;
+            background-color: rgba(255, 255, 255, 0.09) !important;
+        }
+
         .btn-universal {
             border-radius: var(--btn-border-radius) !important;
             box-shadow: var(--glow-shadow) !important;
@@ -2383,7 +2405,10 @@
                                 <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">Tipo da API</label>
                                 <select id="admin-master-type" class="form-control" onchange="saveAdminMasterApiSettings()" style="border-radius: 8px;">
                                     <option value="GEMINI">Google Gemini API</option>
-                                    <option value="OPENAI">OpenAI / Copatível</option>
+                                    <option value="OPENAI">OpenAI / Compatível</option>
+                                    <option value="GROQ">Groq Cloud API</option>
+                                    <option value="OPENROUTER">OpenRouter (Open-Routing)</option>
+                                    <option value="CUSTOM">Provedor Customizado</option>
                                 </select>
                             </div>
                             <div>
@@ -5150,6 +5175,21 @@ WITH CHECK (true);</code>
 
         function deleteAgent(id) {
             triggerPulse();
+            const confirmMsg = currentLanguage === 'pt' ? 'Tem certeza que deseja excluir este agente?' : (currentLanguage === 'en' ? 'Are you sure you want to delete this agent?' : '¿Está seguro de que deseja eliminar este agente?');
+            showAppConfirm(confirmMsg, () => {
+                let customAgents = JSON.parse(localStorage.getItem('synapse_custom_agents') || '[]');
+                customAgents = customAgents.filter(a => a.id !== id);
+                localStorage.setItem('synapse_custom_agents', JSON.stringify(customAgents));
+                renderAgentsList();
+                const deletedMsg = currentLanguage === 'pt' ? 'Agente excluído com sucesso.' : (currentLanguage === 'en' ? 'Agent deleted successfully.' : 'Agent eliminado con éxito.');
+                showAppToast(deletedMsg, "success");
+                if (selectedAssistantId === id) {
+                    selectAgent('geral', true);
+                }
+            });
+        }
+        function old_deleteAgent(id) {
+            triggerPulse();
             const confirmMsg = currentLanguage === 'pt' ? 'Tem certeza que deseja excluir este agente?' : (currentLanguage === 'en' ? 'Are you sure you want to delete this agent?' : '¿Está seguro de que desea eliminar este agente?');
             if (!confirm(confirmMsg)) return;
 
@@ -5912,27 +5952,26 @@ WITH CHECK (true);</code>
             }
         }
 
-        async function deleteWorkspaceItem(id, category) {
+        function deleteWorkspaceItem(id, category) {
             triggerPulse();
-            // Evita erros de confirm usando o confirm customizado do Synapse!
             const msgConfirm = currentLanguage === 'en' ? "Are you sure you want to delete this item permanently?" : "Tem certeza de que deseja excluir este item permanentemente do Workspace?";
-            const yes = await showCustomConfirm(msgConfirm);
-            if (!yes) return;
+            
+            showAppConfirm(msgConfirm, () => {
+                let key = category + 's';
+                if (category === 'memoria') key = 'memorias';
 
-            let key = category + 's';
-            if (category === 'memoria') key = 'memorias';
-
-            const arr = workspaceData[key];
-            if (arr) {
-                const index = arr.findIndex(i => i.id === id);
-                if (index !== -1) {
-                    arr.splice(index, 1);
-                    saveWorkspaceToStorage();
-                    renderWorkspace(currentWorkspaceFilter, currentWorkspaceSearch);
-                    showAppToast("Item excluído com sucesso do Workspace.", "success");
-                    addLog(`Item do Workspace excluído: ID ${id}, Categoria ${category}`, "info");
+                const arr = workspaceData[key];
+                if (arr) {
+                    const index = arr.findIndex(i => i.id === id);
+                    if (index !== -1) {
+                        arr.splice(index, 1);
+                        saveWorkspaceToStorage();
+                        renderWorkspace(currentWorkspaceFilter, currentWorkspaceSearch);
+                        showAppToast("Item excluído com sucesso do Workspace.", "success");
+                        addLog(`Item do Workspace excluído: ID ${id}, Categoria ${category}`, "info");
+                    }
                 }
-            }
+            });
         }
 
         // Modal para Editar dados Inline
@@ -6954,6 +6993,26 @@ WITH CHECK (true);</code>
         }
 
         function clearResumeToBlank() {
+            showAppConfirm("Tem certeza que deseja limpar tudo e começar do zero?", () => {
+                document.getElementById('rb-input-name').value = '';
+                document.getElementById('rb-input-title').value = '';
+                document.getElementById('rb-input-email').value = '';
+                document.getElementById('rb-input-phone').value = '';
+                document.getElementById('rb-input-location').value = '';
+                document.getElementById('rb-input-website').value = '';
+                document.getElementById('rb-input-summary').value = '';
+                document.getElementById('rb-input-skills').value = '';
+                removeResumePhoto();
+
+                document.getElementById('rb-repeater-exp').innerHTML = '';
+                document.getElementById('rb-repeater-edu').innerHTML = '';
+                document.getElementById('rb-repeater-proj').innerHTML = '';
+
+                updateResumePreview();
+                showAppToast("Limpado com sucesso!", "info");
+            });
+        }
+        function old_clearResumeToBlank() {
             if (confirm("Tem certeza que deseja limpar tudo e começar do zero?")) {
                 document.getElementById('rb-input-name').value = '';
                 document.getElementById('rb-input-title').value = '';
@@ -7902,6 +7961,185 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             showAppToast("Confirm bloqueado. Ação cancelada ou requer confirmação em modal.", "warning");
             return false;
         };
+
+        // Modal de Seleção Customizado Premium para substituir o select nativo e evitar wheels no Android/iOS
+        function showCustomSelect(title, options, currentValue, onSelect) {
+            const existing = document.getElementById('app-custom-select-modal');
+            if (existing) existing.remove();
+
+            const modal = document.createElement('div');
+            modal.id = 'app-custom-select-modal';
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100vw';
+            modal.style.height = '100vh';
+            modal.style.backgroundColor = 'rgba(3, 4, 6, 0.86)';
+            modal.style.backdropFilter = 'blur(16px)';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.style.zIndex = '120000';
+            modal.style.opacity = '0';
+            modal.style.transition = 'opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1)';
+            modal.style.padding = '20px';
+
+            const card = document.createElement('div');
+            card.style.background = 'rgba(17, 19, 26, 0.98)';
+            card.style.border = '1px solid rgba(255, 255, 255, 0.08)';
+            card.style.borderRadius = '20px';
+            card.style.padding = '24px';
+            card.style.maxWidth = '420px';
+            card.style.width = '100%';
+            card.style.boxShadow = '0 30px 70px rgba(0,0,0,0.85)';
+            card.style.transform = 'translateY(15px) scale(0.97)';
+            card.style.transition = 'all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.15)';
+            card.style.color = '#ffffff';
+            card.style.fontFamily = 'system-ui, -apple-system, sans-serif';
+
+            let optionsHtml = '';
+            options.forEach(opt => {
+                const isActive = String(opt.value) === String(currentValue);
+                optionsHtml += `
+                    <div class="custom-select-option" data-value="${opt.value}" style="
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        padding: 14px 18px;
+                        border-radius: 12px;
+                        background: ${isActive ? 'rgba(56, 189, 248, 0.08)' : 'rgba(255,255,255,0.02)'};
+                        border: 1px solid ${isActive ? 'var(--primary, #38bdf8)' : 'rgba(255,255,255,0.04)'};
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                        margin-bottom: 10px;
+                        font-weight: ${isActive ? '600' : '500'};
+                        color: ${isActive ? '#fff' : '#9ca3af'};
+                    " onmouseover="this.style.background='rgba(56, 189, 248, 0.12)'; this.style.color='#ffffff';" onmouseout="this.style.background='${isActive ? 'rgba(56, 189, 248, 0.08)' : 'rgba(255,255,255,0.02)'}'; this.style.color='${isActive ? '#fff' : '#9ca3af'}';">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 1.25rem; line-height:1;">${opt.icon || '✦'}</span>
+                            <span style="font-size: 0.92rem;">${opt.label}</span>
+                        </div>
+                        ${isActive ? '<span style="color: var(--primary, #38bdf8); font-size: 1.1rem; font-weight:bold;">✓</span>' : ''}
+                    </div>
+                `;
+            });
+
+            card.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+                    <h4 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: #f3f4f6;">${title}</h4>
+                    <button id="custom-select-close" style="background: rgba(255,255,255,0.05); border: none; width: 30px; height: 30px; border-radius: 50%; color: #9ca3af; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; transition: background 0.2s;">✕</button>
+                </div>
+                <div style="max-height: 280px; overflow-y: auto; padding-right: 4px; margin-bottom: 4px;">
+                    ${optionsHtml}
+                </div>
+            `;
+
+            modal.appendChild(card);
+            document.body.appendChild(modal);
+
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                card.style.transform = 'translateY(0) scale(1)';
+            }, 20);
+
+            const closeSelectModal = () => {
+                card.style.transform = 'translateY(15px) scale(0.97)';
+                modal.style.opacity = '0';
+                setTimeout(() => modal.remove(), 220);
+            };
+
+            const closeBtn = document.getElementById('custom-select-close');
+            closeBtn.onmouseenter = () => closeBtn.style.background = 'rgba(255,255,255,0.1)';
+            closeBtn.onmouseleave = () => closeBtn.style.background = 'rgba(255,255,255,0.05)';
+            closeBtn.onclick = closeSelectModal;
+
+            modal.onclick = (e) => {
+                if (e.target === modal) closeSelectModal();
+            };
+
+            const optionElements = card.querySelectorAll('.custom-select-option');
+            optionElements.forEach(el => {
+                el.onclick = () => {
+                    const val = el.getAttribute('data-value');
+                    onSelect(val);
+                    closeSelectModal();
+                };
+            });
+        }
+
+        // Transforma um select nativo estático em um componente customizado e sincronizado de alta qualidade
+        function setupInteractiveCustomSelect(selectId, title, options) {
+            const rawSelect = document.getElementById(selectId);
+            if (!rawSelect) return;
+
+            const wrapperId = selectId + '-custom-wrapper';
+            const existingWrapper = document.getElementById(wrapperId);
+
+            if (existingWrapper) {
+                // Sincroniza em tempo real se re-renderizado
+                const displayBtnText = document.getElementById(selectId + '-custom-value');
+                if (displayBtnText) {
+                    const currentVal = rawSelect.value;
+                    const currentOpt = options.find(o => String(o.value) === String(currentVal));
+                    displayBtnText.innerText = currentOpt ? currentOpt.label : currentVal;
+                }
+                return;
+            }
+
+            // Oculta completamente o elemento nativo (porém mantém seu estado e compatibilidade com o JS legado)
+            rawSelect.style.display = 'none';
+
+            // Cria o botão fake com design moderno, combinando com o design de bordas e inputs do Synapse Console
+            const btn = document.createElement('div');
+            btn.id = wrapperId;
+            btn.className = 'custom-select-trigger';
+            btn.style.background = 'rgba(255, 255, 255, 0.03)';
+            btn.style.border = '1px solid var(--border-color, rgba(255,255,255,0.08))';
+            btn.style.borderRadius = '10px';
+            btn.style.padding = '12px 14px';
+            btn.style.display = 'flex';
+            btn.style.alignItems = 'center';
+            btn.style.justifyContent = 'space-between';
+            btn.style.cursor = 'pointer';
+            btn.style.fontSize = '0.88rem';
+            btn.style.color = '#fff';
+            btn.style.userSelect = 'none';
+            btn.style.marginTop = '4px';
+            btn.style.marginBottom = '8px';
+
+            btn.innerHTML = `
+                <span id="${selectId}-custom-value" style="font-weight: 500;">Selecione...</span>
+                <span style="color: var(--text-muted); font-size: 0.72rem; margin-left: 8px; transition: transform 0.2s;">▼</span>
+            `;
+
+            // Insere o trigger simulado no DOM logo à frente do elemento oculto
+            rawSelect.parentNode.insertBefore(btn, rawSelect.nextSibling);
+
+            const updateDisplayText = () => {
+                const val = rawSelect.value;
+                const opt = options.find(o => String(o.value) === String(val));
+                const displayLabel = opt ? opt.label : val;
+                const txtNode = btn.querySelector(`#${selectId}-custom-value`);
+                if (txtNode) txtNode.innerText = displayLabel;
+            };
+
+            // Propaga alteração quando o select ocultado muda de valor (programaticamente ou por sincronização de presets)
+            rawSelect.addEventListener('change', updateDisplayText);
+            
+            // Inicializa texto
+            updateDisplayText();
+
+            btn.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const currentVal = rawSelect.value;
+                showCustomSelect(title, options, currentVal, (newValue) => {
+                    rawSelect.value = newValue;
+                    rawSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+            };
+        }
 
         function goToAuthSection() {
             triggerPulse();
@@ -9637,6 +9875,20 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             if (masterUrlInput) masterUrlInput.value = localStorage.getItem('synapse_admin_master_url') || 'https://generativelanguage.googleapis.com/';
             if (masterModelInput) masterModelInput.value = localStorage.getItem('synapse_admin_master_model') || 'gemini-1.5-flash';
 
+            // Sincroniza widgets de seleção customizados para as definições de teste do administrador
+            setupInteractiveCustomSelect('admin-master-active', 'Modo da Chave de Testes', [
+                { value: 'false', label: '🔴 Desativado (Pedir chave do usuário)', icon: '🔒' },
+                { value: 'true', label: '🟢 Ativado (Usar Chave do Dono como Fallback)', icon: '🌍' }
+            ]);
+
+            setupInteractiveCustomSelect('admin-master-type', 'Moderação: Tipo da API Mestre', [
+                { value: 'GEMINI', label: 'Google Gemini API', icon: '♊' },
+                { value: 'OPENAI', label: 'OpenAI / Compatível', icon: '⚡' },
+                { value: 'GROQ', label: 'Groq Cloud API', icon: '🔥' },
+                { value: 'OPENROUTER', label: 'OpenRouter (Open-Routing)', icon: '🪐' },
+                { value: 'CUSTOM', label: 'Provedor Customizado', icon: '🔧' }
+            ]);
+
             // Primeiro renderiza baseado nas informações locais
             renderAdminUsersTable();
             renderAdminActivityLogs();
@@ -9798,7 +10050,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                         : u.email;
 
                     tBody.innerHTML += `
-                        <tr onclick="openUserManagementModal('${u.id}')" style="cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.03)'" onmouseout="this.style.backgroundColor='transparent'" title="Clique para gerenciar moderação de ${u.display_name}">
+                        <tr class="admin-user-row" onclick="openUserManagementModal('${u.id}')" style="cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.04);" title="Clique para gerenciar moderação de ${u.display_name}">
                             <td style="padding:12px 8px; text-align:left;">
                                 <div style="font-weight:bold; color:#fff; display: flex; align-items: center; gap: 6px;">
                                     <span>${u.display_name}</span>
@@ -9976,7 +10228,23 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             modal.appendChild(card);
             document.body.appendChild(modal);
 
+            // Sincroniza selects customizados na visualização do modal de moderação se existirem na tela
+            setupInteractiveCustomSelect('mute-minutes-select', 'Duração do Silenciamento', [
+                { value: '15', label: '15 Minutos', icon: '⏳' },
+                { value: '60', label: '1 Hora', icon: '🕐' },
+                { value: '1440', label: '24 Horas', icon: '📅' },
+                { value: '525600', label: 'Permanente (1 ano)', icon: '🔒' }
+            ]);
+
+            setupInteractiveCustomSelect('ban-minutes-select', 'Tempo de Bloqueio', [
+                { value: '20', label: '20 Minutos', icon: '⏳' },
+                { value: '60', label: '1 Hora', icon: '🕐' },
+                { value: '1440', label: '24 Horas', icon: '📅' },
+                { value: '525600', label: 'Permanente (1 ano)', icon: '🚫' }
+            ]);
+
             setTimeout(() => {
+                modal.style.opacity = '1';
                 card.style.transform = 'scale(1)';
             }, 10);
 
