@@ -4242,6 +4242,9 @@ WITH CHECK (true);</code>
                         setApiType('GEMINI', true);
                     }
                     safeSetVal('api-key', data.apiKey !== undefined ? data.apiKey : '');
+                    if (data.apiKey !== undefined && typeof apiType !== 'undefined' && apiType) {
+                        localStorage.setItem('apiKey_' + apiType, data.apiKey);
+                    }
                     safeSetVal('telegram-token', data.telegramToken !== undefined ? data.telegramToken : '');
                     safeSetVal('telegram-webhook', data.telegramWebhook !== undefined ? data.telegramWebhook : '');
                     if (data.baseUrl) safeSetVal('base-url', data.baseUrl);
@@ -4917,6 +4920,9 @@ WITH CHECK (true);</code>
             };
             
             localStorage.setItem('ai_console_settings', JSON.stringify(data));
+            if (typeof apiType !== 'undefined' && apiType) {
+                localStorage.setItem('apiKey_' + apiType, data.apiKey);
+            }
             
             // Aplica os novos ajustes no ecossistema atual
             applyChatFontSize(data.chatFontSize);
@@ -8135,14 +8141,11 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             const existingWrapper = document.getElementById(wrapperId);
 
             if (existingWrapper) {
-                // Sincroniza em tempo real se re-renderizado
-                const displayBtnText = document.getElementById(selectId + '-custom-value');
-                if (displayBtnText) {
-                    const currentVal = rawSelect.value;
-                    const currentOpt = options.find(o => String(o.value) === String(currentVal));
-                    displayBtnText.innerText = currentOpt ? currentOpt.label : currentVal;
-                }
-                return;
+                existingWrapper.remove();
+            }
+
+            if (rawSelect._updateDisplayHandler) {
+                rawSelect.removeEventListener('change', rawSelect._updateDisplayHandler);
             }
 
             // Oculta completamente o elemento nativo (porém mantém seu estado e compatibilidade com o JS legado)
@@ -8183,6 +8186,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             };
 
             // Propaga alteração quando o select ocultado muda de valor (programaticamente ou por sincronização de presets)
+            rawSelect._updateDisplayHandler = updateDisplayText;
             rawSelect.addEventListener('change', updateDisplayText);
             
             // Inicializa texto
@@ -10595,15 +10599,29 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
 
         // Resolve credenciais ativas da API com inteligência de Fallback do Dono
         function getActiveApiCredentials() {
-            let key = document.getElementById('api-key').value.trim();
-            let url = document.getElementById('base-url').value.trim();
-            let model = document.getElementById('model-name').value.trim();
             let type = typeof apiType !== 'undefined' ? apiType : 'GEMINI';
+            
+            // Verifica se há chave salva especificamente no localStorage para o tipo corrente
+            let savedUserKey = localStorage.getItem('apiKey_' + type) || '';
+            
+            const apiKeyField = document.getElementById('api-key');
+            let key = apiKeyField ? apiKeyField.value.trim() : '';
+            
+            // Se o valor do input difere da chave salva e não é vazio, o usuário pode ter digitado ou colado algo novo agora
+            // Caso contrário, confiamos na chave específica salva (evitando poluição por auto-preenchimento generalista do navegador)
+            if (key && key !== savedUserKey && savedUserKey === '') {
+                savedUserKey = key;
+            } else {
+                key = savedUserKey || key;
+            }
+
+            let url = document.getElementById('base-url') ? document.getElementById('base-url').value.trim() : '';
+            let model = document.getElementById('model-name') ? document.getElementById('model-name').value.trim() : '';
 
             const masterActive = localStorage.getItem('synapse_admin_master_active') === 'true';
             const masterKey = localStorage.getItem('synapse_admin_master_key');
             
-            if (!key && masterActive && masterKey) {
+            if (!savedUserKey && masterActive && masterKey) {
                 key = masterKey;
                 url = localStorage.getItem('synapse_admin_master_url') || 'https://generativelanguage.googleapis.com/';
                 model = localStorage.getItem('synapse_admin_master_model') || 'gemini-1.5-flash';
