@@ -2249,7 +2249,7 @@
         </section>
 
         <!-- ABA PAINEL ADMIN -->
-        <section id="tab-admin" class="tab-section" style="padding: 18px 14px 80px; display: none;">
+        <section id="tab-admin" class="tab-section" style="padding: 18px 14px 80px;">
             <div class="section-header">
                 <h2>🛡️ Painel Administrador (Moderação de Contas)</h2>
                 <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">Gerencie acessos de usuários, monitore o histórico de atividades e defina banimentos sem precisar acessar os painéis do banco diretamente.</p>
@@ -2357,6 +2357,42 @@
                             <div style="display: flex; gap: 10px; margin-top: 5px;">
                                 <button class="btn-universal" onclick="saveAdminConfigSettings(true)" style="background-color: var(--primary); color: var(--bg-color); height: 38px; font-size: 0.8rem; border-radius: 8px;">Salvar Ajustes</button>
                                 <button class="btn-universal" onclick="lockAdminSession()" style="background-color: transparent; border: 1px solid var(--border-color); color: var(--text-muted); height: 38px; font-size: 0.8rem; border-radius: 8px;">Bloquear Painel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modo de Testes (API Global do Proprietário) -->
+                    <div class="supabase-card" style="margin-bottom: 0;">
+                        <div class="supabase-card-header">
+                            <span class="supabase-card-title">⚙️ Modo de Testes (Chave API do Dono)</span>
+                        </div>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin: 4px 0;">Use esta opção para permitir que os usuários consigam mandar mensagem para a inteligência artificial através da sua API, mesmo que eles não configurem chave nenhuma individualmente.</p>
+                        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                            <div>
+                                <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">Status da API de Teste Coletivo</label>
+                                <select id="admin-master-active" class="form-control" onchange="saveAdminMasterApiSettings()" style="border-radius: 8px;">
+                                    <option value="false">🔴 Desativado (Exigir chave individual)</option>
+                                    <option value="true">🟢 Ativado (Usar chave master se usuário não tiver)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">Chave de API Mestre (API Key)</label>
+                                <input type="password" id="admin-master-key" class="form-control" placeholder="Insira a chave mestre para teste" onchange="saveAdminMasterApiSettings()" style="border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">Tipo da API</label>
+                                <select id="admin-master-type" class="form-control" onchange="saveAdminMasterApiSettings()" style="border-radius: 8px;">
+                                    <option value="GEMINI">Google Gemini API</option>
+                                    <option value="OPENAI">OpenAI / Copatível</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">URL Base da API</label>
+                                <input type="text" id="admin-master-url" class="form-control" placeholder="https://generativelanguage.googleapis.com/" onchange="saveAdminMasterApiSettings()" style="border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">Modelo Padrão da API</label>
+                                <input type="text" id="admin-master-model" class="form-control" placeholder="gemini-1.5-flash" onchange="saveAdminMasterApiSettings()" style="border-radius: 8px;">
                             </div>
                         </div>
                     </div>
@@ -6397,10 +6433,8 @@ WITH CHECK (true);</code>
                 return;
             }
 
-            // Dados da interface
-            const key = document.getElementById('api-key').value.trim();
-            const url = document.getElementById('base-url').value.trim();
-            const model = document.getElementById('model-name').value.trim();
+            // Dados da interface (com fallback para chave mestre de testes)
+            const { key, url, model, type: activeApiType } = getActiveApiCredentials();
             const prompt = getEffectiveSystemPrompt();
 
             const activeAssis = smartAssistants.find(a => a.id === selectedAssistantId) || smartAssistants[0];
@@ -6414,7 +6448,7 @@ WITH CHECK (true);</code>
                     aiReply = getSimulationReplyByAssistant(selectedAssistantId, currentLanguage);
                 } else {
                     try {
-                        if (apiType === "GEMINI") {
+                        if (activeApiType === "GEMINI") {
                             const cleanUrl = url.endsWith('/') ? url : url + '/';
                             const fetchUrl = `${cleanUrl}v1beta/models/${model}:generateContent?key=${key}`;
                             
@@ -6601,13 +6635,10 @@ WITH CHECK (true);</code>
             const promptConfig = `Você é um tradutor nativo hiper-fluente de nível corporativo e técnico. Traduza agora este exato texto do usuário para o idioma: ${targetLang}. IMPORTANTE: Retorne APENAS a tradução crua, mantendo exatamente o tom, as gírias do contexto, não interaja com o usuário nem adicione introduções como "Aqui está". Somente o texto traduzido.`;
 
             try {
-                const type = apiType;
-                const key = document.getElementById('api-key').value.trim();
-                const url = document.getElementById('base-url').value.trim();
-                const model = document.getElementById('model-name').value.trim();
+                const { key, url, model, type } = getActiveApiCredentials();
 
                 if (!key || key === "") {
-                    outputBox.value = "Erro fatal: API Key não detectada - Verifique a aba de Configurações.";
+                    outputBox.value = "Erro fatal: API Key não detectada nas configurações e nenhuma chave Master ativa.";
                     return;
                 }
 
@@ -7194,9 +7225,7 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem código markdown, 
 `;
 
             try {
-                const key = document.getElementById('api-key').value.trim();
-                const url = document.getElementById('base-url').value.trim();
-                const model = document.getElementById('model-name').value.trim();
+                const { key, url, model, type: activeApiType } = getActiveApiCredentials();
 
                 if (!key || key === "") {
                     showAppToast("Por favor, adicione sua API Key nas configurações para habilitar a geração real.", "error");
@@ -7205,7 +7234,7 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem código markdown, 
 
                 let responseText = "";
 
-                if (apiType === "GEMINI") {
+                if (activeApiType === "GEMINI") {
                     const cleanUrl = url.endsWith('/') ? url : url + '/';
                     const fetchUrl = `${cleanUrl}v1beta/models/${model}:generateContent?key=${key}`;
                     
@@ -7307,9 +7336,7 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem código markdown, 
             const systemPrompt = `Você é um gestor experiente de recrutamento técnico (Tech Recruiter). Analise o resumo e histórico do candidato e ofereça 4 dicas valiosas, realistas e animadoras para melhorar a descrição do perfil, focar mais em termos-chave, adicionar métricas plausíveis ou enriquecer as hard skills. Seja direto e encorajador. Retorne no idioma português brasileiro formate a resposta apenas no formato HTML simples de lista (com <li>).`;
 
             try {
-                const key = document.getElementById('api-key').value.trim();
-                const url = document.getElementById('base-url').value.trim();
-                const model = document.getElementById('model-name').value.trim();
+                const { key, url, model, type: activeApiType } = getActiveApiCredentials();
 
                 if (!key || key === "") {
                     suggestionBox.innerHTML = `⚠️ API Key Ausente em Configurações. Ative a chave para obter análise em tempo real. No entanto, aqui vai uma bela dica padrão: <b>Destaque seus projetos e as metas de entrega no início do seu Sobre Mim!</b>`;
@@ -7317,7 +7344,7 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem código markdown, 
                 }
 
                 let reply = "";
-                if (apiType === "GEMINI") {
+                if (activeApiType === "GEMINI") {
                     const cleanUrl = url.endsWith('/') ? url : url + '/';
                     const fetchUrl = `${cleanUrl}v1beta/models/${model}:generateContent?key=${key}`;
                     const res = await fetch(fetchUrl, {
@@ -7397,9 +7424,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             const userText = `Currículo Atual:\nTitle: ${currentResume.title}\nSummary: ${currentResume.summary}\nSkills: ${currentResume.skills}\n\nVaga Pretendida:\n${vacancy}`;
 
             try {
-                const key = document.getElementById('api-key').value.trim();
-                const url = document.getElementById('base-url').value.trim();
-                const model = document.getElementById('model-name').value.trim();
+                const { key, url, model, type: activeApiType } = getActiveApiCredentials();
 
                 if (!key || key === "") {
                     showAppToast("Insira a chave de API para obter adaptação real para vagas específicas.", "warning");
@@ -7407,7 +7432,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                 }
 
                 let reply = "";
-                if (apiType === "GEMINI") {
+                if (activeApiType === "GEMINI") {
                     const cleanUrl = url.endsWith('/') ? url : url + '/';
                     const fetchUrl = `${cleanUrl}v1beta/models/${model}:generateContent?key=${key}`;
                     const res = await fetch(fetchUrl, {
@@ -9486,6 +9511,13 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             document.getElementById('admin-settings-email').value = localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com";
             document.getElementById('admin-settings-pass').value = localStorage.getItem('synapse_admin_pin') || "123456";
 
+            // Preenche paineis de controle de API Mestre
+            document.getElementById('admin-master-active').value = localStorage.getItem('synapse_admin_master_active') || 'false';
+            document.getElementById('admin-master-key').value = localStorage.getItem('synapse_admin_master_key') || '';
+            document.getElementById('admin-master-type').value = localStorage.getItem('synapse_admin_master_type') || 'GEMINI';
+            document.getElementById('admin-master-url').value = localStorage.getItem('synapse_admin_master_url') || 'https://generativelanguage.googleapis.com/';
+            document.getElementById('admin-master-model').value = localStorage.getItem('synapse_admin_master_model') || 'gemini-1.5-flash';
+
             // Computa estatísticas do painel
             let totalUsers = adminLocalUsers.length;
             let totalActions = adminLocalLogs.length;
@@ -9667,6 +9699,44 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                 document.execCommand('copy');
                 showAppToast("SQL copiado para a Área de Transferência! Cole no seu Supabase.", "success");
             }
+        }
+
+        // Salva configurações da API Mestre
+        function saveAdminMasterApiSettings() {
+            const activeVal = document.getElementById('admin-master-active').value;
+            const keyVal = document.getElementById('admin-master-key').value.trim();
+            const urlVal = document.getElementById('admin-master-url').value.trim() || 'https://generativelanguage.googleapis.com/';
+            const modelVal = document.getElementById('admin-master-model').value.trim() || 'gemini-1.5-flash';
+            const typeVal = document.getElementById('admin-master-type').value;
+
+            localStorage.setItem('synapse_admin_master_active', activeVal);
+            localStorage.setItem('synapse_admin_master_key', keyVal);
+            localStorage.setItem('synapse_admin_master_url', urlVal);
+            localStorage.setItem('synapse_admin_master_model', modelVal);
+            localStorage.setItem('synapse_admin_master_type', typeVal);
+            
+            showAppToast("Configurações da API Mestre salvas!", "success");
+            addLog(`API Mestre atualizada. Ativo: ${activeVal} | Modelo: ${modelVal}`, "info");
+        }
+
+        // Resolve credenciais ativas da API com inteligência de Fallback do Dono
+        function getActiveApiCredentials() {
+            let key = document.getElementById('api-key').value.trim();
+            let url = document.getElementById('base-url').value.trim();
+            let model = document.getElementById('model-name').value.trim();
+            let type = typeof apiType !== 'undefined' ? apiType : 'GEMINI';
+
+            const masterActive = localStorage.getItem('synapse_admin_master_active') === 'true';
+            const masterKey = localStorage.getItem('synapse_admin_master_key');
+            
+            if (!key && masterActive && masterKey) {
+                key = masterKey;
+                url = localStorage.getItem('synapse_admin_master_url') || 'https://generativelanguage.googleapis.com/';
+                model = localStorage.getItem('synapse_admin_master_model') || 'gemini-1.5-flash';
+                type = localStorage.getItem('synapse_admin_master_type') || 'GEMINI';
+            }
+            
+            return { key, url, model, type };
         }
     </script>
 </body>
