@@ -2734,7 +2734,7 @@ CREATE POLICY "Permitir leitura de logs" ON public.synapse_activity_logs FOR SEL
                 </div>
 
                 <div class="form-group">
-                    <label>Chave de API da IA Selecionada</label>
+                    <label id="api-key-label">Chave de API da IA Selecionada</label>
                     <div style="position: relative; display: flex; align-items: center;">
                         <input type="password" id="api-key" class="form-control" style="padding-right: 40px;" placeholder="Cole sua API Key para a IA selecionada..." autocomplete="current-password">
                         <button type="button" onclick="togglePasswordVisibility('api-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
@@ -4372,12 +4372,44 @@ WITH CHECK (true);</code>
 
         function setApiType(type, initLoad = false) {
             triggerPulse();
+            
+            // Salva a chave anterior do motor ativo no localStorage se o usuário estiver trocando ativamente
+            const apiKeyField = document.getElementById('api-key');
+            if (apiKeyField && typeof apiType !== 'undefined' && apiType) {
+                localStorage.setItem('apiKey_' + apiType, apiKeyField.value.trim());
+            }
+
             apiType = type;
             document.getElementById('btn-gemini')?.classList.toggle('active', type === "GEMINI");
             document.getElementById('btn-openai')?.classList.toggle('active', type === "OPENAI");
             document.getElementById('btn-groq')?.classList.toggle('active', type === "GROQ");
             document.getElementById('btn-openrouter')?.classList.toggle('active', type === "OPENROUTER");
             document.getElementById('btn-custom')?.classList.toggle('active', type === "CUSTOM");
+
+            // Atualiza o literal do rótulo da chave de API
+            const keyLabel = document.getElementById('api-key-label');
+            if (keyLabel) {
+                const mapDisplay = {
+                    'GEMINI': 'Gemini',
+                    'OPENAI': 'OpenAI',
+                    'GROQ': 'Groq',
+                    'OPENROUTER': 'OpenRouter (Open-Routing)',
+                    'CUSTOM': 'Provedor Customizado'
+                };
+                keyLabel.innerText = `Chave de API da IA Selecionada (${mapDisplay[type] || type})`;
+            }
+
+            // Restaura a chave correspondente ao novo motor selecionado
+            if (apiKeyField) {
+                const savedKey = localStorage.getItem('apiKey_' + type) || '';
+                if (savedKey) {
+                    apiKeyField.value = savedKey;
+                } else if (initLoad) {
+                    // No carregamento inicial, do not clear what loadConfiguration has already filled
+                } else {
+                    apiKeyField.value = '';
+                }
+            }
 
             const modelSelect = document.getElementById('model-name');
             if (modelSelect) {
@@ -9566,35 +9598,79 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             return false;
         }
 
-        // Atualiza a visualização da tela
-        function updateAdminPanel() {
-            loadAdminPersistence();
-            const gate = document.getElementById('admin-security-gate');
-            const mainView = document.getElementById('admin-main-panel');
+        // Sincroniza as contas de usuários criadas do Supabase em background
+        async function syncSupabaseUsers() {
+            const url = document.getElementById('supabase-url')?.value.trim();
+            const key = document.getElementById('supabase-key')?.value.trim();
+            if (!url || !key) return;
 
-            // Verifica login automático antes
-            const isAutoIn = checkAdminAutoLogin();
-
-            if (!isAdminActiveSession && !isAutoIn) {
-                gate.style.display = "block";
-                mainView.style.display = "none";
-                return;
+            const cleanUrl = url.endsWith('/') ? url : url + '/';
+            const headers = {
+                'apikey': key,
+                'Content-Type': 'application/json'
+            };
+            if (supabaseSession && supabaseSession.access_token) {
+                headers['Authorization'] = `Bearer ${supabaseSession.access_token}`;
             }
 
-            gate.style.display = "none";
-            mainView.style.display = "flex";
+            try {
+                const response = await fetch(`${cleanUrl}rest/v1/synapse_users?select=*`, {
+                    method: 'GET',
+                    headers: headers
+                });
+                if (response.ok) {
+                    const dbUsers = await response.json();
+                    if (Array.isArray(dbUsers)) {
+                        loadAdminPersistence();
+                        let updated = false;
+                        dbUsers.forEach(dbU => {
+                            const localIndex = adminLocalUsers.findIndex(u => u.email.toLowerCase() === dbU.email.toLowerCase() || u.id === dbU.id);
+                            if (localIndex === -1) {
+                                adminLocalUsers.push({
+                                    id: dbU.id || "usr-" + Math.random().toString(36).substr(2, 9),
+                                    email: dbU.email,
+                                    display_name: dbU.display_name || dbU.email.split('@')[0],
+                                    created_at: dbU.created_at || new Date().toISOString(),
+                                    usage_count: dbU.usage_count || 1,
+                                    most_used_feature: dbU.most_used_feature || "Chat Neural",
+                                    banned_until: dbU.banned_until || null,
+                                    muted_until: dbU.muted_until || null
+                                });
+                                updated = true;
+                            } else {
+                                const localU = adminLocalUsers[localIndex];
+                                if (dbU.usage_count > (localU.usage_count || 0)) {
+                                    localU.usage_count = dbU.usage_count;
+                                    updated = true;
+                                }
+                                if (dbU.most_used_feature && dbU.most_used_feature !== localU.most_used_feature) {
+                                    localU.most_used_feature = dbU.most_used_feature;
+                                    updated = true;
+                                }
+                                if (dbU.banned_until !== localU.banned_until) {
+                                    localU.banned_until = dbU.banned_until;
+                                    updated = true;
+                                }
+                                if (dbU.muted_until !== localU.muted_until) {
+                                    localU.muted_until = dbU.muted_until;
+                                    updated = true;
+                                }
+                            }
+                        });
 
-            // Preenche paineis de controle
-            document.getElementById('admin-settings-email').value = localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com";
-            document.getElementById('admin-settings-pass').value = localStorage.getItem('synapse_admin_pin') || "123456";
+                        if (updated) {
+                            localStorage.setItem('synapse_admin_users', JSON.stringify(adminLocalUsers));
+                            renderAdminUsersTable();
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Falha ao sincronizar contas criadas via Supabase:", err);
+            }
+        }
 
-            // Preenche paineis de controle de API Mestre
-            document.getElementById('admin-master-active').value = localStorage.getItem('synapse_admin_master_active') || 'false';
-            document.getElementById('admin-master-key').value = localStorage.getItem('synapse_admin_master_key') || '';
-            document.getElementById('admin-master-type').value = localStorage.getItem('synapse_admin_master_type') || 'GEMINI';
-            document.getElementById('admin-master-url').value = localStorage.getItem('synapse_admin_master_url') || 'https://generativelanguage.googleapis.com/';
-            document.getElementById('admin-master-model').value = localStorage.getItem('synapse_admin_master_model') || 'gemini-1.5-flash';
-
+        // Renderiza a tabela de utilizadores cadastrados de maneira visual rica e com suporte a cliques
+        function renderAdminUsersTable() {
             // Computa estatísticas do painel
             let totalUsers = adminLocalUsers.length;
             let totalActions = adminLocalLogs.length;
@@ -9603,12 +9679,18 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                 return new Date(u.banned_until) > new Date();
             }).length;
 
-            document.getElementById('admin-stat-users-count').innerText = totalUsers;
-            document.getElementById('admin-stat-actions-count').innerText = totalActions;
-            document.getElementById('admin-stat-banned-count').innerText = activeBans;
+            const statUsers = document.getElementById('admin-stat-users-count');
+            const statActions = document.getElementById('admin-stat-actions-count');
+            const statBanned = document.getElementById('admin-stat-banned-count');
+
+            if (statUsers) statUsers.innerText = totalUsers;
+            if (statActions) statActions.innerText = totalActions;
+            if (statBanned) statBanned.innerText = activeBans;
 
             // Renderiza tabela de usuários
             const tBody = document.getElementById('admin-users-table-body');
+            if (!tBody) return;
+
             tBody.innerHTML = "";
 
             if (adminLocalUsers.length === 0) {
@@ -9617,24 +9699,17 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                 adminLocalUsers.forEach(u => {
                     const registryDate = u.created_at ? new Date(u.created_at).toLocaleDateString() : "Sem registro";
                     
-                    // Verifica status de banimento
-                    let statusLabel = `<span style="color:#4ade80; display:flex; align-items:center; gap:4px;">Ativo 🟢</span>`;
-                    let banActionHtml = ``;
+                    // Verifica status de banimento e silenciamento
+                    const isBanned = u.banned_until && new Date(u.banned_until) > new Date();
+                    const isMuted = u.muted_until && new Date(u.muted_until) > new Date();
                     
-                    if (u.banned_until && new Date(u.banned_until) > new Date()) {
-                        const banExp = new Date(u.banned_until);
-                        statusLabel = `<span style="color:#f87171; display:flex; align-items:center; gap:4px; font-weight:bold;" title="Expira em ${banExp.toLocaleString()}">Suspenso 🚫</span>`;
-                        banActionHtml = `<button class="btn-universal" onclick="unbanUser('${u.id}')" style="padding:4px 8px; font-size:0.75rem; height:auto; background-color:#10b981; color:#fff; border-radius:6px; margin-left:4px;">Ativar Conta</button>`;
-                    } else {
-                        banActionHtml = `
-                            <select class="form-control" style="font-size:0.75rem; width:110px; display:inline-block; padding:4px 6px; height:28px;" onchange="if(this.value) banUser('${u.id}', this.value); this.value=''">
-                                <option value="">Suspender...</option>
-                                <option value="20">20 minutos</option>
-                                <option value="60">1 hora</option>
-                                <option value="1440">24 horas</option>
-                                <option value="10080">1 semana</option>
-                            </select>
-                        `;
+                    let statusLabel = `<span style="color:#4ade80; display:flex; align-items:center; gap:4px;">Ativo 🟢</span>`;
+                    if (isBanned && isMuted) {
+                        statusLabel = `<span style="color:#ef4444; display:flex; align-items:center; gap:4px; font-weight:bold;" title="Suspenso e Silenciado">Bloqueado 🚫🔕</span>`;
+                    } else if (isBanned) {
+                        statusLabel = `<span style="color:#f87171; display:flex; align-items:center; gap:4px; font-weight:bold;" title="Suspenso">Suspenso 🚫</span>`;
+                    } else if (isMuted) {
+                        statusLabel = `<span style="color:#f59e0b; display:flex; align-items:center; gap:4px; font-weight:bold;" title="Silenciado">Silenciado 🔕</span>`;
                     }
 
                     const emailStyle = u.email.toLowerCase() === (localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com").toLowerCase() 
@@ -9645,91 +9720,213 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                         : u.email;
 
                     tBody.innerHTML += `
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.04); transition: background-color 0.2s;">
+                        <tr onclick="openUserManagementModal('${u.id}')" style="cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.03)'" onmouseout="this.style.backgroundColor='transparent'" title="Clique para gerenciar moderação de ${u.display_name}">
                             <td style="padding:12px 8px; text-align:left;">
-                                <div style="font-weight:bold; color:#fff;">${u.display_name}</div>
+                                <div style="font-weight:bold; color:#fff; display: flex; align-items: center; gap: 6px;">
+                                    <span>${u.display_name}</span>
+                                    ${isBanned ? '🚫' : ''}
+                                    ${isMuted ? '🔕' : ''}
+                                </div>
                                 <div style="font-size:0.75rem; ${emailStyle}">${emailDisplay}</div>
                             </td>
                             <td style="padding:12px 8px; color:var(--text-muted);">${registryDate}</td>
                             <td style="padding:12px 8px; text-align:center; font-weight:bold; color:#38bdf8;">${u.usage_count || 1}</td>
                             <td style="padding:12px 8px; color:var(--text-muted);">${u.most_used_feature || "Chat Neural"}</td>
                             <td style="padding:12px 8px;">${statusLabel}</td>
-                            <td style="padding:12px 8px; text-align:right;">${banActionHtml}</td>
+                            <td style="padding:12px 8px; text-align:right;">
+                                <button class="btn-universal" style="padding:4px 10px; font-size:0.75rem; height:auto; background-color: var(--primary); color: var(--bg-color); font-weight: bold; border-radius:6px; border:none; cursor:pointer;" onclick="event.stopPropagation(); openUserManagementModal('${u.id}')">Gerenciar</button>
+                            </td>
                         </tr>
                     `;
                 });
             }
+        }
 
-            // Renderiza painel de logs de atividades
-            const logsContainer = document.getElementById('admin-activity-logs-container');
-            logsContainer.innerHTML = "";
+        // Abre modal para gerenciamento de silêncio (mute) ou banimento do usuário
+        function openUserManagementModal(userId) {
+            userId = String(userId);
+            loadAdminPersistence();
+            const user = adminLocalUsers.find(u => String(u.id) === userId);
+            if (!user) {
+                showAppToast("Usuário não encontrado!", "warning");
+                return;
+            }
 
-            if (adminLocalLogs.length === 0) {
-                logsContainer.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:15px;">Nenhum evento registrado ainda.</div>`;
-            } else {
-                adminLocalLogs.forEach(lg => {
-                    const timeStr = lg.timestamp ? new Date(lg.timestamp).toLocaleTimeString() : "--:--:--";
-                    const emailBold = lg.user_email === (localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com")
-                        ? `<span style="color:var(--primary); font-weight:bold;">${lg.user_email}</span>`
-                        : `<span style="color:#fff;">${lg.user_email}</span>`;
+            // Remove modal antigo se estiver na tela
+            const existing = document.getElementById('user-management-modal');
+            if (existing) existing.remove();
 
-                    logsContainer.innerHTML += `
-                        <div style="border-bottom:1px solid rgba(255,255,255,0.03); padding-bottom:4px; line-height:1.4;">
-                            <span style="color:#38bdf8;">[${timeStr}]</span> ${emailBold} 
-                            <span style="color:#e2e8f0;">executou</span> <strong style="color:var(--primary); font-family:sans-serif;">${lg.action}</strong>: 
-                            <span style="color:var(--text-muted);">${lg.target}</span>
+            const modal = document.createElement('div');
+            modal.id = 'user-management-modal';
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100vw';
+            modal.style.height = '100vh';
+            modal.style.background = 'rgba(3, 4, 6, 0.85)';
+            modal.style.backdropFilter = 'blur(12px)';
+            modal.style.zIndex = '110000';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.style.padding = '20px';
+            modal.style.animation = 'fadeIn 0.25s ease';
+
+            const registryDate = user.created_at ? new Date(user.created_at).toLocaleString() : "Sem registro";
+            const isSelf = user.email.toLowerCase() === (localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com").toLowerCase();
+
+            // Status de suspensão/silêncio
+            const banExp = user.banned_until ? new Date(user.banned_until) : null;
+            const isBanned = banExp && banExp > new Date();
+            const muteExp = user.muted_until ? new Date(user.muted_until) : null;
+            const isMuted = muteExp && muteExp > new Date();
+
+            let banStatusBadge = `<span style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">🟢 Ativo</span>`;
+            if (isBanned) {
+                banStatusBadge = `<span style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #ef4444; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">🚫 Suspenso até ${banExp.toLocaleString()}</span>`;
+            }
+
+            let muteStatusBadge = `<span style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">🔊 Permitido falar</span>`;
+            if (isMuted) {
+                muteStatusBadge = `<span style="background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; color: #f59e0b; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">🔕 Silenciado até ${muteExp.toLocaleString()}</span>`;
+            }
+
+            const card = document.createElement('div');
+            card.className = 'supabase-card';
+            card.style.width = '100%';
+            card.style.maxWidth = '520px';
+            card.style.background = 'var(--card-bg, #111827)';
+            card.style.boxShadow = '0 20px 25px -5px rgba(0,0,0,0.5), 0 10px 10px -5px rgba(0,0,0,0.4)';
+            card.style.borderRadius = '16px';
+            card.style.border = '1px solid var(--border-color, rgba(255,255,255,0.08))';
+            card.style.padding = '24px';
+            card.style.transform = 'scale(0.95)';
+            card.style.transition = 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+            
+            card.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                    <div>
+                        <h3 style="font-size: 1.25rem; font-weight: bold; color: #fff; margin: 0; display: flex; align-items: center; gap: 8px;">
+                            🛡️ Moderação de Conta
+                        </h3>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin: 4px 0 0 0;">Controle de acesso e restrição de permissões no sistema</p>
+                    </div>
+                    <button class="btn-universal" id="btn-close-management" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; padding:0; line-height:1;">✕</button>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.15); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.03); margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Nome de Exibição</span>
+                        <span style="font-size: 0.9rem; font-weight: bold; color: #fff;">${user.display_name}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Endereço de E-mail</span>
+                        <span style="font-size: 0.85rem; color: var(--primary); font-family: monospace;">${user.email}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Registrado em</span>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">${registryDate}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Total de Interações</span>
+                        <span style="font-size: 0.9rem; font-weight: bold; color: #38bdf8;">${user.usage_count || 1} cliques</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Função preferida</span>
+                        <span style="font-size: 0.8rem; color: #a78bfa;">${user.most_used_feature || "N/A"}</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <!-- SESSÃO SILENCIAMENTO -->
+                    <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.1); border-radius: 12px; padding: 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-size: 0.85rem; font-weight: bold; color: #f59e0b; display: flex; align-items: center; gap: 6px;">🔕 Mudo (Silenciar Chat)</span>
+                            ${muteStatusBadge}
                         </div>
-                    `;
-                });
-            }
+                        ${isSelf ? `
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">Você é o administrador proprietário desta conta.</p>
+                        ` : isMuted ? `
+                            <button class="btn-universal" onclick="unmuteUser('${user.id}')" style="width: 100%; background: #f59e0b; color: #000; font-weight: bold; padding: 8px 12px; border-radius: 8px; border:none;">🔊 Retirar Silêncio (Desmutar)</button>
+                        ` : `
+                            <div style="display: flex; gap: 8px;">
+                                <select id="mute-minutes-select" class="form-control" style="flex: 1; font-size: 0.8rem; height: 36px; padding: 4px 8px;">
+                                    <option value="15">15 Minutos</option>
+                                    <option value="60">1 Hora</option>
+                                    <option value="1440">24 Horas</option>
+                                    <option value="525600">Permanente (1 ano)</option>
+                                </select>
+                                <button class="btn-universal" onclick="muteUser('${user.id}', document.getElementById('mute-minutes-select').value)" style="background: rgba(245,158,11,0.15); border: 1px solid #f59e0b; color: #f59e0b; font-weight: bold; padding: 0 16px; font-size: 0.8rem; height: 36px; border-radius: 8px; cursor: pointer;">Silenciar</button>
+                            </div>
+                        `}
+                    </div>
+
+                    <!-- SESSÃO BANIMENTO -->
+                    <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 12px; padding: 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-size: 0.85rem; font-weight: bold; color: #ef4444; display: flex; align-items: center; gap: 6px;">🚫 Bloquear Conta (Banimento)</span>
+                            ${banStatusBadge}
+                        </div>
+                        ${isSelf ? `
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">Sua própria conta de proprietário não pode ser banida.</p>
+                        ` : isBanned ? `
+                            <button class="btn-universal" onclick="unbanUser('${user.id}')" style="width: 100%; background: #10b981; color: #fff; font-weight: bold; padding: 8px 12px; border-radius: 8px; border:none;">🟢 Ativar Conta (Remover Ban)</button>
+                        ` : `
+                            <div style="display: flex; gap: 8px;">
+                                <select id="ban-minutes-select" class="form-control" style="flex: 1; font-size: 0.8rem; height: 36px; padding: 4px 8px;">
+                                    <option value="20">20 Minutos</option>
+                                    <option value="60">1 Hora</option>
+                                    <option value="1440">24 Horas</option>
+                                    <option value="525600">Permanente (1 ano)</option>
+                                </select>
+                                <button class="btn-universal" onclick="banUser('${user.id}', document.getElementById('ban-minutes-select').value)" style="background: rgba(239,68,68,0.15); border: 1px solid #ef4444; color: #ef4444; font-weight: bold; padding: 0 16px; font-size: 0.8rem; height: 36px; border-radius: 8px; cursor: pointer;">Bloquear</button>
+                            </div>
+                        `}
+                    </div>
+                </div>
+
+                <div style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px;">
+                    <div>
+                        ${!isSelf ? `
+                            <button class="btn-universal" onclick="deleteLocalUserRecord('${user.id}')" style="background: transparent; border: none; color: #94a3b8; font-size: 0.78rem; text-decoration: underline; cursor: pointer; padding: 0;">Expurgar registro local</button>
+                        ` : ''}
+                    </div>
+                    <button class="btn-universal" id="btn-close-management-bottom" style="background: rgba(255,255,255,0.08); color: #fff; font-weight: bold; padding: 6px 16px; border-radius: 8px; border: none; cursor: pointer;">Fechar</button>
+                </div>
+            `;
+
+            modal.appendChild(card);
+            document.body.appendChild(modal);
+
+            setTimeout(() => {
+                card.style.transform = 'scale(1)';
+            }, 10);
+
+            const closeModal = () => {
+                card.style.transform = 'scale(0.95)';
+                modal.style.opacity = '0';
+                modal.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+                setTimeout(() => modal.remove(), 200);
+            };
+
+            document.getElementById('btn-close-management').onclick = closeModal;
+            document.getElementById('btn-close-management-bottom').onclick = closeModal;
+            modal.onclick = (e) => {
+                if (e.target === modal) closeModal();
+            };
         }
 
-        // Bloqueia usuário por N minutos
-        function banUser(userId, minutes) {
-            userId = String(userId);
-            loadAdminPersistence();
-            const index = adminLocalUsers.findIndex(u => String(u.id) === userId);
-            
-            if (index !== -1) {
-                const user = adminLocalUsers[index];
-                
-                // Evita banir o próprio admin
-                const adminEmail = localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com";
-                if (user.email.toLowerCase() === adminEmail.toLowerCase()) {
-                    showAppToast("Operação Recusada: Você não pode auto-suspender sua conta de dono!", "warning");
-                    return;
-                }
-
-                const blockDurationMs = parseInt(minutes) * 60 * 1000;
-                const expirationDate = new Date(Date.now() + blockDurationMs);
-                
-                adminLocalUsers[index].banned_until = expirationDate.toISOString();
+        // Função utilitária para expurgar registro local
+        function deleteLocalUserRecord(userId) {
+            showAppConfirm("Deseja mesmo remover os registros locais deste usuário? (Ele será recadastrado se interagir com o app novamente)", () => {
+                loadAdminPersistence();
+                adminLocalUsers = adminLocalUsers.filter(u => String(u.id) !== String(userId));
                 localStorage.setItem('synapse_admin_users', JSON.stringify(adminLocalUsers));
-                
-                showAppToast(`Usuário ${user.display_name} suspenso por ${minutes} minutos.`, "error");
-                logAdminActivity(adminEmail, "Auditoria Admin (Block)", `Suspensão aplicada a ${user.email} por ${minutes} minutos.`);
-                
+                showAppToast("Registro do usuário removido do cache local.", "success");
                 updateAdminPanel();
-            }
-        }
-
-        // Reverte banamento do usuário
-        function unbanUser(userId) {
-            userId = String(userId);
-            loadAdminPersistence();
-            const index = adminLocalUsers.findIndex(u => String(u.id) === userId);
-            
-            if (index !== -1) {
-                const user = adminLocalUsers[index];
-                adminLocalUsers[index].banned_until = null;
-                localStorage.setItem('synapse_admin_users', JSON.stringify(adminLocalUsers));
-                
-                const adminEmail = localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com";
-                showAppToast(`Conta de ${user.display_name} liberada com sucesso!`, "success");
-                logAdminActivity(adminEmail, "Auditoria Admin (Liberar)", `Suspensão anulada para ${user.email}`);
-                
-                updateAdminPanel();
-            }
+                const modal = document.getElementById('user-management-modal');
+                if (modal) modal.remove();
+            });
         }
 
         // Limpa o cache de logs locais
