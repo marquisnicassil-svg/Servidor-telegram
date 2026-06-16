@@ -9401,22 +9401,24 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                 adminLocalLogs = JSON.parse(localStorage.getItem('synapse_admin_logs')) || [];
 
                 // Seeding de demonstração realista para engrandecer a interface inicial
-                if (adminLocalUsers.length === 0) {
+                if (adminLocalUsers.length === 0 && !localStorage.getItem('synapse_admin_users_seeded')) {
                     adminLocalUsers = [
                         { id: "usr-001", email: "gabriel.santos@exemplo.com", display_name: "Gabriel Santos", created_at: new Date(Date.now() - 3 * 24 * 3600 * 1000).toISOString(), usage_count: 54, most_used_feature: "📄 Currículo IA", banned_until: null },
                         { id: "usr-002", email: "ana.recrutadora@exemplo.com", display_name: "Ana Recrutadora", created_at: new Date(Date.now() - 5 * 24 * 3600 * 1000).toISOString(), usage_count: 120, most_used_feature: "💬 Chat Neural", banned_until: null },
                         { id: "usr-003", email: "lucas.developer@exemplo.com", display_name: "Lucas Dev", created_at: new Date(Date.now() - 1 * 24 * 3600 * 1000).toISOString(), usage_count: 15, most_used_feature: "🌐 Tradutor", banned_until: null }
                     ];
                     localStorage.setItem('synapse_admin_users', JSON.stringify(adminLocalUsers));
+                    localStorage.setItem('synapse_admin_users_seeded', 'true');
                 }
 
-                if (adminLocalLogs.length === 0) {
+                if (adminLocalLogs.length === 0 && !localStorage.getItem('synapse_admin_logs_seeded')) {
                     adminLocalLogs = [
                         { id: "log-001", user_email: "gabriel.santos@exemplo.com", action: "Currículo Gerado", target: "Modelo Moderno (PDF)", timestamp: new Date(Date.now() - 25 * 60 * 1000).toISOString() },
                         { id: "log-002", user_email: "ana.recrutadora@exemplo.com", action: "Mensagem de Chat", target: "Agent RH Sênior", timestamp: new Date(Date.now() - 50 * 60 * 1000).toISOString() },
                         { id: "log-003", user_email: "lucas.developer@exemplo.com", action: "Tradução de Texto", target: "Inglês -> Português", timestamp: new Date(Date.now() - 3 * 3600 * 1000).toISOString() }
                     ];
                     localStorage.setItem('synapse_admin_logs', JSON.stringify(adminLocalLogs));
+                    localStorage.setItem('synapse_admin_logs_seeded', 'true');
                 }
             } catch (err) {
                 console.error("Erro na persistência do Admin:", err);
@@ -9596,6 +9598,82 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                 return true;
             }
             return false;
+        }
+
+        // Atualiza a visualização da tela
+        function updateAdminPanel() {
+            loadAdminPersistence();
+            const gate = document.getElementById('admin-security-gate');
+            const mainView = document.getElementById('admin-main-panel');
+
+            // Verifica login automático antes
+            const isAutoIn = checkAdminAutoLogin();
+
+            if (!isAdminActiveSession && !isAutoIn) {
+                if (gate) gate.style.display = "block";
+                if (mainView) mainView.style.display = "none";
+                return;
+            }
+
+            if (gate) gate.style.display = "none";
+            if (mainView) mainView.style.display = "flex";
+
+            // Preenche paineis de controle
+            const adminEmailInput = document.getElementById('admin-settings-email');
+            const adminPassInput = document.getElementById('admin-settings-pass');
+            if (adminEmailInput) adminEmailInput.value = localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com";
+            if (adminPassInput) adminPassInput.value = localStorage.getItem('synapse_admin_pin') || "123456";
+
+            // Preenche paineis de controle de API Mestre
+            const masterActiveInput = document.getElementById('admin-master-active');
+            const masterKeyInput = document.getElementById('admin-master-key');
+            const masterTypeInput = document.getElementById('admin-master-type');
+            const masterUrlInput = document.getElementById('admin-master-url');
+            const masterModelInput = document.getElementById('admin-master-model');
+
+            if (masterActiveInput) masterActiveInput.value = localStorage.getItem('synapse_admin_master_active') || 'false';
+            if (masterKeyInput) masterKeyInput.value = localStorage.getItem('synapse_admin_master_key') || '';
+            if (masterTypeInput) masterTypeInput.value = localStorage.getItem('synapse_admin_master_type') || 'GEMINI';
+            if (masterUrlInput) masterUrlInput.value = localStorage.getItem('synapse_admin_master_url') || 'https://generativelanguage.googleapis.com/';
+            if (masterModelInput) masterModelInput.value = localStorage.getItem('synapse_admin_master_model') || 'gemini-1.5-flash';
+
+            // Primeiro renderiza baseado nas informações locais
+            renderAdminUsersTable();
+            renderAdminActivityLogs();
+
+            // Sincroniza em background com contas registradas no Supabase
+            try {
+                syncSupabaseUsers();
+            } catch (err) {
+                console.error("Erro ao sincronizar com Supabase:", err);
+            }
+        }
+
+        // Renderiza o painel de logs de atividades do sistema
+        function renderAdminActivityLogs() {
+            const logsContainer = document.getElementById('admin-activity-logs-container');
+            if (!logsContainer) return;
+
+            logsContainer.innerHTML = "";
+
+            if (adminLocalLogs.length === 0) {
+                logsContainer.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:15px;">Nenhum evento registrado ainda.</div>`;
+            } else {
+                adminLocalLogs.forEach(lg => {
+                    const timeStr = lg.timestamp ? new Date(lg.timestamp).toLocaleTimeString() : "--:--:--";
+                    const emailBold = lg.user_email === (localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com")
+                        ? `<span style="color:var(--primary); font-weight:bold;">${lg.user_email}</span>`
+                        : `<span style="color:#fff;">${lg.user_email}</span>`;
+
+                    logsContainer.innerHTML += `
+                        <div style="border-bottom:1px solid rgba(255,255,255,0.03); padding-bottom:4px; line-height:1.4;">
+                            <span style="color:#38bdf8;">[${timeStr}]</span> ${emailBold} 
+                            <span style="color:#e2e8f0;">executou</span> <strong style="color:var(--primary); font-family:sans-serif;">${lg.action}</strong>: 
+                            <span style="color:var(--text-muted);">${lg.target}</span>
+                        </div>
+                    `;
+                });
+            }
         }
 
         // Sincroniza as contas de usuários criadas do Supabase em background
