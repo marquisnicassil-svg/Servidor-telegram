@@ -10651,11 +10651,18 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             const apiKeyField = document.getElementById('api-key');
             let key = apiKeyField ? apiKeyField.value.trim() : '';
             
-            // Tenta recuperar do localStorage para o tipo atual se o campo estiver vazio
-            if (!key) {
+            // Filtro de segurança contra valores inválidos ou placeholders corrompidos
+            const isInvalidVal = (v) => {
+                if (!v) return true;
+                const normalized = String(v).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
+                return !normalized || normalized === '' || normalized === 'undefined' || normalized === 'null' || normalized === 'placeholder' || normalized.toLowerCase() === 'insira sua chave';
+            };
+            
+            // Tenta recuperar do localStorage para o tipo atual se o campo estiver vazio ou corrompido
+            if (isInvalidVal(key)) {
                 key = localStorage.getItem('apiKey_' + type) || '';
             } else {
-                // Guarda a chave mais recente se o usuário digitou ou autocompletou
+                // Guarda a chave mais recente se o usuário digitou ou autocompletou algo válido
                 localStorage.setItem('apiKey_' + type, key);
             }
 
@@ -10665,11 +10672,17 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             const masterActive = localStorage.getItem('synapse_admin_master_active') === 'true';
             const masterKey = localStorage.getItem('synapse_admin_master_key');
             
-            if (!key && masterActive && masterKey) {
+            // Se a chave recuperada ainda for inválida, e houver o Fallback de testes do Dono ativado
+            if (isInvalidVal(key) && masterActive && !isInvalidVal(masterKey)) {
                 key = masterKey;
                 url = localStorage.getItem('synapse_admin_master_url') || 'https://generativelanguage.googleapis.com/';
                 model = localStorage.getItem('synapse_admin_master_model') || 'gemini-1.5-flash';
                 type = localStorage.getItem('synapse_admin_master_type') || 'GEMINI';
+            }
+            
+            // Garante string vazia limpa caso nada seja detectado como válido para evitar cabeçalhos "Bearer undefined/null" na rede
+            if (isInvalidVal(key)) {
+                key = '';
             }
             
             return { key, url, model, type };

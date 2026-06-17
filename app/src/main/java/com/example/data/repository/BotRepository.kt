@@ -198,7 +198,9 @@ class BotRepository(private val botDao: BotDao) {
                 .addLast(com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory())
                 .build()
 
-            if (aiApiType == "OPENAI") {
+            val isCompatibleOpenAI = aiApiType == "OPENAI" || aiApiType == "GROQ" || aiApiType == "OPENROUTER" || aiApiType == "CUSTOM"
+
+            if (isCompatibleOpenAI) {
                 val messages = mutableListOf<OpenAIMessage>()
                 if (systemPrompt.isNotBlank()) {
                     messages.add(OpenAIMessage(role = "system", content = systemPrompt))
@@ -230,12 +232,20 @@ class BotRepository(private val botDao: BotDao) {
                 val mediaType = "application/json; charset=utf-8".toMediaType()
                 val body = okhttp3.RequestBody.create(mediaType, jsonBody)
 
-                val req = okhttp3.Request.Builder()
+                val cleanApiKey = finalApiKey.replace(Regex("(?i)^Bearer\\s+"), "").replace(Regex("^[\"']|[\"']$"), "").trim()
+
+                val reqBuilder = okhttp3.Request.Builder()
                     .url(finalUrl)
                     .post(body)
-                    .addHeader("Authorization", "Bearer $finalApiKey")
+                    .addHeader("Authorization", "Bearer $cleanApiKey")
                     .addHeader("Content-Type", "application/json")
-                    .build()
+
+                if (aiApiType == "OPENROUTER") {
+                    reqBuilder.addHeader("HTTP-Referer", "https://google.com")
+                    reqBuilder.addHeader("X-Title", "Synapse AI")
+                }
+
+                val req = reqBuilder.build()
 
                 val client = NetworkModule.okHttpClient
                 val response = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
