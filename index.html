@@ -4242,16 +4242,14 @@ WITH CHECK (true);</code>
                         setApiType('GEMINI', true);
                     }
 
-                    // Inteligência para evitar que a apiKey genérica sobrescreva chaves específicas mais novas
+                    // Inteligência para carregar chaves específicas de forma robusta e persistir sincronização
                     const currentType = data.apiType || 'GEMINI';
-                    const savedTypeKey = localStorage.getItem('apiKey_' + currentType) || '';
-                    if (savedTypeKey && savedTypeKey !== '') {
-                        safeSetVal('api-key', savedTypeKey);
+                    if (data.apiKey !== undefined && data.apiKey !== '') {
+                        safeSetVal('api-key', data.apiKey);
+                        localStorage.setItem('apiKey_' + currentType, data.apiKey);
                     } else {
-                        safeSetVal('api-key', data.apiKey !== undefined ? data.apiKey : '');
-                        if (data.apiKey !== undefined) {
-                            localStorage.setItem('apiKey_' + currentType, data.apiKey);
-                        }
+                        const savedTypeKey = localStorage.getItem('apiKey_' + currentType) || '';
+                        safeSetVal('api-key', savedTypeKey);
                     }
                     safeSetVal('telegram-token', data.telegramToken !== undefined ? data.telegramToken : '');
                     safeSetVal('telegram-webhook', data.telegramWebhook !== undefined ? data.telegramWebhook : '');
@@ -4463,10 +4461,11 @@ WITH CHECK (true);</code>
         function setApiType(type, initLoad = false) {
             triggerPulse();
             
-            // Salva a chave anterior do motor ativo no localStorage se o usuário estiver trocando ativamente
+            // Salva a chave anterior do motor ativo no localStorage apenas se o usuário estiver trocando ativamente (não no initLoad ou se o campo estiver vazio)
             const apiKeyField = document.getElementById('api-key');
-            if (apiKeyField && typeof apiType !== 'undefined' && apiType) {
-                localStorage.setItem('apiKey_' + apiType, apiKeyField.value.trim());
+            const prevType = typeof apiType !== 'undefined' ? apiType : '';
+            if (!initLoad && apiKeyField && prevType && apiKeyField.value.trim() !== '') {
+                localStorage.setItem('apiKey_' + prevType, apiKeyField.value.trim());
             }
 
             apiType = type;
@@ -6679,8 +6678,14 @@ WITH CHECK (true);</code>
                             const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
                             
                             // Diagnóstico de segurança e mascaramento de chave na depuração
-                            const maskedKey = cleanKey ? (cleanKey.substring(0, 10) + "..." + cleanKey.substring(cleanKey.length - 4)) : "vazio/ausente";
-                            addLog(`Disparando chamada compatível OpenAI para o motor [${activeApiType}]. Chave ativa purificada: ${maskedKey}`, "sys");
+                            const maskedKey = cleanKey ? (cleanKey.substring(0, Math.min(10, cleanKey.length)) + "..." + (cleanKey.length > 4 ? cleanKey.substring(cleanKey.length - 4) : "")) : "vazio/ausente";
+                            
+                            // Adição de logs de diagnóstico detalhados para o usuário
+                            addLog(`[DIAGNÓSTICO] Provedor Ativo: ${activeApiType}`, "info");
+                            addLog(`[DIAGNÓSTICO] Endpoint Utilizado: ${fetchUrl}`, "info");
+                            addLog(`[DIAGNÓSTICO] Modelo Escolhido: ${model}`, "info");
+                            addLog(`[DIAGNÓSTICO] Chave de API Carregada: ${cleanKey ? 'SUCESSO ✅' : 'AUSENTE ❌'} (Sanitizada: ${maskedKey})`, cleanKey ? "success" : "error");
+                            
                             if (!cleanKey) {
                                 addLog("Alerta: A chave está vazia. Isso resultará em erro 401 'Missing Authentication header' no OpenRouter. Certifique-se de configurar e salvar sua chave.", "warning");
                             }
@@ -6698,6 +6703,13 @@ WITH CHECK (true);</code>
                                 headers['X-Title'] = 'Synapse AI';
                             }
 
+                            // Registra cabeçalhos descaracterizados para depuração segura
+                            const loggedHeaders = { ...headers };
+                            if (loggedHeaders['Authorization']) {
+                                loggedHeaders['Authorization'] = 'Bearer ' + maskedKey;
+                            }
+                            addLog(`[DIAGNÓSTICO] Headers Enviados: ${JSON.stringify(loggedHeaders)}`, "sys");
+
                             const response = await fetch(fetchUrl, {
                                 method: 'POST',
                                 headers: headers,
@@ -6706,13 +6718,16 @@ WITH CHECK (true);</code>
                                     messages: openAiMessages,
                                     temperature: 0.7
                                 })
-                            });
+                             });
+                            
+                            addLog(`[DIAGNÓSTICO] Status da Resposta: Código ${response.status} (${response.statusText})`, response.ok ? "success" : "error");
                             
                             if (response.ok) {
                                 const data = await response.json();
                                 aiReply = data.choices?.[0]?.message?.content || "Mudo.";
                             } else {
                                 const err = await response.text();
+                                addLog(`[DIAGNÓSTICO - ERRO] Detalhes retornados pela API: ${err}`, "error");
                                 aiReply = `Erro [${activeApiType}]: ${err}`;
                             }
                         }
