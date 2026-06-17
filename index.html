@@ -4241,9 +4241,17 @@ WITH CHECK (true);</code>
                     } else {
                         setApiType('GEMINI', true);
                     }
-                    safeSetVal('api-key', data.apiKey !== undefined ? data.apiKey : '');
-                    if (data.apiKey !== undefined && typeof apiType !== 'undefined' && apiType) {
-                        localStorage.setItem('apiKey_' + apiType, data.apiKey);
+
+                    // Inteligência para evitar que a apiKey genérica sobrescreva chaves específicas mais novas
+                    const currentType = data.apiType || 'GEMINI';
+                    const savedTypeKey = localStorage.getItem('apiKey_' + currentType) || '';
+                    if (savedTypeKey && savedTypeKey !== '') {
+                        safeSetVal('api-key', savedTypeKey);
+                    } else {
+                        safeSetVal('api-key', data.apiKey !== undefined ? data.apiKey : '');
+                        if (data.apiKey !== undefined) {
+                            localStorage.setItem('apiKey_' + currentType, data.apiKey);
+                        }
                     }
                     safeSetVal('telegram-token', data.telegramToken !== undefined ? data.telegramToken : '');
                     safeSetVal('telegram-webhook', data.telegramWebhook !== undefined ? data.telegramWebhook : '');
@@ -6669,14 +6677,22 @@ WITH CHECK (true);</code>
                             });
 
                             const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
+                            
+                            // Diagnóstico de segurança e mascaramento de chave na depuração
+                            const maskedKey = cleanKey ? (cleanKey.substring(0, 10) + "..." + cleanKey.substring(cleanKey.length - 4)) : "vazio/ausente";
+                            addLog(`Disparando chamada compatível OpenAI para o motor [${activeApiType}]. Chave ativa purificada: ${maskedKey}`, "sys");
+                            if (!cleanKey) {
+                                addLog("Alerta: A chave está vazia. Isso resultará em erro 401 'Missing Authentication header' no OpenRouter. Certifique-se de configurar e salvar sua chave.", "warning");
+                            }
+
                             const headers = {
                                 'Content-Type': 'application/json',
-                                'Authorization': 'Bearer ' + cleanKey
+                                'Authorization': 'Bearer ' + cleanKey,
+                                'authorization': 'Bearer ' + cleanKey
                             };
                             if (activeApiType === "OPENROUTER") {
                                 try {
-                                    // Utiliza try-catch pois alguns navegadores móveis barram a alteração ou envio do Referer e quebram a chamada como "Failed to fetch"
-                                    headers['HTTP-Referer'] = window.location.origin;
+                                    headers['HTTP-Referer'] = window.location.origin || "https://google.com";
                                 } catch(e) {
                                     console.warn("Não foi possível registrar o HTTP-Referer:", e);
                                 }
