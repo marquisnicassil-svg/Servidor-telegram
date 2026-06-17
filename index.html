@@ -2815,7 +2815,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                 <div class="form-group">
                     <label id="api-key-label">Chave de API da IA Selecionada</label>
                     <div style="position: relative; display: flex; align-items: center;">
-                        <input type="password" id="api-key" class="form-control" style="padding-right: 40px;" placeholder="Cole sua API Key para a IA selecionada..." autocomplete="current-password">
+                        <input type="password" id="api-key" class="form-control" style="padding-right: 40px;" placeholder="Cole sua API Key para a IA selecionada..." autocomplete="current-password" oninput="if(typeof apiType !== 'undefined' && apiType) { localStorage.setItem('apiKey_' + apiType, this.value.trim()); }">
                         <button type="button" onclick="togglePasswordVisibility('api-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
                     </div>
                 </div>
@@ -6687,8 +6687,7 @@ WITH CHECK (true);</code>
 
                             const headers = {
                                 'Content-Type': 'application/json',
-                                'Authorization': 'Bearer ' + cleanKey,
-                                'authorization': 'Bearer ' + cleanKey
+                                'Authorization': 'Bearer ' + cleanKey
                             };
                             if (activeApiType === "OPENROUTER") {
                                 try {
