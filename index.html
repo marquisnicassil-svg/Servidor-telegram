@@ -6668,9 +6668,10 @@ WITH CHECK (true);</code>
                                 });
                             });
 
+                            const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
                             const headers = {
                                 'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${key}`
+                                'Authorization': 'Bearer ' + cleanKey
                             };
                             if (activeApiType === "OPENROUTER") {
                                 try {
@@ -6858,12 +6859,23 @@ WITH CHECK (true);</code>
                     const cleanUrl = url.endsWith('/') ? url : url + '/';
                     const fetchUrl = cleanUrl.includes('chat/completions') ? cleanUrl : `${cleanUrl}chat/completions`;
                     
+                    const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
+                    const headers = {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + cleanKey
+                    };
+                    if (type === "OPENROUTER") {
+                        try {
+                            headers['HTTP-Referer'] = window.location.origin;
+                        } catch(e) {
+                            console.warn("Não foi possível registrar o HTTP-Referer:", e);
+                        }
+                        headers['X-Title'] = 'Synapse AI';
+                    }
+
                     const response = await fetch(fetchUrl, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${key}`
-                        },
+                        headers: headers,
                         body: JSON.stringify({
                             model: model,
                             messages: [
@@ -7466,12 +7478,23 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem código markdown, 
                     const cleanUrl = url.endsWith('/') ? url : url + '/';
                     const fetchUrl = cleanUrl.includes('chat/completions') ? cleanUrl : `${cleanUrl}chat/completions`;
                     
+                    const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
+                    const headers = {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + cleanKey
+                    };
+                    if (activeApiType === "OPENROUTER") {
+                        try {
+                            headers['HTTP-Referer'] = window.location.origin;
+                        } catch(e) {
+                            console.warn("Não foi possível registrar o HTTP-Referer:", e);
+                        }
+                        headers['X-Title'] = 'Synapse AI';
+                    }
+
                     const response = await fetch(fetchUrl, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${key}`
-                        },
+                        headers: headers,
                         body: JSON.stringify({
                             model: model,
                             messages: [
@@ -7573,12 +7596,24 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem código markdown, 
                 } else {
                     const cleanUrl = url.endsWith('/') ? url : url + '/';
                     const fetchUrl = cleanUrl.includes('chat/completions') ? cleanUrl : `${cleanUrl}chat/completions`;
+                    
+                    const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
+                    const headers = {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + cleanKey
+                    };
+                    if (activeApiType === "OPENROUTER") {
+                        try {
+                            headers['HTTP-Referer'] = window.location.origin;
+                        } catch(e) {
+                            console.warn("Não foi possível registrar o HTTP-Referer:", e);
+                        }
+                        headers['X-Title'] = 'Synapse AI';
+                    }
+
                     const res = await fetch(fetchUrl, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${key}`
-                        },
+                        headers: headers,
                         body: JSON.stringify({
                             model: model,
                             messages: [
@@ -7661,12 +7696,24 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                 } else {
                     const cleanUrl = url.endsWith('/') ? url : url + '/';
                     const fetchUrl = cleanUrl.includes('chat/completions') ? cleanUrl : `${cleanUrl}chat/completions`;
+                    
+                    const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
+                    const headers = {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + cleanKey
+                    };
+                    if (activeApiType === "OPENROUTER") {
+                        try {
+                            headers['HTTP-Referer'] = window.location.origin;
+                        } catch(e) {
+                            console.warn("Não foi possível registrar o HTTP-Referer:", e);
+                        }
+                        headers['X-Title'] = 'Synapse AI';
+                    }
+
                     const res = await fetch(fetchUrl, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${key}`
-                        },
+                        headers: headers,
                         body: JSON.stringify({
                             model: model,
                             messages: [
@@ -10601,18 +10648,15 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
         function getActiveApiCredentials() {
             let type = typeof apiType !== 'undefined' ? apiType : 'GEMINI';
             
-            // Verifica se há chave salva especificamente no localStorage para o tipo corrente
-            let savedUserKey = localStorage.getItem('apiKey_' + type) || '';
-            
             const apiKeyField = document.getElementById('api-key');
             let key = apiKeyField ? apiKeyField.value.trim() : '';
             
-            // Se o valor do input difere da chave salva e não é vazio, o usuário pode ter digitado ou colado algo novo agora
-            // Caso contrário, confiamos na chave específica salva (evitando poluição por auto-preenchimento generalista do navegador)
-            if (key && key !== savedUserKey && savedUserKey === '') {
-                savedUserKey = key;
+            // Tenta recuperar do localStorage para o tipo atual se o campo estiver vazio
+            if (!key) {
+                key = localStorage.getItem('apiKey_' + type) || '';
             } else {
-                key = savedUserKey || key;
+                // Guarda a chave mais recente se o usuário digitou ou autocompletou
+                localStorage.setItem('apiKey_' + type, key);
             }
 
             let url = document.getElementById('base-url') ? document.getElementById('base-url').value.trim() : '';
@@ -10621,7 +10665,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             const masterActive = localStorage.getItem('synapse_admin_master_active') === 'true';
             const masterKey = localStorage.getItem('synapse_admin_master_key');
             
-            if (!savedUserKey && masterActive && masterKey) {
+            if (!key && masterActive && masterKey) {
                 key = masterKey;
                 url = localStorage.getItem('synapse_admin_master_url') || 'https://generativelanguage.googleapis.com/';
                 model = localStorage.getItem('synapse_admin_master_model') || 'gemini-1.5-flash';
