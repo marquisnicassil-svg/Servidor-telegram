@@ -1066,8 +1066,8 @@ fun SettingsTab(
     var activeSettingsView by remember { mutableStateOf<String?>(null) } // "appearance", "ai", "database", "account"
 
     // Mock states for Supabase settings tab
-    var supabaseUrl by remember { mutableStateOf("https://hqnlyksuprjabcgpqdl.supabase.co") }
-    var supabaseKey by remember { mutableStateOf("sb_publishable_VNDxq3Hxp1Ly5tf57b2d23") }
+    var supabaseUrl by remember { mutableStateOf("https://hqnlyksuprjdabcgpqdl.supabase.co") }
+    var supabaseKey by remember { mutableStateOf("sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa") }
     var supabaseTable by remember { mutableStateOf("chat_backups") }
     var supabaseAuto by remember { mutableStateOf(false) }
     var testConnectionStatus by remember { mutableStateOf("") } // "", "TESTING", "SUCCESS", "ERROR"
