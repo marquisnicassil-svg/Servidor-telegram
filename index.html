@@ -2910,13 +2910,14 @@ CREATE TRIGGER on_synapse_user_signed_up
                     <!-- Painel de instrução SQL autocontido -->
                     <div id="sql-snippet-block" class="sql-instructions">
                         <span style="display:block; margin-bottom: 6px;">Cole e execute o código no <strong>SQL Editor</strong> do painel Supabase para criar a tabela compatível:</span>
-                        <code>-- Remove a tabela antiga se necessário para recriar
-DROP TABLE IF EXISTS public.chat_backups;
+                        <code>-- Opção A: Se você já tem a tabela chat_backups, execute este ALTER para adicionar a coluna user_id:
+ALTER TABLE public.chat_backups ADD COLUMN IF NOT EXISTS user_id uuid DEFAULT auth.uid();
 
--- Cria a tabela com suporte a backups completos e mensagens individuais
-CREATE TABLE public.chat_backups (
+-- Opção B: Criar a tabela do zero se ainda não existir:
+CREATE TABLE IF NOT EXISTS public.chat_backups (
     id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+    user_id uuid DEFAULT auth.uid(),
     role text,
     content text,
     chat_html text,
@@ -2924,10 +2925,11 @@ CREATE TABLE public.chat_backups (
     settings_json json
 );
 
--- Ativa Segurança de Nível de Linha (RLS)
+-- Ativa Segurança de Nível de Linha (RLS) se ainda não estiver ativa
 ALTER TABLE public.chat_backups ENABLE ROW LEVEL SECURITY;
 
--- Cria política permissiva total para testes locais/front-end rápidos
+-- Garante política permissiva de acesso para garantir sincronização do usuário
+DROP POLICY IF EXISTS "Permitir acesso total para testes" ON public.chat_backups;
 CREATE POLICY "Permitir acesso total para testes" 
 ON public.chat_backups 
 FOR ALL 
@@ -6692,7 +6694,8 @@ WITH CHECK (true);</code>
 
                             const headers = {
                                 'Content-Type': 'application/json',
-                                'Authorization': 'Bearer ' + cleanKey
+                                'Authorization': 'Bearer ' + cleanKey,
+                                'authorization': 'Bearer ' + cleanKey
                             };
                             if (activeApiType === "OPENROUTER") {
                                 try {
@@ -6892,7 +6895,8 @@ WITH CHECK (true);</code>
                     const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
                     const headers = {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + cleanKey
+                        'Authorization': 'Bearer ' + cleanKey,
+                        'authorization': 'Bearer ' + cleanKey
                     };
                     if (type === "OPENROUTER") {
                         try {
@@ -7511,7 +7515,8 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem código markdown, 
                     const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
                     const headers = {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + cleanKey
+                        'Authorization': 'Bearer ' + cleanKey,
+                        'authorization': 'Bearer ' + cleanKey
                     };
                     if (activeApiType === "OPENROUTER") {
                         try {
@@ -7630,7 +7635,8 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem código markdown, 
                     const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
                     const headers = {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + cleanKey
+                        'Authorization': 'Bearer ' + cleanKey,
+                        'authorization': 'Bearer ' + cleanKey
                     };
                     if (activeApiType === "OPENROUTER") {
                         try {
@@ -7730,7 +7736,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                     const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
                     const headers = {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + cleanKey
+                        'Authorization': 'Bearer ' + cleanKey,
+                        'authorization': 'Bearer ' + cleanKey
                     };
                     if (activeApiType === "OPENROUTER") {
                         try {
@@ -8539,7 +8546,10 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                 modelName: document.getElementById('model-name').value.trim(),
                 systemPrompt: document.getElementById('system-prompt').value,
                 isAmoled: document.getElementById('amoled-switch').classList.contains('on'),
-                accentColor: currentAccentColor
+                accentColor: currentAccentColor,
+                // Preserva metadados do usuário para filtro no cliente caso falte a coluna na tabela
+                user_id: (supabaseSession && supabaseSession.user) ? supabaseSession.user.id : null,
+                user_email: (supabaseSession && supabaseSession.user) ? supabaseSession.user.email : null
             };
 
             const payload = {
@@ -8597,10 +8607,16 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                         if (parsed.message && parsed.message.includes("JWT expired")) {
                             isJwtExpired = true;
                         }
-                        if (parsed.code === "PGRST204" && parsed.message && parsed.message.includes("user_id")) {
+                        // Detecção super robusta de schema com coluna 'user_id' ausente (Códigos PostgREST PGRST204, PostgreSQL 42703 ou texto)
+                        if (parsed.code === "PGRST204" || parsed.code === "42703" || 
+                            (parsed.message && (parsed.message.toLowerCase().includes("user_id") || parsed.message.toLowerCase().includes("column")))) {
                             isMissingUserIdColumn = true;
                         }
-                    } catch(e) {}
+                    } catch(e) {
+                        if (errText.toLowerCase().includes("user_id") || errText.toLowerCase().includes("column")) {
+                            isMissingUserIdColumn = true;
+                        }
+                    }
 
                     if (isJwtExpired) {
                         updateCloudIndicators('error', 'Token Expirado');
@@ -8619,7 +8635,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                             supabaseSaveBackup(quiet);
                         }
                     } else if (isMissingUserIdColumn) {
-                        addLog("Aviso de Schema: Coluna 'user_id' não encontrada na tabela do Supabase. Salvando backup global sem vincular ID de usuário.", "info");
+                        addLog("Aviso de Schema: Coluna 'user_id' não encontrada na tabela do Supabase. Salvando backup global e vinculando id via settings_json. Para corrigir de verdade, execute a migração SQL do rodapé das configurações no Supabase.", "warning");
                         supabaseHasUserId = false;
                         supabaseSaveBackup(quiet);
                     } else {
@@ -8652,8 +8668,14 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
 
                 try {
                     const cleanUrl = url.endsWith('/') ? url : url + '/';
-                    // Seleciona o backup mais recente ordenando por id decrescente, limitando a 1 linha
-                    const fetchUrl = `${cleanUrl}rest/v1/${table}?order=id.desc&limit=1`;
+                    // Seleciona o backup mais recente. Se a coluna real user_id existir na DB, filtramos por ela. 
+                    // Caso contrário, baixamos as últimas 30 linhas e realizamos o filtro no cliente por inteligência de retrocompatibilidade do settings_json.user_id.
+                    let fetchUrl = `${cleanUrl}rest/v1/${table}?order=id.desc&limit=1`;
+                    if (supabaseHasUserId && supabaseSession && supabaseSession.user) {
+                        fetchUrl = `${cleanUrl}rest/v1/${table}?user_id=eq.${supabaseSession.user.id}&order=id.desc&limit=1`;
+                    } else if (supabaseSession && supabaseSession.user) {
+                        fetchUrl = `${cleanUrl}rest/v1/${table}?order=id.desc&limit=30`;
+                    }
 
                     const headers = {
                         'apikey': key
@@ -8673,7 +8695,25 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                     if (response.ok) {
                         const data = await response.json();
                         if (data && data.length > 0) {
-                            const backup = data[0];
+                            let backup = data[0];
+                            
+                            // Se o banco não tem coluna para indexar user_id no SQL, filtramos o lote do próprio usuário no cliente para máxima segurança contra perdas de dados e vazamentos
+                            if (!supabaseHasUserId && supabaseSession && supabaseSession.user) {
+                                const matchedBackup = data.find(row => {
+                                    let s = row.settings_json;
+                                    if (typeof s === 'string') {
+                                        try { s = JSON.parse(s); } catch(e){}
+                                    }
+                                    return s && s.user_id === supabaseSession.user.id;
+                                });
+                                if (matchedBackup) {
+                                    backup = matchedBackup;
+                                } else {
+                                    updateCloudIndicators('active', 'Vazio');
+                                    addLog("Nenhum backup correspondente para o seu ID foi encontrado nos últimos 30 registros da tabela.", "warning");
+                                    return;
+                                }
+                            }
                             
                             // Restaura os logs de chats
                             if (backup.chat_html) {
