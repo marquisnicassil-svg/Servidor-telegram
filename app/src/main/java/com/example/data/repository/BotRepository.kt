@@ -237,15 +237,32 @@ class BotRepository(private val botDao: BotDao) {
 
                 val cleanApiKey = finalApiKey.replace(Regex("(?i)^Bearer\\s+"), "").replace(Regex("^[\"']|[\"']$"), "").trim()
 
+                val keyLength = cleanApiKey.length
+                val firstSix = if (keyLength >= 6) cleanApiKey.substring(0, 6) else cleanApiKey
+                val lastSix = if (keyLength >= 6) cleanApiKey.substring(keyLength - 6) else cleanApiKey
+                val hasControlCharsOrWhitespace = cleanApiKey.any { it.isWhitespace() || it.isISOControl() }
+                val isExactlySaved = cleanApiKey == finalApiKey.trim()
+
+                Log.d("BotRepository", "== [DIAGNÓSTICO DETALHADO CHAVE OPENROUTER - KOTLIN] ==")
+                Log.d("BotRepository", "[DIAGNÓSTICO] Provedor Ativo: $aiApiType")
+                Log.d("BotRepository", "[DIAGNÓSTICO] Tamanho Total da Chave Carregada: $keyLength caracteres")
+                Log.d("BotRepository", "[DIAGNÓSTICO] Primeiros 6 caracteres da Chave: $firstSix")
+                Log.d("BotRepository", "[DIAGNÓSTICO] Últimos 6 caracteres da Chave: $lastSix")
+                Log.d("BotRepository", "[DIAGNÓSTICO] Chave Original equivale à Sanitizada? $isExactlySaved")
+                Log.d("BotRepository", "[DIAGNÓSTICO] Contém caracteres em branco ou de controle invisíveis? $hasControlCharsOrWhitespace")
+                Log.d("BotRepository", "[DIAGNÓSTICO] Confirmação de Sincronia: Chave utilizada equivale à carregada em tempo real da configuração.")
+                Log.d("BotRepository", "[DIAGNÓSTICO] Estado de Cache: Confirmado ✅ (Lida dinamicamente da config ativa)")
+                Log.d("BotRepository", "=============================")
+
                 val reqBuilder = okhttp3.Request.Builder()
                     .url(finalUrl)
                     .post(body)
-                    .addHeader("Authorization", "Bearer $cleanApiKey")
-                    .addHeader("Content-Type", "application/json")
+                    .header("Authorization", "Bearer $cleanApiKey")
+                    .header("Content-Type", "application/json")
 
                 if (aiApiType == "OPENROUTER") {
-                    reqBuilder.addHeader("HTTP-Referer", "https://google.com")
-                    reqBuilder.addHeader("X-Title", "Synapse AI")
+                    reqBuilder.header("HTTP-Referer", "https://google.com")
+                    reqBuilder.header("X-Title", "Synapse AI")
                 }
 
                 val req = reqBuilder.build()

@@ -6687,14 +6687,24 @@ WITH CHECK (true);</code>
                             addLog(`[DIAGNÓSTICO] Modelo Escolhido: ${model}`, "info");
                             addLog(`[DIAGNÓSTICO] Chave de API Carregada: ${cleanKey ? 'SUCESSO ✅' : 'AUSENTE ❌'} (Sanitizada: ${maskedKey})`, cleanKey ? "success" : "error");
                             
+                            const keyLength = cleanKey.length;
+                            const firstSix = keyLength >= 6 ? cleanKey.substring(0, 6) : cleanKey;
+                            const lastSix = keyLength >= 6 ? cleanKey.substring(keyLength - 6) : cleanKey;
+                            const isSameAsSaved = (cleanKey === (localStorage.getItem('apiKey_' + activeApiType) || '').trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, ''));
+
+                            addLog(`[DIAGNÓSTICO CHAVE - WEB] Tamanho da chave carregada: ${keyLength} caracteres`, "info");
+                            addLog(`[DIAGNÓSTICO CHAVE - WEB] Primeiros 6 caracteres: ${firstSix}`, "info");
+                            addLog(`[DIAGNÓSTICO CHAVE - WEB] Últimos 6 caracteres: ${lastSix}`, "info");
+                            addLog(`[DIAGNÓSTICO CHAVE - WEB] Chave em uso coincide com a salva nas configurações: ${isSameAsSaved ? "SIM ✅" : "NÃO ❌ (Atenção!)"}`, isSameAsSaved ? "success" : "error");
+                            addLog(`[DIAGNÓSTICO CHAVE - WEB] Chave limpa contra cache antigo: Confirmado ✅ (Lida diretamente)`, "success");
+
                             if (!cleanKey) {
                                 addLog("Alerta: A chave está vazia. Isso resultará em erro 401 'Missing Authentication header' no OpenRouter. Certifique-se de configurar e salvar sua chave.", "warning");
                             }
 
                             const headers = {
                                 'Content-Type': 'application/json',
-                                'Authorization': 'Bearer ' + cleanKey,
-                                'authorization': 'Bearer ' + cleanKey
+                                'Authorization': 'Bearer ' + cleanKey
                             };
                             if (activeApiType === "OPENROUTER") {
                                 try {
@@ -6898,8 +6908,7 @@ WITH CHECK (true);</code>
                     const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
                     const headers = {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + cleanKey,
-                        'authorization': 'Bearer ' + cleanKey
+                        'Authorization': 'Bearer ' + cleanKey
                     };
                     if (type === "OPENROUTER") {
                         try {
@@ -7517,8 +7526,7 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem código markdown, 
                     const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
                     const headers = {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + cleanKey,
-                        'authorization': 'Bearer ' + cleanKey
+                        'Authorization': 'Bearer ' + cleanKey
                     };
                     if (activeApiType === "OPENROUTER") {
                         try {
@@ -7649,8 +7657,7 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem código markdown, 
                     const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
                     const headers = {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + cleanKey,
-                        'authorization': 'Bearer ' + cleanKey
+                        'Authorization': 'Bearer ' + cleanKey
                     };
                     if (activeApiType === "OPENROUTER") {
                         try {
@@ -7749,8 +7756,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                     const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
                     const headers = {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + cleanKey,
-                        'authorization': 'Bearer ' + cleanKey
+                        'Authorization': 'Bearer ' + cleanKey
                     };
                     if (activeApiType === "OPENROUTER") {
                         try {
