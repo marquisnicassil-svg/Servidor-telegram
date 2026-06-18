@@ -6665,8 +6665,7 @@ WITH CHECK (true);</code>
                                 aiReply = `Erro Gemini: ${err}`;
                             }
                         } else {
-                            const cleanUrl = url.endsWith('/') ? url : url + '/';
-                            const fetchUrl = cleanUrl.includes('chat/completions') ? cleanUrl : `${cleanUrl}chat/completions`;
+                            const fetchUrl = sanitizeChatCompletionsUrl(url);
                             
                             // Monta payload OpenAI/Groq
                             let openAiMessages = [{ role: "system", content: prompt }];
@@ -6894,8 +6893,7 @@ WITH CHECK (true);</code>
                     aiReply = rData.candidates[0].content.parts[0].text;
 
                 } else {
-                    const cleanUrl = url.endsWith('/') ? url : url + '/';
-                    const fetchUrl = cleanUrl.includes('chat/completions') ? cleanUrl : `${cleanUrl}chat/completions`;
+                    const fetchUrl = sanitizeChatCompletionsUrl(url);
                     
                     const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
                     const headers = {
@@ -7514,8 +7512,7 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem código markdown, 
                     if (rData.error) throw new Error(rData.error.message);
                     responseText = rData.candidates[0].content.parts[0].text;
                 } else {
-                    const cleanUrl = url.endsWith('/') ? url : url + '/';
-                    const fetchUrl = cleanUrl.includes('chat/completions') ? cleanUrl : `${cleanUrl}chat/completions`;
+                    const fetchUrl = sanitizeChatCompletionsUrl(url);
                     
                     const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
                     const headers = {
@@ -7634,8 +7631,7 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem código markdown, 
                     if (rData.error) throw new Error(rData.error.message);
                     reply = rData.candidates[0].content.parts[0].text;
                 } else {
-                    const cleanUrl = url.endsWith('/') ? url : url + '/';
-                    const fetchUrl = cleanUrl.includes('chat/completions') ? cleanUrl : `${cleanUrl}chat/completions`;
+                    const fetchUrl = sanitizeChatCompletionsUrl(url);
                     
                     const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
                     const headers = {
@@ -7735,8 +7731,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                     if (rData.error) throw new Error(rData.error.message);
                     reply = rData.candidates[0].content.parts[0].text;
                 } else {
-                    const cleanUrl = url.endsWith('/') ? url : url + '/';
-                    const fetchUrl = cleanUrl.includes('chat/completions') ? cleanUrl : `${cleanUrl}chat/completions`;
+                    const fetchUrl = sanitizeChatCompletionsUrl(url);
                     
                     const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
                     const headers = {
@@ -10762,6 +10757,18 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             }
             
             return { key, url, model, type };
+        }
+
+        // Constrói uma URL de chat/completions limpa e robusta para APIs OpenAI/Groq/OpenRouter, sem barras duplicadas ou trailing-slashes indevidos
+        function sanitizeChatCompletionsUrl(baseUrl) {
+            let clean = String(baseUrl).trim();
+            while (clean.endsWith('/')) {
+                clean = clean.slice(0, -1);
+            }
+            if (clean.endsWith('chat/completions')) {
+                return clean;
+            }
+            return clean + '/chat/completions';
         }
 
         // Sincroniza em tempo real a Chave e modelo Mestre da nuvem Supabase
