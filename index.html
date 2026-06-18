@@ -4545,7 +4545,7 @@ WITH CHECK (true);</code>
                     baseUrl.value = "https://api.groq.com/openai/v1/";
                     model.value = "llama-3.1-8b-instant";
                 } else if (type === "OPENROUTER") {
-                    baseUrl.value = "https://openrouter.ai/api/v1/";
+                    baseUrl.value = "https://openrouter.ai/api/v1/chat/completions";
                     model.value = "google/gemini-flash-1.5";
                 } else if (type === "CUSTOM") {
                     baseUrl.value = "https://api.provider.com/v1/";
@@ -10538,7 +10538,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                     urlInput.value = "https://api.groq.com/openai/v1/";
                     defaultModel = "llama-3.1-8b-instant";
                 } else if (typeVal === "OPENROUTER") {
-                    urlInput.value = "https://openrouter.ai/api/v1/";
+                    urlInput.value = "https://openrouter.ai/api/v1/chat/completions";
                     defaultModel = "google/gemini-flash-1.5";
                 } else if (typeVal === "OPENAI") {
                     urlInput.value = "https://api.openai.com/v1/";
