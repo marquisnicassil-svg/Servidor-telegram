@@ -2867,7 +2867,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         <div style="display: flex; gap: 8px;">
                             <div style="flex: 1;">
                                 <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">URL do Projeto</label>
-                                <input type="text" id="supabase-url" class="form-control" style="border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;" placeholder="https://seu-slug.supabase.co" value="https://hqnlyksuprjdabcgpqdl.supabase.co">
+                                <input type="text" id="supabase-url" class="form-control" style="border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;" placeholder="https://seu-slug.supabase.co" value="https://hqnlyksuprjabcgpqdl.supabase.co">
                             </div>
                             <div style="width: 35%;">
                                 <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Tabela</label>
@@ -2878,7 +2878,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         <div>
                             <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Chave Pública (Anon Key)</label>
                             <div style="position: relative; display: flex; align-items: center;">
-                                <input type="password" id="supabase-key" class="form-control" style="border-radius: 10px; padding: 8px 40px 8px 12px; font-size: 0.85rem;" placeholder="Chave anônima" value="sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa" autocomplete="current-password">
+                                <input type="password" id="supabase-key" class="form-control" style="border-radius: 10px; padding: 8px 40px 8px 12px; font-size: 0.85rem;" placeholder="Chave anônima" value="sb_publishable_VNDxq3Hxp1Ly5tf57b2d23" autocomplete="current-password">
                                 <button type="button" onclick="togglePasswordVisibility('supabase-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
                             </div>
                         </div>
@@ -4280,8 +4280,8 @@ WITH CHECK (true);</code>
                     }
 
                     // Restaura Supabase Fields
-                    safeSetVal('supabase-url', data.supabaseUrl !== undefined ? data.supabaseUrl : 'https://hqnlyksuprjdabcgpqdl.supabase.co');
-                    safeSetVal('supabase-key', data.supabaseKey !== undefined ? data.supabaseKey : 'sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa');
+                    safeSetVal('supabase-url', data.supabaseUrl !== undefined ? data.supabaseUrl : 'https://hqnlyksuprjabcgpqdl.supabase.co');
+                    safeSetVal('supabase-key', data.supabaseKey !== undefined ? data.supabaseKey : 'sb_publishable_VNDxq3Hxp1Ly5tf57b2d23');
                     safeSetVal('supabase-table', data.supabaseTable !== undefined ? data.supabaseTable : 'chat_backups');
                     
                     const autoSw = document.getElementById('supabase-auto-switch');
@@ -4347,8 +4347,8 @@ WITH CHECK (true);</code>
                     setApiType('GEMINI', true);
                     
                     // Preenche valores padrão de Supabase fornecidos pelo usuário
-                    safeSetVal('supabase-url', 'https://hqnlyksuprjdabcgpqdl.supabase.co');
-                    safeSetVal('supabase-key', 'sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa');
+                    safeSetVal('supabase-url', 'https://hqnlyksuprjabcgpqdl.supabase.co');
+                    safeSetVal('supabase-key', 'sb_publishable_VNDxq3Hxp1Ly5tf57b2d23');
                     safeSetVal('supabase-table', 'chat_backups');
 
                     // Defaults de Acessibilidade de segurança ao reiniciar sem dados
@@ -8539,7 +8539,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                 
                 const isDefaultProject = url.includes("hqnlyksuprjdabcgpqdl");
                 if (isDefaultProject) {
-                    addLog("💡 [DICA DO ASSISTENTE]: O projeto Supabase padrão do template (hqnlyksuprjdabcgpqdl) foi pausado por inatividade, uma política comum dos planos gratuitos do Supabase após alguns dias.", "warning");
+                    addLog("💡 [DICA DO ASSISTENTE]: O projeto Supabase do template legado (hqnlyksuprjdabcgpqdl) foi pausado por inatividade.", "warning");
                     addLog("🛠️ [COMO RESOLVER]: Para ter o seu próprio banco de dados em nuvem para backups inteligentes:", "info");
                     addLog(" 1. Acesse https://supabase.com e crie uma conta gratuita.", "info");
                     addLog(" 2. Crie um novo projeto e copie a 'Project URL' e a 'Anon API Key'.", "info");
