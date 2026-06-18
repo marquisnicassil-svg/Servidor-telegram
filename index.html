@@ -7529,20 +7529,33 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem código markdown, 
                         headers['X-Title'] = 'Synapse AI';
                     }
 
+                    const reqPayload = {
+                        model: model,
+                        messages: [
+                            { role: "system", content: "Gere exclusivamente JSON válido." },
+                            { role: "user", content: modelPrompt }
+                        ],
+                        temperature: 0.2
+                    };
+
+                    const maskedKey = cleanKey ? (cleanKey.substring(0, Math.min(10, cleanKey.length)) + "..." + (cleanKey.length > 4 ? cleanKey.substring(cleanKey.length - 4) : "")) : "vazio/ausente";
+                    addLog(`[DIAGNÓSTICO CR] Provedor Ativo: ${activeApiType}`, "info");
+                    addLog(`[DIAGNÓSTICO CR] Endpoint: ${fetchUrl}`, "info");
+                    addLog(`[DIAGNÓSTICO CR] Método HTTP: POST`, "sys");
+                    addLog(`[DIAGNÓSTICO CR] Chave Sanitizada: ${maskedKey}`, "info");
+                    addLog(`[DIAGNÓSTICO CR] Corpo enviado: ${JSON.stringify(reqPayload)}`, "sys");
+
                     const response = await fetch(fetchUrl, {
                         method: 'POST',
                         headers: headers,
-                        body: JSON.stringify({
-                            model: model,
-                            messages: [
-                                { role: "system", content: "Gere exclusivamente JSON válido." },
-                                { role: "user", content: modelPrompt }
-                            ],
-                            temperature: 0.2
-                        })
+                        body: JSON.stringify(reqPayload)
                     });
                     
+                    addLog(`[DIAGNÓSTICO CR] Status: Código ${response.status} (${response.statusText})`, response.ok ? "success" : "error");
+
                     const rData = await response.json();
+                    addLog(`[DIAGNÓSTICO CR] Resposta Completa: ${JSON.stringify(rData)}`, response.ok ? "success" : "error");
+
                     if (rData.error) throw new Error(rData.error.message);
                     responseText = rData.choices[0].message.content;
                 }

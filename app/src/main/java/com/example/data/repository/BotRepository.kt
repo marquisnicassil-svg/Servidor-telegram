@@ -222,11 +222,14 @@ class BotRepository(private val botDao: BotDao) {
                 val requestAdapter = moshi.adapter(OpenAIChatRequest::class.java)
                 val jsonBody = requestAdapter.toJson(openAiRequest)
 
-                val cleanUrl = if (aiBaseUrl.endsWith("/")) aiBaseUrl else "$aiBaseUrl/"
-                val finalUrl = if (cleanUrl.contains("chat/completions")) {
+                var cleanUrl = aiBaseUrl.trim()
+                while (cleanUrl.endsWith("/")) {
+                    cleanUrl = cleanUrl.substring(0, cleanUrl.length - 1)
+                }
+                val finalUrl = if (cleanUrl.endsWith("chat/completions")) {
                     cleanUrl
                 } else {
-                    "${cleanUrl}chat/completions"
+                    "$cleanUrl/chat/completions"
                 }
 
                 val mediaType = "application/json; charset=utf-8".toMediaType()
@@ -247,19 +250,44 @@ class BotRepository(private val botDao: BotDao) {
 
                 val req = reqBuilder.build()
 
+                val maskedApiKey = if (cleanApiKey.length > 10) {
+                    cleanApiKey.substring(0, 10) + "..." + cleanApiKey.substring(cleanApiKey.length - 4)
+                } else if (cleanApiKey.isNotEmpty()) {
+                    "..."
+                } else {
+                    "vazio/ausente"
+                }
+
+                Log.d("BotRepository", "== [DIAGNÓSTICO ENTRADA - KOTLIN] ==")
+                Log.d("BotRepository", "[DIAGNÓSTICO] Provedor Ativo: $aiApiType")
+                Log.d("BotRepository", "[DIAGNÓSTICO] Endpoint Utilizado (finalUrl): $finalUrl")
+                Log.d("BotRepository", "[DIAGNÓSTICO] Método HTTP: POST")
+                Log.d("BotRepository", "[DIAGNÓSTICO] Modelo Escolhido: $aiModel")
+                Log.d("BotRepository", "[DIAGNÓSTICO] API Key Sanitizada: $maskedApiKey")
+                Log.d("BotRepository", "[DIAGNÓSTICO] Corpo enviado (Payload JSON): $jsonBody")
+                Log.d("BotRepository", "=============================")
+
                 val client = NetworkModule.okHttpClient
                 val response = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
                     client.newCall(req).execute()
                 }
 
+                Log.d("BotRepository", "== [DIAGNÓSTICO RESPOSTA - KOTLIN] ==")
+                Log.d("BotRepository", "[DIAGNÓSTICO] Código da Resposta: ${response.code}")
+                Log.d("BotRepository", "[DIAGNÓSTICO] Mensagem da Resposta: ${response.message}")
+
                 if (response.isSuccessful) {
                     val respBodyStr = response.body?.string() ?: ""
+                    Log.d("BotRepository", "[DIAGNÓSTICO] Resposta Completa: $respBodyStr")
+                    Log.d("BotRepository", "=============================")
                     val responseAdapter = moshi.adapter(OpenAIChatResponse::class.java)
                     val openAiResponse = responseAdapter.fromJson(respBodyStr)
                     openAiResponse?.choices?.firstOrNull()?.message?.content
                         ?: "Erro: Resposta vazia ou formato inválido do provedor OpenAI compatível."
                 } else {
                     val errBody = response.body?.string() ?: ""
+                    Log.d("BotRepository", "[DIAGNÓSTICO - ERRO] Detalhes (Resposta Completa de Erro): $errBody")
+                    Log.d("BotRepository", "=============================")
                     "Erro da API Compatível OpenAI (${response.code}): $errBody"
                 }
             } else {
