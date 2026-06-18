@@ -4511,7 +4511,7 @@ WITH CHECK (true);</code>
                 } else if (type === "GROQ") {
                     options = ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "mixtral-8x7b-32768", "gemma2-9b-it"];
                 } else if (type === "OPENROUTER") {
-                    options = ["google/gemini-2.5-flash", "google/gemini-2.5-pro", "anthropic/claude-3.5-sonnet", "meta-llama/llama-3.3-70b-instruct", "deepseek/deepseek-chat"];
+                    options = ["google/gemini-flash-1.5", "google/gemini-pro-1.5", "google/gemini-2.0-flash-exp", "anthropic/claude-3.5-sonnet", "meta-llama/llama-3.3-70b-instruct", "deepseek/deepseek-chat"];
                 } else if (type === "CUSTOM") {
                     options = ["custom-model-1", "custom-model-2"];
                 } else {
@@ -4546,7 +4546,7 @@ WITH CHECK (true);</code>
                     model.value = "llama-3.1-8b-instant";
                 } else if (type === "OPENROUTER") {
                     baseUrl.value = "https://openrouter.ai/api/v1/";
-                    model.value = "google/gemini-2.5-flash";
+                    model.value = "google/gemini-flash-1.5";
                 } else if (type === "CUSTOM") {
                     baseUrl.value = "https://api.provider.com/v1/";
                     model.value = "custom-model";
@@ -6713,24 +6713,29 @@ WITH CHECK (true);</code>
                             }
                             addLog(`[DIAGNÓSTICO] Headers Enviados: ${JSON.stringify(loggedHeaders)}`, "sys");
 
+                            const reqPayload = {
+                                model: model,
+                                messages: openAiMessages,
+                                temperature: 0.7
+                            };
+                            addLog(`[DIAGNÓSTICO] Método HTTP: POST`, "sys");
+                            addLog(`[DIAGNÓSTICO] Corpo enviado: ${JSON.stringify(reqPayload)}`, "sys");
+
                             const response = await fetch(fetchUrl, {
                                 method: 'POST',
                                 headers: headers,
-                                body: JSON.stringify({
-                                    model: model,
-                                    messages: openAiMessages,
-                                    temperature: 0.7
-                                })
-                             });
+                                body: JSON.stringify(reqPayload)
+                            });
                             
                             addLog(`[DIAGNÓSTICO] Status da Resposta: Código ${response.status} (${response.statusText})`, response.ok ? "success" : "error");
                             
                             if (response.ok) {
                                 const data = await response.json();
+                                addLog(`[DIAGNÓSTICO] Resposta Completa: ${JSON.stringify(data)}`, "success");
                                 aiReply = data.choices?.[0]?.message?.content || "Mudo.";
                             } else {
                                 const err = await response.text();
-                                addLog(`[DIAGNÓSTICO - ERRO] Detalhes retornados pela API: ${err}`, "error");
+                                addLog(`[DIAGNÓSTICO - ERRO] Detalhes (Resposta Completa de Erro): ${err}`, "error");
                                 aiReply = `Erro [${activeApiType}]: ${err}`;
                             }
                         }
@@ -10526,7 +10531,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                     defaultModel = "llama-3.1-8b-instant";
                 } else if (typeVal === "OPENROUTER") {
                     urlInput.value = "https://openrouter.ai/api/v1/";
-                    defaultModel = "google/gemini-2.5-flash";
+                    defaultModel = "google/gemini-flash-1.5";
                 } else if (typeVal === "OPENAI") {
                     urlInput.value = "https://api.openai.com/v1/";
                     defaultModel = "gpt-4o-mini";
@@ -10571,8 +10576,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                 ];
             } else if (typeVal === "OPENROUTER") {
                 optionsList = [
-                    { value: "google/gemini-2.5-flash", label: "google/gemini-2.5-flash" },
-                    { value: "google/gemini-2.5-pro", label: "google/gemini-2.5-pro" },
+                    { value: "google/gemini-flash-1.5", label: "google/gemini-flash-1.5" },
+                    { value: "google/gemini-pro-1.5", label: "google/gemini-pro-1.5" },
+                    { value: "google/gemini-2.0-flash-exp", label: "google/gemini-2.0-flash-exp" },
                     { value: "anthropic/claude-3.5-sonnet", label: "anthropic/claude-3.5-sonnet" },
                     { value: "meta-llama/llama-3.3-70b-instruct", label: "meta-llama/llama-3.3-70b-instruct" },
                     { value: "deepseek/deepseek-chat", label: "deepseek/deepseek-chat" }
