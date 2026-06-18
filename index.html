@@ -4238,6 +4238,20 @@ WITH CHECK (true);</code>
                 if (saved) {
                     const data = JSON.parse(saved);
                     
+                    // Sincronização e migração inteligente de banco de dados Supabase legado do template para o novo projeto ativo do usuário
+                    let needsSaveMigration = false;
+                    if (data.supabaseUrl === 'https://hqnlyksuprjdabcgpqdl.supabase.co' || data.supabaseUrl === 'https://hqnlyksuprjdabcgpqdl.supabase.co/') {
+                        data.supabaseUrl = 'https://hqnlyksuprjabcgpqdl.supabase.co';
+                        needsSaveMigration = true;
+                    }
+                    if (data.supabaseKey === 'sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa') {
+                        data.supabaseKey = 'sb_publishable_VNDxq3Hxp1Ly5tf57b2d23';
+                        needsSaveMigration = true;
+                    }
+                    if (needsSaveMigration) {
+                        localStorage.setItem('ai_console_settings', JSON.stringify(data));
+                    }
+                    
                     if (data.apiType) {
                         setApiType(data.apiType, true); // passa true p/ não resetar base url se já está salvo
                     } else {
