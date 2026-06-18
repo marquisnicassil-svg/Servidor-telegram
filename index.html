@@ -8536,6 +8536,18 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                 console.error(err);
                 updateCloudIndicators('error', 'Erro de Rede');
                 addLog(`Incapaz de alcançar o servidor Supabase. Host offline ou bloqueio por CORS: ${err.message}`, "error");
+                
+                const isDefaultProject = url.includes("hqnlyksuprjdabcgpqdl");
+                if (isDefaultProject) {
+                    addLog("💡 [DICA DO ASSISTENTE]: O projeto Supabase padrão do template (hqnlyksuprjdabcgpqdl) foi pausado por inatividade, uma política comum dos planos gratuitos do Supabase após alguns dias.", "warning");
+                    addLog("🛠️ [COMO RESOLVER]: Para ter o seu próprio banco de dados em nuvem para backups inteligentes:", "info");
+                    addLog(" 1. Acesse https://supabase.com e crie uma conta gratuita.", "info");
+                    addLog(" 2. Crie um novo projeto e copie a 'Project URL' e a 'Anon API Key'.", "info");
+                    addLog(" 3. Insira suas novas credenciais nos Ajustes do aplicativo.", "info");
+                    addLog(" 4. Clique em 'Mostrar SQL' na seção do Supabase, copie o código SQL e execute-o no 'SQL Editor' do painel do Supabase para criar as tabelas necessárias de backup.", "info");
+                } else {
+                    addLog("💡 [DICA DO ASSISTENTE]: Se você está usando um projeto Supabase personalizado, por favor verifique se o projeto foi pausado no painel da Supabase por inatividade, se as chaves e URL estão corretas ou se as configurações de CORS/Rede no seu celular ou navegador estão bloqueando o acesso.", "warning");
+                }
                 return false;
             }
         }
