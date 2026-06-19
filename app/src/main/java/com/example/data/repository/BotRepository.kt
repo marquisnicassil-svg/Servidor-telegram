@@ -76,6 +76,16 @@ class BotRepository(private val botDao: BotDao) {
         }
     }
 
+    suspend fun getTelegramWebhookInfo(token: String): com.example.data.model.TelegramWebhookInfo? {
+        val response = NetworkModule.telegramApiService.getWebhookInfo(token)
+        return if (response.ok) response.result else null
+    }
+
+    suspend fun deleteTelegramWebhook(token: String): Boolean {
+        val response = NetworkModule.telegramApiService.deleteWebhook(token)
+        return response.ok
+    }
+
     // --- Gemini API Operations ---
     private fun getSmartFallbackResponse(message: String): String {
         val cleanMsg = message.trim().lowercase()

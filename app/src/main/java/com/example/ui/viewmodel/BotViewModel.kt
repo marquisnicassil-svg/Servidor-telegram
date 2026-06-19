@@ -249,12 +249,56 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 
                 addLog("Token Válido! Conectado a: @${botUser.username} (${botUser.firstName})", LogType.SUCCESS)
+
+                // Verificação extra de Webhook ativo (Conflito de Escuta)
+                try {
+                    val whInfo = withContext(Dispatchers.IO) {
+                        repository.getTelegramWebhookInfo(token)
+                    }
+                    if (whInfo != null && whInfo.url.isNotBlank()) {
+                         addLog("[CONFLITO DETECTADO] O bot '@${botUser.username}' possui o Webhook ativo: '${whInfo.url}'. Telegram BLOQUEOU o Long Polling! Limpe o Webhook para fazer as mensagens chegarem aqui.", LogType.WARNING)
+                    } else {
+                         addLog("Webhook Status check: OK! Nenhum webhook ativo impedindo a chegada de mensagens.", LogType.SUCCESS)
+                    }
+                } catch (whEx: Exception) {
+                    Log.e("BotViewModel", "Erro ao buscar webhook info", whEx)
+                }
             } catch (e: Exception) {
                 _botVerificationStatus.value = "INVALID"
                 _verifiedBotName.value = null
                 _verifiedBotUsername.value = null
                 val errStr = e.localizedMessage ?: e.message ?: "Erro de rede"
                 addLog("Erro na Autenticação do Telegram: $errStr", LogType.ERROR)
+            }
+        }
+    }
+
+    fun clearTelegramWebhook() {
+        val config = configState.value ?: return
+        val currentToken = config.token
+        if (currentToken.isBlank()) {
+            addLog("Aviso: configure um Token de Bot válido primeiro.", LogType.WARNING)
+            return
+        }
+        _botVerificationStatus.value = "VERIFYING"
+        addLog("Solicitando remoção de Webhook ao Telegram...", LogType.INFO)
+        viewModelScope.launch {
+            try {
+                val success = withContext(Dispatchers.IO) {
+                    repository.deleteTelegramWebhook(currentToken)
+                }
+                if (success) {
+                    addLog("Concluído! Webhook removido do Bot com sucesso. As mensagens já podem chegar por Long Polling!", LogType.SUCCESS)
+                    // Re-verify token to update status messages
+                    _botVerificationStatus.value = "VALID"
+                } else {
+                    addLog("Erro: a API do Telegram recusou a remoção do Webhook.", LogType.ERROR)
+                    _botVerificationStatus.value = "INVALID"
+                }
+            } catch (e: Exception) {
+                val errStr = e.localizedMessage ?: e.message ?: "rede"
+                addLog("Erro ao falar com o Telegram: $errStr", LogType.ERROR)
+                _botVerificationStatus.value = "INVALID"
             }
         }
     }

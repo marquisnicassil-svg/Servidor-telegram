@@ -4,6 +4,8 @@ import com.example.data.model.TelegramGetMeResponse
 import com.example.data.model.TelegramSendMessageRequest
 import com.example.data.model.TelegramSendMessageResponse
 import com.example.data.model.TelegramUpdatesResponse
+import com.example.data.model.TelegramWebhookResponse
+import com.example.data.model.TelegramSimpleResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -29,4 +31,14 @@ interface TelegramApiService {
         @Path("token") token: String,
         @Body request: TelegramSendMessageRequest
     ): TelegramSendMessageResponse
+
+    @GET("bot{token}/getWebhookInfo")
+    suspend fun getWebhookInfo(
+        @Path("token") token: String
+    ): TelegramWebhookResponse
+
+    @GET("bot{token}/deleteWebhook")
+    suspend fun deleteWebhook(
+        @Path("token") token: String
+    ): TelegramSimpleResponse
 }

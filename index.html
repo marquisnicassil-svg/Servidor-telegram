@@ -2764,8 +2764,11 @@ CREATE TRIGGER on_synapse_user_signed_up
 
                         <div class="form-group" style="margin-top: 6px;">
                             <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">🔗 URL de End-Point de webhook</label>
-                            <div style="position: relative; display: flex; align-items: center;">
-                                <input type="text" id="telegram-webhook" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" placeholder="https://api.telegram.org/bot<token>/setWebhook">
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <input type="text" id="telegram-webhook" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); flex: 1;" placeholder="Nenhum webhook ativo (Recomendado para Polling)">
+                                <button type="button" onclick="deleteTelegramWebhook()" class="btn-universal" style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #f87171; height: 38px; padding: 0 16px; font-size: 0.75rem; font-weight: bold; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; border: 1px solid #ef4444; width: auto; margin-top: 0; white-space: nowrap;">
+                                    🗑️ Limpar Webhook
+                                </button>
                              </div>
                         </div>
 
@@ -5253,6 +5256,24 @@ WITH CHECK (true);</code>
                         const username = data.result.username;
                         addLog(`Conexão do Bot estabelecida com sucesso! @${username} está online.`, "success");
                         showAppToast(`Sucesso! Conexão ativa com o bot @${username}.`, "success");
+
+                        // Verificação extra de webhook ativo
+                        try {
+                            const whRes = await fetch(`https://api.telegram.org/bot${token}/getWebhookInfo`);
+                            if (whRes.ok) {
+                                const whData = await whRes.json();
+                                if (whData.ok && whData.result && whData.result.url) {
+                                    addLog(`[ALERTA CONFLITO] O bot '@${username}' possui o Webhook ativo: "${whData.result.url}". Enquanto o Webhook estiver ativo, o Telegram NÃO enviará mensagens via Long Polling! Clique em "Limpar Webhook" para liberar a escuta ativa do app.`, "warning");
+                                    document.getElementById('telegram-webhook').value = whData.result.url;
+                                } else {
+                                    addLog("[Conexão Webhook] OK! Sem nenhum webhook ativo bloqueando a escuta por Long Polling.", "success");
+                                    document.getElementById('telegram-webhook').value = "";
+                                }
+                            }
+                        } catch (whErr) {
+                            console.error(whErr);
+                        }
+
                     } else {
                         addLog("Erro na validação do token do Telegram.", "error");
                         showAppToast("Token inválido.", "error");
@@ -5268,6 +5289,37 @@ WITH CHECK (true);</code>
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
+            }
+        }
+
+        async function deleteTelegramWebhook() {
+            triggerPulse();
+            const token = document.getElementById('telegram-token').value.trim();
+            if (!token) {
+                addLog("Por favor, insira o token do bot primeiro.", "error");
+                showAppToast("Por favor, insira o token.", "warning");
+                return;
+            }
+            addLog("Apagando Webhook no Telegram para liberar a escuta ativa...", "sys");
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${token}/deleteWebhook`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.ok) {
+                        addLog("Concluído! Webhook removido do Telegram com sucesso. As mensagens já podem chegar em tempo real via Long Polling!", "success");
+                        showAppToast("Webhook removido!", "success");
+                        document.getElementById('telegram-webhook').value = "";
+                    } else {
+                        addLog(`Telegram recusou a remoção: ${data.description}`, "error");
+                        showAppToast("Falha ao apagar Webhook.", "error");
+                    }
+                } else {
+                    addLog("Erro HTTP ao apagar o webhook.", "error");
+                }
+            } catch (err) {
+                console.error(err);
+                addLog(`Incapaz de remover webhook: ${err.message}`, "error");
+                showAppToast("Erro de rede ao falar com o Telegram.", "error");
             }
         }
 

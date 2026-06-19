@@ -63,3 +63,26 @@ data class TelegramSendMessageResponse(
     val result: TelegramMessage? = null,
     val description: String? = null
 )
+
+@JsonClass(generateAdapter = true)
+data class TelegramWebhookInfo(
+    val url: String = "",
+    @Json(name = "has_custom_certificate") val hasCustomCertificate: Boolean = false,
+    @Json(name = "pending_update_count") val pendingUpdateCount: Int = 0,
+    @Json(name = "last_error_date") val lastErrorDate: Long? = null,
+    @Json(name = "last_error_message") val lastErrorMessage: String? = null
+)
+
+@JsonClass(generateAdapter = true)
+data class TelegramWebhookResponse(
+    val ok: Boolean,
+    val result: TelegramWebhookInfo? = null,
+    val description: String? = null
+)
+
+@JsonClass(generateAdapter = true)
+data class TelegramSimpleResponse(
+    val ok: Boolean,
+    val description: String? = null
+)
+

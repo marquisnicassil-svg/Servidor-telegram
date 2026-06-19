@@ -319,6 +319,9 @@ fun BotDashboardScreen(
                         },
                         onUpdateTheme = { amoled, accent ->
                             viewModel.updateTheme(amoled, accent)
+                        },
+                        onClearWebhook = {
+                            viewModel.clearTelegramWebhook()
                         }
                     )
                     5 -> TranslatorTab(viewModel = viewModel)
@@ -1059,7 +1062,8 @@ fun SettingsTab(
     accentColor: String,
     onSaveSettings: (String, String, Float, String, String, String, String) -> Unit,
     onVerifyToken: (String) -> Unit,
-    onUpdateTheme: (Boolean, String) -> Unit
+    onUpdateTheme: (Boolean, String) -> Unit,
+    onClearWebhook: () -> Unit
 ) {
     var token by remember(initialToken) { mutableStateOf(initialToken) }
     var systemPrompt by remember(initialPrompt) { mutableStateOf(initialPrompt) }
@@ -1890,6 +1894,21 @@ fun SettingsTab(
                                         fontSize = 11.sp,
                                         color = if (token.isNotEmpty()) Color(0xFF38BDF8) else Color(0xFF475569)
                                     )
+                                }
+
+                                if (token.isNotEmpty()) {
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Button(
+                                        onClick = { onClearWebhook() },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(38.dp),
+                                        shape = RoundedCornerShape(10.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0x1AEF4444)),
+                                        border = BorderStroke(1.dp, Color(0x33EF4444))
+                                    ) {
+                                        Text("🗑️ Limpar Webhook (Liberar Long Polling)", color = Color(0xFFF87171), fontWeight = FontWeight.SemiBold, fontSize = 11.sp)
+                                    }
                                 }
 
                                 Spacer(modifier = Modifier.height(16.dp))
