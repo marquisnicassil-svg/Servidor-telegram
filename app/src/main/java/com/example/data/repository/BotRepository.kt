@@ -270,7 +270,7 @@ class BotRepository(private val botDao: BotDao) {
                     .header("Authorization", "Bearer $cleanApiKey")
                     .header("Content-Type", "application/json")
 
-                if (aiApiType == "OPENROUTER") {
+                if (aiApiType == "OPENROUTER" || aiBaseUrl.contains("openrouter.ai", ignoreCase = true)) {
                     reqBuilder.header("HTTP-Referer", "https://google.com")
                     reqBuilder.header("X-Title", "Synapse AI")
                 }
