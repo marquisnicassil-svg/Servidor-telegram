@@ -1957,6 +1957,173 @@ fun SettingsTab(
                         }
                     }
 
+                    // INTELIGÊNCIA ARTIFICIAL (CÉREBRO DO BOT)
+                    item {
+                        Text(
+                            text = "🧠 Inteligência Artificial (Cérebro do Bot)",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                            color = Color(0xFFA855F7),
+                            modifier = Modifier.padding(top = 12.dp, bottom = 2.dp)
+                        )
+                    }
+
+                    item {
+                        var isApiKeyVisible by remember { mutableStateOf(false) }
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(16.dp))
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    text = "Tipo de Provedor / API",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                    color = Color.White
+                                )
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    listOf("GEMINI" to "Gemini ♊", "OPENAI" to "ChatGPT 🌐").forEach { (typePref, label) ->
+                                        val isSelected = aiApiType == typePref
+                                        Box(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .clip(RoundedCornerShape(10.dp))
+                                                .background(if (isSelected) Color(0x33A855F7) else Color(0xFF020617))
+                                                .border(
+                                                    width = 1.dp,
+                                                    color = if (isSelected) Color(0xFFA855F7) else Color(0xFF1E293B),
+                                                    shape = RoundedCornerShape(10.dp)
+                                                )
+                                                .clickable {
+                                                    aiApiType = typePref
+                                                    if (typePref == "GEMINI") {
+                                                        aiBaseUrl = "https://generativelanguage.googleapis.com/"
+                                                        aiModel = "gemini-1.5-flash"
+                                                    } else {
+                                                        aiBaseUrl = "https://api.openai.com/v1/"
+                                                        aiModel = "gpt-4o"
+                                                    }
+                                                }
+                                                .padding(vertical = 10.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = label,
+                                                fontSize = 11.sp,
+                                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                                color = if (isSelected) Color(0xFFA855F7) else Color(0xFF64748B)
+                                            )
+                                        }
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                Text(
+                                    text = if (aiApiType == "GEMINI") "Chave de API do Gemini (AI Key)" else "Chave de API / Token do Provedor",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                    color = Color.White
+                                )
+
+                                Spacer(modifier = Modifier.height(6.dp))
+
+                                OutlinedTextField(
+                                    value = aiApiKey,
+                                    onValueChange = { aiApiKey = it },
+                                    placeholder = {
+                                        Text(
+                                            text = if (aiApiType == "GEMINI") "Cole sua Gemini API Key..." else "Digite seu token (sk-...)",
+                                            fontSize = 12.sp,
+                                            color = Color(0xFF475569)
+                                        )
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    singleLine = true,
+                                    visualTransformation = if (isApiKeyVisible) androidx.compose.ui.text.input.VisualTransformation.None else androidx.compose.ui.text.input.PasswordVisualTransformation(),
+                                    trailingIcon = {
+                                        IconButton(onClick = { isApiKeyVisible = !isApiKeyVisible }) {
+                                            Text(if (isApiKeyVisible) "🙈" else "👁️", fontSize = 16.sp)
+                                        }
+                                    },
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = Color(0xFFA855F7),
+                                        unfocusedBorderColor = Color(0xFF1E293B),
+                                        focusedContainerColor = Color(0xFF020617),
+                                        unfocusedContainerColor = Color(0xFF020617),
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White
+                                    )
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                Text(
+                                    text = "Nome do Modelo",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                    color = Color.White
+                                )
+
+                                Spacer(modifier = Modifier.height(6.dp))
+
+                                OutlinedTextField(
+                                    value = aiModel,
+                                    onValueChange = { aiModel = it },
+                                    placeholder = { Text("Ex: gemini-1.5-flash ou gpt-4o", color = Color(0xFF475569), fontSize = 12.sp) },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    singleLine = true,
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = Color(0xFFA855F7),
+                                        unfocusedBorderColor = Color(0xFF1E293B),
+                                        focusedContainerColor = Color(0xFF020617),
+                                        unfocusedContainerColor = Color(0xFF020617),
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White
+                                    )
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                Text(
+                                    text = "URL Base da API (Endpoint)",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                    color = Color.White
+                                )
+
+                                Spacer(modifier = Modifier.height(6.dp))
+
+                                OutlinedTextField(
+                                    value = aiBaseUrl,
+                                    onValueChange = { aiBaseUrl = it },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    singleLine = true,
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = Color(0xFFA855F7),
+                                        unfocusedBorderColor = Color(0xFF1E293B),
+                                        focusedContainerColor = Color(0xFF020617),
+                                        unfocusedContainerColor = Color(0xFF020617),
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White
+                                    )
+                                )
+                            }
+                        }
+                    }
+
                     // WEBHOOK MANAGER SECTION
                     item {
                         Text(

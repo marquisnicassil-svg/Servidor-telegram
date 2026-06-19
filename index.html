@@ -2779,6 +2779,60 @@ CREATE TRIGGER on_synapse_user_signed_up
                     </div>
                 </div>
 
+                <!-- CÉREBRO DO BOT (PROVEDOR DE IA) -->
+                <h3 style="font-size: 1rem; color: #a855f7; font-weight: bold; margin-top: 20px; margin-bottom: 10px; text-align: left;">🧠 Cérebro do Bot (Inteligência Artificial)</h3>
+                <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: #0F172A; border: 1px solid var(--border-color); border-radius: 16px;">
+                    <div style="padding: 16px; display: flex; flex-direction: column; gap: 14px;">
+                        <span style="color: #94a3b8; font-size: 0.75rem; text-align: left; line-height: 1.4; display: block; margin-top: -4px;">
+                            Defina qual cérebro de Inteligência Artificial o seu bot utilizará para responder às mensagens no Telegram.
+                        </span>
+                        
+                        <div class="form-group">
+                            <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Tipo de Provedor / API</label>
+                            <div class="api-selector-grid" style="grid-template-columns: repeat(auto-fit, minmax(95px, 1fr)); gap: 8px; margin-bottom: 16px;">
+                                <div class="selector-btn active" id="tg-btn-gemini" onclick="setTelegramApiType('GEMINI')" style="border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s;">
+                                    <span>♊</span>
+                                    <span style="font-size: 0.75rem;">Gemini</span>
+                                </div>
+                                <div class="selector-btn" id="tg-btn-openai" onclick="setTelegramApiType('OPENAI')" style="border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s;">
+                                    <span>🌐</span>
+                                    <span style="font-size: 0.75rem;">ChatGPT</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label id="tg-api-key-label" style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Chave de API / Token do Provedor</label>
+                            <div style="position: relative; display: flex; align-items: center;">
+                                <input type="password" id="tg-api-key" class="form-control" style="padding-right: 40px; border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff;" placeholder="Cole sua API Key aqui..." oninput="syncTelegramApiKeysFromInput(this.value)">
+                                <button type="button" onclick="togglePasswordVisibility('tg-api-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="display: flex; gap: 10px;">
+                            <div style="flex: 1;">
+                                <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Endpoint URL</label>
+                                <input type="text" id="tg-base-url" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff;" value="https://generativelanguage.googleapis.com/" oninput="syncTelegramBaseUrlFromInput(this.value)">
+                            </div>
+                            <div style="width: 35%;">
+                                <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Modelo</label>
+                                <input type="text" id="tg-model-name" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff;" value="gemini-1.5-flash" oninput="syncTelegramModelFromInput(this.value)">
+                            </div>
+                        </div>
+
+                        <!-- BOT LISTENER ON/OFF INTERATIVE STATUS -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; margin-top: 8px;">
+                            <div>
+                                <span style="font-weight: bold; font-size: 0.85rem; color: #fff; display: block;">Escuta Ativa do Bot (Browser)</span>
+                                <span id="tg-polling-status-desc" style="font-size: 0.75rem; color: var(--text-muted);">Desativado. Ative para responder pelo navegador.</span>
+                            </div>
+                            <button id="btn-tg-polling-toggle" class="btn-universal" onclick="toggleTelegramBrowserPolling()" style="width: auto; height: 38px; padding: 0 16px; margin-top: 0; background: rgba(168, 85, 247, 0.15); border: 1px solid #a855f7; color: #c084fc; border-radius: 10px; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                📡 Iniciar Escuta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- SEÇÃO 2: WEBHOOK MANAGER -->
                 <h3 style="font-size: 1rem; color: #10b981; font-weight: bold; margin-top: 20px; margin-bottom: 10px; text-align: left;">🔗 Webhook Manager</h3>
                 <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: #0F172A; border: 1px solid var(--border-color); border-radius: 16px;">
@@ -4447,6 +4501,21 @@ WITH CHECK (true);</code>
                     if (data.modelName) safeSetVal('model-name', data.modelName);
                     if (data.systemPrompt) safeSetVal('system-prompt', data.systemPrompt);
                     
+                    // Restaura os campos secundários de Telegram AI settings para congruência instantânea
+                    if (data.apiType) {
+                        telegramApiType = data.apiType;
+                        document.getElementById('tg-btn-gemini')?.classList.toggle('active', data.apiType === "GEMINI");
+                        document.getElementById('tg-btn-openai')?.classList.toggle('active', data.apiType === "OPENAI");
+                        const label = document.getElementById('tg-api-key-label');
+                        if (label) {
+                            label.innerText = data.apiType === "GEMINI" ? "Chave de API do Gemini (AI Key)" : "Chave de API / Token do Provedor (ChatGPT)";
+                        }
+                    }
+                    const tgKeyToRestore = data.apiKey || localStorage.getItem('apiKey_' + (data.apiType || 'GEMINI')) || '';
+                    safeSetVal('tg-api-key', tgKeyToRestore);
+                    if (data.baseUrl) safeSetVal('tg-base-url', data.baseUrl);
+                    if (data.modelName) safeSetVal('tg-model-name', data.modelName);
+                    
                     // Restaura estado do Switch AMOLED
                     if (data.isAmoled === false) {
                         const sw = document.getElementById('amoled-switch');
@@ -5189,6 +5258,289 @@ WITH CHECK (true);</code>
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }
+        }
+
+        // --- Sincronização Inteligente do Cérebro do Bot em Tempo Real ---
+        let telegramApiType = "GEMINI";
+        
+        function setTelegramApiType(type) {
+            triggerPulse();
+            telegramApiType = type;
+            
+            document.getElementById('tg-btn-gemini')?.classList.toggle('active', type === "GEMINI");
+            document.getElementById('tg-btn-openai')?.classList.toggle('active', type === "OPENAI");
+            
+            // Sync labels
+            const label = document.getElementById('tg-api-key-label');
+            if (label) {
+                label.innerText = type === "GEMINI" ? "Chave de API do Gemini (AI Key)" : "Chave de API / Token do Provedor (ChatGPT)";
+            }
+            
+            // Re-sync basic engine type
+            setApiType(type, false);
+            
+            // Write defaults
+            const tgBaseUrl = document.getElementById('tg-base-url');
+            const tgModelName = document.getElementById('tg-model-name');
+            const mainBaseUrl = document.getElementById('base-url');
+            const mainModelName = document.getElementById('model-name');
+            
+            if (type === "GEMINI") {
+                if (tgBaseUrl) tgBaseUrl.value = "https://generativelanguage.googleapis.com/";
+                if (tgModelName) tgModelName.value = "gemini-1.5-flash";
+                if (mainBaseUrl) mainBaseUrl.value = "https://generativelanguage.googleapis.com/";
+                if (mainModelName) mainModelName.value = "gemini-1.5-flash";
+            } else {
+                if (tgBaseUrl) tgBaseUrl.value = "https://api.openai.com/v1/";
+                if (tgModelName) tgModelName.value = "gpt-4o";
+                if (mainBaseUrl) mainBaseUrl.value = "https://api.openai.com/v1/";
+                if (mainModelName) mainModelName.value = "gpt-4o";
+            }
+            
+            // Sync API key value
+            const savedValue = localStorage.getItem('apiKey_' + type) || '';
+            const tgApiKey = document.getElementById('tg-api-key');
+            if (tgApiKey) tgApiKey.value = savedValue;
+            const mainApiKey = document.getElementById('api-key');
+            if (mainApiKey) mainApiKey.value = savedValue;
+        }
+        
+        function syncTelegramApiKeysFromInput(val) {
+            const mainApiKey = document.getElementById('api-key');
+            if (mainApiKey) mainApiKey.value = val;
+            if (typeof apiType !== 'undefined' && apiType) {
+                localStorage.setItem('apiKey_' + apiType, val);
+            }
+        }
+        
+        function syncTelegramBaseUrlFromInput(val) {
+            const mainBaseUrl = document.getElementById('base-url');
+            if (mainBaseUrl) mainBaseUrl.value = val;
+        }
+        
+        function syncTelegramModelFromInput(val) {
+            const mainModelName = document.getElementById('model-name');
+            if (mainModelName) {
+                let optExists = Array.from(mainModelName.options).some(o => o.value === val);
+                if (!optExists && val.trim() !== "") {
+                    const optionEl = document.createElement('option');
+                    optionEl.value = val;
+                    optionEl.innerText = val;
+                    mainModelName.appendChild(optionEl);
+                }
+                mainModelName.value = val;
+            }
+        }
+        
+        // Polling Variables
+        let isTelegramBrowserPollingActive = false;
+        let telegramBrowserPollingInterval = null;
+        let tgBrowserLastUpdateId = 0;
+        
+        function toggleTelegramBrowserPolling() {
+            triggerPulse();
+            if (isTelegramBrowserPollingActive) {
+                stopTelegramBrowserPolling();
+            } else {
+                startTelegramBrowserPolling();
+            }
+        }
+        
+        async function startTelegramBrowserPolling() {
+            const token = document.getElementById('telegram-token').value.trim();
+            if (!token) {
+                addLog("Por favor, configure o Token do Bot antes de iniciar a escuta.", "error");
+                showAppToast("Insira o token do bot.", "warning");
+                return;
+            }
+            
+            // Load and Sync Key
+            let keyToUse = document.getElementById('tg-api-key').value.trim() || document.getElementById('api-key').value.trim();
+            if (!keyToUse) {
+                addLog("Aviso: Nenhuma chave de API de inteligência configurada. O bot funcionará em modo Fallback Inteligente local.", "warning");
+            }
+            
+            addLog("Iniciando escuta ativa no navegador...", "sys");
+            const btn = document.getElementById('btn-tg-polling-toggle');
+            if (btn) {
+                btn.innerHTML = `😴 Verificando...`;
+                btn.disabled = true;
+            }
+            
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${token}/getMe`);
+                if (!res.ok) {
+                    addLog("Falha ao iniciar escuta: Token inválido ou bloqueado pelo Telegram.", "error");
+                    showAppToast("Token inválido.", "error");
+                    if (btn) {
+                        btn.innerHTML = `📡 Iniciar Escuta`;
+                        btn.disabled = false;
+                    }
+                    return;
+                }
+                
+                const data = await res.json();
+                const username = data.result.username;
+                
+                isTelegramBrowserPollingActive = true;
+                if (btn) {
+                    btn.innerHTML = `🛑 Parar Escuta`;
+                    btn.style.background = "rgba(239, 68, 68, 0.15)";
+                    btn.style.borderColor = "#ef4444";
+                    btn.style.color = "#f87171";
+                    btn.disabled = false;
+                }
+                
+                document.getElementById('tg-polling-status-desc').innerHTML = `🟢 Escuta Rodando para @${username}`;
+                document.getElementById('tg-polling-status-desc').style.color = "#4ade80";
+                
+                addLog(`[Telegram Bot] Escuta em tempo real bem-sucedida! Bot @${username} online e operando no navegador.`, "success");
+                showAppToast(`Bot @${username} ativo de momento!`, "success");
+                
+                tgBrowserLastUpdateId = 0;
+                
+                telegramBrowserPollingInterval = setInterval(async () => {
+                    if (!isTelegramBrowserPollingActive) return;
+                    try {
+                        const tokenActive = document.getElementById('telegram-token').value.trim();
+                        if (!tokenActive) {
+                            stopTelegramBrowserPolling();
+                            return;
+                        }
+                        
+                        const updatesRes = await fetch(`https://api.telegram.org/bot${tokenActive}/getUpdates?offset=${tgBrowserLastUpdateId}&limit=5&timeout=1`);
+                        if (updatesRes.ok) {
+                            const updatesData = await updatesRes.json();
+                            if (updatesData.ok && updatesData.result.length > 0) {
+                                for (const update of updatesData.result) {
+                                    tgBrowserLastUpdateId = update.update_id + 1;
+                                    
+                                    if (update.message && update.message.text) {
+                                        const chatId = update.message.chat.id;
+                                        const msgText = update.message.text;
+                                        const userFirst = update.message.from?.first_name || "Usuário";
+                                        const userLast = update.message.from?.last_name || "";
+                                        const fullName = `${userFirst} ${userLast}`.trim();
+                                        
+                                        addLog(`[Telegram IN] (${fullName} id: ${chatId}): "${msgText}"`, "success");
+                                        
+                                        let reply = "";
+                                        const activeKey = document.getElementById('tg-api-key').value.trim() || document.getElementById('api-key').value.trim();
+                                        const activeBase = document.getElementById('tg-base-url').value.trim() || document.getElementById('base-url').value.trim();
+                                        const activeModel = document.getElementById('tg-model-name').value.trim() || document.getElementById('model-name').value.trim();
+                                        const activeSys = document.getElementById('system-prompt')?.value || "Você é uma inteligência artificial direta, precisa e amigável.";
+                                        
+                                        if (activeKey) {
+                                            try {
+                                                addLog(`[AI Brain] Processando resposta via API (${telegramApiType})...`, "info");
+                                                if (telegramApiType === "GEMINI") {
+                                                    const cleanBaseUrl = activeBase.endsWith('/') ? activeBase : activeBase + '/';
+                                                    const geminiUrl = `${cleanBaseUrl}v1beta/models/${activeModel}:generateContent?key=${activeKey}`;
+                                                    const postBody = {
+                                                        contents: [{ role: 'user', parts: [{ text: msgText }] }],
+                                                        systemInstruction: { parts: [{ text: activeSys }] }
+                                                    };
+                                                    const geminiRes = await fetch(geminiUrl, {
+                                                        method: 'POST',
+                                                        headers: { 'Content-Type': 'application/json' },
+                                                        body: JSON.stringify(postBody)
+                                                    });
+                                                    if (geminiRes.ok) {
+                                                        const gData = await geminiRes.json();
+                                                        reply = gData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+                                                    } else {
+                                                        const errTxt = await geminiRes.text();
+                                                        reply = `Erro na API do Gemini: ${errTxt.substring(0, 100)}`;
+                                                    }
+                                                } else {
+                                                    const cleanBaseUrl = activeBase.endsWith('/') ? activeBase : activeBase + '/';
+                                                    const oUrl = cleanBaseUrl.endsWith('chat/completions') ? cleanBaseUrl : `${cleanBaseUrl}chat/completions`;
+                                                    const oBody = {
+                                                        model: activeModel,
+                                                        messages: [
+                                                            { role: 'system', content: activeSys },
+                                                            { role: 'user', content: msgText }
+                                                        ]
+                                                    };
+                                                    const oRes = await fetch(oUrl, {
+                                                        method: 'POST',
+                                                        headers: {
+                                                            'Content-Type': 'application/json',
+                                                            'Authorization': `Bearer ${activeKey}`
+                                                        },
+                                                        body: JSON.stringify(oBody)
+                                                    });
+                                                    if (oRes.ok) {
+                                                        const oData = await oRes.json();
+                                                        reply = oData.choices?.[0]?.message?.content || "";
+                                                    } else {
+                                                        const errTxt = await oRes.text();
+                                                        reply = `Erro na API OpenAI: ${errTxt.substring(0, 100)}`;
+                                                    }
+                                                }
+                                            } catch (aiErr) {
+                                                console.error(aiErr);
+                                                reply = `Incapaz de gerar resposta IA: ${aiErr.message}`;
+                                            }
+                                        }
+                                        
+                                        if (!reply || reply.trim() === "") {
+                                            reply = `Olá ${userFirst}! Recebi sua mensagem: "${msgText}". Fui integrado com Android Jetpack Compose e SQLite Room Database! (Servidor rodando em modo Fallback Local)`;
+                                        }
+                                        
+                                        const sendRes = await fetch(`https://api.telegram.org/bot${tokenActive}/sendMessage`, {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({
+                                                chat_id: chatId,
+                                                text: reply,
+                                                parse_mode: 'Markdown'
+                                            })
+                                        });
+                                        
+                                        if (sendRes.ok) {
+                                            addLog(`[Telegram OUT] Resposta enviada de volta para ${userFirst}.`, "info");
+                                        } else {
+                                            addLog(`[Telegram OUT Erro] Erro ao enviar mensagem para ${userFirst}.`, "error");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } catch (loopErr) {
+                        console.error(loopErr);
+                    }
+                }, 3000);
+            } catch (err) {
+                console.error(err);
+                addLog(`Incapaz de alcançar o Telegram: ${err.message}`, "error");
+                showAppToast("Erro de rede no Bot.", "error");
+                if (btn) {
+                    btn.innerHTML = `📡 Iniciar Escuta`;
+                    btn.disabled = false;
+                }
+            }
+        }
+        
+        function stopTelegramBrowserPolling() {
+            isTelegramBrowserPollingActive = false;
+            if (telegramBrowserPollingInterval) {
+                clearInterval(telegramBrowserPollingInterval);
+                telegramBrowserPollingInterval = null;
+            }
+            
+            const btn = document.getElementById('btn-tg-polling-toggle');
+            if (btn) {
+                btn.innerHTML = `📡 Iniciar Escuta`;
+                btn.style.background = "rgba(168, 85, 247, 0.15)";
+                btn.style.borderColor = "#a855f7";
+                btn.style.color = "#c084fc";
+            }
+            
+            document.getElementById('tg-polling-status-desc').innerHTML = "Desativado. Ative para responder pelo navegador.";
+            document.getElementById('tg-polling-status-desc').style.color = "var(--text-muted)";
+            
+            addLog("[Telegram Bot] Escuta ativa desativada no navegador.", "warning");
         }
 
         let isWebhookOnline = true;
