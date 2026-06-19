@@ -2828,14 +2828,19 @@ CREATE TRIGGER on_synapse_user_signed_up
                         </div>
 
                         <!-- BOT LISTENER ON/OFF INTERATIVE STATUS -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; margin-top: 8px;">
-                            <div>
-                                <span style="font-weight: bold; font-size: 0.85rem; color: #fff; display: block;">Escuta Ativa do Bot (Browser)</span>
-                                <span id="tg-polling-status-desc" style="font-size: 0.75rem; color: var(--text-muted);">Desativado. Ative para responder pelo navegador.</span>
+                        <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; margin-top: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <span style="font-weight: bold; font-size: 0.85rem; color: #fff; display: block;">Escuta Ativa do Bot (Browser — Sandbox)</span>
+                                    <span id="tg-polling-status-desc" style="font-size: 0.75rem; color: var(--text-muted);">Desativado. Ative apenas para testes simples.</span>
+                                </div>
+                                <button id="btn-tg-polling-toggle" class="btn-universal" onclick="toggleTelegramBrowserPolling()" style="width: auto; height: 38px; padding: 0 16px; margin-top: 0; background: rgba(168, 85, 247, 0.15); border: 1px solid #a855f7; color: #c084fc; border-radius: 10px; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                    📡 Iniciar Escuta
+                                </button>
                             </div>
-                            <button id="btn-tg-polling-toggle" class="btn-universal" onclick="toggleTelegramBrowserPolling()" style="width: auto; height: 38px; padding: 0 16px; margin-top: 0; background: rgba(168, 85, 247, 0.15); border: 1px solid #a855f7; color: #c084fc; border-radius: 10px; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                                📡 Iniciar Escuta
-                            </button>
+                            <p style="font-size: 0.72rem; color: #94a3b8; margin-top: 8px; line-height: 1.35; padding: 10px; background: rgba(30, 41, 59, 0.4); border-radius: 8px; border: 1px dashed rgba(255,255,255,0.08);">
+                                ⚠️ <b>Nota de Segurança do Browser:</b> Chamadas diretas para APIs de IA (como OpenAI/Groq/OpenRouter) no navegador sofrem de <b>bloqueios CORS</b>. Recomenda-se fortemente <u>não usar</u> a Escuta do Navegador se pretender usar esses modelos. Em vez disso, ative o botão <b>Ligar Servidor</b> no <b>Aplicativo Android nativo (Kotlin)</b>, que executa fora do navegador e é 100% imune a erros de CORS.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -5577,7 +5582,11 @@ WITH CHECK (true);</code>
                                                 }
                                             } catch (aiErr) {
                                                 console.error(aiErr);
-                                                reply = `Incapaz de gerar resposta IA: ${aiErr.message}`;
+                                                let friendlyMessage = aiErr.message;
+                                                if (aiErr.message === "Failed to fetch") {
+                                                    friendlyMessage = "Bloqueio CORS ou de Rede detectado no Navegador (Failed to fetch). ⚠️ Atenção: O navegador limita requisições diretas de IA por questões de segurança (CORS). Para que o bot funcione perfeitamente sem bloqueios, desative a 'Escuta do Navegador' (Web Gateway) no painel web e ligue o servidor nativo na aba correspondente do seu próprio Aplicativo Android (Kotlin) rodando no Emulador.";
+                                                }
+                                                reply = `Incapaz de gerar resposta IA: ${friendlyMessage}`;
                                             }
                                         }
                                         
