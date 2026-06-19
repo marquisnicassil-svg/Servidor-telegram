@@ -54,6 +54,13 @@ data class DrawerItemData(
     val icon: androidx.compose.ui.graphics.vector.ImageVector
 )
 
+data class WebhookQueryLog(
+    val method: String,
+    val code: String,
+    val time: String,
+    val body: String
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BotDashboardScreen(
@@ -1073,6 +1080,54 @@ fun SettingsTab(
     var testConnectionStatus by remember { mutableStateOf("") } // "", "TESTING", "SUCCESS", "ERROR"
     val scope = rememberCoroutineScope()
 
+    // Webhook Manager States
+    var webhookName by remember { mutableStateOf("Synapse Production Webhook") }
+    var webhookDescription by remember { mutableStateOf("Canal integrado para recepção de logs e eventos automotores") }
+    var webhookUrl by remember { mutableStateOf("https://ais-pre-czylyfbapj56qz6hoxll75-727445671983.us-east1.run.app/api/v1/webhooks/synapse-8c9df1") }
+    var webhookIsOnline by remember { mutableStateOf(true) }
+    var webhookLastRequestReceived by remember { mutableStateOf<WebhookQueryLog?>(
+        WebhookQueryLog(
+            method = "POST",
+            code = "200 OK",
+            time = "11:38:12",
+            body = "{\n  \"status\": \"active\",\n  \"event_source\": \"reception_bot\",\n  \"user\": \"nicassil2017@gmail.com\",\n  \"meta\": {\n    \"device_ping\": \"21ms\",\n    \"integration_version\": \"v2.1\"\n  }\n}"
+        )
+    ) }
+    var webhookHistoryList by remember { mutableStateOf(listOf(
+        WebhookQueryLog("POST", "200 OK", "11:38:12", "{\n  \"status\": \"active\",\n  \"event_source\": \"reception_bot\",\n  \"user\": \"nicassil2017@gmail.com\"\n}"),
+        WebhookQueryLog("POST", "200 OK", "11:30:05", "{\n  \"event\": \"payment_completed\",\n  \"amount\": 49.90,\n  \"user_email\": \"nicassil2017@gmail.com\"\n}"),
+        WebhookQueryLog("GET", "200 OK", "11:15:00", "{\n  \"status\": \"ping_ok\",\n  \"server_uptime\": \"248h\"\n}"),
+        WebhookQueryLog("POST", "400 Bad Request", "10:04:14", "{\n  \"error\": \"missing_parameter_email\"\n}")
+    )) }
+    var isTestingWebhook by remember { mutableStateOf(false) }
+
+    val regenerateWebhookUrl = {
+        val randomHex = java.util.UUID.randomUUID().toString().substring(0, 6)
+        webhookUrl = "https://ais-pre-czylyfbapj56qz6hoxll75-727445671983.us-east1.run.app/api/v1/webhooks/synapse-$randomHex"
+    }
+
+    val testWebhookAction = {
+        scope.launch {
+            isTestingWebhook = true
+            delay(1000)
+            isTestingWebhook = false
+            
+            // Get current hour format
+            val sdf = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.getDefault())
+            val currentTimeStr = sdf.format(java.util.Date())
+            
+            val randomNum = (100..999).random()
+            val newLog = WebhookQueryLog(
+                method = listOf("POST", "GET", "PUT").random(),
+                code = listOf("200 OK", "201 Created", "200 OK").random(),
+                time = currentTimeStr,
+                body = "{\n  \"event\": \"webhook_test_trigger\",\n  \"trigger_id\": \"trg_$randomNum\",\n  \"status\": \"success\",\n  \"client_ip\": \"189.122.45.$randomNum\",\n  \"payload\": {\n    \"checked\": true,\n    \"mock_data\": {\n      \"temp\": 24.5,\n      \"humidity\": 62\n    }\n  }\n}"
+            )
+            webhookLastRequestReceived = newLog
+            webhookHistoryList = listOf(newLog) + webhookHistoryList.take(6)
+        }
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -1109,9 +1164,9 @@ fun SettingsTab(
                         onClick = { activeSettingsView = "appearance" }
                     )
                     SettingsMenuItem(
-                        icon = "🤖",
-                        title = "Conexão Bot do Telegram",
-                        subtitle = "Insira o token do BotFather e configure a integração do robô",
+                        icon = "🔗",
+                        title = "Integrações e Automação",
+                        subtitle = "Configure bot do Telegram, Webhooks e integrações com Discord, Make, N8N, Zapier",
                         onClick = { activeSettingsView = "telegram" }
                     )
                     SettingsMenuItem(
@@ -1738,38 +1793,50 @@ fun SettingsTab(
                 }
 
                 "telegram" -> {
+                    // Header Title
                     item {
                         Text(
-                            text = "🤖 CONEXÃO BOT DO TELEGRAM",
+                            text = "🔗 INTEGRAÇÕES E AUTOMAÇÃO",
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp,
                             color = Color.White
                         )
                     }
 
+                    // TELEGRAM BOT CARD
+                    item {
+                        Text(
+                            text = "🤖 Telegram Bot",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                            color = Color(0xFF38BDF8),
+                            modifier = Modifier.padding(top = 4.dp, bottom = 2.dp)
+                        )
+                    }
+
                     item {
                         var isTokenVisible by remember { mutableStateOf(false) }
                         Card(
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFF000000)), // Super Black (#000000)
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
                             shape = RoundedCornerShape(16.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
+                                .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(16.dp))
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(
-                                    text = "🤖 Token do Bot (Telegram)",
+                                    text = "Token do Bot (Telegram)",
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 13.sp,
+                                    fontSize = 12.sp,
                                     color = Color.White
                                 )
 
-                                Spacer(modifier = Modifier.height(10.dp))
+                                Spacer(modifier = Modifier.height(8.dp))
 
                                 OutlinedTextField(
                                     value = token,
                                     onValueChange = { token = it },
-                                    placeholder = { Text("Insira o token gerado pelo @BotFather...", color = Color(0xFF475569)) },
+                                    placeholder = { Text("Insira o token gerado pelo @BotFather...", color = Color(0xFF475569), fontSize = 12.sp) },
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .testTag("settings_token_input"),
@@ -1783,21 +1850,40 @@ fun SettingsTab(
                                     },
                                     colors = OutlinedTextFieldDefaults.colors(
                                         focusedBorderColor = Color(0xFF38BDF8),
-                                        unfocusedBorderColor = Color(0xFF334155),
-                                        focusedContainerColor = Color(0xFF0F172A),
-                                        unfocusedContainerColor = Color(0xFF0F172A),
+                                        unfocusedBorderColor = Color(0xFF1E293B),
+                                        focusedContainerColor = Color(0xFF020617),
+                                        unfocusedContainerColor = Color(0xFF020617),
                                         focusedTextColor = Color.White,
                                         unfocusedTextColor = Color.White
                                     )
                                 )
 
-                                Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(modifier = Modifier.height(12.dp))
 
                                 Text(
-                                    text = "Insira o token gerado pelo @BotFather para ativar o Moreno no Telegram.",
-                                    fontSize = 11.sp,
-                                    color = Color(0xFF94A3B8)
+                                    text = "URL do Webhook do Bot",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                    color = Color.White
                                 )
+
+                                Spacer(modifier = Modifier.height(6.dp))
+
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(Color(0xFF020617))
+                                        .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(8.dp))
+                                        .padding(horizontal = 12.dp, vertical = 10.dp)
+                                ) {
+                                    Text(
+                                        text = if (token.isNotEmpty()) "https://api.telegram.org/bot${token.take(15)}.../setWebhook" else "Configure um token para habilitar o Webhook",
+                                        fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                                        fontSize = 11.sp,
+                                        color = if (token.isNotEmpty()) Color(0xFF38BDF8) else Color(0xFF475569)
+                                    )
+                                }
 
                                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -1805,7 +1891,7 @@ fun SettingsTab(
                                     onClick = { onVerifyToken(token) },
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(48.dp)
+                                        .height(44.dp)
                                         .testTag("settings_verify_btn"),
                                     shape = RoundedCornerShape(12.dp),
                                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E293B)),
@@ -1815,7 +1901,7 @@ fun SettingsTab(
                                         CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = Color(0xFF38BDF8))
                                         Spacer(modifier = Modifier.width(8.dp))
                                     } else {
-                                        Text("🔄 Testar Conexão do Bot", color = Color(0xFF38BDF8), fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                                        Text("🔄 Testar Conexão do Bot", color = Color(0xFF38BDF8), fontWeight = FontWeight.Bold, fontSize = 12.sp)
                                     }
                                 }
 
@@ -1871,8 +1957,455 @@ fun SettingsTab(
                         }
                     }
 
+                    // WEBHOOK MANAGER SECTION
+                    item {
+                        Text(
+                            text = "🔗 Webhook Manager",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                            color = Color(0xFF10B981),
+                            modifier = Modifier.padding(top = 12.dp, bottom = 2.dp)
+                        )
+                    }
+
+                    item {
+                        val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
+                        var copiedTextIndicator by remember { mutableStateOf(false) }
+
+                        LaunchedEffect(copiedTextIndicator) {
+                            if (copiedTextIndicator) {
+                                delay(2000)
+                                copiedTextIndicator = false
+                            }
+                        }
+
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(16.dp))
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                // Webhook Name & Status Toggle
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = "Status do Gateway",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 12.sp,
+                                            color = Color.White
+                                        )
+                                        Text(
+                                            text = if (webhookIsOnline) "🟢 Ativo e Escutando" else "🔴 Desativado",
+                                            fontSize = 11.sp,
+                                            color = if (webhookIsOnline) Color(0xFF4ADE80) else Color(0xFFEF4444)
+                                        )
+                                    }
+                                    
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(
+                                            text = if (webhookIsOnline) "ONLINE" else "OFFLINE",
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (webhookIsOnline) Color(0xFF4ADE80) else Color(0xFFEF4444),
+                                            modifier = Modifier.padding(end = 6.dp)
+                                        )
+                                        Switch(
+                                            checked = webhookIsOnline,
+                                            onCheckedChange = { webhookIsOnline = it },
+                                            colors = SwitchDefaults.colors(
+                                                checkedThumbColor = Color(0xFF10B981),
+                                                checkedTrackColor = Color(0x6610B981)
+                                            ),
+                                            modifier = Modifier.height(28.dp)
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                // Webhook Name Field
+                                Text(
+                                    text = "Nome do Webhook",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 11.sp,
+                                    color = Color(0xFF94A3B8)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                OutlinedTextField(
+                                    value = webhookName,
+                                    onValueChange = { webhookName = it },
+                                    placeholder = { Text("Ex: Synapse Leads", color = Color(0xFF475569), fontSize = 12.sp) },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(10.dp),
+                                    singleLine = true,
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = Color(0xFF10B981),
+                                        unfocusedBorderColor = Color(0xFF1E293B),
+                                        focusedContainerColor = Color(0xFF020617),
+                                        unfocusedContainerColor = Color(0xFF020617),
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White
+                                    )
+                                )
+
+                                Spacer(modifier = Modifier.height(10.dp))
+
+                                // Webhook Description Field
+                                Text(
+                                    text = "Descrição (Opcional)",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 11.sp,
+                                    color = Color(0xFF94A3B8)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                OutlinedTextField(
+                                    value = webhookDescription,
+                                    onValueChange = { webhookDescription = it },
+                                    placeholder = { Text("Ex: Recebimento de lead do Make... (Opcional)", color = Color(0xFF475569), fontSize = 12.sp) },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(10.dp),
+                                    singleLine = true,
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = Color(0xFF10B981),
+                                        unfocusedBorderColor = Color(0xFF1E293B),
+                                        focusedContainerColor = Color(0xFF020617),
+                                        unfocusedContainerColor = Color(0xFF020617),
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White
+                                    )
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                // Auto-generated Unique URL Field
+                                Text(
+                                    text = "URL do Webhook Gerada",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 11.sp,
+                                    color = Color(0xFF94A3B8)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                OutlinedTextField(
+                                    value = webhookUrl,
+                                    onValueChange = {},
+                                    readOnly = true,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(10.dp),
+                                    singleLine = true,
+                                    textStyle = androidx.compose.ui.text.TextStyle(
+                                        fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                                        fontSize = 11.sp,
+                                        color = Color(0xFF10B981)
+                                    ),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = Color(0xFF1E293B),
+                                        unfocusedBorderColor = Color(0xFF1E293B),
+                                        focusedContainerColor = Color(0xFF020617),
+                                        unfocusedContainerColor = Color(0xFF020617)
+                                    )
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                // Buttons Area
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    // Copiar URL Button
+                                    Button(
+                                        onClick = {
+                                            clipboardManager.setText(androidx.compose.ui.text.AnnotatedString(webhookUrl))
+                                            copiedTextIndicator = true
+                                        },
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(38.dp),
+                                        shape = RoundedCornerShape(10.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E293B)),
+                                        border = BorderStroke(1.dp, Color(0xFF334155)),
+                                        contentPadding = PaddingValues(0.dp)
+                                    ) {
+                                        Text(
+                                            text = if (copiedTextIndicator) "✓ Copiado" else "📋 Copiar URL",
+                                            color = if (copiedTextIndicator) Color(0xFF4ADE80) else Color.White,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 11.sp
+                                        )
+                                    }
+
+                                    // Regenerar URL Button
+                                    Button(
+                                        onClick = { regenerateWebhookUrl() },
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(38.dp),
+                                        shape = RoundedCornerShape(10.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E293B)),
+                                        border = BorderStroke(1.dp, Color(0xFF334155)),
+                                        contentPadding = PaddingValues(0.dp)
+                                    ) {
+                                        Text(
+                                            text = "🔄 Regenerar",
+                                            color = Color.White,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 11.sp
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                // Test Webhook Button
+                                Button(
+                                    onClick = { testWebhookAction() },
+                                    enabled = !isTestingWebhook && webhookIsOnline,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(42.dp),
+                                    shape = RoundedCornerShape(10.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF10B981).copy(alpha = 0.15f),
+                                        disabledContainerColor = Color(0xFF1E293B)
+                                    ),
+                                    border = BorderStroke(1.dp, if (webhookIsOnline) Color(0xFF10B981) else Color(0xFF334155))
+                                ) {
+                                    if (isTestingWebhook) {
+                                        CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = Color(0xFF10B981))
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text("Enviando requisição fictícia...", color = Color(0xFF10B981), fontSize = 11.sp)
+                                    } else {
+                                        Text(
+                                            text = if (webhookIsOnline) "⚡ Enviar Requisição Teste" else "Ative o Gateway para Testar",
+                                            color = if (webhookIsOnline) Color(0xFF10B981) else Color(0xFF475569),
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 12.sp
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                // Last Request Details Box
+                                Text(
+                                    text = "Monitoramento - Última Requisição Recebida",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 11.sp,
+                                    color = Color(0xFF94A3B8)
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+
+                                val lastReq = webhookLastRequestReceived
+                                if (lastReq != null) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(Color(0xFF020617))
+                                            .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(8.dp))
+                                            .padding(12.dp)
+                                    ) {
+                                        Column {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+                                                    // Method badge
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .clip(RoundedCornerShape(4.dp))
+                                                            .background(Color(0x3310B981))
+                                                            .border(1.dp, Color(0xFF10B981), RoundedCornerShape(4.dp))
+                                                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                                                    ) {
+                                                        Text(lastReq.method, fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Color(0xFF10B981))
+                                                    }
+                                                    
+                                                    // Response code badge
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .clip(RoundedCornerShape(4.dp))
+                                                            .background(if (lastReq.code.contains("200") || lastReq.code.contains("201")) Color(0x334ADE80) else Color(0x33EF4444))
+                                                            .border(1.dp, if (lastReq.code.contains("200") || lastReq.code.contains("201")) Color(0xFF4ADE80) else Color(0xFFEF4444), RoundedCornerShape(4.dp))
+                                                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                                                    ) {
+                                                        Text(lastReq.code, fontSize = 9.sp, fontWeight = FontWeight.Bold, color = if (lastReq.code.contains("200") || lastReq.code.contains("201")) Color(0xFF4ADE80) else Color(0xFFEF4444))
+                                                    }
+                                                }
+                                                Text(lastReq.time, fontSize = 10.sp, color = Color(0xFF475569))
+                                            }
+
+                                            Spacer(modifier = Modifier.height(8.dp))
+
+                                            Text(
+                                                text = lastReq.body,
+                                                fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                                                fontSize = 10.sp,
+                                                color = Color(0xFF94A3B8),
+                                                lineHeight = 13.sp
+                                            )
+                                        }
+                                    }
+                                } else {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(Color(0xFF020617))
+                                            .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(8.dp))
+                                            .padding(16.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text("Nenhuma requisição recebida ainda.", color = Color(0xFF475569), fontSize = 11.sp)
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                // Simple request logs history
+                                Text(
+                                    text = "Histórico Recente de Disparos",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 11.sp,
+                                    color = Color(0xFF94A3B8)
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+
+                                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    webhookHistoryList.forEachIndexed { idx, item ->
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clip(RoundedCornerShape(8.dp))
+                                                .background(Color(0xFF090F1E))
+                                                .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(8.dp))
+                                                .padding(8.dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+                                                Text(
+                                                    text = item.method,
+                                                    fontWeight = FontWeight.Black,
+                                                    fontSize = 10.sp,
+                                                    color = if (item.method == "POST") Color(0xFF10B981) else if (item.method == "GET") Color(0xFF38BDF8) else Color(0xFFF59E0B)
+                                                )
+                                                Text(
+                                                    text = "/synapse-${webhookUrl.substringAfterLast("-")}",
+                                                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                                                    fontSize = 9.sp,
+                                                    color = Color(0xFF475569)
+                                                )
+                                            }
+
+                                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                                                Text(
+                                                    text = item.code,
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 9.sp,
+                                                    color = if (item.code.contains("200") || item.code.contains("201")) Color(0xFF4ADE80) else Color(0xFFEF4444)
+                                                )
+                                                Text(
+                                                    text = item.time,
+                                                    fontSize = 9.sp,
+                                                    color = Color(0xFF475569)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // ☁️ FUTURE INTEGRATIONS SECTION
+                    item {
+                        Text(
+                            text = "☁️ Integrações Futuras (Smart Hooks)",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                            color = Color(0xFFF59E0B),
+                            modifier = Modifier.padding(top = 12.dp, bottom = 2.dp)
+                        )
+                    }
+
+                    item {
+                        val services = listOf(
+                            Triple("Discord Webhooks", "Envia alertas de canais", "#8B5CF6"),
+                            Triple("WhatsApp API", "Notificações diretas de vendas", "#10B981"),
+                            Triple("n8n Workflow", "Integração zero-code nativa", "#EF4444"),
+                            Triple("Make (Integromat)", "Gerador de cenários webhook", "#EF4444"),
+                            Triple("Zapier Integrations", "Conector de aplicativos em nuvem", "#F59E0B"),
+                            Triple("APIs Customizadas", "Triggers JSON e REST custom", "#38BDF8")
+                        )
+
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            services.chunked(2).forEach { pairs ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    pairs.forEach { service ->
+                                        val tintColor = try { Color(android.graphics.Color.parseColor(service.third)) } catch(e: Exception) { Color.LightGray }
+                                        Card(
+                                            colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                                            shape = RoundedCornerShape(12.dp),
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(12.dp))
+                                        ) {
+                                            Column(modifier = Modifier.padding(12.dp)) {
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                                ) {
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .size(6.dp)
+                                                            .clip(CircleShape)
+                                                            .background(tintColor)
+                                                    )
+                                                    Text(
+                                                        text = service.first,
+                                                        fontWeight = FontWeight.Bold,
+                                                        fontSize = 11.sp,
+                                                        color = Color.White
+                                                    )
+                                                }
+                                                Spacer(modifier = Modifier.height(2.dp))
+                                                Text(
+                                                    text = service.second,
+                                                    fontSize = 9.sp,
+                                                    color = Color(0xFF64748B)
+                                                )
+                                                Spacer(modifier = Modifier.height(6.dp))
+                                                Box(
+                                                    modifier = Modifier
+                                                        .clip(RoundedCornerShape(4.dp))
+                                                        .background(tintColor.copy(alpha = 0.1f))
+                                                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                                                ) {
+                                                    Text("EM BREVE", fontSize = 8.sp, fontWeight = FontWeight.Bold, color = tintColor)
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     // Save settings action
                     item {
+                        Spacer(modifier = Modifier.height(8.dp))
                         Button(
                             onClick = { onSaveSettings(token, systemPrompt, temperature, aiApiKey, aiApiType, aiBaseUrl, aiModel) },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF38BDF8)),
