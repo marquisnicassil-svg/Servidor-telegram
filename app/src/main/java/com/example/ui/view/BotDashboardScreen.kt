@@ -1391,7 +1391,7 @@ fun SettingsTab(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    listOf("GEMINI" to "Gemini ♊", "OPENAI" to "ChatGPT 🌐").forEach { (typePref, label) ->
+                                    listOf("GEMINI" to "Gemini ♊", "OPENAI" to "ChatGPT 🌐", "CUSTOM" to "Universal 🧠").forEach { (typePref, label) ->
                                         val isSelected = aiApiType == typePref
                                         Box(
                                             modifier = Modifier
@@ -1408,9 +1408,16 @@ fun SettingsTab(
                                                     if (typePref == "GEMINI") {
                                                         aiBaseUrl = "https://generativelanguage.googleapis.com/"
                                                         aiModel = "gemini-1.5-flash"
-                                                    } else {
+                                                    } else if (typePref == "OPENAI") {
                                                         aiBaseUrl = "https://api.openai.com/v1/"
                                                         aiModel = "gpt-4o"
+                                                    } else if (typePref == "CUSTOM") {
+                                                        if (aiBaseUrl == "https://generativelanguage.googleapis.com/" || aiBaseUrl == "https://api.openai.com/v1/") {
+                                                            aiBaseUrl = "https://api.deepseek.com/v1/"
+                                                        }
+                                                        if (aiModel == "gemini-1.5-flash" || aiModel == "gpt-4o") {
+                                                            aiModel = "deepseek-chat"
+                                                        }
                                                     }
                                                 }
                                                 .padding(vertical = 12.dp, horizontal = 4.dp),
@@ -1430,7 +1437,7 @@ fun SettingsTab(
 
                                 // API Key
                                 Text(
-                                    text = if (aiApiType == "GEMINI") "Chave de API do Gemini (AI Key):" else "Chave de API / Token do Provedor:",
+                                    text = if (aiApiType == "GEMINI") "Chave de API do Gemini (AI Key):" else if (aiApiType == "OPENAI") "Chave de API / Token do Provedor:" else "Chave de API / Token (Qualquer API):",
                                     fontSize = 12.sp,
                                     color = Color(0xFF94A3B8)
                                 )
@@ -1441,7 +1448,7 @@ fun SettingsTab(
                                     onValueChange = { aiApiKey = it },
                                     placeholder = {
                                         Text(
-                                            text = if (aiApiType == "GEMINI") "Usar chave GEMINI_API_KEY do AI Studio" else "Digite seu token aqui (sk-...)",
+                                            text = if (aiApiType == "GEMINI") "Usar chave GEMINI_API_KEY do AI Studio" else if (aiApiType == "OPENAI") "Digite seu token aqui (sk-...)" else "Digite sua API Key customizada...",
                                             fontSize = 12.sp,
                                             color = Color(0xFF475569)
                                         )
@@ -1991,7 +1998,7 @@ fun SettingsTab(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    listOf("GEMINI" to "Gemini ♊", "OPENAI" to "ChatGPT 🌐").forEach { (typePref, label) ->
+                                    listOf("GEMINI" to "Gemini ♊", "OPENAI" to "ChatGPT 🌐", "CUSTOM" to "Universal 🧠").forEach { (typePref, label) ->
                                         val isSelected = aiApiType == typePref
                                         Box(
                                             modifier = Modifier
@@ -2008,9 +2015,16 @@ fun SettingsTab(
                                                     if (typePref == "GEMINI") {
                                                         aiBaseUrl = "https://generativelanguage.googleapis.com/"
                                                         aiModel = "gemini-1.5-flash"
-                                                    } else {
+                                                    } else if (typePref == "OPENAI") {
                                                         aiBaseUrl = "https://api.openai.com/v1/"
                                                         aiModel = "gpt-4o"
+                                                    } else if (typePref == "CUSTOM") {
+                                                        if (aiBaseUrl == "https://generativelanguage.googleapis.com/" || aiBaseUrl == "https://api.openai.com/v1/") {
+                                                            aiBaseUrl = "https://api.deepseek.com/v1/"
+                                                        }
+                                                        if (aiModel == "gemini-1.5-flash" || aiModel == "gpt-4o") {
+                                                            aiModel = "deepseek-chat"
+                                                        }
                                                     }
                                                 }
                                                 .padding(vertical = 10.dp),
@@ -2029,7 +2043,7 @@ fun SettingsTab(
                                 Spacer(modifier = Modifier.height(12.dp))
 
                                 Text(
-                                    text = if (aiApiType == "GEMINI") "Chave de API do Gemini (AI Key)" else "Chave de API / Token do Provedor",
+                                    text = if (aiApiType == "GEMINI") "Chave de API do Gemini (AI Key)" else if (aiApiType == "OPENAI") "Chave de API / Token do Provedor" else "Chave de API / Token (Qualquer API)",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 12.sp,
                                     color = Color.White
@@ -2042,7 +2056,7 @@ fun SettingsTab(
                                     onValueChange = { aiApiKey = it },
                                     placeholder = {
                                         Text(
-                                            text = if (aiApiType == "GEMINI") "Cole sua Gemini API Key..." else "Digite seu token (sk-...)",
+                                            text = if (aiApiType == "GEMINI") "Cole sua Gemini API Key..." else if (aiApiType == "OPENAI") "Digite seu token (sk-...)" else "Cole sua API Key customizada...",
                                             fontSize = 12.sp,
                                             color = Color(0xFF475569)
                                         )

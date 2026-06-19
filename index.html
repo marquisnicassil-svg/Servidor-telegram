@@ -2789,7 +2789,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         
                         <div class="form-group">
                             <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Tipo de Provedor / API</label>
-                            <div class="api-selector-grid" style="grid-template-columns: repeat(auto-fit, minmax(95px, 1fr)); gap: 8px; margin-bottom: 16px;">
+                            <div class="api-selector-grid" style="grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px;">
                                 <div class="selector-btn active" id="tg-btn-gemini" onclick="setTelegramApiType('GEMINI')" style="border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s;">
                                     <span>♊</span>
                                     <span style="font-size: 0.75rem;">Gemini</span>
@@ -2797,6 +2797,10 @@ CREATE TRIGGER on_synapse_user_signed_up
                                 <div class="selector-btn" id="tg-btn-openai" onclick="setTelegramApiType('OPENAI')" style="border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s;">
                                     <span>🌐</span>
                                     <span style="font-size: 0.75rem;">ChatGPT</span>
+                                </div>
+                                <div class="selector-btn" id="tg-btn-custom" onclick="setTelegramApiType('CUSTOM')" style="border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s;">
+                                    <span>🧠</span>
+                                    <span style="font-size: 0.75rem;">Universal</span>
                                 </div>
                             </div>
                         </div>
@@ -4506,9 +4510,16 @@ WITH CHECK (true);</code>
                         telegramApiType = data.apiType;
                         document.getElementById('tg-btn-gemini')?.classList.toggle('active', data.apiType === "GEMINI");
                         document.getElementById('tg-btn-openai')?.classList.toggle('active', data.apiType === "OPENAI");
+                        document.getElementById('tg-btn-custom')?.classList.toggle('active', data.apiType === "CUSTOM");
                         const label = document.getElementById('tg-api-key-label');
                         if (label) {
-                            label.innerText = data.apiType === "GEMINI" ? "Chave de API do Gemini (AI Key)" : "Chave de API / Token do Provedor (ChatGPT)";
+                            if (data.apiType === "GEMINI") {
+                                label.innerText = "Chave de API do Gemini (AI Key)";
+                            } else if (data.apiType === "OPENAI") {
+                                label.innerText = "Chave de API / Token do Provedor (ChatGPT)";
+                            } else {
+                                label.innerText = "Chave de API / Token do Provedor (Qualquer API)";
+                            }
                         }
                     }
                     const tgKeyToRestore = data.apiKey || localStorage.getItem('apiKey_' + (data.apiType || 'GEMINI')) || '';
@@ -5269,11 +5280,18 @@ WITH CHECK (true);</code>
             
             document.getElementById('tg-btn-gemini')?.classList.toggle('active', type === "GEMINI");
             document.getElementById('tg-btn-openai')?.classList.toggle('active', type === "OPENAI");
+            document.getElementById('tg-btn-custom')?.classList.toggle('active', type === "CUSTOM");
             
             // Sync labels
             const label = document.getElementById('tg-api-key-label');
             if (label) {
-                label.innerText = type === "GEMINI" ? "Chave de API do Gemini (AI Key)" : "Chave de API / Token do Provedor (ChatGPT)";
+                if (type === "GEMINI") {
+                    label.innerText = "Chave de API do Gemini (AI Key)";
+                } else if (type === "OPENAI") {
+                    label.innerText = "Chave de API / Token do Provedor (ChatGPT)";
+                } else {
+                    label.innerText = "Chave de API / Token do Provedor (Qualquer API)";
+                }
             }
             
             // Re-sync basic engine type
@@ -5290,11 +5308,33 @@ WITH CHECK (true);</code>
                 if (tgModelName) tgModelName.value = "gemini-1.5-flash";
                 if (mainBaseUrl) mainBaseUrl.value = "https://generativelanguage.googleapis.com/";
                 if (mainModelName) mainModelName.value = "gemini-1.5-flash";
-            } else {
+            } else if (type === "OPENAI") {
                 if (tgBaseUrl) tgBaseUrl.value = "https://api.openai.com/v1/";
                 if (tgModelName) tgModelName.value = "gpt-4o";
                 if (mainBaseUrl) mainBaseUrl.value = "https://api.openai.com/v1/";
                 if (mainModelName) mainModelName.value = "gpt-4o";
+            } else if (type === "CUSTOM") {
+                if (tgBaseUrl && (tgBaseUrl.value === "https://generativelanguage.googleapis.com/" || tgBaseUrl.value === "https://api.openai.com/v1/")) {
+                    tgBaseUrl.value = "https://api.deepseek.com/v1/";
+                }
+                if (tgModelName && (tgModelName.value === "gemini-1.5-flash" || tgModelName.value === "gpt-4o")) {
+                    tgModelName.value = "deepseek-chat";
+                }
+                if (mainBaseUrl && (mainBaseUrl.value === "https://generativelanguage.googleapis.com/" || mainBaseUrl.value === "https://api.openai.com/v1/")) {
+                    mainBaseUrl.value = "https://api.deepseek.com/v1/";
+                }
+                if (mainModelName) {
+                    let optExists = Array.from(mainModelName.options).some(o => o.value === "deepseek-chat");
+                    if (!optExists) {
+                        const optionEl = document.createElement('option');
+                        optionEl.value = "deepseek-chat";
+                        optionEl.innerText = "deepseek-chat";
+                        mainModelName.appendChild(optionEl);
+                    }
+                    if (mainModelName.value === "gemini-1.5-flash" || mainModelName.value === "gpt-4o") {
+                        mainModelName.value = "deepseek-chat";
+                    }
+                }
             }
             
             // Sync API key value
