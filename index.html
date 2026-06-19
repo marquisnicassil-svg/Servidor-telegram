@@ -5237,6 +5237,7 @@ WITH CHECK (true);</code>
 
         async function testTelegramConnection() {
             triggerPulse();
+            saveConfiguration();
             const token = document.getElementById('telegram-token').value.trim();
             if (!token) {
                 addLog("Por favor, insira o token do bot antes de testar.", "error");
@@ -5545,8 +5546,7 @@ WITH CHECK (true);</code>
                                                         reply = `Erro na API do Gemini: ${errTxt.substring(0, 100)}`;
                                                     }
                                                 } else {
-                                                    const cleanBaseUrl = activeBase.endsWith('/') ? activeBase : activeBase + '/';
-                                                    const oUrl = cleanBaseUrl.endsWith('chat/completions') ? cleanBaseUrl : `${cleanBaseUrl}chat/completions`;
+                                                    const oUrl = sanitizeChatCompletionsUrl(activeBase);
                                                     const oBody = {
                                                         model: activeModel,
                                                         messages: [

@@ -239,12 +239,16 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
                 // Update local configuration with tested credentials and save token immediately
                 val config = configState.value
                 if (config != null) {
+                    val updatedConfig = config.copy(
+                        token = token,
+                        botName = botUser.firstName,
+                        botUsername = botUser.username ?: ""
+                    )
                     withContext(Dispatchers.IO) {
-                        repository.saveConfig(config.copy(
-                            token = token,
-                            botName = botUser.firstName,
-                            botUsername = botUser.username ?: ""
-                        ))
+                        repository.saveConfig(updatedConfig)
+                    }
+                    if (_isServerRunning.value) {
+                        startBotServer(updatedConfig)
                     }
                 }
                 

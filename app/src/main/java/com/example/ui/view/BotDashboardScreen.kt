@@ -1914,7 +1914,10 @@ fun SettingsTab(
                                 Spacer(modifier = Modifier.height(16.dp))
 
                                 Button(
-                                    onClick = { onVerifyToken(token) },
+                                    onClick = {
+                                        onSaveSettings(token, systemPrompt, temperature, aiApiKey, aiApiType, aiBaseUrl, aiModel)
+                                        onVerifyToken(token)
+                                    },
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(44.dp)
