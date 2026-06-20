@@ -1465,6 +1465,10 @@
                 <span class="drawer-icon">📄</span>
                 <span class="drawer-label" data-i18n="resume_builder">Currículo IA</span>
             </li>
+            <li class="drawer-item" onclick="clickDrawerItem('tab-interview-simulator', '💼 Simulador de Entrevistas IA')">
+                <span class="drawer-icon">💼</span>
+                <span class="drawer-label" data-i18n="interview_simulator">Simulador de Entrevistas IA</span>
+            </li>
             <li class="drawer-item" onclick="clickDrawerItem('tab-workspace', '💼 Workspace')" id="drawer-tab-workspace">
                 <span class="drawer-icon">💼</span>
                 <span class="drawer-label" data-i18n="workspace">Workspace</span>
@@ -1723,6 +1727,166 @@
                         🔊 Ouvir
                     </button>
                 </div>
+            </div>
+        </section>
+
+        <!-- ABA SIMULADOR DE ENTREVISTAS IA -->
+        <section id="tab-interview-simulator" class="tab-section" style="padding: 18px 14px 80px;">
+            <div class="section-header">
+                <h2>💼 Simulador de Entrevistas IA</h2>
+            </div>
+            
+            <!-- Setup container -->
+            <div id="int-setup-container" style="display: flex; flex-direction: column; gap: 15px;">
+                <div class="card" style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px;">
+                    <span style="color: var(--primary); font-family: monospace; font-size: 0.75rem; font-weight: bold; text-transform: uppercase;">Recurso Premium</span>
+                    <h3 style="margin: 8px 0; font-size: 1.3rem;">Treine com nosso RH virtual alimentado por IA</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.4;">Selecione suas preferências e simule conversas com nosso recrutador virtual em rodadas dinâmicas. Ao final, ganhe uma sabatina analítica com notas e pontos de melhoria personalizados!</p>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+                    <div>
+                        <label style="display:block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Cargo Desejado:</label>
+                        <input id="int-input-cargo" type="text" class="form-control" value="Desenvolvedor Mobile Android" placeholder="Ex: Desenvolvedor React Native, Product Manager...">
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <label style="display:block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Área Profissional:</label>
+                            <select id="int-select-area" class="form-control" style="background: #0f172a; color: #fff; border: 1px solid var(--border-color);">
+                                <option value="Tecnologia">Tecnologia</option>
+                                <option value="Design">Design</option>
+                                <option value="Negócios / Gestão">Negócios</option>
+                                <option value="Vendas / Marketing">Marketing</option>
+                                <option value="Finanças">Finanças</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display:block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Nível de Experiência:</label>
+                            <select id="int-select-nivel" class="form-control" style="background: #0f172a; color: #fff; border: 1px solid var(--border-color);">
+                                <option value="Estágio">Estágio</option>
+                                <option value="Júnior">Júnior</option>
+                                <option value="Pleno" selected>Pleno</option>
+                                <option value="Sênior">Sênior</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-universal" style="background-color: var(--primary); color: #000; border: none; border-radius: 24px; padding: 14px; font-size: 0.95rem; font-weight: 600; cursor: pointer; text-align: center; display: block; width: 100%; transition: opacity 0.2s; margin-top: 10px;" onclick="startWebInterview()">🔥 INICIAR ENTREVISTA COM IA</button>
+
+                <!-- History panel -->
+                <div id="int-history-root" style="margin-top: 20px;">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--text-light);">Histórico de Simulações</h3>
+                    <div id="int-history-list" style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- dynamic history items go here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat playing container -->
+            <div id="int-chat-container" style="display: none; flex-direction: column; height: 500px; border: 1px solid var(--border-color); border-radius: 16px; background: rgba(0,0,0,0.22); overflow: hidden;">
+                <div style="background: rgba(255,255,255,0.03); padding: 14px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4 id="int-chat-title" style="margin: 0; font-size: 1rem; color: #fff;">Entrevista em Curso</h4>
+                        <small id="int-chat-subtitle" style="color: var(--text-muted).">Aguardando...</small>
+                    </div>
+                    <span id="int-chat-progress" style="font-family: monospace; font-weight: bold; font-size: 0.85rem; color: var(--primary);">Pergunta 1 de 5</span>
+                </div>
+                
+                <div id="int-chat-scroll" style="flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;">
+                    <!-- chat messages -->
+                </div>
+
+                <div style="padding: 12px; border-top: 1px solid var(--border-color); display: flex; gap: 10px; background: rgba(0,0,0,0.3);">
+                    <input id="int-chat-input" type="text" class="form-control" style="flex: 1;" placeholder="Digite sua resposta completa..." onkeypress="handleIntKeyPress(event)">
+                    <button class="btn-universal" style="background-color: var(--primary); color: #000; border: none; border-radius: 8px; padding: 0 16px; font-weight: bold; cursor: pointer;" onclick="submitWebAnswer()">Enviar</button>
+                </div>
+            </div>
+
+            <!-- Results container -->
+            <div id="int-result-container" style="display: none; flex-direction: column; gap: 18px;">
+                <div class="card" style="background: var(--card-bg-primary); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div>
+                            <span style="color: var(--primary); font-family: monospace; font-size: 0.75rem; font-weight: bold; text-transform: uppercase;">Performance Geral</span>
+                            <h3 id="int-res-cargo" style="margin: 4px 0 0 0; font-size: 1.25rem;">Nome do Cargo</h3>
+                            <small id="int-res-meta" style="color: var(--text-muted);"></small>
+                        </div>
+                        <div id="int-res-circle" style="width: 64px; height: 64px; border-radius: 50%; border: 3px solid #10b981; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #0f172a;">
+                            <span id="int-res-nota" style="font-size: 1.3rem; font-weight: 900; color: #10b981;">85</span>
+                            <span style="font-size: 0.5rem; color: var(--text-muted); font-weight: bold;">NOTA</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px;">
+                    <h4 style="margin: 0 0 4px 0; font-size: 0.95rem; text-transform: uppercase; color: var(--text-muted);">Critérios de Avaliação</h4>
+                    
+                    <div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size: 0.85rem;">
+                            <span>🗣️ Comunicação</span>
+                            <strong id="int-score-comm">90 / 100</strong>
+                        </div>
+                        <div style="width:100%; height:8px; background: rgba(255,255,255,0.05); border-radius:4px; overflow:hidden;">
+                            <div id="int-bar-comm" style="height:100%; width:90%; background: #38bdf8;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size: 0.85rem;">
+                            <span>🎯 Clareza de Respostas</span>
+                            <strong id="int-score-clar">80 / 100</strong>
+                        </div>
+                        <div style="width:100%; height:8px; background: rgba(255,255,255,0.05); border-radius:4px; overflow:hidden;">
+                            <div id="int-bar-clar" style="height:100%; width:80%; background: #818cf8;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size: 0.85rem;">
+                            <span>💻 Conhecimento Técnico</span>
+                            <strong id="int-score-tech">85 / 100</strong>
+                        </div>
+                        <div style="width:100%; height:8px; background: rgba(255,255,255,0.05); border-radius:4px; overflow:hidden;">
+                            <div id="int-bar-tech" style="height:100%; width:85%; background: #f59e0b;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size: 0.85rem;">
+                            <span>🧠 Confiança Demonstrada</span>
+                            <strong id="int-score-conf">85 / 100</strong>
+                        </div>
+                        <div style="width:100%; height:8px; background: rgba(255,255,255,0.05); border-radius:4px; overflow:hidden;">
+                            <div id="int-bar-conf" style="height:100%; width:85%; background: #ec4899;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 12px; padding: 14px;">
+                        <h4 style="margin: 0; font-size: 0.9rem; color: #10b981;">✅ Pontos Fortes</h4>
+                        <p id="int-res-strengths" style="margin: 6px 0 0 0; font-size: 0.82rem; line-height: 1.4; color: #fff;"></p>
+                    </div>
+
+                    <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 12px; padding: 14px;">
+                        <h4 style="margin: 0; font-size: 0.9rem; color: #ef4444;">⚠️ Pontos a Melhorar</h4>
+                        <p id="int-res-improvements" style="margin: 6px 0 0 0; font-size: 0.82rem; line-height: 1.4; color: #fff;"></p>
+                    </div>
+
+                    <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 14px;">
+                        <h4 style="margin: 0; font-size: 0.9rem; color: #38bdf8;">💡 Recomendações Personalizadas</h4>
+                        <p id="int-res-recommendations" style="margin: 6px 0 0 0; font-size: 0.82rem; line-height: 1.4; color: #fff;"></p>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <button class="btn-universal" style="background-color: var(--primary); color: #000; border: none; border-radius: 20px; padding: 12px; font-weight: 600; cursor: pointer;" onclick="retakeWebInterview()">Refazer Treino</button>
+                    <button class="btn-universal" style="background-color: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-color); border-radius: 20px; padding: 12px; font-weight: 600; cursor: pointer;" onclick="shareWebReport()">Compartilhar</button>
+                </div>
+
+                <button class="btn-universal" style="background-color: transparent; color: var(--text-muted); border: 1px solid var(--border-color); border-radius: 20px; padding: 12px; font-weight: 500; cursor: pointer;" onclick="closeWebResult()">Voltar ao Simulador</button>
             </div>
         </section>
 
@@ -3487,6 +3651,7 @@ WITH CHECK (true);</code>
             'tab-chat': '💬 Conversas',
             'tab-agents': '🤖 Agents',
             'tab-resume-builder': '📄 Currículo IA',
+            'tab-interview-simulator': '💼 Simulador de Entrevistas IA',
             'tab-workspace': '💼 Workspace',
             'tab-config': '⚙️ Configurações (Ajustes)',
             'tab-logs': '🖥️ Terminal de Comandos',
@@ -7892,6 +8057,286 @@ WITH CHECK (true);</code>
                 loadSampleResumeData();
             }
         }
+
+         }
+ 
+        // --- SIMULADOR DE ENTREVISTAS IA ---
+        let webInterviewState = {
+            cargo: "",
+            area: "",
+            nivel: "",
+            progress: 1,
+            history: [],
+            isRunning: false
+        };
+
+        function getWebInterviews() {
+            try {
+                return JSON.parse(localStorage.getItem('synapse_interviews') || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveWebInterview(record) {
+            try {
+                const list = getWebInterviews();
+                list.unshift(record);
+                localStorage.setItem('synapse_interviews', JSON.stringify(list));
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function renderWebInterviewHistory() {
+            const container = document.getElementById('int-history-list');
+            if (!container) return;
+            const records = getWebInterviews();
+            if (records.length === 0) {
+                container.innerHTML = `<div style="color: var(--text-muted); font-size: 0.85rem; padding: 10px; text-align: center;">Nenhuma simulação anterior encontrada. Inicie uma nova acima!</div>`;
+                return;
+            }
+
+            container.innerHTML = records.map(r => `
+                <div class="card" style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px;">
+                    <div style="flex: 1; min-width: 0; text-align: left;">
+                        <h4 style="margin: 0; font-size: 0.95rem; color: #fff; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${r.cargo}</h4>
+                        <small style="color: var(--text-muted);">${r.nivel} • ${r.area}</small>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; font-weight: 900; font-size: 0.85rem; padding: 4px 10px; border-radius: 6px; cursor: pointer;" onclick="loadWebResultFromHistory('${r.id}')">${r.scoreGeneral}</span>
+                        <span style="color: #ef4444; font-size: 1.1rem; cursor: pointer; padding: 5px;" onclick="deleteWebInterview('${r.id}')">🗑️</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteWebInterview(id) {
+            try {
+                let records = getWebInterviews();
+                records = records.filter(r => r.id !== id);
+                localStorage.setItem('synapse_interviews', JSON.stringify(records));
+                renderWebInterviewHistory();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function loadWebResultFromHistory(id) {
+            const records = getWebInterviews();
+            const found = records.find(r => r.id === id);
+            if (found) {
+                showWebInterviewResult(found);
+            }
+        }
+
+        function startWebInterview() {
+            const cargo = document.getElementById('int-input-cargo').value || "Desenvolvedor Mobile Android";
+            const area = document.getElementById('int-select-area').value;
+            const nivel = document.getElementById('int-select-nivel').value;
+
+            webInterviewState = {
+                id: 'int-' + Date.now(),
+                cargo: cargo,
+                area: area,
+                nivel: nivel,
+                progress: 1,
+                history: [],
+                isRunning: true
+            };
+
+            document.getElementById('int-setup-container').style.display = 'none';
+            document.getElementById('int-chat-container').style.display = 'flex';
+            document.getElementById('int-result-container').style.display = 'none';
+
+            document.getElementById('int-chat-title').innerText = cargo;
+            document.getElementById('int-chat-subtitle').innerText = `${nivel} • ${area}`;
+            
+            const chatScroll = document.getElementById('int-chat-scroll');
+            chatScroll.innerHTML = "";
+
+            addWebRecruiterMessage("Olá! Seja muito bem-vindo ao Simulador de Entrevistas Synapse IA. É um prazer falar com você! Identifiquei que você está pleiteando a vaga de " + cargo + " (" + nivel + ") na área profissional de " + area + ". Para dar o primeiro passo na nossa sabatina, por favor compartilhe comigo qual foi sua maior conquista técnica de projeto nos últimos 12 meses?");
+        }
+
+        function addWebRecruiterMessage(text) {
+            webInterviewState.history.push({ sender: "RECRUTADOR", text: text });
+            const chatScroll = document.getElementById('int-chat-scroll');
+            
+            const bubble = document.createElement('div');
+            bubble.style.alignSelf = 'flex-start';
+            bubble.style.maxWidth = '80%';
+            bubble.style.display = 'flex';
+            bubble.style.flexDirection = 'column';
+            bubble.style.alignItems = 'flex-start';
+            bubble.style.marginBottom = '12px';
+            bubble.innerHTML = `
+                <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: bold; margin-bottom: 2px;">👨‍💼 Recrutador IA</div>
+                <div style="background: var(--card-bg-primary); border: 1px solid var(--border-color); color: #fff; padding: 10px 14px; border-radius: 4px 12px 12px 12px; font-size: 0.88rem; line-height: 1.4; text-align: left;">${text}</div>
+            `;
+            chatScroll.appendChild(bubble);
+            chatScroll.scrollTop = chatScroll.scrollHeight;
+
+            document.getElementById('int-chat-progress').innerText = `Pergunta ${webInterviewState.progress} de 5`;
+        }
+
+        function addWebCandidateMessage(text) {
+            webInterviewState.history.push({ sender: "CANDIDATO", text: text });
+            const chatScroll = document.getElementById('int-chat-scroll');
+            
+            const bubble = document.createElement('div');
+            bubble.style.alignSelf = 'flex-end';
+            bubble.style.maxWidth = '80%';
+            bubble.style.display = 'flex';
+            bubble.style.flexDirection = 'column';
+            bubble.style.alignItems = 'flex-end';
+            bubble.style.marginLeft = 'auto';
+            bubble.style.marginBottom = '12px';
+            bubble.innerHTML = `
+                <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: bold; margin-bottom: 2px; text-align: right;">👤 Você</div>
+                <div style="background: var(--primary); color: #000; padding: 10px 14px; border-radius: 12px 4px 12px 12px; font-size: 0.88rem; line-height: 1.4; text-align: left;">${text}</div>
+            `;
+            chatScroll.appendChild(bubble);
+            chatScroll.scrollTop = chatScroll.scrollHeight;
+        }
+
+        function handleIntKeyPress(e) {
+            if (e.key === 'Enter') {
+                submitWebAnswer();
+            }
+        }
+
+        function submitWebAnswer() {
+            const inputEl = document.getElementById('int-chat-input');
+            const text = inputEl.value.trim();
+            if (!text) return;
+
+            addWebCandidateMessage(text);
+            inputEl.value = "";
+
+            if (webInterviewState.progress >= 5) {
+                evaluateAndFinishWebInterview();
+            } else {
+                webInterviewState.progress++;
+                setTimeout(() => {
+                    const questions = [
+                        "Perfeito. Como profissional " + webInterviewState.nivel + ", você poderia compartilhar qual foi o desafio mais complexo de equipe ou produto que você ajudou a solucionar recentemente de forma cooperada?",
+                        "Excelente colocação. Entrando na vertente comportamental e situacional: como você lida com frustrações de prazos urgentes ou escopos indefinidos estabelecidos pelos clientes?",
+                        "Entendido. Em termos mais técnicos: focando na área de " + webInterviewState.area + ", quais são os principais padrões arquiteturais ou frameworks que você considera fundamentais para escalabilidade das soluções contemporâneas?",
+                        "Para fecharmos: de que maneira você se atualiza continuamente com as novas tendências tecnológicas e qual curso ou tema você está aprofundando neste exato momento?"
+                    ];
+                    addWebRecruiterMessage(questions[webInterviewState.progress - 2]);
+                }, 1000);
+            }
+        }
+
+        function evaluateAndFinishWebInterview() {
+            document.getElementById('int-chat-container').style.display = 'none';
+            document.getElementById('int-setup-container').style.display = 'none';
+            
+            // Simular loading de análise
+            const container = document.getElementById('tab-interview-simulator');
+            const preResult = document.createElement('div');
+            preResult.id = "int-eval-loader";
+            preResult.style.textAlign = 'center';
+            preResult.style.padding = '40px 20px';
+            preResult.innerHTML = `
+                <div class="loader-spinner" style="width: 48px; height: 48px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px auto;"></div>
+                <h3 style="color: #fff; margin-bottom: 8px;">Avaliando performance...</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; max-width: 320px; margin: 0 auto;">Nossa inteligência artificial está computando sua clareza verbal, assertividade e termos técnicos para montar um diagnóstico completo.</p>
+            `;
+            container.appendChild(preResult);
+
+            setTimeout(() => {
+                const loader = document.getElementById('int-eval-loader');
+                if (loader) loader.remove();
+
+                const userResponses = webInterviewState.history.filter(h => h.sender === "CANDIDATO").map(h => h.text).join(" ");
+                const answersLength = userResponses.length;
+                
+                // Métrica adaptativa baseada no tamanho das respostas
+                const scoreGeneral = Math.min(100, Math.max(50, 72 + Math.floor(answersLength / 22)));
+                const scoreComm = Math.min(100, Math.max(50, 68 + Math.floor(answersLength / 20)));
+                const scoreClar = Math.min(100, Math.max(50, 75 + (answersLength > 150 ? 15 : 5)));
+                const scoreTech = Math.min(100, Math.max(50, 70 + (webInterviewState.nivel === 'Sênior' ? 18 : 22)));
+                const scoreConf = Math.min(100, Math.max(50, 74 + Math.floor(answersLength / 35)));
+
+                const newRecord = {
+                    id: webInterviewState.id,
+                    cargo: webInterviewState.cargo,
+                    area: webInterviewState.area,
+                    nivel: webInterviewState.nivel,
+                    scoreGeneral: scoreGeneral,
+                    scoreCommunication: scoreComm,
+                    scoreClarity: scoreClar,
+                    scoreTechnical: scoreTech,
+                    scoreConfidence: scoreConf,
+                    strengths: "Excelente clareza expositiva, foco correto nos resultados e ótimas qualidades conceituais.",
+                    improvements: "Poderia expandir mais a parte prática de codificação ou padrões de arquitetura de software de grande escala.",
+                    recommendations: "Estudar conceitos sólidos de desenvolvimento escalável (Clean Architecture, padrões de microsserviços) e praticar simulados de live coding.",
+                    timestamp: Date.now()
+                };
+
+                saveWebInterview(newRecord);
+                showWebInterviewResult(newRecord);
+                renderWebInterviewHistory();
+            }, 2500);
+        }
+
+        function showWebInterviewResult(rec) {
+            webInterviewState.activeRecord = rec;
+
+            document.getElementById('int-setup-container').style.display = 'none';
+            document.getElementById('int-chat-container').style.display = 'none';
+            document.getElementById('int-result-container').style.display = 'flex';
+
+            document.getElementById('int-res-cargo').innerText = rec.cargo;
+            document.getElementById('int-res-meta').innerText = `${rec.nivel} • ${rec.area}`;
+            document.getElementById('int-res-nota').innerText = rec.scoreGeneral;
+
+            document.getElementById('int-score-comm').innerText = `${rec.scoreGeneral} / 100`;
+            document.getElementById('int-bar-comm').style.width = `${rec.scoreGeneral}%`;
+
+            document.getElementById('int-score-clar').innerText = `${rec.scoreClarity} / 100`;
+            document.getElementById('int-bar-clar').style.width = `${rec.scoreClarity}%`;
+
+            document.getElementById('int-score-tech').innerText = `${rec.scoreTechnical} / 100`;
+            document.getElementById('int-bar-tech').style.width = `${rec.scoreTechnical}%`;
+
+            document.getElementById('int-score-conf').innerText = `${rec.scoreConfidence} / 100`;
+            document.getElementById('int-bar-conf').style.width = `${rec.scoreConfidence}%`;
+
+            document.getElementById('int-res-strengths').innerText = rec.strengths;
+            document.getElementById('int-res-improvements').innerText = rec.improvements;
+            document.getElementById('int-res-recommendations').innerText = rec.recommendations;
+        }
+
+        function retakeWebInterview() {
+            startWebInterview();
+        }
+
+        function shareWebReport() {
+            const rec = webInterviewState.activeRecord;
+            if (!rec) return;
+
+            const text = `🎯 Simulador de Entrevistas Synapse IA 🎯\n\nCargo: ${rec.cargo} (${rec.nivel})\nPontuação Geral: ${rec.scoreGeneral}/100\n\n🗣️ Comunicação: ${rec.scoreGeneral}\n🎯 Clareza: ${rec.scoreClarity}\n💻 Técnico: ${rec.scoreTechnical}\n🧠 Confiança: ${rec.scoreConfidence}\n\n✅ Pontos Fortes:\n${rec.strengths}\n\n💡 Recomendações:\n${rec.recommendations}\n\nEnviado através do Synapse PWA.`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Relatório de performance copiado para a área de transferência!");
+            }).catch(err => {
+                console.error(err);
+            });
+        }
+
+        function closeWebResult() {
+            document.getElementById('int-setup-container').style.display = 'flex';
+            document.getElementById('int-chat-container').style.display = 'none';
+            document.getElementById('int-result-container').style.display = 'none';
+        }
+
+        // Initialize table on load
+        setTimeout(() => {
+            renderWebInterviewHistory();
+        }, 1500);
 
         function switchResumeAiTab(tabId) {
             document.getElementById('rb-ai-tab-gen').style.display = (tabId === 'ai-gen') ? 'flex' : 'none';

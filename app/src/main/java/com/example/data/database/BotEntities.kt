@@ -28,3 +28,22 @@ data class BotMessageEntity(
     val isBotReply: Boolean, // true if reply from AI, false if message from user
     val timestamp: Long = System.currentTimeMillis()
 )
+
+@Entity(tableName = "bot_interviews")
+data class BotInterviewEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val cargo: String,
+    val area: String,
+    val nivel: String,
+    val timestamp: Long = System.currentTimeMillis(),
+    val completed: Boolean = false,
+    val scoreGeneral: Int = 0,
+    val scoreCommunication: Int = 0,
+    val scoreClarity: Int = 0,
+    val scoreTechnical: Int = 0,
+    val scoreConfidence: Int = 0,
+    val strengths: String = "",
+    val improvements: String = "",
+    val recommendations: String = "",
+    val chatHistoryJson: String = "[]" // JSON representation of the interview messages
+)

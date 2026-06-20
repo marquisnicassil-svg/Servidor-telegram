@@ -39,4 +39,17 @@ interface BotDao {
 
     @Query("SELECT COUNT(*) FROM bot_messages WHERE isBotReply = 1")
     fun getAiResponsesCountFlow(): Flow<Int>
+
+    // --- Interview Simulator Queries ---
+    @Query("SELECT * FROM bot_interviews ORDER BY timestamp DESC")
+    fun getAllInterviewsFlow(): Flow<List<BotInterviewEntity>>
+
+    @Query("SELECT * FROM bot_interviews WHERE id = :id LIMIT 1")
+    suspend fun getInterviewById(id: Long): BotInterviewEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertInterview(interview: BotInterviewEntity): Long
+
+    @Query("DELETE FROM bot_interviews WHERE id = :id")
+    suspend fun deleteInterviewById(id: Long)
 }

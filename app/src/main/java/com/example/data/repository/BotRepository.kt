@@ -388,4 +388,19 @@ class BotRepository(private val botDao: BotDao) {
             "Erro de conexão com o motor de Inteligência Artificial: ${e.localizedMessage ?: e.message}"
         }
     }
+
+    // --- Interview Simulator API ---
+    val allInterviewsFlow: Flow<List<com.example.data.database.BotInterviewEntity>> = botDao.getAllInterviewsFlow()
+
+    suspend fun getInterviewById(id: Long): com.example.data.database.BotInterviewEntity? {
+        return botDao.getInterviewById(id)
+    }
+
+    suspend fun saveInterview(interview: com.example.data.database.BotInterviewEntity): Long {
+        return botDao.insertInterview(interview)
+    }
+
+    suspend fun deleteInterview(id: Long) {
+        botDao.deleteInterviewById(id)
+    }
 }

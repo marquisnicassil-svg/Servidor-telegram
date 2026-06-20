@@ -982,7 +982,275 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    // --- SIMULADOR DE ENTREVISTAS IA ---
+    val allInterviews: StateFlow<List<com.example.data.database.BotInterviewEntity>> by lazy {
+        repository.allInterviewsFlow.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+    }
+
+    val interviewCargo = MutableStateFlow("Desenvolvedor Mobile Android")
+    val interviewArea = MutableStateFlow("Tecnologia")
+    val interviewNivel = MutableStateFlow("Pleno")
+
+    val isInterviewRunning = MutableStateFlow(false)
+    val interviewHistory = MutableStateFlow<List<InterviewChatMessage>>(emptyList())
+    val interviewProgress = MutableStateFlow(0) // total questions asked (0 to 5)
+    val isInterviewEvaluating = MutableStateFlow(false)
+    val interviewResultModel = MutableStateFlow<com.example.data.database.BotInterviewEntity?>(null)
+    val isRecruiterThinking = MutableStateFlow(false)
+
+    fun startInterviewMatch() {
+        val cargo = interviewCargo.value
+        val area = interviewArea.value
+        val nivel = interviewNivel.value
+
+        interviewHistory.value = emptyList()
+        interviewProgress.value = 1
+        isInterviewRunning.value = true
+        isInterviewEvaluating.value = false
+        interviewResultModel.value = null
+        isRecruiterThinking.value = true
+
+        viewModelScope.launch {
+            val systemPrompt = "Você é um Recrutador Profissional de RH experiente de uma grande empresa de tecnologia. Você está conduzindo uma entrevista de emprego virtual para o cargo de '$cargo' na área de '$area' no nível de senioridade '$nivel'. Seu objetivo é fazer uma pergunta de cada vez para que o candidato possa responder. Limite a entrevista a no máximo 5 perguntas no total. Faça perguntas técnicas pertinentes adicionadas de questões situacionais de mercado. Inicie agora mesmo com uma breve e elegante saudação de boas-vindas ao candidato e faça a primeira pergunta."
+            
+            // Generate first question
+            val firstQuestion = try {
+                repository.generateAiContent(
+                    userMessage = "Olá, estou pronto para iniciar a entrevista.",
+                    systemPrompt = systemPrompt,
+                    temperature = 0.7f,
+                    chatId = 777777L
+                )
+            } catch (e: Exception) {
+                getLocalMockFirstQuestion(cargo, area, nivel)
+            }
+
+            interviewHistory.value = listOf(
+                InterviewChatMessage(sender = "RECRUTADOR", text = firstQuestion)
+            )
+            isRecruiterThinking.value = false
+        }
+    }
+
+    fun submitInterviewAnswer(answerText: String) {
+        if (answerText.isBlank()) return
+        val currentHistory = interviewHistory.value.toMutableList()
+        currentHistory.add(InterviewChatMessage(sender = "CANDIDATO", text = answerText))
+        interviewHistory.value = currentHistory
+
+        val progress = interviewProgress.value
+        if (progress >= 5) {
+            // Evaluates and completes!
+            evaluateAndFinishInterview()
+        } else {
+            // Ask next question
+            interviewProgress.value = progress + 1
+            isRecruiterThinking.value = true
+
+            viewModelScope.launch {
+                val cargo = interviewCargo.value
+                val area = interviewArea.value
+                val nivel = interviewNivel.value
+                val systemPrompt = "Você é um Recrutador de RH para o cargo '$cargo' na área de '$area' no nível '$nivel'. Você já fez $progress perguntas. Esta será a pergunta número ${progress + 1}. Avalie criticamente e adapte sua próxima pergunta à resposta anterior do usuário. Não faça mais de uma pergunta e não responda você mesmo. Faça apenas a pergunta."
+                val promptForGenerative = "Histórico de mensagens:\n" + currentHistory.joinToString("\n") { "${it.sender}: ${it.text}" } + "\n\nCandidato acabou de responder: '$answerText'. Por favor faça a próxima pergunta relevante para a entrevista."
+
+                val nextQuestion = try {
+                    repository.generateAiContent(
+                        userMessage = promptForGenerative,
+                        systemPrompt = systemPrompt,
+                        temperature = 0.7f,
+                        chatId = 777777L
+                    )
+                } catch (e: Exception) {
+                    getLocalMockNextQuestion(cargo, area, nivel, progress + 1)
+                }
+
+                val updatedHistory = interviewHistory.value.toMutableList()
+                updatedHistory.add(InterviewChatMessage(sender = "RECRUTADOR", text = nextQuestion))
+                interviewHistory.value = updatedHistory
+                isRecruiterThinking.value = false
+            }
+        }
+    }
+
+    private fun evaluateAndFinishInterview() {
+        isInterviewRunning.value = false
+        isInterviewEvaluating.value = true
+        val currentHistory = interviewHistory.value
+
+        viewModelScope.launch {
+            val cargo = interviewCargo.value
+            val area = interviewArea.value
+            val nivel = interviewNivel.value
+
+            val transcript = currentHistory.joinToString("\n") { "${it.sender}: ${it.text}" }
+            
+            val systemPrompt = "Você é o Diretor de Tecnologia e RH da empresa. Avalie a entrevista de emprego fictícia em português para o cargo '$cargo', área '$area' e nível '$nivel' com base apenas na conversa abaixo.\n" +
+                    "Entrevista:\n$transcript\n\n" +
+                    "Você deve gerar uma análise detalhada e retornar OBRIGATORIAMENTE um JSON válido com os seguintes campos inteiros de pontuação (de 0 a 100) e campos de texto:\n" +
+                    "{\n" +
+                    "  \"scoreGeneral\": 85,\n" +
+                    "  \"scoreCommunication\": 90,\n" +
+                    "  \"scoreClarity\": 80,\n" +
+                    "  \"scoreTechnical\": 85,\n" +
+                    "  \"scoreConfidence\": 85,\n" +
+                    "  \"strengths\": \"Excelente conhecimento de arquitetura MVVM, comunicação fluida, boas práticas\",\n" +
+                    "  \"improvements\": \"Poderia detalhar melhor testes unitários e gerenciar melhor a ansiedade técnica\",\n" +
+                    "  \"recommendations\": \"Estudar JUnit, praticar exercícios de live coding e detalhar transições\"\n" +
+                    "}\n" +
+                    "Atenção: Não insira nenhuma formatação extra Markdown fora do JSON, apenas o JSON puro."
+
+            var result: com.example.data.database.BotInterviewEntity? = null
+            try {
+                val jsonResponse = repository.generateAiContent(
+                    userMessage = "Por favor, avalie a entrevista.",
+                    systemPrompt = systemPrompt,
+                    temperature = 0.4f,
+                    chatId = 777777L
+                )
+
+                // Try parsing JSON response manually or using regex for safety
+                val cleanJson = extractJsonContent(jsonResponse)
+                val moshi = com.squareup.moshi.Moshi.Builder()
+                    .addLast(com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory())
+                    .build()
+                val adapter = moshi.adapter(InterviewEvaluationJson::class.java)
+                val parsed = adapter.fromJson(cleanJson)
+                if (parsed != null) {
+                    result = com.example.data.database.BotInterviewEntity(
+                        cargo = cargo,
+                        area = area,
+                        nivel = nivel,
+                        completed = true,
+                        scoreGeneral = parsed.scoreGeneral,
+                        scoreCommunication = parsed.scoreCommunication,
+                        scoreClarity = parsed.scoreClarity,
+                        scoreTechnical = parsed.scoreTechnical,
+                        scoreConfidence = parsed.scoreConfidence,
+                        strengths = parsed.strengths,
+                        improvements = parsed.improvements,
+                        recommendations = parsed.recommendations,
+                        chatHistoryJson = moshi.adapter(List::class.java).toJson(currentHistory.map { mapOf("sender" to it.sender, "text" to it.text) })
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("BotViewModel", "Error evaluating interview, falling back", e)
+            }
+
+            if (result == null) {
+                // Fallback simulation metrics if API fails or returned invalid JSON
+                result = generateMockEvaluation(cargo, area, nivel, currentHistory)
+            }
+
+            // Save results to Room SQL representation
+            val insertedId = repository.saveInterview(result)
+            interviewResultModel.value = result.copy(id = insertedId)
+            isInterviewEvaluating.value = false
+            
+            addLog("💼 [Sucesso] Simulador de Entrevistas IA concluiu a avaliação para o cargo de $cargo ($nivel).", LogType.SUCCESS)
+        }
+    }
+
+    private fun extractJsonContent(raw: String): String {
+        val start = raw.indexOf("{")
+        val end = raw.lastIndexOf("}")
+        return if (start != -1 && end != -1 && end > start) {
+            raw.substring(start, end + 1)
+        } else {
+            raw
+        }
+    }
+
+    fun deleteInterviewItem(id: Long) {
+        viewModelScope.launch {
+            repository.deleteInterview(id)
+            addLog("Histórico de Entrevista apagado com sucesso.", LogType.WARNING)
+        }
+    }
+
+    // Direct helper functions to simulate recruiters on local fallback
+    private fun getLocalMockFirstQuestion(cargo: String, area: String, nivel: String): String {
+        return "Olá, seja muito bem-vindo! Identifiquei aqui que você está aplicando para a posição de $cargo ($nivel) na área de $area. Para começarmos, você poderia me contar um pouco sobre sua trajetória profissional e quais motivos te levaram a se candidatar a esta vaga?"
+    }
+
+    private fun getLocalMockNextQuestion(cargo: String, area: String, nivel: String, index: Int): String {
+        return when (index) {
+            2 -> "Excelente relato. Entrando em uma parte mais analítica: você poderia descrever um desafio técnico ou de projeto recente enfrentado por você, de que modo lidou com as limitações técnicas e qual foi o resultado final?"
+            3 -> "Ótima colocação estratégica. Como profissional de nível $nivel, como você avalia a colaboração entre equipes multidisciplinares (arquitetura, produto, QA)? Pode dar um exemplo prático de como facilitou isso no passado?"
+            4 -> "Entendi perfeitamente. Em termos práticos de mercado: se surgisse uma demanda urgente em produção com prazo extremamente apertado e indefinições técnicas no escopo, de que forma você priorizaria suas tarefas e garantiria a qualidade das entregas?"
+            5 -> "Muito esclarecedor. E por último, quais são suas metas profissionais a curto e médio prazo de aprendizado e crescimento técnico na área de $area?"
+            else -> "Obrigado pelas respostas. Por favor, aguarde enquanto calculamos o resultado detalhado de sua entrevista."
+        }
+    }
+
+    private fun generateMockEvaluation(
+        cargo: String,
+        area: String,
+        nivel: String,
+        history: List<InterviewChatMessage>
+    ): com.example.data.database.BotInterviewEntity {
+        // Calculate dynamic scores based on interaction
+        val userResponses = history.filter { it.sender == "CANDIDATO" }
+        val totalLength = userResponses.sumOf { it.text.length }
+        val answersCount = userResponses.size
+
+        val averageLength = if (answersCount > 0) totalLength / answersCount else 0
+        
+        // Base score dynamic calculations
+        val generalScore = (70 + (averageLength / 12).coerceAtMost(30))
+        val commScore = (68 + (averageLength / 10).coerceAtMost(32))
+        val clarityScore = (75 + (if (averageLength in 100..400) 25 else 10))
+        val techScore = (70 + (if (nivel == "Sênior") 15 else 25))
+        val confidenceScore = (72 + (answersCount * 5).coerceAtMost(25))
+
+        val moshi = com.squareup.moshi.Moshi.Builder()
+            .addLast(com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory())
+            .build()
+        val chatJson = try {
+            moshi.adapter(List::class.java).toJson(history.map { mapOf("sender" to it.sender, "text" to it.text) })
+        } catch (_: Exception) {
+            "[]"
+        }
+
+        return com.example.data.database.BotInterviewEntity(
+            cargo = cargo,
+            area = area,
+            nivel = nivel,
+            completed = true,
+            scoreGeneral = generalScore,
+            scoreCommunication = commScore,
+            scoreClarity = clarityScore,
+            scoreTechnical = techScore,
+            scoreConfidence = confidenceScore,
+            strengths = "Boa fluidez comunicativa, estruturação coesa de respostas e proatividade profissional.",
+            improvements = "Poderia expandir mais a contextualização técnica das suas soluções e detalhar metodologias de qualidade.",
+            recommendations = "Focar no estudo aprofundado de padrões de design sólidos (SOLID) e praticar oratória para reuniões técnicas com lideranças.",
+            chatHistoryJson = chatJson
+        )
+    }
+
     override fun onCleared() {
         super.onCleared()
     }
 }
+
+data class InterviewChatMessage(
+    val sender: String, // "RECRUTADOR" or "CANDIDATO"
+    val text: String,
+    val timestamp: Long = System.currentTimeMillis()
+)
+
+data class InterviewEvaluationJson(
+    val scoreGeneral: Int,
+    val scoreCommunication: Int,
+    val scoreClarity: Int,
+    val scoreTechnical: Int,
+    val scoreConfidence: Int,
+    val strengths: String,
+    val improvements: String,
+    val recommendations: String
+)

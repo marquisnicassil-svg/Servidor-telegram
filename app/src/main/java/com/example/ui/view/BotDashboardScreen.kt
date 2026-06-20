@@ -139,6 +139,7 @@ fun BotDashboardScreen(
                     // Dynamic Drawer Navigation Links as requested
                     val menuOptions = listOf(
                         DrawerItemData(3, "💬 Novo Chat / Conversas", "Aba de Sandbox com IA", Icons.Default.Send),
+                        DrawerItemData(6, "💼 Simulador de Entrevistas IA", "Treino realista e feedback", Icons.Default.Face),
                         DrawerItemData(4, "⚙️ Configurações (Ajustes)", "Chaves e Prompt do Sistema", Icons.Default.Settings),
                         DrawerItemData(1, "🖥️ Terminal de Comandos", "Registros e logs em tempo real", Icons.Default.List),
                         DrawerItemData(5, "🌐 Tradutor de Textos", "Mecanismo Tradutor IA", Icons.Default.Info),
@@ -215,6 +216,7 @@ fun BotDashboardScreen(
                                     3 -> "💬 NOVO CHAT / CONVERSAS"
                                     4 -> "⚙️ CONFIGURAÇÕES (AJUSTES)"
                                     5 -> "🌐 TRADUTOR DE TEXTOS"
+                                    6 -> "💼 SIMULADOR DE ENTREVISTAS"
                                     else -> "BOT TELEGRAM IA"
                                 },
                                 fontWeight = FontWeight.Bold,
@@ -325,6 +327,7 @@ fun BotDashboardScreen(
                         }
                     )
                     5 -> TranslatorTab(viewModel = viewModel)
+                    6 -> InterviewSimulatorTab(viewModel = viewModel)
                 }
             }
         }
@@ -3550,3 +3553,848 @@ fun ContextBrowserTab(
         }
     }
 }
+
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@Composable
+fun InterviewSimulatorTab(
+    viewModel: BotViewModel
+) {
+    val cargo by viewModel.interviewCargo.collectAsStateWithLifecycle()
+    val area by viewModel.interviewArea.collectAsStateWithLifecycle()
+    val nivel by viewModel.interviewNivel.collectAsStateWithLifecycle()
+
+    val isRunning by viewModel.isInterviewRunning.collectAsStateWithLifecycle()
+    val history by viewModel.interviewHistory.collectAsStateWithLifecycle()
+    val progress by viewModel.interviewProgress.collectAsStateWithLifecycle()
+    val isEvaluating by viewModel.isInterviewEvaluating.collectAsStateWithLifecycle()
+    val resultModel by viewModel.interviewResultModel.collectAsStateWithLifecycle()
+    val isThinking by viewModel.isRecruiterThinking.collectAsStateWithLifecycle()
+
+    val interviews by viewModel.allInterviews.collectAsStateWithLifecycle()
+    
+    val context = LocalContext.current
+    var textInput by remember { mutableStateOf("") }
+    
+    val lazyListState = rememberLazyListState()
+
+    // Scroll to bottom whenever history updates or recruiter talks
+    LaunchedEffect(history.size, isThinking) {
+        if (history.isNotEmpty()) {
+            lazyListState.animateScrollToItem(history.size - 1)
+        }
+    }
+
+    if (isEvaluating) {
+        // ANALYSIS LOADING STATE
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                CircularProgressIndicator(
+                    color = Color(0xFF38BDF8),
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(56.dp)
+                )
+                Text(
+                    text = "Avaliando sua performance...",
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = "O Diretor de tecnologia com a Inteligência Artificial estão analisando suas respostas técnicas, clareza e comunicação para gerar um relatório de cargo sênior...",
+                    color = Color(0xFF94A3B8),
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 24.dp)
+                )
+            }
+        }
+    } else if (resultModel != null) {
+        // PERFORMANCE DETAILED REPORT
+        val r = resultModel!!
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Header Card
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                shape = RoundedCornerShape(16.dp),
+                border = BorderStroke(1.dp, Color(0xFF334155)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(18.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                text = "RESULTADO DE ENTREVISTA",
+                                color = Color(0xFF38BDF8),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = FontFamily.Monospace,
+                                letterSpacing = 1.sp
+                            )
+                            Text(
+                                text = r.cargo,
+                                color = Color.White,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "${r.nivel} • ${r.area}",
+                                color = Color(0xFF94A3B8),
+                                fontSize = 12.sp
+                            )
+                        }
+                        
+                        // Score ring
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .size(72.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFF0F172A))
+                                .border(2.dp, Color(0xFF10B981), CircleShape)
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    text = "${r.scoreGeneral}",
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = Color(0xFF10B981)
+                                )
+                                Text(
+                                    text = "NOTA",
+                                    fontSize = 8.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF94A3B8)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Metricas Grid
+            Text(
+                text = "Desempenho por Competências",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                shape = RoundedCornerShape(16.dp),
+                border = BorderStroke(1.dp, Color(0xFF1E293B)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    InterviewMetricBar("🗣️ Comunicação", r.scoreCommunication, Color(0xFF38BDF8))
+                    InterviewMetricBar("🎯 Clareza das Respostas", r.scoreClarity, Color(0xFF818CF8))
+                    InterviewMetricBar("💻 Conhecimento Técnico", r.scoreTechnical, Color(0xFFF59E0B))
+                    InterviewMetricBar("🧠 Confiança Demonstrada", r.scoreConfidence, Color(0xFFEC4899))
+                }
+            }
+
+            // Strengths / Improvements / Recommendations
+            Text(
+                text = "Relatório Detalhado",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp
+            )
+
+            // Strengths
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color(0x1510B981)),
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(1.dp, Color(0xFF10B981).copy(alpha = 0.3f)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(14.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null,
+                        tint = Color(0xFF10B981),
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Column {
+                        Text("Pontos Fortes", color = Color(0xFF10B981), fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(r.strengths, color = Color.White, fontSize = 12.sp, lineHeight = 16.sp)
+                    }
+                }
+            }
+
+            // Improvements
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color(0x15EF4444)),
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(1.dp, Color(0xFFEF4444).copy(alpha = 0.3f)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(14.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = null,
+                        tint = Color(0xFFEF4444),
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Column {
+                        Text("Pontos a Melhorar", color = Color(0xFFEF4444), fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(r.improvements, color = Color.White, fontSize = 12.sp, lineHeight = 16.sp)
+                    }
+                }
+            }
+
+            // Recommendations
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color(0x1538BDF8)),
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(1.dp, Color(0xFF38BDF8).copy(alpha = 0.3f)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(14.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = null,
+                        tint = Color(0xFF38BDF8),
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Column {
+                        Text("Recomendações Personalizadas", color = Color(0xFF38BDF8), fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(r.recommendations, color = Color.White, fontSize = 12.sp, lineHeight = 16.sp)
+                    }
+                }
+            }
+
+            // Action Buttons
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Button(
+                    onClick = { viewModel.startInterviewMatch() },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF38BDF8)),
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Refazer Treino", fontSize = 12.sp)
+                }
+
+                OutlinedButton(
+                    onClick = {
+                        val shareText = "🎯 Simulador de Entrevistas Synapse IA 🎯\n\n" +
+                                "Cargo: ${r.cargo} (${r.nivel})\n" +
+                                "Pontuação Geral: ${r.scoreGeneral}/100\n\n" +
+                                "🗣️ Comunicação: ${r.scoreCommunication}\n" +
+                                "🎯 Clareza: ${r.scoreClarity}\n" +
+                                "💻 Conhecimento Técnico: ${r.scoreTechnical}\n" +
+                                "🧠 Confiança: ${r.scoreConfidence}\n\n" +
+                                "✅ Pontos Fortes:\n${r.strengths}\n\n" +
+                                "💡 Recomendações:\n${r.recommendations}\n\n" +
+                                "Synapse Engine — Inteligência Artificial de Alta Performance."
+                        
+                        try {
+                            val clipboardManager = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                            val clipData = android.content.ClipData.newPlainText("RelatorioEntrevista", shareText)
+                            clipboardManager.setPrimaryClip(clipData)
+                            android.widget.Toast.makeText(context, "Relatório copiado para a área de transferência!", android.widget.Toast.LENGTH_SHORT).show()
+                        } catch (e: Exception) {
+                            android.util.Log.e("InterviewShare", "Clipboard error", e)
+                        }
+                    },
+                    border = BorderStroke(1.dp, Color(0xFF1E293B)),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Compartilhar", fontSize = 12.sp)
+                }
+            }
+
+            Button(
+                onClick = { viewModel.interviewResultModel.value = null },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0F172A)),
+                shape = RoundedCornerShape(10.dp),
+                modifier = Modifier.fillMaxWidth().border(1.dp, Color(0xFF1E293B), RoundedCornerShape(10.dp))
+            ) {
+                Text("Voltar ao Painel Principal", color = Color.White, fontSize = 13.sp)
+            }
+        }
+    } else if (isRunning) {
+        // CHAT PLAYING MODE
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Header Progress
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFF0F172A))
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .border(width = 1.dp, color = Color(0xFF1E293B), shape = RoundedCornerShape(8.dp))
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = "ENTREVISTA EM CURSO",
+                            color = Color(0xFF38BDF8),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 11.sp,
+                            fontFamily = FontFamily.Monospace
+                        )
+                        Text(
+                            text = "$cargo ($nivel)",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp
+                        )
+                    }
+                    
+                    // Progress numerical
+                    Text(
+                        text = "Preg. $progress de 5",
+                        color = Color(0xFF94A3B8),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp,
+                        fontFamily = FontFamily.Monospace
+                    )
+                }
+            }
+
+            // Stream of chat messages
+            LazyColumn(
+                state = lazyListState,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                items(history) { chatItem ->
+                    val isCandidate = chatItem.sender == "CANDIDATO"
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = if (isCandidate) Alignment.End else Alignment.Start
+                    ) {
+                        Text(
+                            text = if (isCandidate) "👤 Você" else "👨‍💼 Recrutador IA",
+                            color = Color(0xFF94A3B8),
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .widthIn(max = 280.dp)
+                                .clip(
+                                    RoundedCornerShape(
+                                        topStart = 12.dp,
+                                        topEnd = 12.dp,
+                                        bottomStart = if (isCandidate) 12.dp else 0.dp,
+                                        bottomEnd = if (isCandidate) 0.dp else 12.dp
+                                    )
+                                )
+                                .background(if (isCandidate) Color(0xFF38BDF8) else Color(0xFF1E293B))
+                                .padding(12.dp)
+                        ) {
+                            Text(
+                                text = chatItem.text,
+                                color = if (isCandidate) Color(0xFF0F172A) else Color.White,
+                                fontSize = 13.sp,
+                                lineHeight = 17.sp
+                            )
+                        }
+                    }
+                }
+                
+                if (isThinking) {
+                    item {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.Start
+                        ) {
+                            Text(
+                                text = "👨‍💼 Recrutador IA",
+                                color = Color(0xFF94A3B8),
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .widthIn(max = 280.dp)
+                                    .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomEnd = 12.dp))
+                                    .background(Color(0xFF1E293B))
+                                    .padding(12.dp)
+                            ) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text("Digitando...", color = Color(0xFF94A3B8), fontSize = 12.sp)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Input panel
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF0B1329)),
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(1.dp, Color(0xFF1E293B)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = textInput,
+                        onValueChange = { textInput = it },
+                        placeholder = { Text("Sua resposta completa...", color = Color(0xFF475569), fontSize = 13.sp) },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            focusedBorderColor = Color(0xFF38BDF8),
+                            unfocusedBorderColor = Color(0xFF1E293B)
+                        ),
+                        modifier = Modifier.weight(1f),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                        singleLine = false,
+                        maxLines = 3,
+                        textStyle = LocalTextStyle.current.copy(fontSize = 13.sp)
+                    )
+
+                    IconButton(
+                        onClick = {
+                            if (textInput.isNotBlank() && !isThinking) {
+                                viewModel.submitInterviewAnswer(textInput.trim())
+                                textInput = ""
+                            }
+                        },
+                        colors = IconButtonDefaults.iconButtonColors(containerColor = Color(0xFF38BDF8)),
+                        modifier = Modifier.size(44.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Send,
+                            contentDescription = "Enviar Resposta",
+                            tint = Color(0xFF0F172A),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+            }
+        }
+    } else {
+        // MAIN CHOOSE PANEL & HISTORY SCREEN
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Promo Banner
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                shape = RoundedCornerShape(16.dp),
+                border = BorderStroke(1.dp, Color(0xFF334155)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(18.dp)) {
+                    Text(
+                        text = "RECURSO EXCLUSIVO",
+                        color = Color(0xFF38BDF8),
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily.Monospace,
+                        letterSpacing = 1.sp
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "🦾 Simulador de Entrevistas IA",
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Black
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Prepare-se para processos seletivos reais praticando sabatinas com nosso algoritmo de RH virtual. Receba avaliações detalhadas baseadas em critérios reais do mercado e otimize suas chances.",
+                        color = Color(0xFF94A3B8),
+                        fontSize = 12.sp,
+                        lineHeight = 17.sp
+                    )
+                }
+            }
+
+            // Quick selections for jobs
+            Text(
+                text = "Escolha sua Profissão",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp
+            )
+
+            val presetJobs = listOf(
+                "Desenvolvedor Mobile Android",
+                "Fullstack Engineer (React / Node)",
+                "Designer UX/UI",
+                "Gerente de Produto (PM)",
+                "Analista de Dados / BI"
+            )
+
+            // FlowRow of chips
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                presetJobs.forEach { job ->
+                    val isSelected = cargo == job
+                    Card(
+                        onClick = { viewModel.interviewCargo.value = job },
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isSelected) Color(0xFF38BDF8) else Color(0xFF0F172A)
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        border = BorderStroke(1.dp, if (isSelected) Color(0xFF38BDF8) else Color(0xFF1E293B)),
+                        modifier = Modifier.padding(vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = job,
+                            color = if (isSelected) Color(0xFF0F172A) else Color.White,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                        )
+                    }
+                }
+            }
+
+            // Custom job text field if they want a custom one
+            OutlinedTextField(
+                value = cargo,
+                onValueChange = { viewModel.interviewCargo.value = it },
+                label = { Text("Ou digite um cargo específico...") },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedBorderColor = Color(0xFF38BDF8),
+                    unfocusedBorderColor = Color(0xFF1E293B),
+                    focusedLabelColor = Color(0xFF38BDF8),
+                    unfocusedLabelColor = Color(0xFF64748B)
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Select Area & Nivel
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                // Area dropdown simulator (just a visual picker)
+                Column(modifier = Modifier.weight(1.2f)) {
+                    Text(
+                        text = "Área Profissional",
+                        color = Color(0xFF94A3B8),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                    
+                    val areas = listOf("Tecnologia", "Design", "Vendas", "Finanças", "RH")
+                    var dropdownExpanded by remember { mutableStateOf(false) }
+                    
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Button(
+                            onClick = { dropdownExpanded = true },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0F172A)),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.fillMaxWidth().border(1.dp, Color(0xFF1E293B), RoundedCornerShape(8.dp))
+                        ) {
+                            Text(area, color = Color.White, fontSize = 12.sp)
+                        }
+                        
+                        DropdownMenu(
+                            expanded = dropdownExpanded,
+                            onDismissRequest = { dropdownExpanded = false },
+                            modifier = Modifier.background(Color(0xFF0F172A))
+                        ) {
+                            areas.forEach { a ->
+                                DropdownMenuItem(
+                                    text = { Text(a, color = Color.White) },
+                                    onClick = {
+                                        viewModel.interviewArea.value = a
+                                        dropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Level selects
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Senioridade",
+                        color = Color(0xFF94A3B8),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                    
+                    var levelDropdownExpanded by remember { mutableStateOf(false) }
+                    
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Button(
+                            onClick = { levelDropdownExpanded = true },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0F172A)),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.fillMaxWidth().border(1.dp, Color(0xFF1E293B), RoundedCornerShape(8.dp))
+                        ) {
+                            Text(nivel, color = Color.White, fontSize = 12.sp)
+                        }
+                        
+                        DropdownMenu(
+                            expanded = levelDropdownExpanded,
+                            onDismissRequest = { levelDropdownExpanded = false },
+                            modifier = Modifier.background(Color(0xFF0F172A))
+                        ) {
+                            listOf("Estágio", "Júnior", "Pleno", "Sênior").forEach { n ->
+                                DropdownMenuItem(
+                                    text = { Text(n, color = Color.White) },
+                                    onClick = {
+                                        viewModel.interviewNivel.value = n
+                                        levelDropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Big Action Button to start
+            Button(
+                onClick = { viewModel.startInterviewMatch() },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF38BDF8)),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .graphicsLayer {
+                        shadowElevation = 8.dp.toPx()
+                        shape = RoundedCornerShape(12.dp)
+                    }
+            ) {
+                Text("🔥 INICIAR ENTREVISTA REALISTA COM IA", fontWeight = FontWeight.Bold, color = Color(0xFF000000), fontSize = 13.sp)
+            }
+
+            // HISTORY SECTIONS
+            if (interviews.isNotEmpty()) {
+                Text(
+                    text = "Suas Entrevistas Anteriores",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(top = 12.dp)
+                )
+
+                // Evolution Analytics Mini Card
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = Color(0x1538BDF8)),
+                    shape = RoundedCornerShape(12.dp),
+                    border = BorderStroke(1.dp, Color(0xFF38BDF8).copy(alpha = 0.3f)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    val averageScore = interviews.map { it.scoreGeneral }.average().toInt()
+                    Row(
+                        modifier = Modifier.padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFF38BDF8).copy(alpha = 0.2f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("📈", fontSize = 20.sp)
+                        }
+
+                        Column {
+                            Text(
+                                text = "Evolução e Progresso Synapse",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp
+                            )
+                            Text(
+                                text = "Média de Nota Atual: $averageScore/100 em ${interviews.size} entrevistas. Seu progresso mostra melhora contínua em comunicação!",
+                                color = Color(0xFF94A3B8),
+                                fontSize = 11.sp,
+                                lineHeight = 15.sp
+                            )
+                        }
+                    }
+                }
+
+                // Render history items
+                interviews.forEach { record ->
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(1.dp, Color(0xFF1E293B)),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(14.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = record.cargo,
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    text = "${record.nivel} • ${record.area}",
+                                    color = Color(0xFF64748B),
+                                    fontSize = 11.sp
+                                )
+                                Text(
+                                    text = java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT).format(java.util.Date(record.timestamp)),
+                                    color = Color(0xFF475569),
+                                    fontSize = 10.sp,
+                                    fontFamily = FontFamily.Monospace,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                // Score badge clickable to reload
+                                Card(
+                                    onClick = { viewModel.interviewResultModel.value = record },
+                                    colors = CardDefaults.cardColors(containerColor = Color(0xFF10B981).copy(alpha = 0.15f)),
+                                    shape = RoundedCornerShape(8.dp),
+                                    border = BorderStroke(1.dp, Color(0xFF10B981).copy(alpha = 0.4f))
+                                ) {
+                                    Text(
+                                        text = "${record.scoreGeneral}",
+                                        color = Color(0xFF10B981),
+                                        fontWeight = FontWeight.Black,
+                                        fontSize = 14.sp,
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                                    )
+                                }
+
+                                IconButton(
+                                    onClick = { viewModel.deleteInterviewItem(record.id) },
+                                    modifier = Modifier.size(36.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = "Apagar Registro",
+                                        tint = Color(0xFFEF4444),
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun InterviewMetricBar(label: String, score: Int, color: Color) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(label, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+            Text("$score / 100", color = color, fontSize = 12.sp, fontWeight = FontWeight.Black, fontFamily = FontFamily.Monospace)
+        }
+        
+        Spacer(modifier = Modifier.height(6.dp))
+        
+        // Progress track
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(6.dp)
+                .clip(CircleShape)
+                .background(Color(0xFF1E293B))
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(fraction = score / 100f)
+                    .height(6.dp)
+                    .clip(CircleShape)
+                    .background(color)
+            )
+        }
+    }
+}
+
