@@ -5587,29 +5587,6 @@ WITH CHECK (true);</code>
                 document.getElementById('tg-polling-status-desc').innerHTML = `🟢 Escuta Rodando para @${username}`;
                 document.getElementById('tg-polling-status-desc').style.color = "#4ade80";
                 
-                // Sincroniza o toggle do Gateway de Webhooks para Ativo (ONLINE)
-                const htmlWhToggle = document.getElementById('html-webhook-online-toggle');
-                if (htmlWhToggle && !htmlWhToggle.checked) {
-                    htmlWhToggle.checked = true;
-                    isWebhookOnline = true;
-                    const textEl = document.getElementById('webhook-gateway-status-text');
-                    const badgeEl = document.getElementById('webhook-badge-status');
-                    const testBtn = document.getElementById('btn-test-html-webhook');
-                    if (textEl) {
-                        textEl.innerHTML = "🟢 Ativo e Escutando";
-                        textEl.style.color = "#4ade80";
-                    }
-                    if (badgeEl) {
-                        badgeEl.innerHTML = "ONLINE";
-                        badgeEl.style.color = "#4ade80";
-                    }
-                    if (testBtn) {
-                        testBtn.disabled = false;
-                        testBtn.style.opacity = "1";
-                        testBtn.innerText = "⚡ Enviar Requisição Teste";
-                    }
-                }
-                
                 addLog(`[Telegram Bot] Escuta em tempo real bem-sucedida! Bot @${username} online e operando no navegador.`, "success");
                 showAppToast(`Bot @${username} ativo de momento!`, "success");
                 
@@ -5773,29 +5750,6 @@ WITH CHECK (true);</code>
             document.getElementById('tg-polling-status-desc').innerHTML = "Desativado. Ative para responder pelo navegador.";
             document.getElementById('tg-polling-status-desc').style.color = "var(--text-muted)";
             
-            // Sincroniza o toggle do Gateway de Webhooks para Desativado (OFFLINE)
-            const htmlWhToggle = document.getElementById('html-webhook-online-toggle');
-            if (htmlWhToggle && htmlWhToggle.checked) {
-                htmlWhToggle.checked = false;
-                isWebhookOnline = false;
-                const textEl = document.getElementById('webhook-gateway-status-text');
-                const badgeEl = document.getElementById('webhook-badge-status');
-                const testBtn = document.getElementById('btn-test-html-webhook');
-                if (textEl) {
-                    textEl.innerHTML = "🔴 Desativado";
-                    textEl.style.color = "#ef4444";
-                }
-                if (badgeEl) {
-                    badgeEl.innerHTML = "OFFLINE";
-                    badgeEl.style.color = "#ef4444";
-                }
-                if (testBtn) {
-                    testBtn.disabled = true;
-                    testBtn.style.opacity = "0.5";
-                    testBtn.innerText = "Ative o Gateway para Testar";
-                }
-            }
-            
             addLog("[Telegram Bot] Escuta ativa desativada no navegador.", "warning");
         }
 
@@ -5816,11 +5770,6 @@ WITH CHECK (true);</code>
                 testBtn.style.opacity = "1";
                 testBtn.innerText = "⚡ Enviar Requisição Teste";
                 addLog("Gateway de Webhooks foi ATIVADO e está pronto para receber requisições.", "success");
-                
-                // Ativa automaticamente a escuta ativa do Telegram no navegador
-                if (!isTelegramBrowserPollingActive) {
-                    startTelegramBrowserPolling();
-                }
             } else {
                 textEl.innerHTML = "🔴 Desativado";
                 textEl.style.color = "#ef4444";
@@ -5830,11 +5779,6 @@ WITH CHECK (true);</code>
                 testBtn.style.opacity = "0.5";
                 testBtn.innerText = "Ative o Gateway para Testar";
                 addLog("Gateway de Webhooks foi DESATIVADO. Requisições recebidas serão rejeitadas.", "warning");
-                
-                // Desativa automaticamente a escuta ativa do Telegram no navegador
-                if (isTelegramBrowserPollingActive) {
-                    stopTelegramBrowserPolling();
-                }
             }
         }
         

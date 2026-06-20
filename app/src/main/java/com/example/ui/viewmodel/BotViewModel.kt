@@ -57,12 +57,18 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
     val totalMessagesState: StateFlow<Int>
     val aiResponsesState: StateFlow<Int>
 
+    companion object {
+        private val globalServerRunning = MutableStateFlow(false)
+        private var globalPollingJob: Job? = null
+        private val globalScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+        private var globalLastUpdateId: Long? = null
+    }
+
     // --- UI state variables ---
     private val _consoleLogs = MutableStateFlow<List<ConsoleLogItem>>(emptyList())
     val consoleLogs: StateFlow<List<ConsoleLogItem>> = _consoleLogs.asStateFlow()
 
-    private val _isServerRunning = MutableStateFlow(false)
-    val isServerRunning: StateFlow<Boolean> = _isServerRunning.asStateFlow()
+    val isServerRunning: StateFlow<Boolean> = globalServerRunning.asStateFlow()
 
     private val _botVerificationStatus = MutableStateFlow<String?>(null) // null = idle, "VERIFYING", "VALID", "INVALID"
     val botVerificationStatus: StateFlow<String?> = _botVerificationStatus.asStateFlow()
@@ -79,10 +85,6 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _isAiThinkingLocal = MutableStateFlow(false)
     val isAiThinkingLocal: StateFlow<Boolean> = _isAiThinkingLocal.asStateFlow()
-
-    // --- Polling Job ---
-    private var pollingJob: Job? = null
-    private var lastUpdateId: Long? = null
 
     init {
         val database = BotDatabase.getDatabase(application)
@@ -131,13 +133,17 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
                 )
                 repository.saveConfig(initialConfig)
                 addLog("Configuração inicial do Bot criada e carregada com sucesso.", LogType.SUCCESS)
-                startBotServer(initialConfig)
+                if (!isServerRunning.value) {
+                    startBotServer(initialConfig)
+                }
             } else {
                 addLog("Configurações anteriores recuperadas do banco de dados.", LogType.INFO)
                 // Force active state to true to establish the connection directly on launch as requested
                 val activeConfig = currentConfig.copy(isActive = true)
                 repository.saveConfig(activeConfig)
-                startBotServer(activeConfig)
+                if (!isServerRunning.value) {
+                    startBotServer(activeConfig)
+                }
             }
         }
 
@@ -247,7 +253,7 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
                     withContext(Dispatchers.IO) {
                         repository.saveConfig(updatedConfig)
                     }
-                    if (_isServerRunning.value) {
+                    if (globalServerRunning.value) {
                         startBotServer(updatedConfig)
                     }
                 }
@@ -310,21 +316,32 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
     private suspend fun startBotServer(config: BotConfigEntity) {
         if (config.token.isBlank()) {
             addLog("Aviso: Token do bot está vazio. Configure seu token na aba Configurar.", LogType.WARNING)
-            _isServerRunning.value = false
+            globalServerRunning.value = false
             return
         }
         
         // Garante que qualquer job de polling anterior seja cancelado imediatamente antes
-        pollingJob?.cancel()
-        pollingJob = null
+        globalPollingJob?.cancel()
+        globalPollingJob = null
         
-        _isServerRunning.value = true
+        globalServerRunning.value = true
         addLog("Iniciando servidor de Inteligência Artificial...", LogType.AI_SYS)
 
         // Reset offset to process incoming from scratch or current
-        lastUpdateId = null
+        globalLastUpdateId = null
 
-        pollingJob = viewModelScope.launch(Dispatchers.IO) {
+        // Try to clear webhooks automatically on start of native polling
+        try {
+            addLog("Limpando possíveis conflitos de Webhook no bot do Telegram...", LogType.INFO)
+            val deleted = repository.deleteTelegramWebhook(config.token)
+            if (deleted) {
+                addLog("[Sucesso] Webhook removido do Telegram. O Long Polling funcionará sem bloqueios!", LogType.SUCCESS)
+            }
+        } catch (e: Exception) {
+            addLog("Aviso ao limpar Webhook: ${e.message}", LogType.WARNING)
+        }
+
+        globalPollingJob = globalScope.launch {
             var finalBotDetails = com.example.data.model.TelegramUser(
                 id = 8664441309L,
                 isBot = true,
@@ -350,13 +367,13 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
 
             addLog("Escutando novas mensagens no Telegram via Long Polling...", LogType.INFO)
 
-            while (isActive && _isServerRunning.value) {
+            while (isActive && globalServerRunning.value) {
                 try {
-                    val updates = repository.getTelegramUpdates(config.token, lastUpdateId)
+                    val updates = repository.getTelegramUpdates(config.token, globalLastUpdateId)
                     
                     if (updates.isNotEmpty()) {
                         for (update in updates) {
-                            lastUpdateId = update.updateId + 1
+                            globalLastUpdateId = update.updateId + 1
                             val msg = update.message
                             
                             // Process valid text messages only
@@ -380,7 +397,7 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
                                 // 2. Trigger AI Response using context history or intercept URL requests
                                 val incomingText = msg.text.trim()
                                 val isUrl = incomingText.startsWith("http://") || incomingText.startsWith("https://") || 
-                                            incomingText.contains(" http://") || incomingText.contains(" https://")
+                                             incomingText.contains(" http://") || incomingText.contains(" https://")
                                 
                                 if (isUrl) {
                                     val extractedUrl = incomingText.split("\\s+".toRegex()).firstOrNull { it.startsWith("http://") || it.startsWith("https://") } ?: incomingText
@@ -459,9 +476,9 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private suspend fun stopBotServer() {
-        _isServerRunning.value = false
-        pollingJob?.cancel()
-        pollingJob = null
+        globalServerRunning.value = false
+        globalPollingJob?.cancel()
+        globalPollingJob = null
         repository.updateActiveState(false)
         addLog("Servidor interrompido. Bot Offline.", LogType.WARNING)
     }
@@ -967,6 +984,5 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
 
     override fun onCleared() {
         super.onCleared()
-        pollingJob?.cancel()
     }
 }
