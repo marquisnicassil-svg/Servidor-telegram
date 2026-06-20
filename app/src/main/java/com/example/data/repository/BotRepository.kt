@@ -315,7 +315,14 @@ class BotRepository(private val botDao: BotDao) {
                     val errBody = response.body?.string() ?: ""
                     Log.d("BotRepository", "[DIAGNÓSTICO - ERRO] Detalhes (Resposta Completa de Erro): $errBody")
                     Log.d("BotRepository", "=============================")
-                    "Erro da API Compatível OpenAI (${response.code}): $errBody"
+                    val friendlyError = if (errBody.contains("unavailable for free", ignoreCase = true) || errBody.contains("paid version", ignoreCase = true)) {
+                        "Este modelo exige conta paga ou créditos no OpenRouter. Escolha o 'Gemini' (que é 100% grátis e integrado no seu app) ou adicione saldo."
+                    } else if (errBody.contains("insufficient_quota", ignoreCase = true) || errBody.contains("billing", ignoreCase = true)) {
+                        "Limite de cota ou saldo esgotado no seu provedor de IA. Recomendamos mudar para o 'Gemini' que é gratuito."
+                    } else {
+                        errBody.take(150)
+                    }
+                    "Erro no Provedor de IA (${response.code}): $friendlyError"
                 }
             } else {
                 val contents = mutableListOf<GeminiContent>()

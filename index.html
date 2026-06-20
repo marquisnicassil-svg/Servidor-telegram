@@ -2753,7 +2753,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         <div class="form-group">
                             <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Token do Bot (Telegram)</label>
                             <div style="position: relative; display: flex; align-items: center;">
-                                <input type="password" id="telegram-token" class="form-control" style="padding-right: 40px; border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" placeholder="Insira o token gerado pelo @BotFather..." autocomplete="new-password">
+                                <input type="password" id="telegram-token" class="form-control" style="padding-right: 40px; border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" placeholder="Insira o token gerado pelo @BotFather..." autocomplete="new-password" oninput="saveConfiguration()">
                                 <button type="button" onclick="togglePasswordVisibility('telegram-token', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Token">👁️</button>
                             </div>
                         </div>
@@ -5401,6 +5401,9 @@ WITH CHECK (true);</code>
             if (tgApiKey) tgApiKey.value = savedValue;
             const mainApiKey = document.getElementById('api-key');
             if (mainApiKey) mainApiKey.value = savedValue;
+
+            // Auto-persist when provider is toggled
+            saveConfiguration();
         }
         
         function syncTelegramApiKeysFromInput(val) {
@@ -5409,11 +5412,13 @@ WITH CHECK (true);</code>
             if (typeof apiType !== 'undefined' && apiType) {
                 localStorage.setItem('apiKey_' + apiType, val);
             }
+            saveConfiguration();
         }
         
         function syncTelegramBaseUrlFromInput(val) {
             const mainBaseUrl = document.getElementById('base-url');
             if (mainBaseUrl) mainBaseUrl.value = val;
+            saveConfiguration();
         }
         
         function syncTelegramModelFromInput(val) {
@@ -5428,6 +5433,7 @@ WITH CHECK (true);</code>
                 }
                 mainModelName.value = val;
             }
+            saveConfiguration();
         }
         
         // Polling Variables
@@ -5577,7 +5583,16 @@ WITH CHECK (true);</code>
                                                         reply = oData.choices?.[0]?.message?.content || "";
                                                     } else {
                                                         const errTxt = await oRes.text();
-                                                        reply = `Erro na API OpenAI: ${errTxt.substring(0, 100)}`;
+                                                        const errMsg = errTxt;
+                                                        let userFriendlyMsg = errMsg;
+                                                        if (errMsg.includes("is unavailable for free") || errMsg.includes("unavailable for free") || errMsg.includes("paid version")) {
+                                                            userFriendlyMsg = "Este modelo exige conta paga ou créditos no OpenRouter. Selecione o 'Gemini' (que é 100% grátis) ou adicione saldo ao seu provedor.";
+                                                        } else if (errMsg.includes("insufficient_quota") || errMsg.includes("quota") || errMsg.includes("billing")) {
+                                                            userFriendlyMsg = "Limite de cota ou saldo esgotado no seu provedor de IA. Recomendamos usar o 'Gemini' que é gratuito.";
+                                                        } else {
+                                                            userFriendlyMsg = errMsg.substring(0, 150);
+                                                        }
+                                                        reply = `Erro no Provedor de IA: ${userFriendlyMsg}`;
                                                     }
                                                 }
                                             } catch (aiErr) {
