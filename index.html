@@ -5527,6 +5527,12 @@ WITH CHECK (true);</code>
         }
         
         async function startTelegramBrowserPolling() {
+            // Garante que qualquer intervalo anterior seja cancelado antes de criar um novo
+            if (telegramBrowserPollingInterval) {
+                clearInterval(telegramBrowserPollingInterval);
+                telegramBrowserPollingInterval = null;
+            }
+
             const token = document.getElementById('telegram-token').value.trim();
             if (!token) {
                 addLog("Por favor, configure o Token do Bot antes de iniciar a escuta.", "error");
@@ -5590,10 +5596,27 @@ WITH CHECK (true);</code>
                 addLog(`[Telegram Bot] Escuta em tempo real bem-sucedida! Bot @${username} online e operando no navegador.`, "success");
                 showAppToast(`Bot @${username} ativo de momento!`, "success");
                 
+                // Sincroniza o offset inicial com a última mensagem enviada no Telegram para descartar o histórico acumulado
                 tgBrowserLastUpdateId = 0;
+                try {
+                    const checkRes = await fetch(`https://api.telegram.org/bot${token}/getUpdates?offset=-1&limit=1`);
+                    if (checkRes.ok) {
+                        const checkData = await checkRes.json();
+                        if (checkData.ok && checkData.result.length > 0) {
+                            tgBrowserLastUpdateId = checkData.result[0].update_id + 1;
+                            addLog(`[Telegram] Sincronizado offset inicial: ${tgBrowserLastUpdateId}. Mensagens anteriores ignoradas para evitar repetição.`, "info");
+                        }
+                    }
+                } catch (e) {
+                    console.error("Erro ao sincronizar offset inicial:", e);
+                }
                 
+                let isBrowserPollingFetchInProgress = false;
                 telegramBrowserPollingInterval = setInterval(async () => {
                     if (!isTelegramBrowserPollingActive) return;
+                    if (isBrowserPollingFetchInProgress) return;
+                    isBrowserPollingFetchInProgress = true;
+                    
                     try {
                         const tokenActive = document.getElementById('telegram-token').value.trim();
                         if (!tokenActive) {
@@ -5615,7 +5638,51 @@ WITH CHECK (true);</code>
                                         const userLast = update.message.from?.last_name || "";
                                         const fullName = `${userFirst} ${userLast}`.trim();
                                         
+                                        const fromUser = update.message.from || {};
+                                        const tgUserId = fromUser.id;
+                                        const tgUsername = fromUser.username || `user_${tgUserId}`;
+                                        const virtualEmail = `telegram_${tgUserId}@bot.com`;
+
+                                        // Registra o remetente na tabela administrativa de moderação, integrando com o painel admin
+                                        registerAdminUser(virtualEmail, `${fullName} (@${tgUsername})`, tgUserId);
+                                        
                                         addLog(`[Telegram IN] (${fullName} id: ${chatId}): "${msgText}"`, "success");
+
+                                        // Verificação de Banimento Administrativo (Moderação ativa)
+                                        const banCheck = isUserBanned(virtualEmail);
+                                        if (banCheck && banCheck.isBanned) {
+                                            const expireText = new Date(banCheck.until).toLocaleString();
+                                            addLog(`[Moderação] Mensagem recebida de @${tgUsername} foi rejeitada (Usuário BANIDO até: ${expireText}).`, "warning");
+                                            
+                                            const blockAlertText = `⚠️ Acesso Recusado: Sua conta está temporariamente bloqueada pelo administrador do painel.\nExpiração: ${expireText}`;
+                                            await fetch(`https://api.telegram.org/bot${tokenActive}/sendMessage`, {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify({
+                                                    chat_id: chatId,
+                                                    text: blockAlertText
+                                                })
+                                            });
+                                            continue; // Ignora o fluxo comum para este update
+                                        }
+
+                                        // Verificação de Silêncio Administrativo (Visualização Muted)
+                                        const muteCheck = isUserMuted(virtualEmail);
+                                        if (muteCheck && muteCheck.isMuted) {
+                                            const expireText = new Date(muteCheck.until).toLocaleString();
+                                            addLog(`[Moderação] Mensagem recebida de @${tgUsername} foi rejeitada (Usuário SILENCIADO até: ${expireText}).`, "warning");
+                                            
+                                            const muteAlertText = `🔕 Chat Silenciado: Sua permissão de enviar mensagens foi temporariamente suspensa pelo administrador.\nExpiração: ${expireText}`;
+                                            await fetch(`https://api.telegram.org/bot${tokenActive}/sendMessage`, {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify({
+                                                    chat_id: chatId,
+                                                    text: muteAlertText
+                                                })
+                                            });
+                                            continue; // Ignora o fluxo comum para este update
+                                        }
                                         
                                         let reply = "";
                                         const activeKey = document.getElementById('tg-api-key').value.trim() || document.getElementById('api-key').value.trim();
@@ -5719,6 +5786,8 @@ WITH CHECK (true);</code>
                         }
                     } catch (loopErr) {
                         console.error(loopErr);
+                    } finally {
+                        isBrowserPollingFetchInProgress = false;
                     }
                 }, 3000);
             } catch (err) {
@@ -10785,6 +10854,81 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                 }
             }
             return false;
+        }
+
+        // Ações de Moderação Administrativa (Banir, Desbanir, Silenciar, Desmutar)
+        function banUser(userId, minutes) {
+            userId = String(userId);
+            loadAdminPersistence();
+            const index = adminLocalUsers.findIndex(u => String(u.id) === userId);
+            if (index !== -1) {
+                const user = adminLocalUsers[index];
+                const expires = new Date(Date.now() + parseInt(minutes) * 60 * 1000);
+                user.banned_until = expires.toISOString();
+                localStorage.setItem('synapse_admin_users', JSON.stringify(adminLocalUsers));
+                showAppToast(`Usuário ${user.display_name} banido por ${minutes} minutos.`, "error");
+                logAdminActivity(user.email, "Banimento Aplicado", `${minutes} minutos`);
+                updateAdminPanel();
+                
+                // Fecha o modal se estiver aberto
+                const modal = document.getElementById('user-management-modal');
+                if (modal) modal.style.display = 'none';
+            }
+        }
+
+        function unbanUser(userId) {
+            userId = String(userId);
+            loadAdminPersistence();
+            const index = adminLocalUsers.findIndex(u => String(u.id) === userId);
+            if (index !== -1) {
+                const user = adminLocalUsers[index];
+                user.banned_until = null;
+                localStorage.setItem('synapse_admin_users', JSON.stringify(adminLocalUsers));
+                showAppToast(`Banimento de ${user.display_name} removido!`, "success");
+                logAdminActivity(user.email, "Banimento Removido", "Excelente");
+                updateAdminPanel();
+                
+                // Fecha o modal se estiver aberto
+                const modal = document.getElementById('user-management-modal');
+                if (modal) modal.style.display = 'none';
+            }
+        }
+
+        function muteUser(userId, minutes) {
+            userId = String(userId);
+            loadAdminPersistence();
+            const index = adminLocalUsers.findIndex(u => String(u.id) === userId);
+            if (index !== -1) {
+                const user = adminLocalUsers[index];
+                const expires = new Date(Date.now() + parseInt(minutes) * 60 * 1000);
+                user.muted_until = expires.toISOString();
+                localStorage.setItem('synapse_admin_users', JSON.stringify(adminLocalUsers));
+                showAppToast(`Usuário ${user.display_name} silenciado por ${minutes} minutos.`, "warning");
+                logAdminActivity(user.email, "Silenciamento Aplicado", `${minutes} minutos`);
+                updateAdminPanel();
+                
+                // Fecha o modal se estiver aberto
+                const modal = document.getElementById('user-management-modal');
+                if (modal) modal.style.display = 'none';
+            }
+        }
+
+        function unmuteUser(userId) {
+            userId = String(userId);
+            loadAdminPersistence();
+            const index = adminLocalUsers.findIndex(u => String(u.id) === userId);
+            if (index !== -1) {
+                const user = adminLocalUsers[index];
+                user.muted_until = null;
+                localStorage.setItem('synapse_admin_users', JSON.stringify(adminLocalUsers));
+                showAppToast(`Silenciamento de ${user.display_name} removido!`, "success");
+                logAdminActivity(user.email, "Silenciamento Removido", "Excelente");
+                updateAdminPanel();
+                
+                // Fecha o modal se estiver aberto
+                const modal = document.getElementById('user-management-modal');
+                if (modal) modal.style.display = 'none';
+            }
         }
 
         // Registra novos usuários na lista administrativa de moderação
