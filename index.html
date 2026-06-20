@@ -2816,14 +2816,41 @@ CREATE TRIGGER on_synapse_user_signed_up
                             </div>
                         </div>
 
-                        <div class="form-group" style="display: flex; gap: 10px;">
+                        <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 4px;">
                             <div style="flex: 1;">
                                 <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Endpoint URL</label>
                                 <input type="text" id="tg-base-url" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff;" value="https://generativelanguage.googleapis.com/" oninput="syncTelegramBaseUrlFromInput(this.value)">
                             </div>
                             <div style="width: 35%;">
                                 <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Modelo</label>
-                                <input type="text" id="tg-model-name" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff;" value="gemini-1.5-flash" oninput="syncTelegramModelFromInput(this.value)">
+                                <select id="tg-model-name" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff; height: 38px;" onchange="syncTelegramModelFromInput(this.value)">
+                                    <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+                                    <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+                                    <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+                                    <option value="gemini-1.0-pro">gemini-1.0-pro</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- QUICK SELECT CHIPS -->
+                        <div style="margin-top: 6px; margin-bottom: 12px; text-align: left;">
+                            <span style="font-size: 0.72rem; color: #94a3b8; font-weight: bold; display: block; margin-bottom: 6px;">⚡ Seleção de IA em 1-Clique (Configuração Automática):</span>
+                            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                <button type="button" class="btn-universal" onclick="quickSelectModel('GEMINI', 'https://generativelanguage.googleapis.com/', 'gemini-1.5-flash')" style="width: auto; height: 28px; padding: 0 10px; font-size: 0.68rem; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; border-radius: 6px; cursor: pointer; margin-top:0; font-weight: 500;">
+                                    ♊ Gemini 1.5 Flash (100% Grátis)
+                                </button>
+                                <button type="button" class="btn-universal" onclick="quickSelectModel('GEMINI', 'https://generativelanguage.googleapis.com/', 'gemini-2.5-flash')" style="width: auto; height: 28px; padding: 0 10px; font-size: 0.68rem; background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.35); color: #c084fc; border-radius: 6px; cursor: pointer; margin-top:0; font-weight: 500;">
+                                    ♊ Gemini 2.5 Flash
+                                </button>
+                                <button type="button" class="btn-universal" onclick="quickSelectModel('OPENAI', 'https://api.openai.com/v1/', 'gpt-4o-mini')" style="width: auto; height: 28px; padding: 0 10px; font-size: 0.68rem; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; border-radius: 6px; cursor: pointer; margin-top:0; font-weight: 500;">
+                                    🌐 ChatGPT 4o Mini
+                                </button>
+                                <button type="button" class="btn-universal" onclick="quickSelectModel('CUSTOM', 'https://api.deepseek.com/v1/', 'deepseek-chat')" style="width: auto; height: 28px; padding: 0 10px; font-size: 0.68rem; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; border-radius: 6px; cursor: pointer; margin-top:0; font-weight: 500;">
+                                    🧠 DeepSeek Chat
+                                </button>
+                                <button type="button" class="btn-universal" onclick="quickSelectModel('CUSTOM', 'https://openrouter.ai/api/v1/', 'google/gemini-2.5-flash')" style="width: auto; height: 28px; padding: 0 10px; font-size: 0.68rem; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.35); color: #f87171; border-radius: 6px; cursor: pointer; margin-top:0; font-weight: 500;">
+                                    🚀 Gemini 2.5 (OpenRouter)
+                                </button>
                             </div>
                         </div>
 
@@ -4467,7 +4494,18 @@ WITH CHECK (true);</code>
                 // Auxiliares internos para evitar crashes caso IDs não existam no DOM
                 const safeSetVal = (id, val) => {
                     const el = document.getElementById(id);
-                    if (el && val !== undefined && val !== null) el.value = val;
+                    if (el && val !== undefined && val !== null) {
+                        if (el.tagName === "SELECT") {
+                            let optExists = Array.from(el.options).some(o => o.value === val);
+                            if (!optExists && String(val).trim() !== '') {
+                                const optionEl = document.createElement('option');
+                                optionEl.value = val;
+                                optionEl.innerText = val;
+                                el.appendChild(optionEl);
+                            }
+                        }
+                        el.value = val;
+                    }
                 };
                 const safeSetText = (id, text) => {
                     const el = document.getElementById(id);
@@ -4736,6 +4774,78 @@ WITH CHECK (true);</code>
             }
         }
 
+        function updateAllModelDropdowns(type) {
+            const mMain = document.getElementById('model-name');
+            const mTelegram = document.getElementById('tg-model-name');
+            
+            let options = [];
+            if (type === "GEMINI") {
+                options = ["gemini-1.5-flash", "gemini-2.5-flash", "gemini-1.5-pro", "gemini-1.0-pro"];
+            } else if (type === "GROQ") {
+                options = ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "mixtral-8x7b-32768", "gemma2-9b-it"];
+            } else if (type === "OPENROUTER") {
+                options = ["google/gemini-flash-1.5", "google/gemini-pro-1.5", "google/gemini-2.0-flash-exp", "anthropic/claude-3.5-sonnet", "meta-llama/llama-3.3-70b-instruct", "deepseek/deepseek-chat"];
+            } else if (type === "CUSTOM") {
+                options = ["google/gemini-2.5-flash", "deepseek/deepseek-chat", "meta-llama/llama-3.3-70b-instruct", "qwen/qwen-2.5-72b-instruct"];
+            } else {
+                options = ["gpt-4o", "gpt-4o-mini", "gpt-4", "gpt-3.5-turbo"];
+            }
+            
+            const fillSelect = (el) => {
+                if (!el) return;
+                el.innerHTML = '';
+                options.forEach(opt => {
+                    const optionEl = document.createElement('option');
+                    optionEl.value = opt;
+                    optionEl.innerText = opt;
+                    el.appendChild(optionEl);
+                });
+            }
+            
+            fillSelect(mMain);
+            fillSelect(mTelegram);
+        }
+
+        function quickSelectModel(providerType, baseUrl, modelName) {
+            triggerPulse();
+            setTelegramApiType(providerType);
+            
+            const tgBaseUrl = document.getElementById('tg-base-url');
+            const tgModelName = document.getElementById('tg-model-name');
+            const mainBaseUrl = document.getElementById('base-url');
+            const mainModelName = document.getElementById('model-name');
+            
+            if (tgBaseUrl) tgBaseUrl.value = baseUrl;
+            if (mainBaseUrl) mainBaseUrl.value = baseUrl;
+            
+            updateAllModelDropdowns(providerType);
+            
+            if (tgModelName) {
+                let optExists = Array.from(tgModelName.options).some(o => o.value === modelName);
+                if (!optExists) {
+                    const optionEl = document.createElement('option');
+                    optionEl.value = modelName;
+                    optionEl.innerText = modelName;
+                    tgModelName.appendChild(optionEl);
+                }
+                tgModelName.value = modelName;
+            }
+            if (mainModelName) {
+                let optExists = Array.from(mainModelName.options).some(o => o.value === modelName);
+                if (!optExists) {
+                    const optionEl = document.createElement('option');
+                    optionEl.value = modelName;
+                    optionEl.innerText = modelName;
+                    mainModelName.appendChild(optionEl);
+                }
+                mainModelName.value = modelName;
+            }
+            
+            addLog(`Modelo rápido selecionado: ${modelName} (${providerType})`, "success");
+            showAppToast(`Modelo ${modelName} Ativado!`, "success");
+            saveConfiguration();
+        }
+
         function setApiType(type, initLoad = false) {
             triggerPulse();
             
@@ -4780,34 +4890,7 @@ WITH CHECK (true);</code>
 
             const modelSelect = document.getElementById('model-name');
             if (modelSelect) {
-                modelSelect.innerHTML = '';
-                let options = [];
-                if (type === "GEMINI") {
-                    options = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.0-pro"];
-                } else if (type === "GROQ") {
-                    options = ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "mixtral-8x7b-32768", "gemma2-9b-it"];
-                } else if (type === "OPENROUTER") {
-                    options = ["google/gemini-flash-1.5", "google/gemini-pro-1.5", "google/gemini-2.0-flash-exp", "anthropic/claude-3.5-sonnet", "meta-llama/llama-3.3-70b-instruct", "deepseek/deepseek-chat"];
-                } else if (type === "CUSTOM") {
-                    options = ["custom-model-1", "custom-model-2"];
-                } else {
-                    options = ["gpt-4o", "gpt-4o-mini", "gpt-4", "gpt-3.5-turbo"];
-                }
-                options.forEach(opt => {
-                    const optionEl = document.createElement('option');
-                    optionEl.value = opt;
-                    optionEl.innerText = opt;
-                    modelSelect.appendChild(optionEl);
-                });
-                
-                if (type === "CUSTOM" && !initLoad) {
-                    const customModel = prompt("Insira o nome do modelo da API customizada (ex: mistral-large):") || "custom-model";
-                    modelSelect.innerHTML = '';
-                    const optionEl = document.createElement('option');
-                    optionEl.value = customModel;
-                    optionEl.innerText = customModel;
-                    modelSelect.appendChild(optionEl);
-                }
+                updateAllModelDropdowns(type);
             }
             
             if (!initLoad) { // Ao clicar mudar motor na hora, sobrescreve defaults
@@ -4824,8 +4907,8 @@ WITH CHECK (true);</code>
                     baseUrl.value = "https://openrouter.ai/api/v1/chat/completions";
                     model.value = "google/gemini-flash-1.5";
                 } else if (type === "CUSTOM") {
-                    baseUrl.value = "https://api.provider.com/v1/";
-                    model.value = "custom-model";
+                    baseUrl.value = "https://openrouter.ai/api/v1/";
+                    model.value = "google/gemini-2.5-flash";
                 } else {
                     baseUrl.value = "https://api.openai.com/v1/";
                     model.value = "gpt-4o";
@@ -5361,6 +5444,8 @@ WITH CHECK (true);</code>
             const mainBaseUrl = document.getElementById('base-url');
             const mainModelName = document.getElementById('model-name');
             
+            updateAllModelDropdowns(type);
+            
             if (type === "GEMINI") {
                 if (tgBaseUrl) tgBaseUrl.value = "https://generativelanguage.googleapis.com/";
                 if (tgModelName) tgModelName.value = "gemini-1.5-flash";
@@ -5375,23 +5460,14 @@ WITH CHECK (true);</code>
                 if (tgBaseUrl && (tgBaseUrl.value === "https://generativelanguage.googleapis.com/" || tgBaseUrl.value === "https://api.openai.com/v1/")) {
                     tgBaseUrl.value = "https://api.deepseek.com/v1/";
                 }
-                if (tgModelName && (tgModelName.value === "gemini-1.5-flash" || tgModelName.value === "gpt-4o")) {
+                if (tgModelName) {
                     tgModelName.value = "deepseek-chat";
                 }
                 if (mainBaseUrl && (mainBaseUrl.value === "https://generativelanguage.googleapis.com/" || mainBaseUrl.value === "https://api.openai.com/v1/")) {
                     mainBaseUrl.value = "https://api.deepseek.com/v1/";
                 }
                 if (mainModelName) {
-                    let optExists = Array.from(mainModelName.options).some(o => o.value === "deepseek-chat");
-                    if (!optExists) {
-                        const optionEl = document.createElement('option');
-                        optionEl.value = "deepseek-chat";
-                        optionEl.innerText = "deepseek-chat";
-                        mainModelName.appendChild(optionEl);
-                    }
-                    if (mainModelName.value === "gemini-1.5-flash" || mainModelName.value === "gpt-4o") {
-                        mainModelName.value = "deepseek-chat";
-                    }
+                    mainModelName.value = "deepseek-chat";
                 }
             }
             
