@@ -5082,23 +5082,71 @@ WITH CHECK (true);</code>
                 if (splash) splash.remove();
             }
 
-            // Inicializa módulo inteligente do Workspace do Synapse
-            if (typeof initWorkspace === 'function') {
-                initWorkspace();
+            // Garante receptadores de teclado nativos robustos para inputs contra ReferenceErrors de inline engine
+            try {
+                const chatInputEl = document.getElementById('chat-input');
+                if (chatInputEl) {
+                    chatInputEl.addEventListener('keydown', function(event) {
+                        if (event && event.key === 'Enter') {
+                            sendMessage();
+                        }
+                    });
+                }
+                const adminPinInputEl = document.getElementById('admin-pin-input');
+                if (adminPinInputEl) {
+                    adminPinInputEl.addEventListener('keydown', function(event) {
+                        if (event && event.key === 'Enter') {
+                            tryUnlockAdminPanel();
+                        }
+                    });
+                }
+                const cliInputEl = document.getElementById('cli-input');
+                if (cliInputEl) {
+                    cliInputEl.addEventListener('keydown', function(event) {
+                        if (event && event.key === 'Enter') {
+                            executeCliCommand();
+                        }
+                    });
+                }
+            } catch (eventBindingErr) {
+                console.error("Erro ao registrar tratadores de teclado adicionais:", eventBindingErr);
             }
+
+            // Inicializa módulo inteligente do Workspace do Synapse
+            try {
+                if (typeof initWorkspace === 'function') {
+                    initWorkspace();
+                }
+            } catch (workspaceInitErr) {
+                console.error("Erro ao inicializar módulo de workspace:", workspaceInitErr);
+            }
+
             // Inicializa o sistema de Assistentes Inteligentes
-            if (typeof initAssistants === 'function') {
-                initAssistants();
+            try {
+                if (typeof initAssistants === 'function') {
+                    initAssistants();
+                }
+            } catch (assistantsInitErr) {
+                console.error("Erro ao inicializar assistentes adicionais:", assistantsInitErr);
             }
             
-            // Ativa o embelezador de selects globais do Synapse instantaneamente
-            if (typeof autoEnhanceAllSelects === 'function') {
-                autoEnhanceAllSelects();
-            }
-            // Mantém um escaneamento leve em background para qualquer menu ou aba renderizada dinamicamente
-            setInterval(() => {
+            // Ativa o embelezador de selects globais do Synapse instantaneamente com segurança
+            try {
                 if (typeof autoEnhanceAllSelects === 'function') {
                     autoEnhanceAllSelects();
+                }
+            } catch (selectsEnhanceErr) {
+                console.error("Erro ao embelezar seletores globais:", selectsEnhanceErr);
+            }
+
+            // Mantém um escaneamento leve em background para qualquer menu ou aba renderizada dinamicamente
+            setInterval(() => {
+                try {
+                    if (typeof autoEnhanceAllSelects === 'function') {
+                        autoEnhanceAllSelects();
+                    }
+                } catch (selectsLoopErr) {
+                    // Fail silenty in loop
                 }
             }, 2000);
         }
