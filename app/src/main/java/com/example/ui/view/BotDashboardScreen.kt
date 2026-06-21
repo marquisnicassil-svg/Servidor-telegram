@@ -2743,20 +2743,30 @@ fun TranslatorTab(
                             Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null, tint = Color.White)
                         }
                     }
-                    DropdownMenu(
-                        expanded = dropdownExpanded,
-                        onDismissRequest = { dropdownExpanded = false },
-                        modifier = Modifier.background(Color(0xFF0F172A)).border(1.dp, Color(0xFF334155))
-                    ) {
-                        languages.forEach { lang ->
-                            DropdownMenuItem(
-                                text = { Text(lang, color = Color.White) },
-                                onClick = {
-                                    selectedLanguage = lang
-                                    dropdownExpanded = false
+                    if (dropdownExpanded) {
+                        SynapseBottomSheetPicker(
+                            title = "Traduzir para...",
+                            options = languages,
+                            selectedOption = selectedLanguage,
+                            optionLabel = { it },
+                            optionIcon = { lang ->
+                                when (lang.lowercase()) {
+                                    "inglês" -> "🇺🇸"
+                                    "espanhol" -> "🇪🇸"
+                                    "francês" -> "🇫🇷"
+                                    "alemão" -> "🇩🇪"
+                                    "italiano" -> "🇮🇹"
+                                    "japonês" -> "🇯🇵"
+                                    "mandarim" -> "🇨🇳"
+                                    "português" -> "🇧🇷"
+                                    else -> "🌐"
                                 }
-                            )
-                        }
+                            },
+                            onDismissRequest = { dropdownExpanded = false },
+                            onOptionSelected = {
+                                selectedLanguage = it
+                            }
+                        )
                     }
                 }
 
@@ -4162,20 +4172,27 @@ fun InterviewSimulatorTab(
                             Text(area, color = Color.White, fontSize = 12.sp)
                         }
                         
-                        DropdownMenu(
-                            expanded = dropdownExpanded,
-                            onDismissRequest = { dropdownExpanded = false },
-                            modifier = Modifier.background(Color(0xFF0F172A))
-                        ) {
-                            areas.forEach { a ->
-                                DropdownMenuItem(
-                                    text = { Text(a, color = Color.White) },
-                                    onClick = {
-                                        viewModel.interviewArea.value = a
-                                        dropdownExpanded = false
+                        if (dropdownExpanded) {
+                            SynapseBottomSheetPicker(
+                                title = "Área Profissional",
+                                options = areas,
+                                selectedOption = area,
+                                optionLabel = { it },
+                                optionIcon = { a ->
+                                    when (a.lowercase()) {
+                                        "tecnologia" -> "💻"
+                                        "design" -> "🎨"
+                                        "vendas" -> "📈"
+                                        "finanças" -> "💰"
+                                        "rh" -> "👥"
+                                        else -> "💼"
                                     }
-                                )
-                            }
+                                },
+                                onDismissRequest = { dropdownExpanded = false },
+                                onOptionSelected = {
+                                    viewModel.interviewArea.value = it
+                                }
+                            )
                         }
                     }
                 }
@@ -4202,20 +4219,26 @@ fun InterviewSimulatorTab(
                             Text(nivel, color = Color.White, fontSize = 12.sp)
                         }
                         
-                        DropdownMenu(
-                            expanded = levelDropdownExpanded,
-                            onDismissRequest = { levelDropdownExpanded = false },
-                            modifier = Modifier.background(Color(0xFF0F172A))
-                        ) {
-                            listOf("Estágio", "Júnior", "Pleno", "Sênior").forEach { n ->
-                                DropdownMenuItem(
-                                    text = { Text(n, color = Color.White) },
-                                    onClick = {
-                                        viewModel.interviewNivel.value = n
-                                        levelDropdownExpanded = false
+                        if (levelDropdownExpanded) {
+                            SynapseBottomSheetPicker(
+                                title = "Senioridade",
+                                options = listOf("Estágio", "Júnior", "Pleno", "Sênior"),
+                                selectedOption = nivel,
+                                optionLabel = { it },
+                                optionIcon = { n ->
+                                    when (n.lowercase()) {
+                                        "estágio" -> "🌱"
+                                        "júnior" -> "🚀"
+                                        "pleno" -> "🔥"
+                                        "sênior" -> "👑"
+                                        else -> "✦"
                                     }
-                                )
-                            }
+                                },
+                                onDismissRequest = { levelDropdownExpanded = false },
+                                onOptionSelected = {
+                                    viewModel.interviewNivel.value = it
+                                }
+                            )
                         }
                     }
                 }
@@ -4397,4 +4420,140 @@ fun InterviewMetricBar(label: String, score: Int, color: Color) {
         }
     }
 }
+
+@Composable
+fun <T> SynapseBottomSheetPicker(
+    title: String,
+    options: List<T>,
+    selectedOption: T,
+    optionLabel: (T) -> String,
+    optionIcon: (T) -> String = { "✦" },
+    onDismissRequest: () -> Unit,
+    onOptionSelected: (T) -> Unit
+) {
+    androidx.compose.ui.window.Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = androidx.compose.ui.window.DialogProperties(
+            usePlatformDefaultWidth = false
+        )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xD9030406))
+                .clickable(
+                    interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                    indication = null,
+                    onClick = onDismissRequest
+                ),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
+                    .background(Color(0xFF11131A))
+                    .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
+                    .clickable(
+                        interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                        indication = null,
+                        onClick = {} // Consume click
+                    )
+                    .padding(24.dp)
+                    .navigationBarsPadding()
+            ) {
+                // Drag Handle
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(bottom = 18.dp)
+                        .size(width = 40.dp, height = 4.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFF334155))
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 18.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = title,
+                        color = Color.White,
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    IconButton(
+                        onClick = onDismissRequest,
+                        modifier = Modifier
+                            .size(32.dp)
+                            .background(Color(0xFF1E293B), CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Fechar",
+                            tint = Color.LightGray,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    options.forEach { opt ->
+                        val isSelected = opt == selectedOption
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(if (isSelected) Color(0x1438BDF8) else Color(0x0AFFFFFF))
+                                .border(
+                                    width = 1.dp,
+                                    color = if (isSelected) Color(0xFF38BDF8) else Color(0xFF1E293B),
+                                    shape = RoundedCornerShape(14.dp)
+                                )
+                                .clickable {
+                                    onOptionSelected(opt)
+                                    onDismissRequest()
+                                }
+                                .padding(horizontal = 18.dp, vertical = 14.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Text(
+                                    text = optionIcon(opt),
+                                    fontSize = 18.sp,
+                                    color = if (isSelected) Color(0xFF38BDF8) else Color.White
+                                )
+                                Text(
+                                    text = optionLabel(opt),
+                                    color = if (isSelected) Color.White else Color(0xFF94A3B8),
+                                    fontSize = 14.sp,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                                )
+                            }
+                            if (isSelected) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "Selecionado",
+                                    tint = Color(0xFF38BDF8),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 
