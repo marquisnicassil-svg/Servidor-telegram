@@ -1428,12 +1428,12 @@
     <!-- Cabeçalho Fixo Nativo -->
     <header>
         <div class="header-container" style="display: flex; align-items: center; justify-content: space-between;">
-            <button id="menu-drawer-btn" onclick="event.stopPropagation(); toggleDrawer(true)" style="background: transparent; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; outline: none; margin-right: 15px;">
+            <button id="menu-drawer-btn" onclick="toggleDrawer(true)" style="background: transparent; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; outline: none; margin-right: 15px;">
                 ☰
             </button>
             <h1 id="topbar-section-title" style="font-size: 1.05rem; font-weight: 700; text-align: center; margin: 0; flex: 1; color: var(--text-main);">💬 Conversas</h1>
             <div style="display: flex; align-items: center; gap: 12px; min-width: 60px; justify-content: flex-end;">
-                <button id="header-clear-chat-btn" onclick="event.stopPropagation(); clearChat()" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; outline: none; color: var(--text-muted); opacity: 0.8; transition: opacity 0.2s;" title="Apagar Conversa" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+                <button id="header-clear-chat-btn" onclick="clearChat()" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; outline: none; color: var(--text-muted); opacity: 0.8; transition: opacity 0.2s;" title="Apagar Conversa" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
                     🗑️
                 </button>
                 <div class="badge-live" style="margin: 0;">Online</div>
@@ -11869,7 +11869,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             if (email.toLowerCase() === adminEmail.toLowerCase()) return false;
 
             loadAdminPersistence(); // Garante leitura atualizada
-            const matched = adminLocalUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+            const matched = adminLocalUsers.find(u => u && u.email && u.email.toLowerCase() === email.toLowerCase());
             if (matched && matched.banned_until) {
                 const bannedTime = new Date(matched.banned_until);
                 if (bannedTime > new Date()) {
@@ -11892,7 +11892,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             if (email.toLowerCase() === adminEmail.toLowerCase()) return false;
 
             loadAdminPersistence(); // Garante leitura atualizada
-            const matched = adminLocalUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+            const matched = adminLocalUsers.find(u => u && u.email && u.email.toLowerCase() === email.toLowerCase());
             if (matched && matched.muted_until) {
                 const mutedTime = new Date(matched.muted_until);
                 if (mutedTime > new Date()) {
@@ -11985,7 +11985,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             if (!email) return;
             loadAdminPersistence();
 
-            const index = adminLocalUsers.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+            const index = adminLocalUsers.findIndex(u => u && u.email && u.email.toLowerCase() === email.toLowerCase());
             if (index === -1) {
                 adminLocalUsers.push({
                     id: id || "usr-" + Date.now(),
@@ -12025,7 +12025,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             localStorage.setItem('synapse_admin_logs', JSON.stringify(adminLocalLogs));
 
             // Atualiza estatísticas de tipo de funcionalidade mais usada
-            const index = adminLocalUsers.findIndex(u => u.email.toLowerCase() === (email || "").toLowerCase());
+            const index = adminLocalUsers.findIndex(u => u && u.email && u.email.toLowerCase() === (email || "").toLowerCase());
             if (index !== -1) {
                 adminLocalUsers[index].usage_count = (adminLocalUsers[index].usage_count || 0) + 1;
                 if (action === "Mensagem de Chat") {
@@ -12231,7 +12231,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                         loadAdminPersistence();
                         let updated = false;
                         dbUsers.forEach(dbU => {
-                            const localIndex = adminLocalUsers.findIndex(u => u.email.toLowerCase() === dbU.email.toLowerCase() || u.id === dbU.id);
+                            if (!dbU || !dbU.email) return;
+                            const localIndex = adminLocalUsers.findIndex(u => u && u.email && u.email.toLowerCase() === dbU.email.toLowerCase() || u.id === dbU.id);
                             if (localIndex === -1) {
                                 adminLocalUsers.push({
                                     id: dbU.id || "usr-" + Math.random().toString(36).substr(2, 9),
@@ -12319,12 +12320,13 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                         statusLabel = `<span style="color:#f59e0b; display:flex; align-items:center; gap:4px; font-weight:bold;" title="Silenciado">Silenciado 🔕</span>`;
                     }
 
-                    const emailStyle = u.email.toLowerCase() === (localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com").toLowerCase() 
+                    const uEmail = u.email || "";
+                    const emailStyle = uEmail.toLowerCase() === (localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com").toLowerCase() 
                         ? "color: var(--primary); font-weight:bold;" : "color: #fff;";
 
-                    const emailDisplay = u.email.toLowerCase() === (localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com").toLowerCase()
-                        ? `${u.email} <span style="font-size:0.65rem; background-color:rgba(124,58,237,0.2); border:1px solid var(--primary); color:var(--primary); padding:2px 4px; border-radius:4px; margin-left:4px;">Proprietário</span>`
-                        : u.email;
+                    const emailDisplay = uEmail.toLowerCase() === (localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com").toLowerCase()
+                        ? `${uEmail} <span style="font-size:0.65rem; background-color:rgba(124,58,237,0.2); border:1px solid var(--primary); color:var(--primary); padding:2px 4px; border-radius:4px; margin-left:4px;">Proprietário</span>`
+                        : uEmail;
 
                     tBody.innerHTML += `
                         <tr class="admin-user-row" onclick="openUserManagementModal('${u.id}')" style="cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.04);" title="Clique para gerenciar moderação de ${u.display_name}">
