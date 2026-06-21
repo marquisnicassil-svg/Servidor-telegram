@@ -954,8 +954,10 @@ fun PlaygroundTab(
 
             Button(
                 onClick = {
-                    if (inputText.isNotBlank()) {
-                        viewModel.sendLocalMockMessage(inputText)
+                    val trimmed = inputText.trim()
+                    val dotFree = trimmed.replace(".", "").trim()
+                    if (trimmed.isNotEmpty() && dotFree.isNotEmpty()) {
+                        viewModel.sendLocalMockMessage(trimmed)
                         inputText = ""
                     }
                 },
@@ -964,7 +966,7 @@ fun PlaygroundTab(
                     .testTag("playground_send_btn"),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF38BDF8)),
-                enabled = !isThinking && inputText.isNotBlank()
+                enabled = !isThinking && inputText.isNotBlank() && inputText.trim().replace(".", "").trim().isNotEmpty()
             ) {
                 Icon(
                     imageVector = Icons.Default.Send,
@@ -4024,8 +4026,10 @@ fun InterviewSimulatorTab(
 
                     IconButton(
                         onClick = {
-                            if (textInput.isNotBlank() && !isThinking) {
-                                viewModel.submitInterviewAnswer(textInput.trim())
+                            val trimmed = textInput.trim()
+                            val dotFree = trimmed.replace(".", "").trim()
+                            if (trimmed.isNotEmpty() && dotFree.isNotEmpty() && !isThinking) {
+                                viewModel.submitInterviewAnswer(trimmed)
                                 textInput = ""
                             }
                         },
