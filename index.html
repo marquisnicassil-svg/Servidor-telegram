@@ -18,8 +18,10 @@
                 const splash = document.getElementById('splash-screen');
                 if (splash) {
                     splash.style.opacity = '0';
+                    splash.style.pointerEvents = 'none';
+                    splash.style.display = 'none';
                     splash.style.transition = 'opacity 0.25s ease-out';
-                    setTimeout(function() { splash.remove(); }, 260);
+                    setTimeout(function() { try { splash.remove(); } catch(err){} }, 260);
                 }
             }, 500);
         });
@@ -29,8 +31,10 @@
                 const splash = document.getElementById('splash-screen');
                 if (splash) {
                     splash.style.opacity = '0';
+                    splash.style.pointerEvents = 'none';
+                    splash.style.display = 'none';
                     splash.style.transition = 'opacity 0.25s ease-out';
-                    setTimeout(function() { splash.remove(); }, 260);
+                    setTimeout(function() { try { splash.remove(); } catch(err){} }, 260);
                 }
             }, 500);
         });
@@ -1090,6 +1094,20 @@
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        /* FAIL-SAFE DEFINITIVO PARA EVITAR TELAS TRAVADAS: Se o splash ou o login estiverem ocultos ou transparentes, */
+        /* as regras abaixo desabilitam cliques deles instantaneamente e evitam que cubram os botões reais do chat. */
+        #splash-screen.fade-out,
+        #auth-gate-screen.fade-out,
+        #splash-screen[style*="opacity: 0"], 
+        #splash-screen[style*="opacity:0"],
+        #auth-gate-screen[style*="opacity: 0"],
+        #auth-gate-screen[style*="opacity:0"] {
+            pointer-events: none !important;
+            display: none !important;
+            visibility: hidden !important;
+            z-index: -99999 !important;
         }
         .auth-gate-wrapper {
             width: 100%;
@@ -5081,15 +5099,24 @@ WITH CHECK (true);</code>
                 await new Promise(resolve => setTimeout(resolve, 300));
                 const splash = document.getElementById('splash-screen');
                 if (splash) {
+                    splash.classList.add('fade-out');
                     splash.style.opacity = '0';
+                    splash.style.pointerEvents = 'none';
+                    splash.style.display = 'none';
                     splash.style.transform = 'scale(1.05)'; // Suave efeito de recuo
                     await new Promise(resolve => setTimeout(resolve, 400));
-                    splash.remove();
+                    try { splash.remove(); } catch(err){}
                 }
             } catch (splashErr) {
                 console.error("Falha ao dispensar splash screen:", splashErr);
                 const splash = document.getElementById('splash-screen');
-                if (splash) splash.remove();
+                if (splash) {
+                    try {
+                        splash.style.pointerEvents = 'none';
+                        splash.style.display = 'none';
+                        splash.remove();
+                    } catch(err){}
+                }
             }
 
             // Garante receptadores de teclado nativos robustos para inputs contra ReferenceErrors de inline engine
@@ -11188,7 +11215,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
 
                 // Descarta o gate de login com animação suave
                 if (authGate) {
+                    authGate.classList.add('fade-out');
                     authGate.style.opacity = '0';
+                    authGate.style.pointerEvents = 'none';
                     authGate.style.transform = 'scale(1.03)';
                     setTimeout(() => {
                         authGate.style.display = 'none';
