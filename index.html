@@ -4984,6 +4984,9 @@ WITH CHECK (true);</code>
 
         // Init Flow
         window.onload = async () => {
+            if (typeof addLog === 'function') {
+                addLog("[STEP 1] Tela carregada - Janela e recursos do navegador totalmente carregados.", "info");
+            }
             try {
                 loadChatSession(); // Restaura memoria do chat
             } catch (chatSessionErr) {
@@ -5104,6 +5107,9 @@ WITH CHECK (true);</code>
                     splash.style.pointerEvents = 'none';
                     splash.style.display = 'none';
                     splash.style.transform = 'scale(1.05)'; // Suave efeito de recuo
+                    if (typeof addLog === 'function') {
+                        addLog("[STEP 2] Widgets renderizados - Splash screen removido, elementos visuais renderizados na viewport.", "info");
+                    }
                     await new Promise(resolve => setTimeout(resolve, 400));
                     try { splash.remove(); } catch(err){}
                 }
@@ -5128,6 +5134,9 @@ WITH CHECK (true);</code>
                             sendMessage();
                         }
                     });
+                    if (typeof addLog === 'function') {
+                        addLog("[STEP 3] Eventos registrados - Escutador de clique e teclas do teclado anexados com sucesso ao campo de mensagem.", "info");
+                    }
                 }
                 const adminPinInputEl = document.getElementById('admin-pin-input');
                 if (adminPinInputEl) {
@@ -8171,11 +8180,18 @@ WITH CHECK (true);</code>
         }
 
         async function sendMessage() {
+            if (typeof addLog === 'function') {
+                addLog("[STEP 4] Clique recebido - Evento disparado na função sendMessage.", "info");
+            }
             triggerPulse();
             const input = document.getElementById('chat-input');
             const container = document.getElementById('chat-messages');
             const txt = input.value.trim();
             const dotFreeTxt = txt.replace(/\./g, "").trim();
+            
+            if (typeof addLog === 'function') {
+                addLog(`[STEP 5] onPressed executado - Validação de entrada de texto concluída. Mensagem: "${txt}"`, "info");
+            }
             if (!txt || !dotFreeTxt) return;
 
             // Check if user is banned
@@ -8226,12 +8242,20 @@ WITH CHECK (true);</code>
             // Memória: adiciona input do usuário
             chatHistoryObjects.push({ role: 'user', content: txt });
 
+            if (typeof addLog === 'function') {
+                addLog("[STEP 6] Mensagem enviada ao controlador - Despachando corpo da mensagem para a IA e salvando histórico local.", "info");
+            }
+
             // Insere msg usuário
             input.value = "";
             const usrMsg = document.createElement('div');
             usrMsg.className = 'chat-message user';
             usrMsg.innerText = txt;
             container.appendChild(usrMsg);
+            
+            if (typeof addLog === 'function') {
+                addLog("[STEP 7] Atualização da interface - Nova divisória de mensagem adicionada na tela principal do chat.", "info");
+            }
             scrollToBottom();
             saveChatSession();
 
@@ -8416,6 +8440,9 @@ WITH CHECK (true);</code>
                 scrollToBottom();
                 saveChatSession();
                 triggerPulse();
+                if (typeof addLog === 'function') {
+                    addLog("[STEP 8] Renderização concluída - O novo bloco de texto da resposta da IA foi finalizado na árvore de renderização.", "info");
+                }
                 addLog(`Thread preenchida com sucesso e salva na memória.`, "success");
 
                 // Auto-Sincronização Cloud Supabase caso esteja ativado

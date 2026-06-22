@@ -729,6 +729,24 @@ fun PlaygroundTab(
     var inputText by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
 
+    // [STEP 1] Tela carregada
+    LaunchedEffect(Unit) {
+        viewModel.addLog("[STEP 1] Tela carregada - UI do Playground carregada de forma reativa", LogType.INFO)
+    }
+
+    // [STEP 2] & [STEP 8] Widgets renderizados e renderização concluída
+    DisposableEffect(Unit) {
+        viewModel.addLog("[STEP 2] Widgets renderizados - Componentes do container de conversas desenhados", LogType.INFO)
+        onDispose {
+            viewModel.addLog("[STEP 8] Renderização concluída - Árvore de UI do Playground reciclada na destruição", LogType.INFO)
+        }
+    }
+
+    // [STEP 3] Eventos registrados
+    LaunchedEffect(Unit) {
+        viewModel.addLog("[STEP 3] Eventos registrados - Escutadores de toque (onClick) e inserção de texto inicializados no botão Enviar.", LogType.INFO)
+    }
+
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(messages.size - 1)
@@ -954,11 +972,25 @@ fun PlaygroundTab(
 
             Button(
                 onClick = {
+                    // [STEP 4] Clique recebido
+                    viewModel.addLog("[STEP 4] Clique recebido - Clique detectado no botão Enviar nativo", LogType.INFO)
+                    
                     val trimmed = inputText.trim()
                     val dotFree = trimmed.replace(".", "").trim()
+                    
+                    // [STEP 5] onPressed executado
+                    viewModel.addLog("[STEP 5] onPressed executado - Evento onClick processado, com validação de campo concluída. Conteúdo: '$trimmed'", LogType.INFO)
+                    
                     if (trimmed.isNotEmpty() && dotFree.isNotEmpty()) {
+                        // [STEP 6] Mensagem enviada ao controlador
+                        viewModel.addLog("[STEP 6] Mensagem enviada ao controlador - Despachando corpo da mensagem para o ViewModel local", LogType.INFO)
                         viewModel.sendLocalMockMessage(trimmed)
+                        
+                        // [STEP 7] Atualização da interface
+                        viewModel.addLog("[STEP 7] Atualização da interface - Limpando inputText e atualizando os estados da UI", LogType.INFO)
                         inputText = ""
+                    } else {
+                        viewModel.addLog("[ALERT] Validação do input falhou no clique do botão", LogType.WARNING)
                     }
                 },
                 modifier = Modifier
