@@ -1465,6 +1465,23 @@
                     🗑️
                 </button>
                 <div class="badge-live" style="margin: 0;">Online</div>
+                <!-- HTML do Menu dos Três Pontos (Opções) Sincronizado -->
+                <div style="position: relative; display: inline-block;">
+                    <button id="three-dots-btn" onclick="toggleThreeDotsMenu()" style="background: transparent; border: none; color: var(--text-main); font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; outline: none; opacity: 0.8; transition: opacity 0.2s;" title="Mais Opções" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+                        ⋮
+                    </button>
+                    <div id="three-dots-dropdown" style="display: none; position: absolute; right: 0; top: 40px; background-color: #0c0a0f; border: 1px solid var(--border-color); border-radius: 12px; width: 180px; z-index: 10001; box-shadow: 0 4px 20px rgba(0,0,0,0.8); overflow: hidden;">
+                        <button onclick="clearChat(); toggleThreeDotsMenu()" style="width: 100%; padding: 12px; background: transparent; border: none; color: #fff; text-align: left; cursor: pointer; font-size: 0.85rem; display: block; border-bottom: 1px solid var(--border-color); transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.05)'" onmouseout="this.style.backgroundColor='transparent'">
+                            💬 Reiniciar Chat
+                        </button>
+                        <button onclick="simulateActivity(); toggleThreeDotsMenu()" style="width: 100%; padding: 12px; background: transparent; border: none; color: #fff; text-align: left; cursor: pointer; font-size: 0.85rem; display: block; border-bottom: 1px solid var(--border-color); transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.05)'" onmouseout="this.style.backgroundColor='transparent'">
+                            ⚡ Simular Chamadas
+                        </button>
+                        <button onclick="clearTerminalReal(); toggleThreeDotsMenu()" style="width: 100%; padding: 12px; background: transparent; border: none; color: #fff; text-align: left; cursor: pointer; font-size: 0.85rem; display: block; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.05)'" onmouseout="this.style.backgroundColor='transparent'">
+                            🖥️ Limpar Terminal
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -3685,6 +3702,36 @@ WITH CHECK (true);</code>
                 overlay.classList.remove('open');
             }
         }
+
+        function toggleThreeDotsMenu() {
+            triggerPulse();
+            const dropdown = document.getElementById('three-dots-dropdown');
+            if (dropdown) {
+                if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+                    dropdown.style.display = 'block';
+                    if (typeof addLog === 'function') {
+                        addLog("[STEP 9] Menu dos Três Pontos aberto com sucesso.", "success");
+                    }
+                } else {
+                    dropdown.style.display = 'none';
+                    if (typeof addLog === 'function') {
+                        addLog("[STEP 10] Menu dos Três Pontos fechado.", "info");
+                    }
+                }
+            }
+        }
+
+        // Clica fora para fechar o menu dos Três Pontos
+        window.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('three-dots-dropdown');
+            const btn = document.getElementById('three-dots-btn');
+            if (dropdown && dropdown.style.display === 'block' && e.target !== btn && !btn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+                if (typeof addLog === 'function') {
+                    addLog("[STEP 10] Menu dos Três Pontos fechado por clique externo.", "info");
+                }
+            }
+        });
 
         function clickDrawerItem(tabId, title) {
             switchTab(tabId);

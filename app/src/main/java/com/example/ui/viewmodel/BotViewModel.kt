@@ -507,8 +507,43 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
 
         if (requiresRealTimeContext(text)) {
             viewModelScope.launch {
+                try {
+                    val userMsg = BotMessageEntity(
+                        chatId = 999999L,
+                        senderId = 1L,
+                        senderName = "Você (Teste)",
+                        messageText = text,
+                        isBotReply = false
+                    )
+                    repository.insertMessage(userMsg)
+                    addLog("Mock Teste: $text", LogType.INFO)
+
+                    _isAiThinkingLocal.value = true
+                    kotlinx.coroutines.delay(600)
+
+                    val promptReply = "Qual o link para eu analisar agora?"
+                    val aiMsg = BotMessageEntity(
+                        chatId = 999999L,
+                        senderId = 999L,
+                        senderName = "IA Bot (Teste)",
+                        messageText = promptReply,
+                        isBotReply = true
+                    )
+                    repository.insertMessage(aiMsg)
+                } catch (e: Exception) {
+                    addLog("Erro na geração simulada: ${e.message}", LogType.ERROR)
+                } finally {
+                    _isAiThinkingLocal.value = false
+                    addLog("Solicitado link de contexto em tempo real por ausência de URL.", LogType.WARNING)
+                }
+            }
+            return
+        }
+
+        viewModelScope.launch {
+            try {
                 val userMsg = BotMessageEntity(
-                    chatId = 999999L,
+                    chatId = 999999L, // Special chat id for local test
                     senderId = 1L,
                     senderName = "Você (Teste)",
                     messageText = text,
@@ -518,56 +553,39 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
                 addLog("Mock Teste: $text", LogType.INFO)
 
                 _isAiThinkingLocal.value = true
-                kotlinx.coroutines.delay(600)
+                
+                // Retrieve config details for local simulation
+                val config = configState.value ?: BotConfigEntity(token = "")
+                
+                // Generate content
+                val aiResponse = repository.generateAiContent(
+                    userMessage = text,
+                    systemPrompt = config.systemPrompt,
+                    temperature = config.temperature,
+                    chatId = 999999L
+                )
 
-                val promptReply = "Qual o link para eu analisar agora?"
                 val aiMsg = BotMessageEntity(
                     chatId = 999999L,
                     senderId = 999L,
                     senderName = "IA Bot (Teste)",
-                    messageText = promptReply,
+                    messageText = aiResponse,
                     isBotReply = true
                 )
                 repository.insertMessage(aiMsg)
+            } catch (e: Exception) {
+                addLog("Erro na execução do Chat de testes local: ${e.message}", LogType.ERROR)
+                val errorMsg = BotMessageEntity(
+                    chatId = 999999L,
+                    senderId = 999L,
+                    senderName = "Sistema",
+                    messageText = "Desculpe, ocorreu um erro de conexão: ${e.message}",
+                    isBotReply = true
+                )
+                try { repository.insertMessage(errorMsg) } catch(dbErr: Exception){}
+            } finally {
                 _isAiThinkingLocal.value = false
-                addLog("Solicitado link de contexto em tempo real por ausência de URL.", LogType.WARNING)
             }
-            return
-        }
-
-        viewModelScope.launch {
-            val userMsg = BotMessageEntity(
-                chatId = 999999L, // Special chat id for local test
-                senderId = 1L,
-                senderName = "Você (Teste)",
-                messageText = text,
-                isBotReply = false
-            )
-            repository.insertMessage(userMsg)
-            addLog("Mock Teste: $text", LogType.INFO)
-
-            _isAiThinkingLocal.value = true
-            
-            // Retrieve config details for local simulation
-            val config = configState.value ?: BotConfigEntity(token = "")
-            
-            // Generate content
-            val aiResponse = repository.generateAiContent(
-                userMessage = text,
-                systemPrompt = config.systemPrompt,
-                temperature = config.temperature,
-                chatId = 999999L
-            )
-
-            val aiMsg = BotMessageEntity(
-                chatId = 999999L,
-                senderId = 999L,
-                senderName = "IA Bot (Teste)",
-                messageText = aiResponse,
-                isBotReply = true
-            )
-            repository.insertMessage(aiMsg)
-            _isAiThinkingLocal.value = false
         }
     }
 

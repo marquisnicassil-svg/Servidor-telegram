@@ -238,9 +238,11 @@ fun BotDashboardScreen(
                         }
                     },
                     actions = {
+                        var showMenu by remember { mutableStateOf(false) }
+
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(end = 12.dp)
+                            modifier = Modifier.padding(end = 4.dp)
                         ) {
                             Box(
                                 modifier = Modifier
@@ -256,6 +258,44 @@ fun BotDashboardScreen(
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.Monospace
                             )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            IconButton(
+                                onClick = { showMenu = !showMenu },
+                                modifier = Modifier.testTag("three_dots_menu_btn")
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = "Mais Opções",
+                                    tint = Color.White
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = showMenu,
+                                onDismissRequest = { showMenu = false },
+                                modifier = Modifier.background(Color(0xFF0F172A))
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text("💬 Limpar Histórico", color = Color.White) },
+                                    onClick = {
+                                        showMenu = false
+                                        viewModel.clearLocalHistory()
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("🖥️ Limpar Logs", color = Color.White) },
+                                    onClick = {
+                                        showMenu = false
+                                        viewModel.clearLogs()
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("⚡ Simular Atividade", color = Color.White) },
+                                    onClick = {
+                                        showMenu = false
+                                        viewModel.addLog("Simulando autoensaios e rotinas de rede automatizadas do painel nativo...", LogType.INFO)
+                                    }
+                                )
+                            }
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
