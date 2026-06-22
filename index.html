@@ -168,15 +168,25 @@
             display: flex;
             flex-direction: column;
             overflow: hidden; /* App travado, barras de rolagem internas */
-            user-select: none;
-            -webkit-user-select: none;
+            user-select: auto !important;
+            -webkit-user-select: auto !important;
+            pointer-events: auto !important;
             transition: background-color 0.3s;
         }
 
-        /* Permite copiar texto de partes essenciais */
-        input, textarea, .chat-message, .log-line {
-            user-select: text;
-            -webkit-user-select: text;
+        /* Permite copiar e interagir com texto de partes essenciais de forma garantida e definitiva */
+        input, textarea, select, [contenteditable="true"], .chat-message, .log-line, .form-control {
+            user-select: text !important;
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
+            pointer-events: auto !important;
+            cursor: text !important;
+        }
+
+        button, a, .tab-btn, .color-circle, .drawer-item, .btn-universal, .chat-btn-send {
+            pointer-events: auto !important;
+            cursor: pointer !important;
         }
 
         /* ==========================================================================
@@ -1532,7 +1542,7 @@
                 </div>
                 <div class="chat-input-area" style="align-items: center; gap: 10px; padding-top: 10px; padding-bottom: 10px;">
                     <div style="position: relative; flex: 1; display: flex; align-items: center;">
-                        <input type="text" id="chat-input" class="form-control" style="padding-left: 18px; padding-right: 44px; border-radius: 24px; background-color: #1E1E22; border: 1px solid rgba(255, 255, 255, 0.08); height: 48px; color: #ffffff;" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
+                        <input type="text" id="chat-input" class="form-control" style="padding-left: 18px; padding-right: 44px; border-radius: 24px; background-color: #1E1E22; border: 1px solid rgba(255, 255, 255, 0.08); height: 48px; color: #ffffff; pointer-events: auto !important; -webkit-user-select: text !important; user-select: text !important; position: relative; z-index: 100 !important; cursor: text !important;" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
                         <button id="btn-mic" onclick="toggleMic()" style="position: absolute; right: 6px; background: transparent; border: none; font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; color: var(--text-muted); outline: none; z-index: 5;" title="Ditado por Voz">🎤</button>
                     </div>
                     <button class="chat-btn-send" onclick="sendMessage()">
