@@ -1261,45 +1261,80 @@
         .drawer {
             position: fixed;
             top: 0;
-            left: -285px;
-            width: 285px;
+            left: -290px;
+            width: 290px;
             height: 100%;
-            background-color: #000000;
-            border-right: 1px solid var(--border-color);
+            background-color: var(--bg-color, #0a0a0c);
+            border-right: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
             z-index: 10000;
-            transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             display: flex;
             flex-direction: column;
-            padding: calc(1.2rem + var(--safe-top)) 1.2rem 1.5rem;
+            padding: calc(1.2rem + var(--safe-top)) 0 1.5rem;
             box-sizing: border-box;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
         }
         .drawer.open {
             left: 0;
         }
         .drawer-header {
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 1.5rem;
+            padding: 0 1.5rem 1.2rem;
+            border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+            margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+        }
+        .drawer-header .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         .drawer-header .brand svg {
-            width: 24px;
-            height: 24px;
+            width: 26px;
+            height: 26px;
             fill: var(--primary);
+            filter: drop-shadow(0 0 8px rgba(var(--primary-rgb), 0.3));
         }
         .drawer-header .brand h1 {
-            font-size: 1.15rem;
-            font-weight: bold;
-            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text-main, #ffffff);
             margin: 0;
             font-family: inherit;
         }
-        .drawer-header .brand span {
-            color: var(--text-muted);
-            font-weight: 500;
-            font-size: 0.9rem;
+        .drawer-content-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.8rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+        }
+        .drawer-content-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .drawer-content-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+        .drawer-section {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .drawer-section-title {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--text-muted, #8e8e93);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            padding-left: 14px;
+            margin-bottom: 4px;
+            user-select: none;
+            opacity: 0.8;
         }
         .drawer-menu {
             list-style: none;
@@ -1307,35 +1342,74 @@
             margin: 0;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 4px;
         }
         .drawer-item {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 12px 18px;
-            border-radius: 12px;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
             cursor: pointer;
-            color: var(--text-muted);
-            transition: all 0.2s ease;
-            font-weight: 600;
-            font-size: 0.92rem;
+            color: var(--text-muted, #a1a1aa);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            font-size: 0.88rem;
             user-select: none;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid transparent;
+        }
+        .drawer-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 15%;
+            height: 70%;
+            width: 3px;
+            background-color: var(--primary);
+            border-radius: 0 4px 4px 0;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.2s ease;
         }
         .drawer-item:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-            color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.03);
+            color: var(--text-main, #ffffff);
+            transform: translateX(2px);
+        }
+        .drawer-item:active {
+            background-color: rgba(255, 255, 255, 0.06);
+            transform: scale(0.98);
         }
         .drawer-item.active {
-            background-color: rgba(56, 189, 248, 0.08);
+            background-color: var(--primary-bg, rgba(56, 189, 248, 0.08));
             color: var(--primary);
-            border: 1px solid rgba(56, 189, 248, 0.15);
+            font-weight: 600;
+            border: 1px solid var(--primary-bg, rgba(56, 189, 248, 0.12));
+        }
+        .drawer-item.active::before {
+            transform: scaleX(1);
         }
         .drawer-icon {
-            font-size: 1.25rem;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            color: inherit;
+            flex-shrink: 0;
+        }
+        .drawer-icon-svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 0.2s ease;
+        }
+        .drawer-item:hover .drawer-icon-svg {
+            transform: scale(1.05);
         }
 
         /* Estilos do Gerenciador de Agentes Autônomos */
@@ -1508,51 +1582,118 @@
                 <svg viewBox="0 0 24 24">
                     <path d="M21 16.5C21 16.88 20.79 17.21 20.47 17.38L12.57 21.82C12.41 21.94 12.21 22 12 22C11.79 22 11.59 21.94 11.43 21.82L3.53 17.38C3.21 17.21 3 16.88 3 16.5V7.5C3 7.12 3.21 6.79 3.53 6.62L11.43 2.18C11.59 2.06 11.79 2 12 2C12.21 2 12.41 2.06 12.57 2.18L20.47 6.62C20.79 6.79 21 7.12 21 7.5V16.5M12 4.15L5 8.09L12 12.03L19 8.09L12 4.15M12 14.1L5.04 10.15V15.77L12 19.71V14.1M20.96 15.77V10.15L14 14.1V19.71L20.96 15.77Z"/>
                 </svg>
-                <h1 style="color: #ffffff; font-size: 1.15rem; font-weight: bold; margin: 0;">Core <span style="color: var(--text-muted); font-weight: 500; font-size: 0.9rem;">System</span></h1>
+                <h1 style="color: #ffffff; font-size: 1.15rem; font-weight: bold; margin: 0;">Synapse <span style="color: var(--primary); font-weight: 500; font-size: 0.9rem;">Console</span></h1>
             </div>
         </div>
-        <ul class="drawer-menu">
-            <li class="drawer-item active" onclick="clickDrawerItem('tab-chat', '💬 Conversas')">
-                <span class="drawer-icon">💬</span>
-                <span class="drawer-label" data-i18n="conversas">Conversas</span>
-            </li>
-            <li class="drawer-item" onclick="clickDrawerItem('tab-agents', '🤖 Agents')">
-                <span class="drawer-icon">🤖</span>
-                <span class="drawer-label" data-i18n="agents_menu">Agents</span>
-            </li>
-            <li class="drawer-item" onclick="clickDrawerItem('tab-resume-builder', '📄 Currículo IA')">
-                <span class="drawer-icon">📄</span>
-                <span class="drawer-label" data-i18n="resume_builder">Currículo IA</span>
-            </li>
-            <li class="drawer-item" onclick="clickDrawerItem('tab-interview-simulator', '💼 Simulador de Entrevistas IA')">
-                <span class="drawer-icon">💼</span>
-                <span class="drawer-label" data-i18n="interview_simulator">Simulador de Entrevistas IA</span>
-            </li>
-            <li class="drawer-item" onclick="clickDrawerItem('tab-workspace', '💼 Workspace')" id="drawer-tab-workspace">
-                <span class="drawer-icon">💼</span>
-                <span class="drawer-label" data-i18n="workspace">Workspace</span>
-            </li>
-            <li class="drawer-item" onclick="clickDrawerItem('tab-config', '⚙️ Configurações (Ajustes)')">
-                <span class="drawer-icon">⚙️</span>
-                <span class="drawer-label" data-i18n="configuracoes_ajustes">Configurações (Ajustes)</span>
-            </li>
-            <li class="drawer-item" onclick="clickDrawerItem('tab-logs', '🖥️ Terminal de Comandos')">
-                <span class="drawer-icon">🖥️</span>
-                <span class="drawer-label" data-i18n="terminal_comandos">Terminal de Comandos</span>
-            </li>
-            <li class="drawer-item" onclick="clickDrawerItem('tab-translator', '🌐 Tradutor de Textos')">
-                <span class="drawer-icon">🌐</span>
-                <span class="drawer-label" data-i18n="tradutor_textos">Tradutor de Textos</span>
-            </li>
-            <li class="drawer-item" onclick="clickDrawerItem('tab-context-browser', '🌐 Navegador de Contexto')">
-                <span class="drawer-icon">🌐</span>
-                <span class="drawer-label" data-i18n="navegador_contexto">Navegador de Contexto</span>
-            </li>
-            <li class="drawer-item" onclick="clickDrawerItem('tab-admin', '🛡️ Painel Admin')">
-                <span class="drawer-icon">🛡️</span>
-                <span class="drawer-label">Painel Admin</span>
-            </li>
-        </ul>
+        
+        <div class="drawer-content-scroll">
+            <!-- PRINCIPAL -->
+            <div class="drawer-section">
+                <div class="drawer-section-title" data-i18n="menu_sec_principal">Principal</div>
+                <ul class="drawer-menu">
+                    <li class="drawer-item active" onclick="clickDrawerItem('tab-chat')">
+                        <span class="drawer-icon">
+                            <svg class="drawer-icon-svg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        </span>
+                        <span class="drawer-label" data-i18n="conversas">Conversas</span>
+                    </li>
+                    <li class="drawer-item" onclick="clickDrawerItem('tab-agents')">
+                        <span class="drawer-icon">
+                            <svg class="drawer-icon-svg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4M8 15h.01M16 15h.01"></path></svg>
+                        </span>
+                        <span class="drawer-label" data-i18n="agents_menu">Agentes</span>
+                    </li>
+                    <li class="drawer-item" onclick="clickDrawerItem('tab-workspace')" id="drawer-tab-workspace">
+                        <span class="drawer-icon">
+                            <svg class="drawer-icon-svg" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                        </span>
+                        <span class="drawer-label" data-i18n="workspace">Espaço de Trabalho</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- PRODUTIVIDADE -->
+            <div class="drawer-section">
+                <div class="drawer-section-title" data-i18n="menu_sec_produtividade">Produtividade</div>
+                <ul class="drawer-menu">
+                    <li class="drawer-item" onclick="clickDrawerItem('tab-resume-builder')">
+                        <span class="drawer-icon">
+                            <svg class="drawer-icon-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        </span>
+                        <span class="drawer-label" data-i18n="resume_builder">Currículo IA</span>
+                    </li>
+                    <li class="drawer-item" onclick="clickDrawerItem('tab-interview-simulator')">
+                        <span class="drawer-icon">
+                            <svg class="drawer-icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        </span>
+                        <span class="drawer-label" data-i18n="interview_simulator">Simulador de Entrevistas</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- FERRAMENTAS -->
+            <div class="drawer-section">
+                <div class="drawer-section-title" data-i18n="menu_sec_ferramentas">Ferramentas</div>
+                <ul class="drawer-menu">
+                    <li class="drawer-item" onclick="clickDrawerItem('tab-logs')">
+                        <span class="drawer-icon">
+                            <svg class="drawer-icon-svg" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                        </span>
+                        <span class="drawer-label" data-i18n="terminal_comandos">Terminal</span>
+                    </li>
+                    <li class="drawer-item" onclick="clickDrawerItem('tab-translator')">
+                        <span class="drawer-icon">
+                            <svg class="drawer-icon-svg" viewBox="0 0 24 24"><path d="M5 8l6 6M4 14l6-6M2 5h12M7 2v3M22 22l-5-10-5 10M14 18h6"></path></svg>
+                        </span>
+                        <span class="drawer-label" data-i18n="tradutor_textos">Tradutor de Textos</span>
+                    </li>
+                    <li class="drawer-item" onclick="clickDrawerItem('tab-context-browser')">
+                        <span class="drawer-icon">
+                            <svg class="drawer-icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        </span>
+                        <span class="drawer-label" data-i18n="navegador_contexto">Navegador de Contexto</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- SISTEMA -->
+            <div class="drawer-section">
+                <div class="drawer-section-title" data-i18n="menu_sec_sistema">Sistema</div>
+                <ul class="drawer-menu">
+                    <li class="drawer-item" onclick="clickDrawerItem('tab-config')">
+                        <span class="drawer-icon">
+                            <svg class="drawer-icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        </span>
+                        <span class="drawer-label" data-i18n="configuracoes_ajustes">Configurações</span>
+                    </li>
+                    <li class="drawer-item" onclick="switchTab('tab-config'); openConfigSubView('appearance'); toggleDrawer(false);">
+                        <span class="drawer-icon">
+                            <svg class="drawer-icon-svg" viewBox="0 0 24 24"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 14.7255 3.09032 17.1962 4.85857 19C5.03455 19.176 5.12254 19.264 5.16785 19.3703C5.21316 19.4767 5.21316 19.5962 5.21316 19.8351V20.5C5.21316 21.3284 5.88473 22 6.71316 22H12Z"></path><circle cx="7.5" cy="10.5" r="1.5"></circle><circle cx="11.5" cy="7.5" r="1.5"></circle><circle cx="16.5" cy="9.5" r="1.5"></circle><circle cx="15.5" cy="14.5" r="1.5"></circle></svg>
+                        </span>
+                        <span class="drawer-label" data-i18n="aparencia_temas">Aparência e Temas</span>
+                    </li>
+                    <li class="drawer-item" onclick="switchTab('tab-config'); openConfigSubView('languages'); toggleDrawer(false);">
+                        <span class="drawer-icon">
+                            <svg class="drawer-icon-svg" viewBox="0 0 24 24"><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        </span>
+                        <span class="drawer-label" data-i18n="idiomas_menu">Idiomas</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- ADMINISTRAÇÃO -->
+            <div class="drawer-section">
+                <div class="drawer-section-title" data-i18n="menu_sec_administracao">Administração</div>
+                <ul class="drawer-menu">
+                    <li class="drawer-item" onclick="clickDrawerItem('tab-admin')">
+                        <span class="drawer-icon">
+                            <svg class="drawer-icon-svg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        </span>
+                        <span class="drawer-label" data-i18n="painel_admin">Painel Administrativo</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <!-- Sistema de Abas no Topo -->
@@ -3983,17 +4124,64 @@ WITH CHECK (true);</code>
         }
 
         const tabTitlesMap = {
-            'tab-chat': '💬 Conversas',
-            'tab-agents': '🤖 Agents',
-            'tab-resume-builder': '📄 Currículo IA',
-            'tab-interview-simulator': '💼 Simulador de Entrevistas IA',
-            'tab-workspace': '💼 Workspace',
-            'tab-config': '⚙️ Configurações (Ajustes)',
-            'tab-logs': '🖥️ Terminal de Comandos',
-            'tab-translator': '🌐 Tradutor de Textos',
-            'tab-context-browser': '🌐 Navegador de Contexto',
-            'tab-admin': '🛡️ Painel Admin'
+            'tab-chat': 'Conversas',
+            'tab-agents': 'Agentes',
+            'tab-resume-builder': 'Currículo IA',
+            'tab-interview-simulator': 'Simulador de Entrevistas',
+            'tab-workspace': 'Espaço de Trabalho',
+            'tab-config': 'Configurações',
+            'tab-logs': 'Terminal',
+            'tab-translator': 'Tradutor de Textos',
+            'tab-context-browser': 'Navegador de Contexto',
+            'tab-admin': 'Painel Administrativo'
         };
+
+        function syncDrawerActiveStates(activeTabId = null) {
+            if (!activeTabId) {
+                const activeTabEl = document.querySelector('.tab-section.active');
+                activeTabId = activeTabEl ? activeTabEl.id : 'tab-chat';
+            }
+            
+            // Determine active subview if we are in tab-config
+            let activeConfigSubview = null;
+            if (activeTabId === 'tab-config') {
+                const indexEl = document.getElementById('config-index-view');
+                const indexVisible = indexEl && indexEl.style.display !== 'none';
+                if (!indexVisible) {
+                    document.querySelectorAll('.config-subview').forEach(el => {
+                        if (el.style.display === 'block' || el.style.display === 'flex') {
+                            activeConfigSubview = el.id.replace('config-subview-', '');
+                        }
+                    });
+                }
+            }
+            
+            document.querySelectorAll('.drawer-item').forEach(item => {
+                item.classList.remove('active');
+                const clickAttr = item.getAttribute('onclick') || '';
+                
+                if (activeTabId === 'tab-config') {
+                    if (activeConfigSubview === 'appearance') {
+                        if (clickAttr.includes('appearance')) {
+                            item.classList.add('active');
+                        }
+                    } else if (activeConfigSubview === 'languages') {
+                        if (clickAttr.includes('languages')) {
+                            item.classList.add('active');
+                        }
+                    } else {
+                        // Main config index
+                        if (clickAttr.includes('tab-config') && !clickAttr.includes('appearance') && !clickAttr.includes('languages')) {
+                            item.classList.add('active');
+                        }
+                    }
+                } else {
+                    if (clickAttr.includes(activeTabId)) {
+                        item.classList.add('active');
+                    }
+                }
+            });
+        }
 
         // --- 1. Navegação de Abas Fluida ---
         function switchTab(tabId) {
@@ -4019,12 +4207,7 @@ WITH CHECK (true);</code>
             }
 
             // Sincroniza classes do Drawer
-            document.querySelectorAll('.drawer-item').forEach(item => {
-                item.classList.remove('active');
-                if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(tabId)) {
-                    item.classList.add('active');
-                }
-            });
+            syncDrawerActiveStates(tabId);
 
             // Mostra/Oculta botão de apagar conversa no cabeçalho
             const clearChatBtn = document.getElementById('header-clear-chat-btn');
@@ -4066,12 +4249,14 @@ WITH CHECK (true);</code>
             document.getElementById('config-index-view').style.display = 'none';
             document.querySelectorAll('.config-subview').forEach(el => el.style.display = 'none');
             document.getElementById('config-subview-' + viewId).style.display = 'block';
+            if (typeof syncDrawerActiveStates === 'function') syncDrawerActiveStates();
         }
 
         function showConfigIndex() {
             triggerPulse();
             document.querySelectorAll('.config-subview').forEach(el => el.style.display = 'none');
             document.getElementById('config-index-view').style.display = 'block';
+            if (typeof syncDrawerActiveStates === 'function') syncDrawerActiveStates();
         }
 
         // --- 1B. Sistema de Idiomas e Dicionários (i18n) & Vozes TTS ---
@@ -4079,11 +4264,11 @@ WITH CHECK (true);</code>
 
         const appTranslations = {
             pt: {
-                "conversas": "💬 Conversas",
-                "configuracoes_ajustes": "⚙️ Configurações (Ajustes)",
-                "terminal_comandos": "🖥️ Terminal de Comandos",
-                "tradutor_textos": "🌐 Tradutor de Textos",
-                "navegador_contexto": "🌐 Navegador de Contexto",
+                "conversas": "Conversas",
+                "configuracoes_ajustes": "Configurações",
+                "terminal_comandos": "Terminal",
+                "tradutor_textos": "Tradutor de Textos",
+                "navegador_contexto": "Navegador de Contexto",
                 "online": "Online",
                 "ajustes_sistema_titulo": "⚙️ Ajustes do Sistema",
                 "ajustes_sistema_subtitle": "Gerencie recursos visuais, inteligência e dados de nuvem",
@@ -4122,13 +4307,13 @@ WITH CHECK (true);</code>
                 "transl_btn_exec": "Realizar Tradução ✨",
                 "transl_output_placeholder": "A tradução aparecerá aqui...",
                 "transl_btn_listen": "🔊 Ouvir",
-                "workspace": "💼 Workspace",
+                "workspace": "Espaço de Trabalho",
                 "ws_main_title": "Central Workspace",
                 "ws_main_subtitle": "Central inteligente de conhecimento. Organize conversas, salve arquivos, gerencie links analisados e controle memórias da IA.",
                 "ws_btn_add": "Novo Dado",
                 "ws_empty_title": "Workspace Vazio ou Sem Correspondências",
                 "assistants_title": "Especialistas IA • Synapse",
-                "agents_menu": "🤖 Agents",
+                "agents_menu": "Agentes",
                 "agents_section_title": "Gerenciador de Agentes",
                 "agents_section_subtitle": "Selecione, personalize ou crie especialistas de Inteligência Artificial autônomos.",
                 "agents_new_btn": "Novo Agente",
@@ -4140,20 +4325,28 @@ WITH CHECK (true);</code>
                 "agent_lbl_welcome": "Mensagem de Boas-Vindas (Saudação Dinâmica)",
                 "agent_btn_save": "Salvar Agente ✓",
                 "btn_cancel": "Cancelar",
-                "resume_builder": "📄 Currículo IA",
+                "resume_builder": "Currículo IA",
                 "resume_builder_desc": "Construa e otimize currículos sob medida com inteligência artificial profissional",
                 "current_selection_title": "Seleção Atual",
                 "all_options_title": "Todas as Opções",
                 "search_placeholder": "Pesquisar opções...",
                 "option_selected": "Opção Selecionada",
-                "search_no_results": "Nenhum resultado encontrado"
+                "search_no_results": "Nenhum resultado encontrado",
+                "interview_simulator": "Simulador de Entrevistas",
+                "painel_admin": "Painel Admin",
+                "idiomas_menu": "Idiomas",
+                "menu_sec_principal": "Principal",
+                "menu_sec_produtividade": "Produtividade",
+                "menu_sec_ferramentas": "Ferramentas",
+                "menu_sec_sistema": "Sistema",
+                "menu_sec_administracao": "Administração"
             },
             en: {
-                "conversas": "💬 Conversations",
-                "configuracoes_ajustes": "⚙️ Settings",
-                "terminal_comandos": "🖥️ Command Terminal",
-                "tradutor_textos": "🌐 Text Translator",
-                "navegador_contexto": "🌐 Context Browser",
+                "conversas": "Conversations",
+                "configuracoes_ajustes": "Settings",
+                "terminal_comandos": "Terminal",
+                "tradutor_textos": "Text Translator",
+                "navegador_contexto": "Context Browser",
                 "online": "Online",
                 "ajustes_sistema_titulo": "⚙️ System Configuration",
                 "ajustes_sistema_subtitle": "Manage visual themes, artificial logic, and databases",
@@ -4210,20 +4403,28 @@ WITH CHECK (true);</code>
                 "agent_lbl_welcome": "Welcome Message (Dynamic Greeting)",
                 "agent_btn_save": "Save Agent ✓",
                 "btn_cancel": "Cancel",
-                "resume_builder": "📄 AI Resume",
+                "resume_builder": "AI Resume",
                 "resume_builder_desc": "Build and optimize customized resumes with professional artificial intelligence",
                 "current_selection_title": "Current Selection",
                 "all_options_title": "All Options",
                 "search_placeholder": "Search options...",
                 "option_selected": "Option Selected",
-                "search_no_results": "No results found"
+                "search_no_results": "No results found",
+                "interview_simulator": "Interview Simulator",
+                "painel_admin": "Admin Panel",
+                "idiomas_menu": "Languages",
+                "menu_sec_principal": "Main",
+                "menu_sec_produtividade": "Productivity",
+                "menu_sec_ferramentas": "Tools",
+                "menu_sec_sistema": "System",
+                "menu_sec_administracao": "Administration"
             },
             es: {
-                "conversas": "💬 Chat y Charlas",
-                "configuracoes_ajustes": "⚙️ Ajustes del Sistema",
-                "terminal_comandos": "🖥️ Línea de Comandos",
-                "tradutor_textos": "🌐 Traductor de Textos",
-                "navegador_contexto": "🌐 Navegador de Contexto",
+                "conversas": "Conversaciones",
+                "configuracoes_ajustes": "Configuraciones",
+                "terminal_comandos": "Terminal",
+                "tradutor_textos": "Traductor de Textos",
+                "navegador_contexto": "Navegador de Contexto",
                 "online": "En Línea",
                 "ajustes_sistema_titulo": "⚙️ Ajustes Generales",
                 "ajustes_sistema_subtitle": "Gestione características visuales, motores de IA y nube",
@@ -4280,10 +4481,18 @@ WITH CHECK (true);</code>
                 "agent_lbl_welcome": "Mensaje de Bienvenida (Saludo Dinámico)",
                 "agent_btn_save": "Guardar Agente ✓",
                 "btn_cancel": "Cancelar",
-                "resume_builder": "📄 Currículum IA",
+                "resume_builder": "Currículum IA",
                 "resume_builder_desc": "Crea y optimiza currículums profesionales a medida con inteligencia artificial",
                 "current_selection_title": "Selección Actual",
-                "all_options_title": "Opciones Disponibles"
+                "all_options_title": "Opciones Disponibles",
+                "interview_simulator": "Simulador de Entrevistas",
+                "painel_admin": "Panel de Administración",
+                "idiomas_menu": "Idiomas",
+                "menu_sec_principal": "Principal",
+                "menu_sec_produtividade": "Productividad",
+                "menu_sec_ferramentas": "Herramientas",
+                "menu_sec_sistema": "Sistema",
+                "menu_sec_administracao": "Administración"
             },
             fr: {
                 "conversas": "💬 Conversations",
