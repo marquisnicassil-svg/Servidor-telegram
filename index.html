@@ -9,6 +9,9 @@
     <link rel="apple-touch-icon" href="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg">
     <link rel="icon" type="image/jpeg" href="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg">
     <link rel="manifest" href="./manifest.json?v=6">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
     <title>Painel & Console IA</title>
     <script>
         // Safety Fallback Barrier to guarantee loader is dismissed if any script errors out
@@ -73,7 +76,6 @@
             --border-weight: 1px;
             --backdrop-filter: none;
             --global-saturation: 100%;
-            --global-brightness: 1;
         }
 
         /* Tema Cinza Escuro (Opção Alternativa Secundária) */
@@ -176,7 +178,6 @@
             -webkit-user-select: auto !important;
             pointer-events: auto !important;
             transition: background-color 0.3s;
-            filter: saturate(var(--global-saturation, 100%)) brightness(var(--global-brightness, 1));
         }
 
         /* Permite copiar e interagir com texto de partes essenciais de forma garantida e definitiva */
@@ -413,7 +414,7 @@
 
         .chat-message.user {
             background-color: var(--primary);
-            color: var(--bg-color); /* Contraste nativo */
+            color: var(--primary-contrast, #ffffff) !important; /* Contraste inteligente */
             font-weight: 500;
             align-self: flex-end;
             border-radius: 18px 18px 0px 18px !important;
@@ -515,7 +516,7 @@
 
         .chat-btn-send {
             background-color: var(--primary);
-            color: var(--bg-color);
+            color: var(--primary-contrast, #ffffff) !important;
             border: none;
             border-radius: 50%;
             width: 46px;
@@ -1590,7 +1591,7 @@
                 </div>
                 <div class="chat-input-area" style="align-items: center; gap: 10px; padding-top: 10px; padding-bottom: 10px;">
                     <div style="position: relative; flex: 1; display: flex; align-items: center;">
-                        <input type="text" id="chat-input" class="form-control" style="padding-left: 18px; padding-right: 44px; border-radius: 24px; background-color: #1E1E22; border: 1px solid rgba(255, 255, 255, 0.08); height: 48px; color: #ffffff; pointer-events: auto !important; -webkit-user-select: text !important; user-select: text !important; position: relative; z-index: 100 !important; cursor: text !important;" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
+                        <input type="text" id="chat-input" class="form-control" style="padding-left: 18px; padding-right: 44px; border-radius: 24px; background-color: var(--card-bg-secondary); border: 1px solid var(--border-color); height: 48px; color: var(--text-main); pointer-events: auto !important; -webkit-user-select: text !important; user-select: text !important; position: relative; z-index: 100 !important; cursor: text !important; box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
                         <button id="btn-mic" onclick="toggleMic()" style="position: absolute; right: 6px; background: transparent; border: none; font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; color: var(--text-muted); outline: none; z-index: 5;" title="Ditado por Voz">🎤</button>
                     </div>
                     <button class="chat-btn-send" onclick="sendMessage()">
@@ -5079,15 +5080,34 @@ WITH CHECK (true);</code>
             }
         }
 
+        function getContrastColor(hex) {
+            try {
+                if (!hex || hex.indexOf('#') !== 0) return '#ffffff';
+                const cleanHex = hex.replace('#', '');
+                if (cleanHex.length !== 6) return '#ffffff';
+                const r = parseInt(cleanHex.substring(0,2), 16);
+                const g = parseInt(cleanHex.substring(2,4), 16);
+                const b = parseInt(cleanHex.substring(4,6), 16);
+                // HSP equation from http://alienryderflex.com/hsp.html
+                const hsp = Math.sqrt(
+                    0.299 * (r * r) +
+                    0.587 * (g * g) +
+                    0.114 * (b * b)
+                );
+                return hsp > 127.5 ? '#000000' : '#ffffff';
+            } catch (e) {
+                return '#ffffff';
+            }
+        }
+
         function adjustColorIntensity(hex, satPercent) {
             try {
                 if (!hex || hex.indexOf('#') !== 0) return hex;
                 let hsl = hexToHsl(hex);
-                // Ajusta saturação
+                // Ajusta saturação de forma suave e física, aceitando boost de até 150%
                 let newS = Math.min(100, Math.max(0, hsl.s * (satPercent / 100)));
-                // Ajusta brilho proporcionalmente p/ não lavar a cor
-                let brightnessFactor = 0.45 + 0.55 * (satPercent / 100);
-                let newL = Math.min(100, Math.max(0, hsl.l * brightnessFactor));
+                // Mantém o brilho (luminosidade) original intacto, permitindo total nitidez
+                let newL = hsl.l;
                 return hslToHex(hsl.h, newS, newL);
             } catch (e) {
                 return hex;
@@ -5115,6 +5135,7 @@ WITH CHECK (true);</code>
             document.documentElement.style.setProperty('--text-main', theme.textMain);
             document.documentElement.style.setProperty('--text-muted', theme.textMuted);
             document.documentElement.style.setProperty('--primary', adjustedPrimary);
+            document.documentElement.style.setProperty('--primary-contrast', getContrastColor(adjustedPrimary));
             document.documentElement.style.setProperty('--success', adjustedSuccess);
             document.documentElement.style.setProperty('--error', adjustedError);
             document.documentElement.style.setProperty('--font-family', theme.font);
@@ -5205,6 +5226,7 @@ WITH CHECK (true);</code>
             const adjustedColor = adjustColorIntensity(color, satVal);
             
             document.documentElement.style.setProperty('--primary', adjustedColor);
+            document.documentElement.style.setProperty('--primary-contrast', getContrastColor(adjustedColor));
             const hex = adjustedColor.replace('#', '');
             if (hex.length === 6) {
                 const r = parseInt(hex.substring(0,2), 16);
@@ -8723,7 +8745,7 @@ WITH CHECK (true);</code>
                 if (activeBtn) {
                     activeBtn.classList.add('active');
                     activeBtn.style.background = 'var(--primary)';
-                    activeBtn.style.color = 'var(--bg-color)';
+                    activeBtn.style.color = 'var(--primary-contrast, #000000)';
                     activeBtn.style.border = 'none';
                 }
             }
@@ -8748,7 +8770,7 @@ WITH CHECK (true);</code>
             if (btnEl) {
                 btnEl.classList.add('active');
                 btnEl.style.background = 'var(--primary)';
-                btnEl.style.color = 'var(--bg-color)';
+                btnEl.style.color = 'var(--primary-contrast, #000000)';
                 btnEl.style.border = 'none';
             }
 
@@ -9207,7 +9229,7 @@ WITH CHECK (true);</code>
                 btnSave.className = 'btn-universal';
                 btnSave.textContent = "Salvar Alterações ✨";
                 btnSave.style.background = 'var(--primary)';
-                btnSave.style.color = 'var(--bg-color)';
+                btnSave.style.color = 'var(--primary-contrast, #000000)';
                 btnSave.onclick = () => {
                     const txt = inputFact.value.trim();
                     if (!txt) return;
@@ -9261,7 +9283,7 @@ WITH CHECK (true);</code>
                 btnSave.className = 'btn-universal';
                 btnSave.textContent = "Salvar Link 🔗";
                 btnSave.style.background = 'var(--primary)';
-                btnSave.style.color = 'var(--bg-color)';
+                btnSave.style.color = 'var(--primary-contrast, #000000)';
                 btnSave.onclick = () => {
                     const t = inputTitle.value.trim();
                     const u = inputUrl.value.trim();
@@ -9316,7 +9338,7 @@ WITH CHECK (true);</code>
                 btnSave.className = 'btn-universal';
                 btnSave.textContent = "Salvar Dados 📁";
                 btnSave.style.background = 'var(--primary)';
-                btnSave.style.color = 'var(--bg-color)';
+                btnSave.style.color = 'var(--primary-contrast, #000000)';
                 btnSave.onclick = () => {
                     const n = inputName.value.trim();
                     if (!n) return;
@@ -9500,7 +9522,7 @@ WITH CHECK (true);</code>
             btnAdd.className = 'btn-universal';
             btnAdd.textContent = "Registrar Recursos ✨";
             btnAdd.style.background = 'var(--primary)';
-            btnAdd.style.color = 'var(--bg-color)';
+            btnAdd.style.color = 'var(--primary-contrast, #000000)';
             btnAdd.onclick = () => {
                 const type = selectType.value;
                 
@@ -12783,7 +12805,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                 
                 if (index === activeResourceIndex) {
                     chip.style.backgroundColor = 'var(--primary)';
-                    chip.style.color = 'var(--bg-color)';
+                    chip.style.color = 'var(--primary-contrast, #000000)';
                     chip.style.border = '1px solid var(--primary)';
                 } else {
                     chip.style.backgroundColor = 'var(--card-bg-secondary)';
@@ -12979,7 +13001,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                         analyzeBtn.style.fontSize = '0.7rem';
                         analyzeBtn.style.borderRadius = '4px';
                         analyzeBtn.style.backgroundColor = 'var(--primary)';
-                        analyzeBtn.style.color = 'var(--bg-color)';
+                        analyzeBtn.style.color = 'var(--primary-contrast, #000000)';
                         analyzeBtn.style.border = 'none';
                         analyzeBtn.style.fontWeight = 'bold';
                         analyzeBtn.style.cursor = 'pointer';
@@ -13373,7 +13395,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                 openBtn.style.fontSize = '0.8rem';
                 openBtn.style.borderRadius = '8px';
                 openBtn.style.backgroundColor = 'var(--primary)';
-                openBtn.style.color = 'var(--bg-color)';
+                openBtn.style.color = 'var(--primary-contrast, #000000)';
                 openBtn.style.border = 'none';
                 openBtn.style.fontWeight = 'bold';
                 openBtn.style.textDecoration = 'none';
