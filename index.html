@@ -5116,7 +5116,7 @@ WITH CHECK (true);</code>
 
         function applyThemePreset(themeId, userClicked = false) {
             if (userClicked) triggerPulse();
-            if (!availableThemes[themeId]) themeId = 'superblack';
+            if (!availableThemes[themeId]) themeId = 'escuro_premium';
             
             selectedThemeId = themeId;
             const theme = availableThemes[themeId];
@@ -5206,7 +5206,7 @@ WITH CHECK (true);</code>
             } else {
                 sw.classList.add('on');
                 document.documentElement.removeAttribute('data-theme');
-                const theme = availableThemes[selectedThemeId] || availableThemes['superblack'];
+                const theme = availableThemes[selectedThemeId] || availableThemes['escuro_premium'];
                 document.documentElement.style.setProperty('--bg-color', theme.bg);
                 document.documentElement.style.setProperty('--card-bg-primary', theme.cardBg1);
                 document.documentElement.style.setProperty('--card-bg-secondary', theme.cardBg2);
@@ -6430,7 +6430,7 @@ WITH CHECK (true);</code>
                     if (data.selectedThemeId) {
                         applyThemePreset(data.selectedThemeId);
                     } else {
-                        applyThemePreset('superblack');
+                        applyThemePreset('escuro_premium');
                     }
 
                     // 2. Aplica a cor de destaque personalizada, sobrescrevendo a padrão do tema
@@ -6550,7 +6550,7 @@ WITH CHECK (true);</code>
                     }
                     updateDynamicStyles();
                 } else {
-                    applyThemePreset('superblack');
+                    applyThemePreset('escuro_premium');
                     applyBordersStyle('rounded');
                     applyVisualFinish('flat');
                     applyColorSaturation(100);
