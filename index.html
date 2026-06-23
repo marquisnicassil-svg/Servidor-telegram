@@ -176,6 +176,7 @@
             -webkit-user-select: auto !important;
             pointer-events: auto !important;
             transition: background-color 0.3s;
+            filter: saturate(var(--global-saturation, 100%)) brightness(var(--global-brightness, 1));
         }
 
         /* Permite copiar e interagir com texto de partes essenciais de forma garantida e definitiva */
@@ -2963,9 +2964,17 @@ CREATE TRIGGER on_synapse_user_signed_up
                         <!-- Slider de Intensidade de Cores -->
                         <div class="form-group">
                             <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">🌈 Intensidade das Cores (Saturação)</label>
-                            <div style="display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); padding: 10px 12px; border-radius: 12px;">
-                                <input type="range" id="config-color-saturation" min="0" max="100" step="5" value="100" style="flex: 1; accent-color: var(--primary, #ffffff); cursor: pointer; height: 6px; border-radius: 3px; outline: none; background: #334155;" oninput="applyColorSaturation(this.value)">
-                                <span id="config-color-saturation-val" style="font-size: 0.82rem; color: #fff; font-family: monospace; font-weight: bold; min-width: 45px; text-align: right;">100%</span>
+                            <div style="display: flex; flex-direction: column; gap: 8px; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); padding: 10px 12px; border-radius: 12px;">
+                                <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+                                    <input type="range" id="config-color-saturation" min="0" max="150" step="5" value="100" style="flex: 1; accent-color: var(--primary, #ffffff); cursor: pointer; height: 6px; border-radius: 3px; outline: none; background: #334155;" oninput="applyColorSaturation(this.value)">
+                                    <span id="config-color-saturation-val" style="font-size: 0.82rem; color: #fff; font-family: monospace; font-weight: bold; min-width: 45px; text-align: right;">100%</span>
+                                </div>
+                                <div style="display: flex; gap: 6px; width: 100%;">
+                                    <button type="button" onclick="applyColorSaturation(0)" style="flex: 1; font-size: 0.68rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; padding: 5px; cursor: pointer; font-weight: 500; transition: background 0.2s;">🔘 0% (Mono)</button>
+                                    <button type="button" onclick="applyColorSaturation(50)" style="flex: 1; font-size: 0.68rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; padding: 5px; cursor: pointer; font-weight: 500; transition: background 0.2s;">🔅 50% (Suave)</button>
+                                    <button type="button" onclick="applyColorSaturation(100)" style="flex: 1; font-size: 0.68rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; padding: 5px; cursor: pointer; font-weight: 500; transition: background 0.2s;">✨ 100% (Real)</button>
+                                    <button type="button" onclick="applyColorSaturation(150)" style="flex: 1; font-size: 0.68rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; padding: 5px; cursor: pointer; font-weight: 500; transition: background 0.2s;">🔥 150% (Vivo)</button>
+                                </div>
                             </div>
                         </div>
 
@@ -4826,6 +4835,7 @@ WITH CHECK (true);</code>
         }
 
         // --- 1C. Galeria de Temas e Customização Estética ---
+        let isConfigLoading = false;
         let selectedThemeId = 'escuro_premium';
         let selectedBorders = 'rounded';
         let selectedFinish = 'flat';
@@ -5152,6 +5162,9 @@ WITH CHECK (true);</code>
                 addLog(`Tema ajustado para: ${theme.name}`, "success");
                 showAppToast(`${theme.name} Ativado! ✨`, "success");
             }
+            if (!isConfigLoading) {
+                saveConfiguration();
+            }
         }
 
         function toggleAmoled() {
@@ -5180,6 +5193,9 @@ WITH CHECK (true);</code>
                 document.getElementById('theme-color-meta').setAttribute('content', '#000000');
             }
             addLog(`Modo AMOLED Super Black ${!isOn ? 'Ativado' : 'Desativado'}`, "info");
+            if (!isConfigLoading) {
+                saveConfiguration();
+            }
         }
 
         function setAccent(color, element) {
@@ -5205,6 +5221,9 @@ WITH CHECK (true);</code>
                 document.querySelectorAll('.color-circle').forEach(el => el.classList.remove('active'));
                 element.classList.add('active');
             }
+            if (!isConfigLoading) {
+                saveConfiguration();
+            }
         }
 
         function applyBordersStyle(radiusKey) {
@@ -5227,6 +5246,9 @@ WITH CHECK (true);</code>
             document.documentElement.style.setProperty('--card-border-radius', cardRadius);
             document.documentElement.style.setProperty('--input-border-radius', inputRadius);
             addLog(`Estilo de bordas alterado para: ${radiusKey}`, "info");
+            if (!isConfigLoading) {
+                saveConfiguration();
+            }
         }
 
         function applyVisualFinish(finishKey) {
@@ -5247,6 +5269,9 @@ WITH CHECK (true);</code>
                 document.documentElement.style.setProperty('--backdrop-filter', 'blur(10px)');
             }
             addLog(`Acabamento decorativo alterado para: ${finishKey}`, "info");
+            if (!isConfigLoading) {
+                saveConfiguration();
+            }
         }
 
         function applyColorSaturation(val) {
@@ -5277,6 +5302,9 @@ WITH CHECK (true);</code>
             }
             
             addLog(`Intensidade de saturação otimizada fisicamente para: ${val}%`, "info");
+            if (!isConfigLoading) {
+                saveConfiguration();
+            }
         }
 
         // --- 1D. Sistema Avançado de Aparência e Perfis Visuais ---
@@ -5512,13 +5540,13 @@ WITH CHECK (true);</code>
         function applyFontFamily(val) {
             selectedFontFamily = val;
             updateDynamicStyles();
-            saveConfiguration();
+            if (!isConfigLoading) saveConfiguration();
         }
 
         function applyFontSize(val) {
             selectedFontSize = val;
             updateDynamicStyles();
-            saveConfiguration();
+            if (!isConfigLoading) saveConfiguration();
         }
 
         function applyAnimationIntensity(val) {
@@ -5554,25 +5582,25 @@ WITH CHECK (true);</code>
                 `;
             }
             styleEl.innerHTML = css;
-            saveConfiguration();
+            if (!isConfigLoading) saveConfiguration();
         }
 
         function applyIconSize(val) {
             selectedIconSize = val;
             updateDynamicStyles();
-            saveConfiguration();
+            if (!isConfigLoading) saveConfiguration();
         }
 
         function applyCardShadow(val) {
             selectedCardShadow = val;
             updateDynamicStyles();
-            saveConfiguration();
+            if (!isConfigLoading) saveConfiguration();
         }
 
         function applyCardPadding(val) {
             selectedCardPadding = val;
             updateDynamicStyles();
-            saveConfiguration();
+            if (!isConfigLoading) saveConfiguration();
         }
 
         function toggleTransparency() {
@@ -5580,7 +5608,7 @@ WITH CHECK (true);</code>
             const sw = document.getElementById('transparency-switch');
             if (sw) sw.classList.toggle('on', selectedTransparency);
             updateDynamicStyles();
-            saveConfiguration();
+            if (!isConfigLoading) saveConfiguration();
         }
 
         function applyBlurDepth(val) {
@@ -5588,7 +5616,7 @@ WITH CHECK (true);</code>
             const label = document.getElementById('config-blur-depth-val');
             if (label) label.textContent = `${val}px`;
             updateDynamicStyles();
-            saveConfiguration();
+            if (!isConfigLoading) saveConfiguration();
         }
 
         function toggleVisualDepth() {
@@ -5596,13 +5624,13 @@ WITH CHECK (true);</code>
             const sw = document.getElementById('visual-depth-switch');
             if (sw) sw.classList.toggle('on', selectedVisualDepth);
             updateDynamicStyles();
-            saveConfiguration();
+            if (!isConfigLoading) saveConfiguration();
         }
 
         function applyInterfaceDensity(val) {
             selectedInterfaceDensity = val;
             updateDynamicStyles();
-            saveConfiguration();
+            if (!isConfigLoading) saveConfiguration();
         }
 
         function toggleAccessibilityContrast() {
@@ -5610,7 +5638,7 @@ WITH CHECK (true);</code>
             const sw = document.getElementById('access-contrast-switch');
             if (sw) sw.classList.toggle('on', accessHighContrast);
             updateDynamicStyles();
-            saveConfiguration();
+            if (!isConfigLoading) saveConfiguration();
         }
 
         function toggleAccessibilityLargeText() {
@@ -5618,7 +5646,7 @@ WITH CHECK (true);</code>
             const sw = document.getElementById('access-largetext-switch');
             if (sw) sw.classList.toggle('on', accessLargeText);
             updateDynamicStyles();
-            saveConfiguration();
+            if (!isConfigLoading) saveConfiguration();
         }
 
         function toggleAccessibilityLargeIcons() {
@@ -5626,7 +5654,7 @@ WITH CHECK (true);</code>
             const sw = document.getElementById('access-largeicons-switch');
             if (sw) sw.classList.toggle('on', accessLargeIcons);
             updateDynamicStyles();
-            saveConfiguration();
+            if (!isConfigLoading) saveConfiguration();
         }
 
         function toggleAccessibilityAnimations() {
@@ -5634,7 +5662,7 @@ WITH CHECK (true);</code>
             const sw = document.getElementById('access-animations-switch');
             if (sw) sw.classList.toggle('on', accessReduceAnimations);
             updateDynamicStyles();
-            saveConfiguration();
+            if (!isConfigLoading) saveConfiguration();
         }
 
         function toggleAccessibilityReadingMode() {
@@ -5642,7 +5670,7 @@ WITH CHECK (true);</code>
             const sw = document.getElementById('access-reading-switch');
             if (sw) sw.classList.toggle('on', accessReadingMode);
             updateDynamicStyles();
-            saveConfiguration();
+            if (!isConfigLoading) saveConfiguration();
         }
 
         function getVisualProfiles() {
@@ -6180,6 +6208,7 @@ WITH CHECK (true);</code>
 
         function loadConfiguration() {
             try {
+                isConfigLoading = true;
                 // Auxiliares internos para evitar crashes caso IDs não existam no DOM
                 const safeSetVal = (id, val) => {
                     const el = document.getElementById(id);
@@ -6268,18 +6297,6 @@ WITH CHECK (true);</code>
                         if (sw && sw.classList.contains('on')) {
                             toggleAmoled(); // Desliga se estiver on
                         }
-                    }
-
-                    // Restaura cor de destaque
-                    if (data.accentColor) {
-                        let matchedEl = null;
-                        const circles = document.querySelectorAll('.color-circle');
-                        circles.forEach(c => {
-                            if(c.getAttribute('style') && c.getAttribute('style').includes(data.accentColor)) {
-                                matchedEl = c;
-                            }
-                        });
-                        setAccent(data.accentColor, matchedEl);
                     }
 
                     // Restaura Supabase Fields
@@ -6387,14 +6404,31 @@ WITH CHECK (true);</code>
                 // Inicializa Temas e Estética com recuperação do Storage
                 if (saved) {
                     const data = JSON.parse(saved);
+                    // 1. Aplica o Tema Preset
                     if (data.selectedThemeId) {
                         applyThemePreset(data.selectedThemeId);
                     } else {
                         applyThemePreset('superblack');
                     }
+
+                    // 2. Aplica a cor de destaque personalizada, sobrescrevendo a padrão do tema
+                    if (data.accentColor) {
+                        let matchedEl = null;
+                        const circles = document.querySelectorAll('.color-circle');
+                        circles.forEach(c => {
+                            if(c.getAttribute('style') && c.getAttribute('style').includes(data.accentColor)) {
+                                matchedEl = c;
+                            }
+                        });
+                        setAccent(data.accentColor, matchedEl);
+                    }
+
+                    // 3. Aplica o arredondamento de bordas (sincronizando os dois seletores se houver)
                     if (data.selectedBorders) {
                         const bSel = document.getElementById('config-border-radius');
                         if (bSel) bSel.value = data.selectedBorders;
+                        const bSelV2 = document.getElementById('config-border-radius-v2');
+                        if (bSelV2) bSelV2.value = data.selectedBorders;
                         applyBordersStyle(data.selectedBorders);
                     } else {
                         applyBordersStyle('rounded');
@@ -6507,6 +6541,8 @@ WITH CHECK (true);</code>
 
             } catch (e) {
                 console.error("Erro ao carregar configurações: ", e);
+            } finally {
+                isConfigLoading = false;
             }
         }
 
