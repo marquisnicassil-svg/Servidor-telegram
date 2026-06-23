@@ -2920,78 +2920,273 @@ CREATE TRIGGER on_synapse_user_signed_up
                 </button>
             </div>
 
-            <!-- SUB-VIEW 1: APARÊNCIA E TEMAS -->
+            <!-- SUB-VIEW 1: APARÊNCIA E TEMAS (UPGRADED) -->
             <div id="config-subview-appearance" class="config-subview" style="display: none;">
                 <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;">⬅️ Voltar para Ajustes</button>
                 
-                <div class="section-header" style="text-align: left; margin-bottom: 12px;">
-                    <h2>🎨 Galeria de Temas do Sistema</h2>
-                    <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; line-height: 1.3;">Selecione um tema exclusivo para alterar instantaneamente toda a identidade visual, cores e tipografia da plataforma.</p>
+                <div class="section-header" style="text-align: left; margin-bottom: 16px;">
+                    <h2 style="font-size: 1.4rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px;">🎨 Aparência e Personalização</h2>
+                    <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; line-height: 1.3;">Ajuste temas, tipografias, efeitos visuais, densidades de tela e perfis estéticos em tempo real.</p>
                 </div>
 
-                <!-- Lista de Temas Dinâmicos (Grid Rápido) -->
-                <div id="themes-grid-container" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
-                    <!-- Preenchido dinamicamente via Javascript -->
+                <!-- Barra de Abas das Categorias -->
+                <div style="display: flex; gap: 6px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); padding: 4px; border-radius: 14px; margin-bottom: 20px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
+                    <button class="appearance-tab-btn active" onclick="switchAppearanceCategory('basic')" style="flex: 1; min-width: 90px; padding: 10px 12px; border-radius: 10px; border: none; background: transparent; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;">🎨 Básica</button>
+                    <button class="appearance-tab-btn" onclick="switchAppearanceCategory('advanced')" style="flex: 1; min-width: 90px; padding: 10px 12px; border-radius: 10px; border: none; background: transparent; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;">⚙️ Avançada</button>
+                    <button class="appearance-tab-btn" onclick="switchAppearanceCategory('accessibility')" style="flex: 1; min-width: 105px; padding: 10px 12px; border-radius: 10px; border: none; background: transparent; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;">♿ Acessibilidade</button>
+                    <button class="appearance-tab-btn" onclick="switchAppearanceCategory('profiles')" style="flex: 1; min-width: 90px; padding: 10px 12px; border-radius: 10px; border: none; background: transparent; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;">💾 Perfis</button>
                 </div>
 
-                <div class="section-header" style="text-align: left; margin-bottom: 12px; border-top: 1px solid var(--border-color); padding-top: 18px;">
-                    <h2>📐 Personalização Estilo-Estética</h2>
-                    <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; line-height: 1.3;">Ajuste o acabamento visual dos botões, inputs, painéis e bordas para moldar a interface.</p>
+                <!-- CATEGORIA 1: APARÊNCIA BÁSICA -->
+                <div id="appearance-cat-basic" class="appearance-cat-section" style="display: block;">
+                    <div class="section-header" style="text-align: left; margin-bottom: 12px;">
+                        <h3 style="font-size: 0.95rem; font-weight: 700; color: #fff;">🎨 Galeria de Temas do Sistema</h3>
+                        <p style="font-size: 0.72rem; color: var(--text-muted);">Escolha entre as nossas identidades estéticas completas.</p>
+                    </div>
+
+                    <!-- Lista de Temas Dinâmicos (Grid Rápido) -->
+                    <div id="themes-grid-container" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                        <!-- Preenchido dinamicamente via Javascript -->
+                    </div>
+
+                    <div class="supabase-card" style="margin-bottom: 20px; text-align: left; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 14px;">
+                        
+                        <!-- Picker de Cor Personalizada -->
+                        <div class="form-group">
+                            <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">🎨 Cor de Destaque Personalizada</label>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="color" id="manual-accent-picker" style="width: 52px; height: 40px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="setAccent(this.value, null)">
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">Defina manualmente a cor principal para botões, bordas e destaques.</span>
+                            </div>
+                        </div>
+
+                        <!-- Slider de Intensidade de Cores -->
+                        <div class="form-group">
+                            <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">🌈 Intensidade das Cores (Saturação)</label>
+                            <div style="display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); padding: 10px 12px; border-radius: 12px;">
+                                <input type="range" id="config-color-saturation" min="0" max="100" step="5" value="100" style="flex: 1; accent-color: var(--primary, #ffffff); cursor: pointer; height: 6px; border-radius: 3px; outline: none; background: #334155;" oninput="applyColorSaturation(this.value)">
+                                <span id="config-color-saturation-val" style="font-size: 0.82rem; color: #fff; font-family: monospace; font-weight: bold; min-width: 45px; text-align: right;">100%</span>
+                            </div>
+                        </div>
+
+                        <!-- Fundo Super Black Toggle -->
+                        <div class="theme-toggle" onclick="toggleAmoled()" style="padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                            <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-weight: 600; display: block; font-size: 0.82rem; color: #fff;">Modo AMOLED Super Black</span>
+                                <span style="color: var(--text-muted); font-size: 0.70rem;">Apaga pixels em tons pretos absolutos para economizar tela</span>
+                            </div>
+                            <div class="toggle-switch on" id="amoled-switch"></div>
+                        </div>
+
+                        <!-- Família Tipográfica -->
+                        <div class="form-group">
+                            <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">🔤 Família Tipográfica (Fontes)</label>
+                            <select id="config-font-family" class="form-control" style="background: var(--card-bg-secondary); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="applyFontFamily(this.value)">
+                                <option value="modern" selected>Moderna (Sistema / Dinâmico)</option>
+                                <option value="professional">Profissional (Inter / Helvetica)</option>
+                                <option value="minimalist">Minimalista (Sutil / Lato)</option>
+                                <option value="elegant">Elegante (Clássico / Georgia)</option>
+                                <option value="tech">Tecnológica (Mono / Code)</option>
+                            </select>
+                        </div>
+
+                        <!-- Tamanho da Fonte -->
+                        <div class="form-group">
+                            <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">📏 Tamanho de Exibição das Fontes</label>
+                            <select id="config-font-size" class="form-control" style="background: var(--card-bg-secondary); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="applyFontSize(this.value)">
+                                <option value="small">Pequena (Compacta)</option>
+                                <option value="normal" selected>Normal (Equilibrada)</option>
+                                <option value="large">Grande (Acessível)</option>
+                                <option value="xlarge">Extra Grande (Alta Legibilidade)</option>
+                            </select>
+                        </div>
+
+                        <!-- Intensidade de Animações -->
+                        <div class="form-group">
+                            <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">🎬 Intensidade de Animação</label>
+                            <select id="config-animation-intensity" class="form-control" style="background: var(--card-bg-secondary); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="applyAnimationIntensity(this.value)">
+                                <option value="disabled">Desativadas (Sem transições)</option>
+                                <option value="gentle">Suaves (Relaxantes e fluídas)</option>
+                                <option value="normal" selected>Normais (Padrão de Sistema)</option>
+                                <option value="snappy">Avançadas (Respostas ágeis)</option>
+                            </select>
+                        </div>
+
+                    </div>
                 </div>
 
-                <div class="supabase-card" style="margin-bottom: 20px; text-align: left; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 14px;">
+                <!-- CATEGORIA 2: PERSONALIZAÇÃO AVANÇADA -->
+                <div id="appearance-cat-advanced" class="appearance-cat-section" style="display: none; flex-direction: column; gap: 16px;">
                     
-                    <!-- Configuração de Bordas -->
-                    <div class="form-group">
-                        <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">🔳 Formato dos Elementos (Bordas)</label>
-                        <select id="config-border-radius" class="form-control" style="background: var(--card-bg-secondary); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="applyBordersStyle(this.value)">
-                            <option value="sharp">Retilíneo & Retro (Hacker / Terminal - 0px)</option>
-                            <option value="minimalist">Suave Compacto (Sutil - 8px)</option>
-                            <option value="rounded" selected>Moderno Curvado (Padrão Sleek - 14px)</option>
-                            <option value="capsule">Totalmente Arredondado (Orgânico / Capsule - 24px)</option>
+                    <!-- Tamanho dos Ícones -->
+                    <div class="supabase-card" style="text-align: left; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 16px; padding: 14px;">
+                        <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">🔘 Dimensão dos Ícones Globais</label>
+                        <select id="config-icon-size" class="form-control" style="background: var(--card-bg-secondary); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="applyIconSize(this.value)">
+                            <option value="small">Pequenos (Foco em dados)</option>
+                            <option value="medium" selected>Médios (Padrão)</option>
+                            <option value="large">Grandes (Toque facilitado)</option>
                         </select>
                     </div>
 
-                    <!-- Acabamento Visual Avançado -->
-                    <div class="form-group">
-                        <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">✨ Acabamentos de Superfície & Luz</label>
-                        <select id="config-visual-finish" class="form-control" style="background: var(--card-bg-secondary); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="applyVisualFinish(this.value)">
-                            <option value="flat" selected>Amoled Flat (Contraste Infinito & Economia Máxima)</option>
-                            <option value="glow">High-Glow Neon (Efeito Neon Brilhante nas Bordas Ativas)</option>
-                            <option value="glass">Glassmorphism (Painéis Translúcidos de Vidro Fosco)</option>
+                    <!-- Cards e Painéis -->
+                    <div class="supabase-card" style="text-align: left; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 14px;">
+                        
+                        <div class="form-group">
+                            <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">📦 Arredondamento dos Elementos</label>
+                            <select id="config-border-radius-v2" class="form-control" style="background: var(--card-bg-secondary); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="applyBordersStyle(this.value)">
+                                <option value="sharp">Retilíneo & Terminal (0px)</option>
+                                <option value="minimalist">Suave Compacto (8px)</option>
+                                <option value="rounded" selected>Moderno Curvado (14px)</option>
+                                <option value="capsule">Estilo Cápsula Orgânica (24px)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">👁️ Profundidade & Intensidade de Sombra</label>
+                            <select id="config-card-shadow" class="form-control" style="background: var(--card-bg-secondary); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="applyCardShadow(this.value)">
+                                <option value="none">Nenhuma (Plana / Minimalista)</option>
+                                <option value="subtle" selected>Sutil (Efeito flutuante leve)</option>
+                                <option value="medium">Média (Sombra Material M3)</option>
+                                <option value="glow">Destaque Glow (Aura iluminada neon)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">📐 Espaçamento Interno dos Cards (Padding)</label>
+                            <select id="config-card-padding" class="form-control" style="background: var(--card-bg-secondary); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="applyCardPadding(this.value)">
+                                <option value="compact">Compacto (Maximiza conteúdo)</option>
+                                <option value="normal" selected>Normal (Material Design 3)</option>
+                                <option value="spacious">Espaçoso (Visualização limpa)</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <!-- Efeitos de Transparência, Blur, Profundidade -->
+                    <div class="supabase-card" style="text-align: left; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 14px;">
+                        
+                        <!-- Transparência Toggle -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleTransparency()">
+                            <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-weight: 600; font-size: 0.82rem; color: #fff;">Transparência nos Painéis</span>
+                                <span style="color: var(--text-muted); font-size: 0.70rem;">Torna as janelas e cards levemente translúcidos</span>
+                            </div>
+                            <div class="toggle-switch" id="transparency-switch"></div>
+                        </div>
+
+                        <!-- Blur Slider -->
+                        <div class="form-group">
+                            <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">✨ Desfoque de Fundo (Backdrop Blur)</label>
+                            <div style="display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); padding: 10px 12px; border-radius: 12px;">
+                                <input type="range" id="config-blur-depth" min="0" max="20" step="1" value="0" style="flex: 1; accent-color: var(--primary, #ffffff); cursor: pointer; height: 6px; border-radius: 3px; outline: none; background: #334155;" oninput="applyBlurDepth(this.value)">
+                                <span id="config-blur-depth-val" style="font-size: 0.82rem; color: #fff; font-family: monospace; font-weight: bold; min-width: 45px; text-align: right;">0px</span>
+                            </div>
+                        </div>
+
+                        <!-- Profundidade Hover -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleVisualDepth()">
+                            <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-weight: 600; font-size: 0.82rem; color: #fff;">Efeito de Profundidade Hover (3D Stack)</span>
+                                <span style="color: var(--text-muted); font-size: 0.70rem;">Cards elevam levemente ao passar o ponteiro</span>
+                            </div>
+                            <div class="toggle-switch" id="visual-depth-switch"></div>
+                        </div>
+
+                    </div>
+
+                    <!-- Interface Density -->
+                    <div class="supabase-card" style="text-align: left; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 16px; padding: 14px;">
+                        <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">📱 Densidade de Tela & Margens</label>
+                        <select id="config-interface-density" class="form-control" style="background: var(--card-bg-secondary); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="applyInterfaceDensity(this.value)">
+                            <option value="compact">Modo Compacto (Mais denso)</option>
+                            <option value="normal" selected>Modo Normal (Padrão balanceado)</option>
+                            <option value="spacious">Modo Espaçoso (Visual limpo)</option>
                         </select>
                     </div>
+
+                </div>
+
+                <!-- CATEGORIA 3: ACESSIBILIDADE -->
+                <div id="appearance-cat-accessibility" class="appearance-cat-section" style="display: none; flex-direction: column; gap: 12px;">
                     
-                    <!-- Fundo Super Black Toggle -->
-                    <div class="theme-toggle" onclick="toggleAmoled()" style="padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
-                        <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
-                            <span style="font-weight: 600; display: block; font-size: 0.82rem; color: #fff;">Modo AMOLED Super Black</span>
-                            <span style="color: var(--text-muted); font-size: 0.70rem;">Pixels apagam em tons pretos absolutos</span>
+                    <div class="supabase-card" style="text-align: left; padding: 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleAccessibilityContrast()">
+                            <div style="text-align: left; display: flex; flex-direction: column; gap: 2px; padding-right: 12px; flex: 1;">
+                                <span style="font-weight: 600; font-size: 0.82rem; color: #fff;">👁️ Modo de Alto Contraste</span>
+                                <span style="color: var(--text-muted); font-size: 0.70rem;">Pretos puros, brancos intensos e bordas fortes para máxima legibilidade.</span>
+                            </div>
+                            <div class="toggle-switch" id="access-contrast-switch"></div>
                         </div>
-                        <div class="toggle-switch on" id="amoled-switch"></div>
                     </div>
 
-                    <!-- Filtro de Intensidade de Cores -->
-                    <div class="form-group" style="margin-top: 4px;">
-                        <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">🌈 Intensidade das Cores (Saturação)</label>
-                        <div style="display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); padding: 10px 12px; border-radius: 12px;">
-                            <input type="range" id="config-color-saturation" min="10" max="120" step="5" value="100" style="flex: 1; accent-color: var(--primary, #ffffff); cursor: pointer; height: 6px; border-radius: 3px; outline: none; background: #334155;" oninput="applyColorSaturation(this.value)">
-                            <span id="config-color-saturation-val" style="font-size: 0.82rem; color: #fff; font-family: 'JetBrains Mono', 'Courier New', monospace; font-weight: bold; min-width: 45px; text-align: right;">100%</span>
+                    <div class="supabase-card" style="text-align: left; padding: 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleAccessibilityLargeText()">
+                            <div style="text-align: left; display: flex; flex-direction: column; gap: 2px; padding-right: 12px; flex: 1;">
+                                <span style="font-weight: 600; font-size: 0.82rem; color: #fff;">🔎 Texto Ampliado (+25%)</span>
+                                <span style="color: var(--text-muted); font-size: 0.70rem;">Aumenta o tamanho de todos os textos de conversa e botões do app.</span>
+                            </div>
+                            <div class="toggle-switch" id="access-largetext-switch"></div>
                         </div>
-                        <span style="color: var(--text-muted); font-size: 0.70rem; display: block; margin-top: 4px;">Arraste para a esquerda para diminuir a vivacidade e intensidade das cores vibrantes ou tons de destaque forte.</span>
                     </div>
 
-                    <!-- Picker Dinâmico Manual de Cor de Destaque -->
-                    <div class="form-group" style="margin-top: 4px;">
-                        <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">🎨 Ajuste Fino: Cor Personalizada (Destaque)</label>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <input type="color" id="manual-accent-picker" style="width: 48px; height: 40px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="setAccent(this.value, null)">
-                            <span style="font-size: 0.78rem; color: var(--text-muted);">Adora uma cor específica? Escolha manualmente seu destaque preferido.</span>
+                    <div class="supabase-card" style="text-align: left; padding: 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleAccessibilityLargeIcons()">
+                            <div style="text-align: left; display: flex; flex-direction: column; gap: 2px; padding-right: 12px; flex: 1;">
+                                <span style="font-weight: 600; font-size: 0.82rem; color: #fff;">🔘 Ícones Ampliados</span>
+                                <span style="color: var(--text-muted); font-size: 0.70rem;">Aumenta o tamanho dos botões de navegação, status e categorias.</span>
+                            </div>
+                            <div class="toggle-switch" id="access-largeicons-switch"></div>
+                        </div>
+                    </div>
+
+                    <div class="supabase-card" style="text-align: left; padding: 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleAccessibilityAnimations()">
+                            <div style="text-align: left; display: flex; flex-direction: column; gap: 2px; padding-right: 12px; flex: 1;">
+                                <span style="font-weight: 600; font-size: 0.82rem; color: #fff;">🎬 Redução Dinâmica de Animações</span>
+                                <span style="color: var(--text-muted); font-size: 0.70rem;">Desativa transições, flashes e efeitos visuais pesados.</span>
+                            </div>
+                            <div class="toggle-switch" id="access-animations-switch"></div>
+                        </div>
+                    </div>
+
+                    <div class="supabase-card" style="text-align: left; padding: 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleAccessibilityReadingMode()">
+                            <div style="text-align: left; display: flex; flex-direction: column; gap: 2px; padding-right: 12px; flex: 1;">
+                                <span style="font-weight: 600; font-size: 0.82rem; color: #fff;">📖 Modo Leitura Imersiva</span>
+                                <span style="color: var(--text-muted); font-size: 0.70rem;">Aplica fontes serifadas de alta leitura, remove distrações visuais e espaça as linhas.</span>
+                            </div>
+                            <div class="toggle-switch" id="access-reading-switch"></div>
                         </div>
                     </div>
 
                 </div>
 
+                <!-- CATEGORIA 4: PERFIS VISUAIS -->
+                <div id="appearance-cat-profiles" class="appearance-cat-section" style="display: none;">
+                    
+                    <div class="supabase-card" style="margin-bottom: 16px; text-align: left; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 16px; padding: 14px;">
+                        <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 8px; color: #fff;">💾 Criar Novo Perfil Visual</label>
+                        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                            <input type="text" id="profile-name-input" class="form-control" placeholder="Ex: Meu Tema Cósmico" style="flex: 1; height: 42px; background: var(--card-bg-secondary); border: 1px solid var(--border-color); border-radius: 10px; color: #fff; padding: 0 12px; outline: none; font-size: 0.85rem;">
+                            <button class="btn-universal" onclick="saveVisualProfile()" style="width: auto; height: 42px; padding: 0 16px; font-size: 0.85rem; margin: 0; white-space: nowrap; background: var(--primary); color: var(--bg-color); font-weight: bold;">Salvar 💾</button>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn-universal" onclick="importVisualProfile()" style="flex: 1; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); font-size: 0.78rem; height: 36px; padding: 0; margin: 0; color: #fff;">Importar Perfil 📥</button>
+                            <button class="btn-universal" onclick="exportVisualProfile()" style="flex: 1; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); font-size: 0.78rem; height: 36px; padding: 0; margin: 0; color: #fff;">Exportar Ativo 📤</button>
+                        </div>
+                    </div>
+
+                    <div class="section-header" style="text-align: left; margin-bottom: 8px; margin-top: 16px;">
+                        <h3 style="font-size: 0.9rem; font-weight: bold; color: #fff;">📋 Meus Perfis Ativos</h3>
+                    </div>
+                    
+                    <div id="visual-profiles-list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+                        <!-- Preenchido via Javascript -->
+                    </div>
+
+                </div>
+
+                <!-- Footer Informativo -->
                 <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; font-size: 0.8rem; color: var(--text-muted); text-align: left; line-height: 1.4; margin-bottom: 24px;">
                     💡 <b>Consistência Estética:</b> Os estilos operam de forma transparente em todas as telas, guias de comando, caixas de diálogo, notificações de sistema (toasts) e logs de terminal!
                 </div>
@@ -4631,162 +4826,147 @@ WITH CHECK (true);</code>
         }
 
         // --- 1C. Galeria de Temas e Customização Estética ---
-        let selectedThemeId = 'superblack';
+        let selectedThemeId = 'escuro_premium';
         let selectedBorders = 'rounded';
         let selectedFinish = 'flat';
         let selectedSaturation = 100;
 
+        let selectedFontFamily = 'modern';
+        let selectedFontSize = 'normal';
+        let selectedAnimationIntensity = 'normal';
+        let selectedIconSize = 'medium';
+        let selectedCardShadow = 'subtle';
+        let selectedCardPadding = 'normal';
+        let selectedTransparency = false;
+        let selectedBlurDepth = 0;
+        let selectedVisualDepth = false;
+        let selectedInterfaceDensity = 'normal';
+        
+        let accessHighContrast = false;
+        let accessLargeText = false;
+        let accessLargeIcons = false;
+        let accessReduceAnimations = false;
+        let accessReadingMode = false;
+
         const availableThemes = {
-            superblack: {
-                name: "Classic SuperBlack",
-                desc: "Aparência clássica AMOLED pura de altíssimo contraste.",
+            escuro_premium: {
+                name: "🌙 Escuro Premium",
+                desc: "Tema escuro AMOLED puro com detalhes prateados e contraste infinito.",
                 bg: "#000000",
                 cardBg1: "#000000",
                 cardBg2: "#050505",
-                border: "#151515",
+                border: "#161616",
                 textMain: "#f5f5f5",
-                textMuted: "#737373",
+                textMuted: "#a3a3a3",
                 primary: "#ffffff",
                 success: "#10b981",
                 error: "#ef4444",
-                font: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif',
+                font: 'system-ui, -apple-system, sans-serif',
                 amoled: true
             },
-            cyberpunk: {
-                name: "Cyberpunk Neon",
-                desc: "Amarelo industrial vibrante e pretos profundos com ciano.",
-                bg: "#060608",
-                cardBg1: "#0a0a0f",
-                cardBg2: "#14141d",
-                border: "#f8e71c",
+            claro_premium: {
+                name: "☀️ Claro Premium",
+                desc: "Visual claro sofisticado, ideal para leitura diurna sob luz natural.",
+                bg: "#f8fafc",
+                cardBg1: "#ffffff",
+                cardBg2: "#f1f5f9",
+                border: "#cbd5e1",
+                textMain: "#0f172a",
+                textMuted: "#475569",
+                primary: "#2563eb",
+                success: "#15803d",
+                error: "#b91c1c",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: false
+            },
+            synapse_oficial: {
+                name: "💜 Synapse Oficial",
+                desc: "Roxo cósmico, orquídea mística e lavanda brilhante futurista.",
+                bg: "#0a0714",
+                cardBg1: "#100c22",
+                cardBg2: "#191433",
+                border: "#3b1e6e",
+                textMain: "#faf5ff",
+                textMuted: "#b19ffb",
+                primary: "#a78bfa",
+                success: "#34d399",
+                error: "#f87171",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: false
+            },
+            neon: {
+                name: "🌌 Neon Cyber",
+                desc: "Contraste extremo com tons neon elétricos de ciano, rosa e amarelo.",
+                bg: "#040406",
+                cardBg1: "#08080f",
+                cardBg2: "#12121e",
+                border: "#ff007f",
                 textMain: "#ffffff",
                 textMuted: "#00f0ff",
-                primary: "#f8e71c",
-                success: "#00f0ff",
-                error: "#ff0055",
-                font: '"Courier New", Courier, monospace',
-                amoled: false,
-                forcedBorders: 'sharp'
-            },
-            dracula: {
-                name: "Dracula Waves",
-                desc: "Matiz requintado de roxo cósmico, orquídea escura e lavanda.",
-                bg: "#0e0b16",
-                cardBg1: "#141121",
-                cardBg2: "#1e1b30",
-                border: "#3d1f5c",
-                textMain: "#f8f8f2",
-                textMuted: "#a292cf",
-                primary: "#a78bfa",
-                success: "#50fa7b",
-                error: "#ff5555",
-                font: '-apple-system, BlinkMacSystemFont, SF Pro, sans-serif',
-                amoled: false
-            },
-            matrix: {
-                name: "Phosphor Terminal",
-                desc: "Computador clássico de fósforo verde dos anos 80.",
-                bg: "#000000",
-                cardBg1: "#000300",
-                cardBg2: "#020a02",
-                border: "#00ff00",
-                textMain: "#00ff00",
-                textMuted: "#008800",
-                primary: "#00ff00",
+                primary: "#00f0ff",
                 success: "#39ff14",
-                error: "#ff3333",
-                font: '"Courier New", Courier, monospace',
-                amoled: true,
-                forcedBorders: 'sharp'
-            },
-            sunset: {
-                name: "Sunset Amber",
-                desc: "Tons terrosos e aconchegantes de âmbar, madeira e mel.",
-                bg: "#0f0b08",
-                cardBg1: "#17120e",
-                cardBg2: "#221b16",
-                border: "#3a2c24",
-                textMain: "#f6e8df",
-                textMuted: "#c1a391",
-                primary: "#f59e0b",
-                success: "#10b981",
-                error: "#ef4444",
-                font: '-apple-system, BlinkMacSystemFont, sans-serif',
+                error: "#ff007f",
+                font: '"Courier New", monospace',
                 amoled: false
             },
-            glacier: {
-                name: "Nordic Glacier",
-                desc: "Profundidades árticas silenciosas por tons azuis e safira.",
-                bg: "#070c14",
-                cardBg1: "#0d1424",
-                cardBg2: "#18233c",
-                border: "#253556",
-                textMain: "#f3f4f6",
-                textMuted: "#88a2d9",
+            oceano: {
+                name: "🌊 Oceano Abissal",
+                desc: "Profundidades marítimas com azul marinho, cobalto e turquesa cristalino.",
+                bg: "#020813",
+                cardBg1: "#051329",
+                cardBg2: "#0c2347",
+                border: "#13376c",
+                textMain: "#f0f7ff",
+                textMuted: "#7dd3fc",
                 primary: "#38bdf8",
                 success: "#10b981",
-                error: "#f87171",
-                font: '-apple-system, BlinkMacSystemFont, sans-serif',
+                error: "#f43f5e",
+                font: 'system-ui, -apple-system, sans-serif',
                 amoled: false
             },
-            forest: {
-                name: "Forest Zen",
-                desc: "Verde floresta profundo, musgo, terra e mint sutil.",
-                bg: "#030805",
-                cardBg1: "#08120d",
-                cardBg2: "#11241a",
-                border: "#1a3a2a",
+            natureza: {
+                name: "🌿 Natureza Zen",
+                desc: "Equilíbrio orgânico composto por verde musgo, floresta profunda e hortelã.",
+                bg: "#040806",
+                cardBg1: "#0a140f",
+                cardBg2: "#13261c",
+                border: "#1b3c2a",
                 textMain: "#f0fdf4",
                 textMuted: "#86efac",
-                primary: "#86efac",
-                success: "#10b981",
-                error: "#f43f5e",
-                font: '-apple-system, BlinkMacSystemFont, sans-serif',
+                primary: "#4ade80",
+                success: "#22c55e",
+                error: "#ef4444",
+                font: 'system-ui, -apple-system, sans-serif',
                 amoled: false
             },
-            ruby: {
-                name: "Crimson Ruby",
-                desc: "Preto luxuoso burgundy com detalhes brilhantes vermelho rubi.",
-                bg: "#080203",
-                cardBg1: "#120608",
-                cardBg2: "#200d10",
-                border: "#3a151b",
-                textMain: "#faebeb",
-                textMuted: "#f43f5e",
-                primary: "#ef4444",
-                success: "#10b981",
-                error: "#f43f5e",
-                font: '-apple-system, sans-serif',
-                amoled: false
-            },
-            pearl: {
-                name: "Luxury light Pearl",
-                desc: "Incrível modo claro minimalista com pretos ricos para leitura diurna.",
-                bg: "#fafafa",
-                cardBg1: "#ffffff",
-                cardBg2: "#f3f4f6",
-                border: "#e5e7eb",
-                textMain: "#0f172a",
-                textMuted: "#64748b",
-                primary: "#0f172a",
+            energia: {
+                name: "🔥 Energia Vulcânica",
+                desc: "Tons ardentes de âmbar, magma aquecido, cinzas de carvão e rubi.",
+                bg: "#090302",
+                cardBg1: "#140805",
+                cardBg2: "#22100a",
+                border: "#441a0e",
+                textMain: "#fff5f2",
+                textMuted: "#f97316",
+                primary: "#f97316",
                 success: "#10b981",
                 error: "#ef4444",
-                font: '-apple-system, BlinkMacSystemFont, sans-serif',
+                font: 'system-ui, -apple-system, sans-serif',
                 amoled: false
             },
-            sakura: {
-                name: "Sakura Dream",
-                desc: "Rosa cerejeira oriental místico com fundo escuro ameixa.",
-                bg: "#10060c",
-                cardBg1: "#1a0b14",
-                cardBg2: "#2a1220",
-                border: "#441a34",
-                textMain: "#fdf2f8",
-                textMuted: "#f472b6",
-                primary: "#f472b6",
-                success: "#10b981",
-                error: "#f43f5e",
-                font: '-apple-system, BlinkMacSystemFont, sans-serif',
+            minimalist: {
+                name: "⚫ Slate Minimal",
+                desc: "Foco absoluto em tons acromáticos de grafite, chumbo e prata escovada.",
+                bg: "#0a0a0c",
+                cardBg1: "#121215",
+                cardBg2: "#1a1a20",
+                border: "#27272a",
+                textMain: "#fafafa",
+                textMuted: "#a1a1aa",
+                primary: "#d4d4d8",
+                success: "#52525b",
+                error: "#71717a",
+                font: 'system-ui, -apple-system, sans-serif',
                 amoled: false
             }
         };
@@ -5097,6 +5277,684 @@ WITH CHECK (true);</code>
             }
             
             addLog(`Intensidade de saturação otimizada fisicamente para: ${val}%`, "info");
+        }
+
+        // --- 1D. Sistema Avançado de Aparência e Perfis Visuais ---
+        function switchAppearanceCategory(category) {
+            triggerPulse();
+            document.querySelectorAll('.appearance-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            const tabs = document.querySelectorAll('.appearance-tab-btn');
+            tabs.forEach(btn => {
+                if (btn.getAttribute('onclick').includes(category)) {
+                    btn.classList.add('active');
+                }
+            });
+
+            document.querySelectorAll('.appearance-cat-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            const targetSection = document.getElementById('appearance-cat-' + category);
+            if (targetSection) {
+                if (category === 'advanced' || category === 'accessibility') {
+                    targetSection.style.display = 'flex';
+                } else {
+                    targetSection.style.display = 'block';
+                }
+            }
+            
+            if (category === 'profiles') {
+                renderVisualProfilesList();
+            }
+        }
+
+        function getFontFamilyCSS(key) {
+            switch (key) {
+                case 'modern': return 'system-ui, -apple-system, sans-serif';
+                case 'professional': return "'Inter', 'Helvetica Neue', Helvetica, sans-serif";
+                case 'minimalist': return "'Lato', 'Avenir', sans-serif";
+                case 'elegant': return "'Georgia', 'Playfair Display', serif";
+                case 'tech': return "'Fira Code', 'JetBrains Mono', 'Courier New', monospace";
+                default: return 'system-ui, -apple-system, sans-serif';
+            }
+        }
+
+        function getFontSizeCSS(key) {
+            switch (key) {
+                case 'small': return '0.82rem';
+                case 'normal': return '0.95rem';
+                case 'large': return '1.18rem';
+                case 'xlarge': return '1.35rem';
+                default: return '0.95rem';
+            }
+        }
+
+        function getIconSizeCSS(key) {
+            switch (key) {
+                case 'small': return '14px';
+                case 'medium': return '18px';
+                case 'large': return '24px';
+                default: return '18px';
+            }
+        }
+
+        function getCardPaddingCSS(key) {
+            switch (key) {
+                case 'compact': return '10px';
+                case 'normal': return '16px';
+                case 'spacious': return '24px';
+                default: return '16px';
+            }
+        }
+
+        function getInterfaceDensityCSS(key) {
+            switch (key) {
+                case 'compact': return '6px';
+                case 'normal': return '12px';
+                case 'spacious': return '20px';
+                default: return '12px';
+            }
+        }
+
+        function updateDynamicStyles() {
+            let styleEl = document.getElementById('synapse-dynamic-appearance-style');
+            if (!styleEl) {
+                styleEl = document.createElement('style');
+                styleEl.id = 'synapse-dynamic-appearance-style';
+                document.head.appendChild(styleEl);
+            }
+            
+            let css = `
+                :root {
+                    --font-family: ${getFontFamilyCSS(selectedFontFamily)} !important;
+                    --chat-font-size: ${getFontSizeCSS(selectedFontSize)} !important;
+                    --icon-size: ${getIconSizeCSS(selectedIconSize)} !important;
+                    --card-padding: ${getCardPaddingCSS(selectedCardPadding)} !important;
+                    --interface-density-gap: ${getInterfaceDensityCSS(selectedInterfaceDensity)} !important;
+                }
+                
+                body, .chat-bubble, .agent-card, .sidebar, .input-area {
+                    font-family: var(--font-family) !important;
+                }
+                
+                .supabase-card, .config-subview-card, .config-subview .supabase-card {
+                    padding: var(--card-padding) !important;
+                }
+            `;
+            
+            if (selectedCardShadow === 'none') {
+                css += `
+                    .supabase-card, .config-subview-card, .config-subview .supabase-card {
+                        box-shadow: none !important;
+                    }
+                `;
+            } else if (selectedCardShadow === 'subtle') {
+                css += `
+                    .supabase-card, .config-subview-card, .config-subview .supabase-card {
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+                    }
+                `;
+            } else if (selectedCardShadow === 'medium') {
+                css += `
+                    .supabase-card, .config-subview-card, .config-subview .supabase-card {
+                        box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
+                    }
+                `;
+            } else if (selectedCardShadow === 'glow') {
+                css += `
+                    .supabase-card, .config-subview-card, .config-subview .supabase-card {
+                        box-shadow: 0 0 16px var(--primary-bg), 0 0 4px var(--primary) !important;
+                    }
+                `;
+            }
+            
+            if (selectedTransparency) {
+                css += `
+                    .supabase-card, .config-subview-card, .config-subview .supabase-card, .sidebar, .bottom-navigation {
+                        background-color: rgba(10, 10, 15, 0.65) !important;
+                        backdrop-filter: blur(${selectedBlurDepth}px) !important;
+                        -webkit-backdrop-filter: blur(${selectedBlurDepth}px) !important;
+                    }
+                `;
+            } else if (selectedBlurDepth > 0) {
+                css += `
+                    .supabase-card, .config-subview-card, .config-subview .supabase-card {
+                        backdrop-filter: blur(${selectedBlurDepth}px) !important;
+                        -webkit-backdrop-filter: blur(${selectedBlurDepth}px) !important;
+                    }
+                `;
+            }
+            
+            if (selectedVisualDepth) {
+                css += `
+                    .supabase-card:hover, .config-subview-card:hover {
+                        transform: translateY(-3px) scale(1.01) !important;
+                        box-shadow: 0 12px 28px rgba(0,0,0,0.5) !important;
+                        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease !important;
+                    }
+                `;
+            }
+            
+            css += `
+                .sidebar, .dashboard-container, .main-layout, .config-subview {
+                    gap: var(--interface-density-gap) !important;
+                }
+                .supabase-card {
+                    margin-bottom: var(--interface-density-gap) !important;
+                }
+            `;
+            
+            if (accessHighContrast) {
+                css += `
+                    :root {
+                        --bg-color: #000000 !important;
+                        --card-bg-primary: #000000 !important;
+                        --card-bg-secondary: #000000 !important;
+                        --border-color: #ffffff !important;
+                        --text-main: #ffffff !important;
+                        --text-muted: #e5e5e5 !important;
+                        --primary: #ffffff !important;
+                    }
+                    * {
+                        border-width: 1.5px !important;
+                        text-shadow: none !important;
+                    }
+                `;
+            }
+            
+            if (accessLargeText) {
+                css += `
+                    body, html, p, span, div, button, input, select, textarea {
+                        font-size: 112.5% !important;
+                    }
+                `;
+            }
+            
+            if (accessLargeIcons) {
+                css += `
+                    .sidebar-icon, .agent-icon, .icon-wrapper, .btn-back span, .bottom-navigation svg, .bottom-navigation i {
+                        transform: scale(1.25) !important;
+                    }
+                `;
+            }
+            
+            if (accessReduceAnimations) {
+                css += `
+                    * {
+                        transition: none !important;
+                        animation: none !important;
+                    }
+                `;
+            }
+            
+            if (accessReadingMode) {
+                css += `
+                    body, html, .chat-bubble-text, .log-content {
+                        font-family: 'Georgia', 'Playfair Display', serif !important;
+                        line-height: 1.8 !important;
+                        letter-spacing: 0.03em !important;
+                        color: #fcfcfc !important;
+                        background-color: #121212 !important;
+                    }
+                    .supabase-card, .sidebar, .bottom-navigation {
+                        background: #181818 !important;
+                        border-color: #333333 !important;
+                    }
+                `;
+            }
+            
+            styleEl.innerHTML = css;
+        }
+
+        function applyFontFamily(val) {
+            selectedFontFamily = val;
+            updateDynamicStyles();
+            saveConfiguration();
+        }
+
+        function applyFontSize(val) {
+            selectedFontSize = val;
+            updateDynamicStyles();
+            saveConfiguration();
+        }
+
+        function applyAnimationIntensity(val) {
+            selectedAnimationIntensity = val;
+            let styleEl = document.getElementById('synapse-animation-override');
+            if (!styleEl) {
+                styleEl = document.createElement('style');
+                styleEl.id = 'synapse-animation-override';
+                document.head.appendChild(styleEl);
+            }
+            
+            let css = '';
+            if (val === 'disabled') {
+                css = `
+                    * {
+                        transition: none !important;
+                        animation: none !important;
+                    }
+                `;
+            } else if (val === 'gentle') {
+                css = `
+                    * {
+                        transition: all 0.4s ease-in-out !important;
+                    }
+                `;
+            } else if (val === 'normal') {
+                css = '';
+            } else if (val === 'snappy') {
+                css = `
+                    * {
+                        transition: all 0.1s cubic-bezier(0, 0, 0.2, 1) !important;
+                    }
+                `;
+            }
+            styleEl.innerHTML = css;
+            saveConfiguration();
+        }
+
+        function applyIconSize(val) {
+            selectedIconSize = val;
+            updateDynamicStyles();
+            saveConfiguration();
+        }
+
+        function applyCardShadow(val) {
+            selectedCardShadow = val;
+            updateDynamicStyles();
+            saveConfiguration();
+        }
+
+        function applyCardPadding(val) {
+            selectedCardPadding = val;
+            updateDynamicStyles();
+            saveConfiguration();
+        }
+
+        function toggleTransparency() {
+            selectedTransparency = !selectedTransparency;
+            const sw = document.getElementById('transparency-switch');
+            if (sw) sw.classList.toggle('on', selectedTransparency);
+            updateDynamicStyles();
+            saveConfiguration();
+        }
+
+        function applyBlurDepth(val) {
+            selectedBlurDepth = parseInt(val);
+            const label = document.getElementById('config-blur-depth-val');
+            if (label) label.textContent = `${val}px`;
+            updateDynamicStyles();
+            saveConfiguration();
+        }
+
+        function toggleVisualDepth() {
+            selectedVisualDepth = !selectedVisualDepth;
+            const sw = document.getElementById('visual-depth-switch');
+            if (sw) sw.classList.toggle('on', selectedVisualDepth);
+            updateDynamicStyles();
+            saveConfiguration();
+        }
+
+        function applyInterfaceDensity(val) {
+            selectedInterfaceDensity = val;
+            updateDynamicStyles();
+            saveConfiguration();
+        }
+
+        function toggleAccessibilityContrast() {
+            accessHighContrast = !accessHighContrast;
+            const sw = document.getElementById('access-contrast-switch');
+            if (sw) sw.classList.toggle('on', accessHighContrast);
+            updateDynamicStyles();
+            saveConfiguration();
+        }
+
+        function toggleAccessibilityLargeText() {
+            accessLargeText = !accessLargeText;
+            const sw = document.getElementById('access-largetext-switch');
+            if (sw) sw.classList.toggle('on', accessLargeText);
+            updateDynamicStyles();
+            saveConfiguration();
+        }
+
+        function toggleAccessibilityLargeIcons() {
+            accessLargeIcons = !accessLargeIcons;
+            const sw = document.getElementById('access-largeicons-switch');
+            if (sw) sw.classList.toggle('on', accessLargeIcons);
+            updateDynamicStyles();
+            saveConfiguration();
+        }
+
+        function toggleAccessibilityAnimations() {
+            accessReduceAnimations = !accessReduceAnimations;
+            const sw = document.getElementById('access-animations-switch');
+            if (sw) sw.classList.toggle('on', accessReduceAnimations);
+            updateDynamicStyles();
+            saveConfiguration();
+        }
+
+        function toggleAccessibilityReadingMode() {
+            accessReadingMode = !accessReadingMode;
+            const sw = document.getElementById('access-reading-switch');
+            if (sw) sw.classList.toggle('on', accessReadingMode);
+            updateDynamicStyles();
+            saveConfiguration();
+        }
+
+        function getVisualProfiles() {
+            try {
+                const saved = localStorage.getItem('ai_console_visual_profiles');
+                return saved ? JSON.parse(saved) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveVisualProfiles(profiles) {
+            localStorage.setItem('ai_console_visual_profiles', JSON.stringify(profiles));
+        }
+
+        function renderVisualProfilesList() {
+            const container = document.getElementById('visual-profiles-list');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            const profiles = getVisualProfiles();
+            if (profiles.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 14px; color: var(--text-muted); font-size: 0.8rem; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 12px;">
+                        Nenhum perfil salvo ainda. Configure sua interface e salve como um novo perfil!
+                    </div>
+                `;
+                return;
+            }
+            
+            profiles.forEach(profile => {
+                const item = document.createElement('div');
+                item.style.display = 'flex';
+                item.style.flexDirection = 'column';
+                item.style.gap = '8px';
+                item.style.background = 'rgba(255,255,255,0.02)';
+                item.style.border = '1px solid var(--border-color)';
+                item.style.borderRadius = '12px';
+                item.style.padding = '12px';
+                
+                item.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <span style="font-weight: bold; color: #fff; font-size: 0.85rem;">✨ ${profile.name}</span>
+                        <span style="font-size: 0.7rem; color: var(--text-muted); background: rgba(255,255,255,0.04); padding: 2px 6px; border-radius: 4px;">ID: ${profile.id.substring(0, 6)}</span>
+                    </div>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                        <button onclick="loadVisualProfile('${profile.id}')" style="flex: 1; min-width: 60px; height: 32px; font-size: 0.75rem; font-weight: bold; border-radius: 8px; border: none; background: var(--primary); color: var(--bg-color); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">Ativar 🔌</button>
+                        <button onclick="renameVisualProfile('${profile.id}')" style="flex: 1; min-width: 60px; height: 32px; font-size: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #fff; cursor: pointer;">Renomear ✏️</button>
+                        <button onclick="duplicateVisualProfile('${profile.id}')" style="flex: 1; min-width: 60px; height: 32px; font-size: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #fff; cursor: pointer;">Duplicar 👥</button>
+                        <button onclick="deleteVisualProfile('${profile.id}')" style="flex: 1; min-width: 60px; height: 32px; font-size: 0.75rem; border-radius: 8px; border: 1px solid #dc2626; background: rgba(220, 38, 38, 0.1); color: #f87171; cursor: pointer;">Excluir 🗑️</button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function saveVisualProfile() {
+            const input = document.getElementById('profile-name-input');
+            if (!input) return;
+            const name = input.value.trim();
+            if (!name) {
+                showAppToast("Insira um nome para o perfil", "warning");
+                return;
+            }
+            
+            const profiles = getVisualProfiles();
+            const newProfile = {
+                id: 'prof_' + Math.random().toString(36).substring(2, 9),
+                name: name,
+                settings: {
+                    selectedThemeId,
+                    selectedBorders,
+                    selectedFinish,
+                    selectedSaturation,
+                    selectedFontFamily,
+                    selectedFontSize,
+                    selectedAnimationIntensity,
+                    selectedIconSize,
+                    selectedCardShadow,
+                    selectedCardPadding,
+                    selectedTransparency,
+                    selectedBlurDepth,
+                    selectedVisualDepth,
+                    selectedInterfaceDensity,
+                    accessHighContrast,
+                    accessLargeText,
+                    accessLargeIcons,
+                    accessReduceAnimations,
+                    accessReadingMode,
+                    currentAccentColor
+                }
+            };
+            
+            profiles.push(newProfile);
+            saveVisualProfiles(profiles);
+            input.value = '';
+            
+            renderVisualProfilesList();
+            showAppToast("Perfil Visual Salvo com Sucesso! 💾", "success");
+            addLog(`Perfil visual criado: "${name}"`, "success");
+        }
+
+        function loadVisualProfile(id) {
+            const profiles = getVisualProfiles();
+            const profile = profiles.find(p => p.id === id);
+            if (!profile) {
+                showAppToast("Perfil não encontrado", "error");
+                return;
+            }
+            
+            applyProfileSettingsObject(profile.settings);
+            
+            showAppToast(`Perfil "${profile.name}" Ativado! ⚡`, "success");
+            addLog(`Perfil visual ativado: "${profile.name}"`, "success");
+        }
+
+        function applyProfileSettingsObject(settings) {
+            if (!settings) return;
+            
+            if (settings.selectedThemeId) {
+                selectedThemeId = settings.selectedThemeId;
+                applyThemePreset(selectedThemeId);
+            }
+            if (settings.currentAccentColor) {
+                currentAccentColor = settings.currentAccentColor;
+                setAccent(currentAccentColor);
+            }
+            if (settings.selectedBorders) {
+                selectedBorders = settings.selectedBorders;
+                applyBordersStyle(selectedBorders);
+                const bSel = document.getElementById('config-border-radius');
+                if (bSel) bSel.value = selectedBorders;
+                const bSel2 = document.getElementById('config-border-radius-v2');
+                if (bSel2) bSel2.value = selectedBorders;
+            }
+            if (settings.selectedFinish) {
+                selectedFinish = settings.selectedFinish;
+                applyVisualFinish(selectedFinish);
+            }
+            if (settings.selectedSaturation !== undefined) {
+                selectedSaturation = settings.selectedSaturation;
+                applyColorSaturation(selectedSaturation);
+            }
+            if (settings.selectedFontFamily) {
+                selectedFontFamily = settings.selectedFontFamily;
+                const fSel = document.getElementById('config-font-family');
+                if (fSel) fSel.value = selectedFontFamily;
+            }
+            if (settings.selectedFontSize) {
+                selectedFontSize = settings.selectedFontSize;
+                const sSel = document.getElementById('config-font-size');
+                if (sSel) sSel.value = selectedFontSize;
+            }
+            if (settings.selectedAnimationIntensity) {
+                selectedAnimationIntensity = settings.selectedAnimationIntensity;
+                applyAnimationIntensity(selectedAnimationIntensity);
+                const aSel = document.getElementById('config-animation-intensity');
+                if (aSel) aSel.value = selectedAnimationIntensity;
+            }
+            if (settings.selectedIconSize) {
+                selectedIconSize = settings.selectedIconSize;
+                const iSel = document.getElementById('config-icon-size');
+                if (iSel) iSel.value = selectedIconSize;
+            }
+            if (settings.selectedCardShadow) {
+                selectedCardShadow = settings.selectedCardShadow;
+                const sdSel = document.getElementById('config-card-shadow');
+                if (sdSel) sdSel.value = selectedCardShadow;
+            }
+            if (settings.selectedCardPadding) {
+                selectedCardPadding = settings.selectedCardPadding;
+                const pSel = document.getElementById('config-card-padding');
+                if (pSel) pSel.value = selectedCardPadding;
+            }
+            
+            if (settings.selectedTransparency !== undefined) {
+                selectedTransparency = settings.selectedTransparency;
+                const sw = document.getElementById('transparency-switch');
+                if (sw) sw.classList.toggle('on', selectedTransparency);
+            }
+            if (settings.selectedBlurDepth !== undefined) {
+                selectedBlurDepth = settings.selectedBlurDepth;
+                const bSlider = document.getElementById('config-blur-depth');
+                if (bSlider) bSlider.value = selectedBlurDepth;
+                const bLabel = document.getElementById('config-blur-depth-val');
+                if (bLabel) bLabel.textContent = `${selectedBlurDepth}px`;
+            }
+            if (settings.selectedVisualDepth !== undefined) {
+                selectedVisualDepth = settings.selectedVisualDepth;
+                const sw = document.getElementById('visual-depth-switch');
+                if (sw) sw.classList.toggle('on', selectedVisualDepth);
+            }
+            if (settings.selectedInterfaceDensity) {
+                selectedInterfaceDensity = settings.selectedInterfaceDensity;
+                const dSel = document.getElementById('config-interface-density');
+                if (dSel) dSel.value = selectedInterfaceDensity;
+            }
+            
+            if (settings.accessHighContrast !== undefined) {
+                accessHighContrast = settings.accessHighContrast;
+                const sw = document.getElementById('access-contrast-switch');
+                if (sw) sw.classList.toggle('on', accessHighContrast);
+            }
+            if (settings.accessLargeText !== undefined) {
+                accessLargeText = settings.accessLargeText;
+                const sw = document.getElementById('access-largetext-switch');
+                if (sw) sw.classList.toggle('on', accessLargeText);
+            }
+            if (settings.accessLargeIcons !== undefined) {
+                accessLargeIcons = settings.accessLargeIcons;
+                const sw = document.getElementById('access-largeicons-switch');
+                if (sw) sw.classList.toggle('on', accessLargeIcons);
+            }
+            if (settings.accessReduceAnimations !== undefined) {
+                accessReduceAnimations = settings.accessReduceAnimations;
+                const sw = document.getElementById('access-animations-switch');
+                if (sw) sw.classList.toggle('on', accessReduceAnimations);
+            }
+            if (settings.accessReadingMode !== undefined) {
+                accessReadingMode = settings.accessReadingMode;
+                const sw = document.getElementById('access-reading-switch');
+                if (sw) sw.classList.toggle('on', accessReadingMode);
+            }
+            
+            updateDynamicStyles();
+            saveConfiguration();
+        }
+
+        function renameVisualProfile(id) {
+            const profiles = getVisualProfiles();
+            const profile = profiles.find(p => p.id === id);
+            if (!profile) return;
+            
+            showAppPrompt(`Renomear perfil "${profile.name}" para:`, (newName) => {
+                if (!newName || !newName.trim()) return;
+                profile.name = newName.trim();
+                saveVisualProfiles(profiles);
+                renderVisualProfilesList();
+                showAppToast("Perfil renomeado com sucesso!", "success");
+            });
+        }
+
+        function duplicateVisualProfile(id) {
+            const profiles = getVisualProfiles();
+            const profile = profiles.find(p => p.id === id);
+            if (!profile) return;
+            
+            const duplicated = {
+                id: 'prof_' + Math.random().toString(36).substring(2, 9),
+                name: profile.name + " (Cópia)",
+                settings: JSON.parse(JSON.stringify(profile.settings))
+            };
+            
+            profiles.push(duplicated);
+            saveVisualProfiles(profiles);
+            renderVisualProfilesList();
+            showAppToast("Perfil duplicado com sucesso!", "success");
+        }
+
+        function deleteVisualProfile(id) {
+            showAppConfirm("Tem certeza que deseja excluir permanentemente este perfil visual?", () => {
+                let profiles = getVisualProfiles();
+                profiles = profiles.filter(p => p.id !== id);
+                saveVisualProfiles(profiles);
+                renderVisualProfilesList();
+                showAppToast("Perfil removido", "success");
+            });
+        }
+
+        function exportVisualProfile() {
+            const currentSettings = {
+                selectedThemeId,
+                selectedBorders,
+                selectedFinish,
+                selectedSaturation,
+                selectedFontFamily,
+                selectedFontSize,
+                selectedAnimationIntensity,
+                selectedIconSize,
+                selectedCardShadow,
+                selectedCardPadding,
+                selectedTransparency,
+                selectedBlurDepth,
+                selectedVisualDepth,
+                selectedInterfaceDensity,
+                accessHighContrast,
+                accessLargeText,
+                accessLargeIcons,
+                accessReduceAnimations,
+                accessReadingMode,
+                currentAccentColor
+            };
+            
+            const str = btoa(JSON.stringify(currentSettings));
+            navigator.clipboard.writeText(str).then(() => {
+                showAppToast("Código do Perfil copiado para a Área de Transferência! 📤", "success");
+            }).catch(() => {
+                showAppPrompt("Copie o código abaixo:", null, str);
+            });
+        }
+
+        function importVisualProfile() {
+            showAppPrompt("Cole o código do perfil visual (Base64) recebido:", (code) => {
+                if (!code || !code.trim()) return;
+                try {
+                    const settings = JSON.parse(atob(code.trim()));
+                    applyProfileSettingsObject(settings);
+                    showAppToast("Perfil Visual importado com sucesso! 📥", "success");
+                } catch (e) {
+                    showAppToast("Falha ao descriptografar ou processar o código informado.", "error");
+                }
+            });
         }
 
         // --- 2. Controle de Lógica Engine (Anteriormente parte das Seções de Botões e AMOLED) ---
@@ -5553,11 +6411,94 @@ WITH CHECK (true);</code>
                     } else {
                         applyColorSaturation(100);
                     }
+                    
+                    // Carrega variáveis estéticas avançadas e acessibilidade
+                    if (data.selectedFontFamily) {
+                        selectedFontFamily = data.selectedFontFamily;
+                        const fSel = document.getElementById('config-font-family');
+                        if (fSel) fSel.value = selectedFontFamily;
+                    }
+                    if (data.selectedFontSize) {
+                        selectedFontSize = data.selectedFontSize;
+                        const sSel = document.getElementById('config-font-size');
+                        if (sSel) sSel.value = selectedFontSize;
+                    }
+                    if (data.selectedAnimationIntensity) {
+                        selectedAnimationIntensity = data.selectedAnimationIntensity;
+                        applyAnimationIntensity(selectedAnimationIntensity);
+                        const aSel = document.getElementById('config-animation-intensity');
+                        if (aSel) aSel.value = selectedAnimationIntensity;
+                    }
+                    if (data.selectedIconSize) {
+                        selectedIconSize = data.selectedIconSize;
+                        const iSel = document.getElementById('config-icon-size');
+                        if (iSel) iSel.value = selectedIconSize;
+                    }
+                    if (data.selectedCardShadow) {
+                        selectedCardShadow = data.selectedCardShadow;
+                        const sdSel = document.getElementById('config-card-shadow');
+                        if (sdSel) sdSel.value = selectedCardShadow;
+                    }
+                    if (data.selectedCardPadding) {
+                        selectedCardPadding = data.selectedCardPadding;
+                        const pSel = document.getElementById('config-card-padding');
+                        if (pSel) pSel.value = selectedCardPadding;
+                    }
+                    if (data.selectedTransparency !== undefined) {
+                        selectedTransparency = data.selectedTransparency;
+                        const sw = document.getElementById('transparency-switch');
+                        if (sw) sw.classList.toggle('on', selectedTransparency);
+                    }
+                    if (data.selectedBlurDepth !== undefined) {
+                        selectedBlurDepth = data.selectedBlurDepth;
+                        const bSlider = document.getElementById('config-blur-depth');
+                        if (bSlider) bSlider.value = selectedBlurDepth;
+                        const bLabel = document.getElementById('config-blur-depth-val');
+                        if (bLabel) bLabel.textContent = `${selectedBlurDepth}px`;
+                    }
+                    if (data.selectedVisualDepth !== undefined) {
+                        selectedVisualDepth = data.selectedVisualDepth;
+                        const sw = document.getElementById('visual-depth-switch');
+                        if (sw) sw.classList.toggle('on', selectedVisualDepth);
+                    }
+                    if (data.selectedInterfaceDensity) {
+                        selectedInterfaceDensity = data.selectedInterfaceDensity;
+                        const dSel = document.getElementById('config-interface-density');
+                        if (dSel) dSel.value = selectedInterfaceDensity;
+                    }
+                    
+                    if (data.accessHighContrast !== undefined) {
+                        accessHighContrast = data.accessHighContrast;
+                        const sw = document.getElementById('access-contrast-switch');
+                        if (sw) sw.classList.toggle('on', accessHighContrast);
+                    }
+                    if (data.accessLargeText !== undefined) {
+                        accessLargeText = data.accessLargeText;
+                        const sw = document.getElementById('access-largetext-switch');
+                        if (sw) sw.classList.toggle('on', accessLargeText);
+                    }
+                    if (data.accessLargeIcons !== undefined) {
+                        accessLargeIcons = data.accessLargeIcons;
+                        const sw = document.getElementById('access-largeicons-switch');
+                        if (sw) sw.classList.toggle('on', accessLargeIcons);
+                    }
+                    if (data.accessReduceAnimations !== undefined) {
+                        accessReduceAnimations = data.accessReduceAnimations;
+                        const sw = document.getElementById('access-animations-switch');
+                        if (sw) sw.classList.toggle('on', accessReduceAnimations);
+                    }
+                    if (data.accessReadingMode !== undefined) {
+                        accessReadingMode = data.accessReadingMode;
+                        const sw = document.getElementById('access-reading-switch');
+                        if (sw) sw.classList.toggle('on', accessReadingMode);
+                    }
+                    updateDynamicStyles();
                 } else {
                     applyThemePreset('superblack');
                     applyBordersStyle('rounded');
                     applyVisualFinish('flat');
                     applyColorSaturation(100);
+                    updateDynamicStyles();
                 }
                 renderThemesGrid();
 
@@ -6134,7 +7075,22 @@ WITH CHECK (true);</code>
                 selectedThemeId: selectedThemeId,
                 selectedBorders: selectedBorders,
                 selectedFinish: selectedFinish,
-                selectedSaturation: selectedSaturation
+                selectedSaturation: selectedSaturation,
+                selectedFontFamily: selectedFontFamily,
+                selectedFontSize: selectedFontSize,
+                selectedAnimationIntensity: selectedAnimationIntensity,
+                selectedIconSize: selectedIconSize,
+                selectedCardShadow: selectedCardShadow,
+                selectedCardPadding: selectedCardPadding,
+                selectedTransparency: selectedTransparency,
+                selectedBlurDepth: selectedBlurDepth,
+                selectedVisualDepth: selectedVisualDepth,
+                selectedInterfaceDensity: selectedInterfaceDensity,
+                accessHighContrast: accessHighContrast,
+                accessLargeText: accessLargeText,
+                accessLargeIcons: accessLargeIcons,
+                accessReduceAnimations: accessReduceAnimations,
+                accessReadingMode: accessReadingMode
             };
             
             localStorage.setItem('ai_console_settings', JSON.stringify(data));
