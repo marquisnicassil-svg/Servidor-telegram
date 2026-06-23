@@ -427,6 +427,15 @@
             padding: 10px 42px 28px 14px;
         }
 
+        .chat-message.bot:has(.chat-msg-avatar) {
+            padding-left: 52px !important;
+        }
+
+        @keyframes agentPulseEffect {
+            0% { transform: scale(0.92); opacity: 0.2; }
+            100% { transform: scale(1.08); opacity: 0.45; }
+        }
+
         /* Espaçamento interno e margem do botão de áudio nos balões de chat */
         .chat-message .reader-btn {
             position: absolute;
@@ -1618,6 +1627,33 @@
                         <div style="width: 80px;">
                             <label style="display: block; font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 6px;" data-i18n="agent_lbl_icon">Ícone / Emoji</label>
                             <input type="text" id="agent-icon" class="form-control" style="background: rgba(0,0,0,0.2); text-align: center; font-size: 1.3rem; padding: 6px;" placeholder="💸" maxlength="4">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 180px;">
+                            <label style="display: block; font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 6px;">URL do Avatar (Imagem)</label>
+                            <input type="text" id="agent-avatar" class="form-control" style="background: rgba(0,0,0,0.2);" placeholder="Ex: https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80">
+                        </div>
+                        <div style="width: 160px; min-width: 140px;">
+                            <label style="display: block; font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 6px;">Categoria</label>
+                            <select id="agent-category" class="form-control" style="background: #110e16; height: 38px; color: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 0 10px; cursor: pointer;">
+                                <option value="RH">RH</option>
+                                <option value="Programação">Programação</option>
+                                <option value="Estudos">Estudos</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Negócios">Negócios</option>
+                                <option value="Produtividade">Produtividade</option>
+                                <option value="Atendimento">Atendimento</option>
+                                <option value="Personalizado" selected>Personalizado</option>
+                            </select>
+                        </div>
+                        <div style="width: 120px;">
+                            <label style="display: block; font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 6px;">Visual Accent</label>
+                            <div style="display: flex; gap: 8px; align-items: center; border: 1px solid var(--border-color); border-radius: 8px; padding: 4px 8px; background: rgba(0,0,0,0.2); height: 38px;">
+                                <input type="color" id="agent-color" style="border: none; background: transparent; width: 28px; height: 28px; cursor: pointer; padding: 0;" value="#38BDF8">
+                                <span style="font-size: 0.7rem; color: var(--text-muted);">Cor</span>
+                            </div>
                         </div>
                     </div>
 
@@ -6802,6 +6838,154 @@ WITH CHECK (true);</code>
 
         let selectedAssistantId = 'geral';
 
+        // ==========================================================================
+        // STATS, AVATAR AND SHARING UTILITIES FOR AGENTS
+        // ==========================================================================
+        function getAgentStats(id) {
+            let allStats = {};
+            try {
+                const raw = localStorage.getItem('synapse_agent_stats');
+                if (raw) allStats = JSON.parse(raw);
+            } catch (e) {}
+            if (!allStats[id]) {
+                allStats[id] = {
+                    totalChats: 0,
+                    totalMessages: 0,
+                    createdAt: new Date().toLocaleDateString('pt-BR'),
+                    lastUsed: 'Nunca'
+                };
+            }
+            return allStats[id];
+        }
+
+        function incrementAgentChatStat(id) {
+            let allStats = {};
+            try {
+                const raw = localStorage.getItem('synapse_agent_stats');
+                if (raw) allStats = JSON.parse(raw);
+            } catch (e) {}
+            if (!allStats[id]) {
+                allStats[id] = {
+                    totalChats: 0,
+                    totalMessages: 0,
+                    createdAt: new Date().toLocaleDateString('pt-BR'),
+                    lastUsed: 'Nunca'
+                };
+            }
+            allStats[id].totalChats = (allStats[id].totalChats || 0) + 1;
+            allStats[id].lastUsed = new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+            localStorage.setItem('synapse_agent_stats', JSON.stringify(allStats));
+        }
+
+        function incrementAgentMsgStat(id) {
+            let allStats = {};
+            try {
+                const raw = localStorage.getItem('synapse_agent_stats');
+                if (raw) allStats = JSON.parse(raw);
+            } catch (e) {}
+            if (!allStats[id]) {
+                allStats[id] = {
+                    totalChats: 0,
+                    totalMessages: 0,
+                    createdAt: new Date().toLocaleDateString('pt-BR'),
+                    lastUsed: 'Nunca'
+                };
+            }
+            allStats[id].totalMessages = (allStats[id].totalMessages || 0) + 1;
+            allStats[id].lastUsed = new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+            localStorage.setItem('synapse_agent_stats', JSON.stringify(allStats));
+        }
+
+        function getAgentAvatarHtml(agentId) {
+            const all = getAllAgents();
+            const agent = all.find(a => a.id === agentId) || all[0];
+            const color = agent ? (agent.color || '#38BDF8') : '#38BDF8';
+            const avatarInner = agent && agent.avatar ? 
+                `<img src="${agent.avatar}" style="width: 100%; height: 100%; object-fit: cover;">` : 
+                `<span style="font-size: 0.95rem; line-height: 1;">${agent ? (agent.icon || '🤖') : '🤖'}</span>`;
+            return `
+                <div class="chat-msg-avatar" style="position: absolute; left: 12px; top: 12px; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(0,0,0,0.2); border: 1.5px solid ${color}; box-shadow: 0 2px 8px rgba(0,0,0,0.3); z-index: 2;">
+                    ${avatarInner}
+                </div>
+            `;
+        }
+
+        function duplicateAgent(id) {
+            triggerPulse();
+            const allAgents = getAllAgents();
+            const agent = allAgents.find(a => a.id === id);
+            if (!agent) return;
+
+            let customAgents = JSON.parse(localStorage.getItem('synapse_custom_agents') || '[]');
+            const newId = 'agent_' + Date.now();
+            const duplicatedName = `${agent.name} (Cópia)`;
+            
+            const duplicate = {
+                id: newId,
+                icon: agent.icon || '🤖',
+                name: duplicatedName,
+                description: agent.description || '',
+                prompt: agent.prompt || '',
+                welcome: agent.welcome || '',
+                avatar: agent.avatar || '',
+                color: agent.color || '#38BDF8',
+                category: agent.category || 'Personalizado',
+                isCustom: true
+            };
+
+            customAgents.push(duplicate);
+            localStorage.setItem('synapse_custom_agents', JSON.stringify(customAgents));
+            
+            // Configurar stats da cópia
+            let allStats = {};
+            try {
+                const raw = localStorage.getItem('synapse_agent_stats');
+                if (raw) allStats = JSON.parse(raw);
+            } catch (e) {}
+            allStats[newId] = {
+                totalChats: 0,
+                totalMessages: 0,
+                createdAt: new Date().toLocaleDateString('pt-BR'),
+                lastUsed: 'Nunca'
+            };
+            localStorage.setItem('synapse_agent_stats', JSON.stringify(allStats));
+
+            renderAgentsList();
+            const msg = currentLanguage === 'pt' ? 'Agente duplicado com sucesso!' : 'Agent duplicated successfully!';
+            showAppToast(msg, "success");
+            selectAgent(newId, false);
+        }
+
+        function shareAgent(id) {
+            triggerPulse();
+            const allAgents = getAllAgents();
+            const agent = allAgents.find(a => a.id === id);
+            if (!agent) return;
+
+            const dataToExport = {
+                name: agent.name,
+                icon: agent.icon || '🤖',
+                description: agent.description || '',
+                prompt: agent.prompt || '',
+                welcome: agent.welcome || '',
+                avatar: agent.avatar || '',
+                color: agent.color || '#38BDF8',
+                category: agent.category || 'Personalizado',
+                sysId: 'synapse_agent_export'
+            };
+
+            const jsonStr = JSON.stringify(dataToExport, null, 2);
+            
+            navigator.clipboard.writeText(jsonStr).then(() => {
+                const successMsg = currentLanguage === 'pt' ? 
+                    'Configurações do Agente copiadas para a área de transferência! (JSON preparado para exportação)' : 
+                    'Agent configurations copied to clipboard! (JSON prepared for export)';
+                showAppToast(successMsg, "success");
+            }).catch(err => {
+                alert(currentLanguage === 'pt' ? 'Copie o JSON abaixo para exportação:' : 'Copy the JSON below to export:\n\n' + jsonStr);
+            });
+        }
+
         function getAllAgents() {
             let custom = [];
             try {
@@ -6817,6 +7001,30 @@ WITH CHECK (true);</code>
             const defaultsMapped = smartAssistants.map(a => {
                 const name = typeof a.names === 'string' ? a.names : (a.names[currentLanguage] || a.names['pt'] || '');
                 const description = typeof a.roles === 'string' ? a.roles : (a.roles[currentLanguage] || a.roles['pt'] || '');
+                
+                let category = 'Produtividade';
+                let color = '#38BDF8';
+                
+                if (a.id === 'programador') {
+                    category = 'Programação';
+                    color = '#10B981';
+                } else if (a.id === 'professor') {
+                    category = 'Estudos';
+                    color = '#8B5CF6';
+                } else if (a.id === 'tradutor') {
+                    category = 'Atendimento';
+                    color = '#FF6B6B';
+                } else if (a.id === 'escritor') {
+                    category = 'Marketing';
+                    color = '#EC4899';
+                } else if (a.id === 'pesquisador') {
+                    category = 'Estudos';
+                    color = '#F59E0B';
+                } else if (a.id === 'analista') {
+                    category = 'Negócios';
+                    color = '#14B8A6';
+                }
+
                 return {
                     id: a.id,
                     icon: a.icon,
@@ -6824,6 +7032,9 @@ WITH CHECK (true);</code>
                     description: description,
                     prompt: a.prompt,
                     welcome: a.welcome,
+                    avatar: '',
+                    color: color,
+                    category: category,
                     isCustom: false
                 };
             });
@@ -6985,6 +7196,10 @@ WITH CHECK (true);</code>
 
         function selectAgent(id, preventGreeting = false) {
             triggerPulse();
+            
+            const isDirty = (window.chatHistoryObjects && window.chatHistoryObjects.length > 1);
+            const isSameAgent = (selectedAssistantId === id);
+            
             selectedAssistantId = id;
             localStorage.setItem('synapse_active_assistant', id);
             
@@ -6993,6 +7208,10 @@ WITH CHECK (true);</code>
             const activeName = activeAssis.name;
             const activeIcon = activeAssis.icon || '🤖';
             const welcomeMsg = activeAssis.welcome || `Olá! Sou seu assistente ${activeName}. Como posso ajudar hoje?`;
+
+            if (!isSameAgent) {
+                incrementAgentChatStat(id);
+            }
 
             if (currentLanguage === 'pt') {
                 addLog(`Agente Ativo: ${activeIcon} ${activeName} ✓`, "success");
@@ -7007,28 +7226,37 @@ WITH CHECK (true);</code>
 
             const topTitleEl = document.getElementById('topbar-section-title');
             if (topTitleEl) {
-                topTitleEl.innerText = `${activeIcon} ${activeName}`;
+                const avHtml = activeAssis.avatar ? 
+                    `<img src="${activeAssis.avatar}" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover; margin-right: 6px; border: 1.5px solid rgba(255,255,255,0.2);">` : 
+                    `${activeIcon} `;
+                topTitleEl.innerHTML = `<span style="display: inline-flex; align-items: center;">${avHtml}</span> <span style="margin-left: 4px;">${activeName}</span>`;
             }
 
             renderAgentsList();
 
-            if (!preventGreeting) {
+            const shouldGreet = !preventGreeting && (!isSameAgent || !isDirty);
+
+            if (shouldGreet) {
                 switchTab('tab-chat');
 
                 const container = document.getElementById('chat-messages');
                 if (container) {
-                    chatHistoryObjects = [];
-                    chatHistoryObjects.push({ role: 'assistant', content: welcomeMsg });
+                    window.chatHistoryObjects = [];
+                    window.chatHistoryObjects.push({ role: 'assistant', content: welcomeMsg });
                     
                     const escapedForSpeech = welcomeMsg.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
                     const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
                     
-                    container.innerHTML = `<div class="chat-message bot">${formatAIResponse(welcomeMsg)}${readerHtml}</div>`;
+                    container.innerHTML = `<div class="chat-message bot" style="border-left: 3px solid ${activeAssis.color || '#38BDF8'};">${getAgentAvatarHtml(id)}${formatAIResponse(welcomeMsg)}${readerHtml}</div>`;
                     scrollToBottom();
                     saveChatSession();
                 }
 
                 speakText(welcomeMsg);
+            } else {
+                if (!preventGreeting) {
+                    switchTab('tab-chat');
+                }
             }
         }
 
@@ -7044,26 +7272,138 @@ WITH CHECK (true);</code>
             grid.innerHTML = '';
             const allAgents = getAllAgents();
             
+            // Painel Executivo do Agente Conectado em Destaque
+            const activeAgent = allAgents.find(a => a.id === selectedAssistantId) || allAgents[0];
+            const activeStats = getAgentStats(activeAgent.id);
+            const accentColor = activeAgent.color || '#38BDF8';
+            
+            const activePanel = document.createElement('div');
+            activePanel.style.gridColumn = '1 / -1';
+            activePanel.innerHTML = `
+                <div class="active-agent-panel" style="background: rgba(12, 10, 15, 0.4); border: 1.5px solid ${accentColor}; border-radius: 20px; padding: 24px; margin-bottom: 12px; position: relative; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,255,255,0.01);">
+                    <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: ${accentColor}; filter: blur(80px); opacity: 0.12; pointer-events: none;"></div>
+                    
+                    <div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: start;">
+                        <!-- Pulse Avatar -->
+                        <div style="position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <div class="agent-pulse-glow" style="position: absolute; width: 84px; height: 84px; border-radius: 50%; background: ${accentColor}; filter: blur(8px); opacity: 0.25; animation: agentPulseEffect 2.5s infinite alternate;"></div>
+                            
+                            <div style="position: relative; width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background: #110e16; border: 2px solid ${accentColor}; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(0,0,0,0.4);">
+                                ${activeAgent.avatar ? 
+                                    `<img src="${activeAgent.avatar}" style="width: 100%; height: 100%; object-fit: cover;">` : 
+                                    `<span style="font-size: 2.6rem; line-height: 1;">${activeAgent.icon || '🤖'}</span>`
+                                }
+                            </div>
+                            
+                            <span style="position: absolute; right: 2px; bottom: 2px; width: 14px; height: 14px; background: #10b981; border: 2.5px solid #0c0a0f; border-radius: 50%; display: block;" title="Ativo"></span>
+                        </div>
+                        
+                        <!-- Main Panel Details -->
+                        <div style="flex: 1; min-width: 240px;">
+                            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px;">
+                                <h3 style="margin: 0; font-size: 1.35rem; font-weight: 800; color: #fff; letter-spacing: -0.2px;">${activeAgent.name}</h3>
+                                <span style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); color: ${accentColor}; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; padding: 2px 10px; border-radius: 12px; letter-spacing: 0.5px;">
+                                    ${activeAgent.category || 'Personalizado'}
+                                </span>
+                                <span style="background: rgba(255,255,255,0.02); color: var(--text-muted); font-size: 0.62rem; padding: 2px 8px; border-radius: 6px;">
+                                    ${activeAgent.isCustom ? 'Customizado' : 'Sistema'}
+                                </span>
+                            </div>
+                            <p style="margin: 0 0 16px 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">${activeAgent.description || 'Sem descrição cadastrada.'}</p>
+                            
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <button class="btn-universal" style="background: ${accentColor}; color: var(--bg-color); font-weight: bold; font-size: 0.78rem; padding: 8px 16px; border-radius: 12px; border: none; display: flex; align-items: center; cursor: pointer;" onclick="switchTab('tab-chat')">
+                                    Conectar no Chat ⚡
+                                </button>
+                                <button class="btn-universal" style="background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); font-size: 0.78rem; padding: 8px 12px; border-radius: 12px; cursor: pointer;" onclick="duplicateAgent('${activeAgent.id}')">
+                                    📋 Duplicar
+                                </button>
+                                <button class="btn-universal" style="background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); font-size: 0.78rem; padding: 8px 12px; border-radius: 12px; cursor: pointer;" onclick="shareAgent('${activeAgent.id}')">
+                                    📤 Exportar
+                                </button>
+                                ${activeAgent.isCustom ? `
+                                <button class="btn-universal" style="background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); font-size: 0.78rem; padding: 8px 12px; border-radius: 12px; cursor: pointer;" onclick="editAgent('${activeAgent.id}')">
+                                    ✏️ Editar
+                                </button>` : ''}
+                            </div>
+                        </div>
+
+                        <!-- Panel Stats Box -->
+                        <div style="background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.04); border-radius: 12px; padding: 12px 16px; min-width: 170px; display: flex; flex-direction: column; gap: 6px; font-size: 0.75rem;">
+                            <div style="font-weight: 700; color: #fff; text-transform: uppercase; font-size: 0.6rem; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom: 4px; margin-bottom: 2px; color: ${accentColor};">📊 Estatísticas</div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-muted);">Conversas:</span>
+                                <span style="font-family: monospace; color: #fff; font-weight: bold;">${activeStats.totalChats || 0}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-muted);">Mensagens:</span>
+                                <span style="font-family: monospace; color: #fff; font-weight: bold;">${activeStats.totalMessages || 0}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-muted);">Criado em:</span>
+                                <span style="font-family: monospace; color: #fff;">${activeStats.createdAt || 'N/A'}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-muted);">Último uso:</span>
+                                <span style="font-family: monospace; color: #fff; font-size: 0.7rem;">${activeStats.lastUsed || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(activePanel);
+            
             allAgents.forEach(agent => {
-                const card = document.createElement('div');
-                card.className = `agent-card ${agent.id === selectedAssistantId ? 'active' : ''}`;
+                const isSelected = (agent.id === selectedAssistantId);
+                const stats = getAgentStats(agent.id);
+                const cardColor = agent.color || '#38BDF8';
                 
+                const card = document.createElement('div');
+                card.className = `agent-card ${isSelected ? 'active' : ''}`;
+                if (isSelected) {
+                    card.style.borderColor = cardColor;
+                    card.style.boxShadow = `0 4px 16px ${cardColor}15, inset 0 0 10px ${cardColor}05`;
+                }
+
                 let activeTag = '';
-                if (agent.id === selectedAssistantId) {
-                    activeTag = `<span class="agent-card-active-tag">${currentLanguage === 'pt' ? 'Ativo' : (currentLanguage === 'en' ? 'Active' : 'Activo')}</span>`;
+                if (isSelected) {
+                    activeTag = `<span class="agent-card-active-tag" style="color: ${cardColor}; border-color: ${cardColor}; background: rgba(0,0,0,0.3); font-size: 0.58rem;">${currentLanguage === 'pt' ? 'Conectado ✓' : 'Connected ✓'}</span>`;
+                } else if (stats.lastUsed && stats.lastUsed !== 'Nunca') {
+                    activeTag = `<span style="position: absolute; top: 14px; right: 14px; font-size: 0.58rem; color: var(--text-muted); padding: 2px 6px; background: rgba(255,255,255,0.04); border-radius: 6px;">Recente</span>`;
                 }
                 
+                let avatarHtml = '';
+                if (agent.avatar) {
+                    avatarHtml = `
+                        <div style="width: 52px; height: 52px; border-radius: 12px; overflow: hidden; border: 1.5px solid ${isSelected ? cardColor : 'var(--border-color)'}; background: rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <img src="${agent.avatar}" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                    `;
+                } else {
+                    avatarHtml = `
+                        <div class="agent-card-icon" style="width: 52px; height: 52px; font-size: 1.8rem; background: rgba(255,255,255,0.02); border: 1.5px solid ${isSelected ? cardColor : 'var(--border-color)'}; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s;">
+                            ${agent.icon || '🤖'}
+                        </div>
+                    `;
+                }
+
                 let actionBtnHtml = '';
                 if (agent.isCustom) {
                     actionBtnHtml = `
                         <div style="display: flex; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.04);">
-                            <button class="btn-universal" style="flex: 1; font-size: 0.75rem; background: var(--primary); color: var(--bg-color); border: none; padding: 6px 12px; border-radius: 12px;" onclick="event.stopPropagation(); selectAgent('${agent.id}')">
-                                ${currentLanguage === 'pt' ? 'Ativar ⚡' : (currentLanguage === 'en' ? 'Activate ⚡' : 'Activar ⚡')}
+                            <button class="btn-universal" style="flex: 1; font-size: 0.75rem; background: ${isSelected ? 'rgba(255,255,255,0.04)' : cardColor}; color: ${isSelected ? '#fff' : 'var(--bg-color)'}; border: ${isSelected ? '1px solid var(--border-color)' : 'none'}; padding: 6px 12px; border-radius: 12px; font-weight: bold; cursor: pointer;" onclick="event.stopPropagation(); selectAgent('${agent.id}')">
+                                ${isSelected ? (currentLanguage === 'pt' ? 'Ativo' : 'Active') : (currentLanguage === 'pt' ? 'Ativar ⚡' : (currentLanguage === 'en' ? 'Activate ⚡' : 'Activar ⚡'))}
                             </button>
-                            <button class="btn-universal" style="background: rgba(255,255,255,0.04); font-size: 0.75rem; border: 1px solid var(--border-color); padding: 6px 10px; border-radius: 12px;" onclick="event.stopPropagation(); editAgent('${agent.id}')">
+                            <button class="btn-universal" style="background: rgba(255,255,255,0.04); font-size: 0.75rem; border: 1px solid var(--border-color); padding: 6px 10px; border-radius: 12px; cursor: pointer;" onclick="event.stopPropagation(); editAgent('${agent.id}')" title="Editar">
                                 ✏️
                             </button>
-                            <button class="btn-universal" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.75rem; padding: 6px 10px; border-radius: 12px;" onclick="event.stopPropagation(); deleteAgent('${agent.id}')">
+                            <button class="btn-universal" style="background: rgba(255,255,255,0.04); font-size: 0.75rem; border: 1px solid var(--border-color); padding: 6px 10px; border-radius: 12px; cursor: pointer;" onclick="event.stopPropagation(); duplicateAgent('${agent.id}')" title="Duplicar">
+                                📋
+                            </button>
+                            <button class="btn-universal" style="background: rgba(255,255,255,0.04); font-size: 0.75rem; border: 1px solid var(--border-color); padding: 6px 10px; border-radius: 12px; cursor: pointer;" onclick="event.stopPropagation(); shareAgent('${agent.id}')" title="Exportar/Compartilhar">
+                                📤
+                            </button>
+                            <button class="btn-universal" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.75rem; padding: 6px 10px; border-radius: 12px; cursor: pointer;" onclick="event.stopPropagation(); deleteAgent('${agent.id}')" title="Excluir">
                                 🗑️
                             </button>
                         </div>
@@ -7071,25 +7411,36 @@ WITH CHECK (true);</code>
                 } else {
                     actionBtnHtml = `
                         <div style="display: flex; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.04);">
-                            <button class="btn-universal" style="flex: 1; font-size: 0.75rem; background: var(--primary); color: var(--bg-color); border: none; padding: 6px 12px; border-radius: 12px;" onclick="event.stopPropagation(); selectAgent('${agent.id}')">
-                                ${currentLanguage === 'pt' ? 'Ativar ⚡' : (currentLanguage === 'en' ? 'Activate ⚡' : 'Activar ⚡')}
+                            <button class="btn-universal" style="flex: 1; font-size: 0.75rem; background: ${isSelected ? 'rgba(255,255,255,0.04)' : cardColor}; color: ${isSelected ? '#fff' : 'var(--bg-color)'}; border: ${isSelected ? '1px solid var(--border-color)' : 'none'}; padding: 6px 12px; border-radius: 12px; font-weight: bold; cursor: pointer;" onclick="event.stopPropagation(); selectAgent('${agent.id}')">
+                                ${isSelected ? (currentLanguage === 'pt' ? 'Ativo' : 'Active') : (currentLanguage === 'pt' ? 'Ativar ⚡' : (currentLanguage === 'en' ? 'Activate ⚡' : 'Activar ⚡'))}
+                            </button>
+                            <button class="btn-universal" style="background: rgba(255,255,255,0.04); font-size: 0.75rem; border: 1px solid var(--border-color); padding: 6px 10px; border-radius: 12px; cursor: pointer;" onclick="event.stopPropagation(); duplicateAgent('${agent.id}')" title="Duplicar">
+                                📋
+                            </button>
+                            <button class="btn-universal" style="background: rgba(255,255,255,0.04); font-size: 0.75rem; border: 1px solid var(--border-color); padding: 6px 10px; border-radius: 12px; cursor: pointer;" onclick="event.stopPropagation(); shareAgent('${agent.id}')" title="Exportar/Compartilhar">
+                                📤
                             </button>
                         </div>
                     `;
                 }
-                
+
                 card.innerHTML = `
                     ${activeTag}
-                    <div class="agent-card-header">
-                        <div class="agent-card-icon">${agent.icon || '🤖'}</div>
+                    <div class="agent-card-header" style="display: flex; align-items: center; gap: 14px;">
+                        ${avatarHtml}
                         <div>
-                            <h4 style="margin: 0; color: #fff; font-size: 1.05rem; font-weight: 700;">${agent.name}</h4>
-                            <span style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px;">
-                                ${agent.isCustom ? (currentLanguage === 'pt' ? 'Personalizado' : (currentLanguage === 'en' ? 'Custom Agent' : 'Personalizado')) : (currentLanguage === 'pt' ? 'Padrão' : (currentLanguage === 'en' ? 'Default' : 'Estándar'))}
-                            </span>
+                            <h4 style="margin: 0; color: #fff; font-size: 1.02rem; font-weight: 700;">${agent.name}</h4>
+                            <div style="display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+                                <span style="font-size: 0.58rem; background: rgba(255,255,255,0.05); color: ${cardColor}; font-weight: 800; text-transform: uppercase; padding: 1px 6px; border-radius: 4px; letter-spacing: 0.3px;">
+                                    ${agent.category || 'Personalizado'}
+                                </span>
+                                <span style="font-size: 0.55rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">
+                                    • ${agent.isCustom ? 'Custom' : 'System'}
+                                </span>
+                            </div>
                         </div>
                     </div>
-                    <p style="margin: 8px 0 12px 0; font-size: 0.78rem; color: var(--text-muted); line-height: 1.45; min-height: 48px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                    <p style="margin: 8px 0 12px 0; font-size: 0.78rem; color: var(--text-muted); line-height: 1.45; min-height: 48px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; opacity: 0.85;">
                         ${agent.description || (currentLanguage === 'pt' ? 'Sem descrição cadastrada.' : 'No description provided.')}
                     </p>
                     ${actionBtnHtml}
@@ -8332,6 +8683,9 @@ WITH CHECK (true);</code>
                 setTimeout(() => {
                     const aiReply = "Qual o link para eu analisar agora?";
                     chatHistoryObjects.push({ role: 'assistant', content: aiReply });
+                    if (typeof incrementAgentMsgStat === 'function') {
+                        incrementAgentMsgStat(selectedAssistantId);
+                    }
                     
                     const escapedForSpeech = aiReply.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
                     const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
@@ -8478,6 +8832,9 @@ WITH CHECK (true);</code>
 
                 // Salva na memória a resposta da AI
                 chatHistoryObjects.push({ role: 'assistant', content: aiReply });
+                if (typeof incrementAgentMsgStat === 'function') {
+                    incrementAgentMsgStat(selectedAssistantId);
+                }
 
                 // Injeta bloco processamento e player de voz (TTS)
                 const escapedForSpeech = aiReply.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
