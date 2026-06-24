@@ -78,6 +78,64 @@
             --global-saturation: 100%;
         }
 
+        /* ==========================================================================
+           Premium SaaS Minimalist Dashboard Styles
+           ========================================================================== */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .skeleton-shimmer {
+            background: linear-gradient(90deg, rgba(255,255,255,0.015) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.015) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        .dashboard-action-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.015);
+            cursor: pointer;
+            transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .dashboard-action-card:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.035) !important;
+            border-color: var(--primary) !important;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.45);
+        }
+        .dashboard-action-card:hover .dashboard-card-glow {
+            opacity: 1 !important;
+        }
+        .dashboard-action-card:active {
+            transform: translateY(-1px);
+        }
+        .activity-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.012);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            text-align: left;
+        }
+        .activity-row:hover {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border-color: rgba(255, 255, 255, 0.15) !important;
+            transform: translateX(4px);
+        }
+        .pulse-indicator {
+            animation: pulse-dot-key 2s infinite alternate;
+        }
+        @keyframes pulse-dot-key {
+            0% { transform: scale(0.95); opacity: 0.85; }
+            100% { transform: scale(1.05); opacity: 1; }
+        }
+
         /* Tema Cinza Escuro (Opção Alternativa Secundária) */
         :root[data-theme="dark"] {
             --bg-color: #0f1115;
@@ -1730,9 +1788,9 @@
                     </li>
                     <li class="drawer-item" onclick="clickDrawerItem('tab-workspace')" id="drawer-tab-workspace">
                         <span class="drawer-icon">
-                            <svg class="drawer-icon-svg" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                            <svg class="drawer-icon-svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                         </span>
-                        <span class="drawer-label" data-i18n="workspace">Espaço de Trabalho</span>
+                        <span class="drawer-label" data-i18n="workspace">Início</span>
                     </li>
                 </ul>
             </div>
@@ -1948,91 +2006,106 @@
             </div>
         </section>
 
-        <!-- ABA WORKSPACE (CENTRAL INTELIGENTE DE PRODUTIVIDADE) -->
-        <section id="tab-workspace" class="tab-section" style="padding-bottom: 80px;">
-            <div class="section-header" style="margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px;">
-                <h2 style="display: flex; align-items: center; gap: 10px; font-weight: 800; color: #fff; margin: 0; font-size: 1.45rem;">
-                    <span>💼</span>
-                    <span data-i18n="ws_main_title">Central Workspace</span>
-                </h2>
-                <p style="color: var(--text-muted); font-size: 0.8rem; margin: 4px 0 0 0; line-height: 1.45;" data-i18n="ws_main_subtitle">
-                    Central inteligente de conhecimento. Organize conversas, salve arquivos, gerencie links analisados e controle memórias da IA.
-                </p>
-            </div>
-
-            <!-- 1. PAINEL DE ESTATÍSTICAS E RENDIMENTO (CARDS ORGANIZADOS) -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px;" id="ws-stats-container">
-                <div class="ws-stat-card" onclick="filterWorkspaceByCategory('conversa')" style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px; text-align: left; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='rgba(255,255,255,0.01)'; this.style.borderColor='var(--border-color)';">
-                    <div style="font-size: 1.15rem; margin-bottom: 4px;">💬</div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Conversas</div>
-                    <div id="ws-count-conversas" style="font-size: 1.3rem; font-weight: bold; color: #fff; margin-top: 2px;">0</div>
+        <!-- ABA WORKSPACE (DASHBOARD FINAL MINIMALISTA SaaS PREMIUM) -->
+        <section id="tab-workspace" class="tab-section" style="padding: 24px 16px 80px; max-width: 1000px; margin: 0 auto;">
+            <!-- SKELETON LOADER CONTAINER -->
+            <div id="dashboard-skeleton" style="display: flex; flex-direction: column; gap: 32px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 24px;">
+                    <div style="display: flex; flex-direction: column; gap: 10px; width: 60%;">
+                        <div class="skeleton-shimmer" style="height: 32px; width: 50%; border-radius: 8px;"></div>
+                        <div class="skeleton-shimmer" style="height: 16px; width: 90%; border-radius: 6px;"></div>
+                    </div>
+                    <div class="skeleton-shimmer" style="height: 36px; width: 120px; border-radius: 18px;"></div>
                 </div>
-                <div class="ws-stat-card" onclick="filterWorkspaceByCategory('arquivo')" style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px; text-align: left; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='rgba(255,255,255,0.01)'; this.style.borderColor='var(--border-color)';">
-                    <div style="font-size: 1.15rem; margin-bottom: 4px;">📁</div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Arquivos</div>
-                    <div id="ws-count-arquivos" style="font-size: 1.3rem; font-weight: bold; color: #fff; margin-top: 2px;">0</div>
-                </div>
-                <div class="ws-stat-card" onclick="filterWorkspaceByCategory('link')" style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px; text-align: left; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='rgba(255,255,255,0.01)'; this.style.borderColor='var(--border-color)';">
-                    <div style="font-size: 1.15rem; margin-bottom: 4px;">🔗</div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Analisados</div>
-                    <div id="ws-count-links" style="font-size: 1.3rem; font-weight: bold; color: #fff; margin-top: 2px;">0</div>
-                </div>
-                <div class="ws-stat-card" onclick="filterWorkspaceByCategory('memoria')" style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px; text-align: left; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='rgba(255,255,255,0.01)'; this.style.borderColor='var(--border-color)';">
-                    <div style="font-size: 1.15rem; margin-bottom: 4px;">🧠</div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Memórias</div>
-                    <div id="ws-count-memorias" style="font-size: 1.3rem; font-weight: bold; color: #fff; margin-top: 2px;">0</div>
-                </div>
-                <div class="ws-stat-card" onclick="filterWorkspaceByCategory('fav')" style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px; text-align: left; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='rgba(255,255,255,0.01)'; this.style.borderColor='var(--border-color)';">
-                    <div style="font-size: 1.15rem; margin-bottom: 4px;">⭐</div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Favoritos</div>
-                    <div id="ws-count-favoritos" style="font-size: 1.3rem; font-weight: bold; color: #fff; margin-top: 2px;">0</div>
-                </div>
-                <div class="ws-stat-card" style="background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 14px; padding: 12px; text-align: left; display: flex; flex-direction: column; justify-content: center;">
-                    <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Armazenamento</div>
-                    <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary); margin-bottom: 4px;">48.5 KB / 10MB</div>
-                    <div style="height: 4px; background: #222; border-radius: 2px; overflow: hidden; width: 100%;">
-                        <div style="width: 2.5%; height: 100%; background: var(--primary);"></div>
+                <div>
+                    <div class="skeleton-shimmer" style="height: 20px; width: 140px; border-radius: 6px; margin-bottom: 16px;"></div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+                        <div class="skeleton-shimmer" style="height: 140px; border-radius: 16px;"></div>
+                        <div class="skeleton-shimmer" style="height: 140px; border-radius: 16px;"></div>
+                        <div class="skeleton-shimmer" style="height: 140px; border-radius: 16px;"></div>
+                        <div class="skeleton-shimmer" style="height: 140px; border-radius: 16px;"></div>
                     </div>
                 </div>
-            </div>
-
-            <!-- 2. BARRA DE PESQUISA RÁPIDA E CONTROLE DE RECURSOS -->
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; background: rgba(255,255,255,0.015); border: 1px solid var(--border-color); padding: 12px; border-radius: 16px;">
-                <!-- Campo de Busca -->
-                <div style="position: relative; display: flex; align-items: center; width: 100%;">
-                    <span style="position: absolute; left: 14px; font-size: 1rem; color: var(--text-muted); pointer-events: none;">🔍</span>
-                    <input type="text" id="ws-search-input" class="form-control" placeholder="Pesquisar conversas, arquivos, links ou memórias..." style="padding-left: 40px; padding-right: 12px; height: 42px; border-radius: 12px; background: #111; width: 100%; font-size: 0.85rem;" oninput="onWorkspaceSearch(this.value)">
-                </div>
-
-                <!-- Botões Rápidos de Cadastro Inline -->
-                <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center;">
-                    <div style="display: flex; flex-wrap: wrap; gap: 6px;" id="ws-filter-pills-row">
-                        <button class="ws-filter-pill active" onclick="setWorkspaceFilter('all', this)" style="background: var(--primary); color: var(--bg-color); border: none; border-radius: 20px; padding: 6px 14px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">🏷️ Todos</button>
-                        <button class="ws-filter-pill" onclick="setWorkspaceFilter('conversa', this)" style="background: rgba(255,255,255,0.03); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 14px; font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.2s;">💬 Conversas</button>
-                        <button class="ws-filter-pill" onclick="setWorkspaceFilter('arquivo', this)" style="background: rgba(255,255,255,0.03); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 14px; font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.2s;">📁 Arquivos</button>
-                        <button class="ws-filter-pill" onclick="setWorkspaceFilter('link', this)" style="background: rgba(255,255,255,0.03); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 14px; font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.2s;">🔗 Links</button>
-                        <button class="ws-filter-pill" onclick="setWorkspaceFilter('memoria', this)" style="background: rgba(255,255,255,0.03); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 14px; font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.2s;">🧠 Memória</button>
-                        <button class="ws-filter-pill" onclick="setWorkspaceFilter('fav', this)" style="background: rgba(255,255,255,0.03); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 14px; font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.2s;">⭐ Favoritos</button>
-                    </div>
-
-                    <div style="display: flex; gap: 6px;">
-                        <button onclick="openAddWorkspaceItemModal()" class="btn-universal" style="background: var(--primary-bg, rgba(255,255,255,0.1)); border: 1px solid var(--primary); color: #fff; padding: 6px 12px; border-radius: 12px; font-size: 0.78rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s;" onmouseover="this.style.background='var(--primary)'; this.style.color='var(--bg-color)';" onmouseout="this.style.background='var(--primary-bg, rgba(255,255,255,0.1))'; this.style.color='#fff';">
-                            <span>➕</span> <span data-i18n="ws_btn_add">Novo Dado</span>
-                        </button>
-                    </div>
+                <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 12px;">
+                    <div class="skeleton-shimmer" style="height: 20px; width: 160px; border-radius: 6px;"></div>
+                    <div class="skeleton-shimmer" style="height: 72px; border-radius: 14px;"></div>
+                    <div class="skeleton-shimmer" style="height: 72px; border-radius: 14px;"></div>
+                    <div class="skeleton-shimmer" style="height: 72px; border-radius: 14px;"></div>
                 </div>
             </div>
 
-            <!-- CONTAINER PARA EXIBIÇÃO DE ITEM / RESULTADO (CARDS MODERNOS DA LISTA) -->
-            <div id="workspace-items-grid" style="display: flex; flex-direction: column; gap: 12px;">
-                <!-- Gerado de forma ultra dinâmica via JavaScript -->
-            </div>
+            <!-- ACTUAL PREMIUM DASHBOARD CONTENT -->
+            <div id="dashboard-actual-content" style="display: none; opacity: 0; transition: opacity 0.4s ease; flex-direction: column; gap: 32px;">
+                <!-- 👋 CABEÇALHO LIMPO -->
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+                    <div>
+                        <h2 style="font-size: 1.85rem; font-weight: 800; color: #fff; margin: 0; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px;">
+                            <span id="dashboard-greeting-text">Olá</span>, <span id="dashboard-user-name" style="color: var(--primary);">Explorador</span> 👋
+                        </h2>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin: 6px 0 0 0; line-height: 1.45;">
+                            Sua central de operações e inteligência no Synapse Console.
+                        </p>
+                    </div>
+                    <!-- Indicator Discreto de Status -->
+                    <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
+                        <span id="dashboard-status-dot" class="pulse-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); display: inline-block;"></span>
+                        <span id="dashboard-status-text" style="font-size: 0.7rem; font-weight: 700; color: var(--text-main); letter-spacing: 0.5px; text-transform: uppercase;">Sistema Online</span>
+                    </div>
+                </div>
 
-            <!-- EMPTY STATE PARA FILTROS OU BUSCAS SEM RESULTADOS -->
-            <div id="workspace-empty-state" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 48px 24px; text-align: center; border: 1px dashed var(--border-color); border-radius: 18px; margin-top: 12px;">
-                <span style="font-size: 2.5rem; margin-bottom: 12px; filter: grayscale(0.5);">🗃️</span>
-                <h4 style="color: #fff; margin: 0 0 4px 0; font-size: 1rem;" data-i18n="ws_empty_title">Workspace Vazio ou Sem Correspondências</h4>
-                <p style="color: var(--text-muted); font-size: 0.8rem; max-width: 280px; margin: 0; line-height: 1.45;" id="ws-empty-text">Cadastre novos dados ou limpe os filtros rápidos de busca para retornar os itens.</p>
+                <!-- ⚡ AÇÕES RÁPIDAS (FOCO PRINCIPAL) -->
+                <div>
+                    <h3 style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; margin: 0 0 16px 4px;">⚡ Ações Rápidas</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+                        <!-- Card 1: Nova Conversa -->
+                        <div class="dashboard-action-card" onclick="triggerQuickAction('chat')" style="padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+                            <div class="dashboard-card-glow" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.06), transparent 60%); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;"></div>
+                            <div style="font-size: 1.8rem; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(56, 189, 248, 0.1); border-radius: 12px; color: #38bdf8; z-index: 2;">💬</div>
+                            <div style="z-index: 2;">
+                                <h4 style="font-size: 1rem; font-weight: 700; color: #fff; margin: 0 0 4px 0;">Nova Conversa</h4>
+                                <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0; line-height: 1.4;">Inicie um diálogo neural com a IA geral do console.</p>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Criar Agente -->
+                        <div class="dashboard-action-card" onclick="triggerQuickAction('agent')" style="padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+                            <div class="dashboard-card-glow" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 10% 10%, rgba(139, 92, 246, 0.06), transparent 60%); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;"></div>
+                            <div style="font-size: 1.8rem; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(139, 92, 246, 0.1); border-radius: 12px; color: #8b5cf6; z-index: 2;">🤖</div>
+                            <div style="z-index: 2;">
+                                <h4 style="font-size: 1rem; font-weight: 700; color: #fff; margin: 0 0 4px 0;">Criar Agente</h4>
+                                <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0; line-height: 1.4;">Construa e customize novos especialistas neurais.</p>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Criar Currículo -->
+                        <div class="dashboard-action-card" onclick="triggerQuickAction('resume')" style="padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+                            <div class="dashboard-card-glow" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.06), transparent 60%); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;"></div>
+                            <div style="font-size: 1.8rem; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(16, 185, 129, 0.1); border-radius: 12px; color: #10b981; z-index: 2;">📄</div>
+                            <div style="z-index: 2;">
+                                <h4 style="font-size: 1rem; font-weight: 700; color: #fff; margin: 0 0 4px 0;">Criar Currículo</h4>
+                                <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0; line-height: 1.4;">Monte seu currículo sob medida otimizado com IA.</p>
+                            </div>
+                        </div>
+
+                        <!-- Card 4: Simular Entrevista -->
+                        <div class="dashboard-action-card" onclick="triggerQuickAction('interview')" style="padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+                            <div class="dashboard-card-glow" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 10% 10%, rgba(245, 158, 11, 0.06), transparent 60%); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;"></div>
+                            <div style="font-size: 1.8rem; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(245, 158, 11, 0.1); border-radius: 12px; color: #f59e0b; z-index: 2;">💼</div>
+                            <div style="z-index: 2;">
+                                <h4 style="font-size: 1rem; font-weight: 700; color: #fff; margin: 0 0 4px 0;">Simular Entrevista</h4>
+                                <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0; line-height: 1.4;">Treine com sabatinas e receba feedback imediato.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🕒 ATIVIDADE RECENTE (SIMPLIFICADA) -->
+                <div>
+                    <h3 style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; margin: 0 0 16px 4px;">🕒 Atividade Recente</h3>
+                    <div id="dashboard-recent-activity-container" style="display: flex; flex-direction: column; gap: 12px;">
+                        <!-- Dynamic Content Rendered with JavaScript -->
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -4241,7 +4314,7 @@ WITH CHECK (true);</code>
             'tab-agents': 'Agentes',
             'tab-resume-builder': 'Currículo IA',
             'tab-interview-simulator': 'Simulador de Entrevistas',
-            'tab-workspace': 'Espaço de Trabalho',
+            'tab-workspace': 'Início',
             'tab-config': 'Configurações',
             'tab-logs': 'Terminal',
             'tab-translator': 'Tradutor de Textos',
@@ -4389,7 +4462,7 @@ WITH CHECK (true);</code>
                 "transl_btn_exec": "Realizar Tradução ✨",
                 "transl_output_placeholder": "A tradução aparecerá aqui...",
                 "transl_btn_listen": "🔊 Ouvir",
-                "workspace": "Espaço de Trabalho",
+                "workspace": "Início",
                 "ws_main_title": "Central Workspace",
                 "ws_main_subtitle": "Central inteligente de conhecimento. Organize conversas, salve arquivos, gerencie links analisados e controle memórias da IA.",
                 "ws_btn_add": "Novo Dado",
@@ -9263,338 +9336,242 @@ WITH CHECK (true);</code>
         }
 
         function renderWorkspace(filter = 'all', search = '') {
-            const grid = document.getElementById('workspace-items-grid');
-            const emptyState = document.getElementById('workspace-empty-state');
-            if (!grid) return;
+            // Sincroniza dados
+            syncConversasFromChatHistory();
 
-            grid.innerHTML = '';
-
-            // 1. Atualizar contadores das estatísticas
-            let countChats = workspaceData.conversas ? workspaceData.conversas.length : 0;
-            let countFiles = workspaceData.arquivos ? workspaceData.arquivos.length : 0;
-            let countLinks = workspaceData.links ? workspaceData.links.length : 0;
-            let countMems = workspaceData.memorias ? workspaceData.memorias.length : 0;
-            
-            // Calcula total de favoritos
-            let favsCount = 0;
-            if (workspaceData.conversas) favsCount += workspaceData.conversas.filter(c => c.favorite).length;
-            if (workspaceData.arquivos) favsCount += workspaceData.arquivos.filter(a => a.favorite).length;
-            if (workspaceData.links) favsCount += workspaceData.links.filter(l => l.favorite).length;
-            if (workspaceData.memorias) favsCount += workspaceData.memorias.filter(m => m.favorite).length;
-
-            const countConversasEl = document.getElementById('ws-count-conversas');
-            const countArquivosEl = document.getElementById('ws-count-arquivos');
-            const countLinksEl = document.getElementById('ws-count-links');
-            const countMemoriasEl = document.getElementById('ws-count-memorias');
-            const countFavoritosEl = document.getElementById('ws-count-favoritos');
-
-            if (countConversasEl) countConversasEl.textContent = countChats;
-            if (countArquivosEl) countArquivosEl.textContent = countFiles;
-            if (countLinksEl) countLinksEl.textContent = countLinks;
-            if (countMemoriasEl) countMemoriasEl.textContent = countMems;
-            if (countFavoritosEl) countFavoritosEl.textContent = favsCount;
-
-            // 2. Reunir todos os itens mapeados por tipo
-            let items = [];
-
-            if (filter === 'all' || filter === 'conversa') {
-                if (workspaceData.conversas) workspaceData.conversas.forEach(c => items.push({ ...c, sys_type: 'conversa', sys_icon: '💬', badge: 'Chat' }));
+            // Atualiza cabeçalho limpo do dashboard
+            const greetingEl = document.getElementById('dashboard-greeting-text');
+            const userNameEl = document.getElementById('dashboard-user-name');
+            if (greetingEl) {
+                const hour = new Date().getHours();
+                let greeting = "Bem-vindo";
+                if (hour >= 5 && hour < 12) greeting = "Bom dia";
+                else if (hour >= 12 && hour < 18) greeting = "Boa tarde";
+                else if (hour >= 18 || hour < 5) greeting = "Boa noite";
+                greetingEl.textContent = greeting;
             }
-            if (filter === 'all' || filter === 'arquivo') {
-                if (workspaceData.arquivos) workspaceData.arquivos.forEach(a => items.push({ ...a, sys_type: 'arquivo', sys_icon: '📁', badge: a.type || 'Ficheiro' }));
-            }
-            if (filter === 'all' || filter === 'link') {
-                if (workspaceData.links) workspaceData.links.forEach(l => items.push({ ...l, sys_type: 'link', sys_icon: '🔗', badge: 'Link' }));
-            }
-            if (filter === 'all' || filter === 'memoria') {
-                if (workspaceData.memorias) workspaceData.memorias.forEach(m => items.push({ ...m, sys_type: 'memoria', sys_icon: '🧠', badge: 'Memória' }));
+            if (userNameEl) {
+                let userName = "Explorador";
+                if (typeof supabaseSession !== 'undefined' && supabaseSession && supabaseSession.user) {
+                    userName = (typeof getDisplayName === 'function' ? getDisplayName(supabaseSession) : "") || supabaseSession.user.email.split('@')[0];
+                } else {
+                    try {
+                        const s = localStorage.getItem('supabase_auth_session');
+                        if (s) {
+                            const parsed = JSON.parse(s);
+                            if (parsed && parsed.user) {
+                                userName = (typeof getDisplayName === 'function' ? getDisplayName(parsed) : "") || parsed.user.email.split('@')[0];
+                            }
+                        }
+                    } catch(e) {}
+                }
+                userNameEl.textContent = userName;
             }
 
-            // Filtro especial de Favoritos
-            if (filter === 'fav') {
-                if (workspaceData.conversas) workspaceData.conversas.filter(c => c.favorite).forEach(c => items.push({ ...c, sys_type: 'conversa', sys_icon: '💬', badge: 'Chat' }));
-                if (workspaceData.arquivos) workspaceData.arquivos.filter(a => a.favorite).forEach(a => items.push({ ...a, sys_type: 'arquivo', sys_icon: '📁', badge: a.type || 'Ficheiro' }));
-                if (workspaceData.links) workspaceData.links.filter(l => l.favorite).forEach(l => items.push({ ...l, sys_type: 'link', sys_icon: '🔗', badge: 'Link' }));
-                if (workspaceData.memorias) workspaceData.memorias.filter(m => m.favorite).forEach(m => items.push({ ...m, sys_type: 'memoria', sys_icon: '🧠', badge: 'Memória' }));
-            }
+            // Monitora status online/offline
+            updateOnlineOfflineStatus();
 
-            // 3. Filtrar de acordo com a pesquisa
-            if (search) {
-                items = items.filter(item => {
-                    const titleText = (item.title || item.name || item.fact || '').toLowerCase();
-                    const bodyText = (item.snippet || item.desc || item.content || '').toLowerCase();
-                    const urlText = (item.url || '').toLowerCase();
-                    return titleText.includes(search) || bodyText.includes(search) || urlText.includes(search);
+            // Montar itens de atividade recente
+            const container = document.getElementById('dashboard-recent-activity-container');
+            if (container) {
+                container.innerHTML = '';
+                const activityItems = [];
+
+                // 1. Última conversa
+                const lastChat = workspaceData.conversas ? workspaceData.conversas[0] : null;
+                if (lastChat) {
+                    activityItems.push({
+                        icon: "💬",
+                        title: lastChat.title || "Conversa do Console",
+                        desc: lastChat.snippet || "Nenhum resumo de conversa.",
+                        date: lastChat.date || "Recente",
+                        action: "switchTab('tab-chat')"
+                    });
+                }
+
+                // 2. Último agente usado
+                let lastAgentName = "Geral";
+                let lastAgentDesc = "Assistente Geral do Synapse Console";
+                let lastAgentIcon = "🤖";
+                if (typeof getAllAgents === 'function') {
+                    try {
+                        const agents = getAllAgents();
+                        if (typeof selectedAssistantId !== 'undefined') {
+                            const selected = agents.find(a => a.id === selectedAssistantId);
+                            if (selected) {
+                                lastAgentName = selected.name;
+                                lastAgentDesc = selected.description || selected.prompt || lastAgentDesc;
+                                lastAgentIcon = selected.icon || lastAgentIcon;
+                            }
+                        }
+                    } catch (e) {
+                        console.error("Falha ao recuperar informações de agentes para o dashboard:", e);
+                    }
+                }
+                activityItems.push({
+                    icon: lastAgentIcon,
+                    title: lastAgentName,
+                    desc: lastAgentDesc,
+                    date: "Ativo",
+                    action: "switchTab('tab-agents')"
+                });
+
+                // 3. Último currículo editado
+                const cvName = document.getElementById('rb-input-name')?.value || "";
+                const cvTitle = document.getElementById('rb-input-title')?.value || "";
+                if (cvName || cvTitle) {
+                    activityItems.push({
+                        icon: "📄",
+                        title: cvName || "Seu Currículo",
+                        desc: cvTitle || "Editor de Currículo IA ativo.",
+                        date: "Editado",
+                        action: "switchTab('tab-resume-builder')"
+                    });
+                } else {
+                    activityItems.push({
+                        icon: "📄",
+                        title: "Currículo Profissional",
+                        desc: "Crie um currículo sob medida otimizado com inteligência artificial.",
+                        date: "Criar",
+                        action: "switchTab('tab-resume-builder')"
+                    });
+                }
+
+                // 4. Última entrevista realizada
+                let lastInterview = null;
+                if (typeof getWebInterviews === 'function') {
+                    try {
+                        const interviews = getWebInterviews();
+                        if (interviews && interviews.length > 0) {
+                            lastInterview = interviews[0];
+                        }
+                    } catch (e) {
+                        console.error("Falha ao recuperar histórico de entrevistas para o dashboard:", e);
+                    }
+                }
+                if (lastInterview) {
+                    activityItems.push({
+                        icon: "💼",
+                        title: lastInterview.cargo || "Simulação de Entrevista",
+                        desc: `Nota Geral: ${lastInterview.scoreGeneral} • ${lastInterview.nivel} (${lastInterview.area})`,
+                        date: new Date(lastInterview.timestamp || Date.now()).toLocaleDateString('pt-BR'),
+                        action: "switchTab('tab-interview-simulator'); setTimeout(() => { if (typeof loadWebResultFromHistory === 'function') loadWebResultFromHistory('" + lastInterview.id + "'); }, 200);"
+                    });
+                } else {
+                    activityItems.push({
+                        icon: "💼",
+                        title: "Simulação de Entrevistas",
+                        desc: "Prepare-se para sabatinas e testes técnicos de forma autônoma.",
+                        date: "Simular",
+                        action: "switchTab('tab-interview-simulator')"
+                    });
+                }
+
+                // Renderiza itens na tela
+                activityItems.forEach(item => {
+                    const row = document.createElement('div');
+                    row.className = 'activity-row';
+                    row.onclick = () => {
+                        triggerPulse();
+                        // Executa ação de navegação
+                        if (item.action.startsWith('switchTab')) {
+                            const match = item.action.match(/'([^']+)'/);
+                            if (match) {
+                                switchTab(match[1]);
+                                if (item.action.includes('loadWebResultFromHistory')) {
+                                    const idMatch = item.action.match(/loadWebResultFromHistory\('([^']+)'\)/);
+                                    if (idMatch) {
+                                        setTimeout(() => {
+                                            if (typeof loadWebResultFromHistory === 'function') loadWebResultFromHistory(idMatch[1]);
+                                        }, 200);
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                    row.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 16px; overflow: hidden; width: 75%;">
+                            <div style="font-size: 1.5rem; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--border-color); flex-shrink: 0;">
+                                ${item.icon}
+                            </div>
+                            <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0 0 2px 0;">${item.title}</h4>
+                                <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.desc}</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; background: rgba(255,255,255,0.02); padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border-color); white-space: nowrap;">
+                                ${item.date}
+                            </span>
+                        </div>
+                    `;
+                    container.appendChild(row);
                 });
             }
 
-            // 4. Se não houver itens, mostra o empty state
-            if (items.length === 0) {
-                emptyState.style.display = 'flex';
-                grid.style.display = 'none';
-                return;
-            } else {
-                emptyState.style.display = 'none';
-                grid.style.display = 'flex';
+            // Exibir skeleton por um tempo curtíssimo (450ms) para simular o carregamento SaaS premium e suave
+            const skeleton = document.getElementById('dashboard-skeleton');
+            const content = document.getElementById('dashboard-actual-content');
+            if (skeleton && content) {
+                if (skeleton.style.display !== 'none' && content.style.display === 'none') {
+                    // Primeiro carregamento
+                    setTimeout(() => {
+                        skeleton.style.display = 'none';
+                        content.style.display = 'flex';
+                        setTimeout(() => {
+                            content.style.opacity = '1';
+                        }, 50);
+                    }, 450);
+                } else {
+                    // Atualização instantânea sem flickers
+                    skeleton.style.display = 'none';
+                    content.style.display = 'flex';
+                    content.style.opacity = '1';
+                }
             }
-
-            // 5. Renderizar cada item como um card requintado
-            items.forEach(item => {
-                const card = document.createElement('div');
-                card.id = `ws-item-${item.id}`;
-                card.style.background = 'rgba(255,255,255,0.015)';
-                card.style.border = '1px solid var(--border-color)';
-                card.style.borderRadius = '16px';
-                card.style.padding = '14px';
-                card.style.display = 'flex';
-                card.style.flexDirection = 'column';
-                card.style.gap = '8px';
-                card.style.transition = 'all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)';
-                card.classList.add('fadeInNative');
-
-                // Cabeçalho do Card
-                const header = document.createElement('div');
-                header.style.display = 'flex';
-                header.style.justifyContent = 'space-between';
-                header.style.alignItems = 'center';
-
-                // Tipo Badge
-                const typeWrapper = document.createElement('div');
-                typeWrapper.style.display = 'flex';
-                typeWrapper.style.alignItems = 'center';
-                typeWrapper.style.gap = '6px';
-
-                const iconSpan = document.createElement('span');
-                iconSpan.textContent = item.sys_icon;
-                iconSpan.style.fontSize = '1.05rem';
-
-                const badge = document.createElement('span');
-                badge.textContent = item.badge;
-                badge.style.fontSize = '0.62rem';
-                badge.style.background = item.sys_type === 'conversa' ? 'rgba(59, 130, 246, 0.12)' : 
-                                         item.sys_type === 'arquivo' ? 'rgba(16, 185, 129, 0.12)' : 
-                                         item.sys_type === 'link' ? 'rgba(245, 158, 11, 0.12)' : 'rgba(139, 92, 246, 0.12)';
-                badge.style.color = item.sys_type === 'conversa' ? '#3b82f6' : 
-                                    item.sys_type === 'arquivo' ? '#10b981' : 
-                                    item.sys_type === 'link' ? '#f59e0b' : '#8b5cf6';
-                badge.style.fontWeight = 'bold';
-                badge.style.textTransform = 'uppercase';
-                badge.style.padding = '3px 8px';
-                badge.style.borderRadius = '20px';
-
-                typeWrapper.appendChild(iconSpan);
-                typeWrapper.appendChild(badge);
-
-                // Botão Fav
-                const favBtn = document.createElement('button');
-                favBtn.innerHTML = item.favorite ? '★' : '☆';
-                favBtn.style.background = 'none';
-                favBtn.style.border = 'none';
-                favBtn.style.fontSize = '1.25rem';
-                favBtn.style.color = item.favorite ? 'var(--primary)' : 'var(--text-muted)';
-                favBtn.style.cursor = 'pointer';
-                favBtn.style.padding = '2px 6px';
-                favBtn.style.display = 'flex';
-                favBtn.style.alignItems = 'center';
-                favBtn.title = item.favorite ? 'Desfavoritar' : 'Favoritar';
-                favBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    toggleWorkspaceFavorite(item.id, item.sys_type);
-                };
-
-                header.appendChild(typeWrapper);
-                header.appendChild(favBtn);
-
-                // Título e subtexto
-                const titleEl = document.createElement('h3');
-                titleEl.textContent = item.title || item.name || (item.fact ? item.fact.substring(0, 45) + (item.fact.length > 45 ? "..." : "") : "Sem título");
-                titleEl.style.margin = '4px 0 0 0';
-                titleEl.style.fontSize = '0.90rem';
-                titleEl.style.color = '#fff';
-                titleEl.style.fontWeight = '700';
-
-                const descEl = document.createElement('p');
-                descEl.textContent = item.snippet || item.desc || item.fact || "Nenhuma descrição fornecida.";
-                descEl.style.margin = '0';
-                descEl.style.fontSize = '0.78rem';
-                descEl.style.color = 'var(--text-muted)';
-                descEl.style.lineHeight = '1.4';
-
-                // Corpo de Meta Detalhes
-                const metaRow = document.createElement('div');
-                metaRow.style.display = 'flex';
-                metaRow.style.justifyContent = 'space-between';
-                metaRow.style.alignItems = 'center';
-                metaRow.style.fontSize = '0.68rem';
-                metaRow.style.color = 'rgba(255,255,255,0.25)';
-                metaRow.style.marginTop = '4px';
-
-                const dateSpan = document.createElement('span');
-                dateSpan.textContent = `Salvo em ${item.date}`;
-                
-                const rightMeta = document.createElement('span');
-                rightMeta.textContent = item.size ? `Tamanho: ${item.size}` : (item.url ? item.url : '');
-                rightMeta.style.textOverflow = 'ellipsis';
-                rightMeta.style.overflow = 'hidden';
-                rightMeta.style.whiteSpace = 'nowrap';
-                rightMeta.style.maxWidth = '180px';
-
-                metaRow.appendChild(dateSpan);
-                metaRow.appendChild(rightMeta);
-
-                // Content Panel expandível para detalhes
-                const expandPanel = document.createElement('div');
-                expandPanel.id = `ws-expand-${item.sys_type}-${item.id}`;
-                expandPanel.style.display = 'none';
-                expandPanel.style.marginTop = '10px';
-                expandPanel.style.padding = '10px';
-                expandPanel.style.borderRadius = '10px';
-                expandPanel.style.background = 'rgba(255,255,255,0.015)';
-                expandPanel.style.border = '1px solid rgba(255,255,255,0.03)';
-                expandPanel.style.fontSize = '0.8rem';
-                expandPanel.style.color = 'var(--text-main)';
-                expandPanel.style.lineHeight = '1.45';
-
-                // Se houver uma imagem real anexada
-                if (item.sys_type === 'arquivo' && item.type === 'Imagem' && item.content && item.content.startsWith('http')) {
-                    const img = document.createElement('img');
-                    img.src = item.content;
-                    img.style.width = '100%';
-                    img.style.maxHeight = '200px';
-                    img.style.objectFit = 'cover';
-                    img.style.borderRadius = '8px';
-                    img.style.marginTop = '6px';
-                    img.style.border = '1px solid var(--border-color)';
-                    expandPanel.appendChild(img);
-                } else if (item.content) {
-                    const txt = document.createElement('pre');
-                    txt.style.whiteSpace = 'pre-wrap';
-                    txt.style.fontFamily = 'monospace';
-                    txt.style.fontSize = '0.75rem';
-                    txt.style.margin = '4px 0 0 0';
-                    txt.style.color = 'var(--text-muted)';
-                    txt.textContent = item.content;
-                    expandPanel.appendChild(txt);
-                }
-
-                // Ações do rodapé do card
-                const footerActions = document.createElement('div');
-                footerActions.style.display = 'flex';
-                footerActions.style.justifyContent = 'flex-end';
-                footerActions.style.gap = '8px';
-                footerActions.style.marginTop = '10px';
-                footerActions.style.borderTop = '1px solid rgba(255,255,255,0.03)';
-                footerActions.style.paddingTop = '8px';
-
-                // Ver Detalhes Toggle Button
-                const btnExpand = document.createElement('button');
-                btnExpand.textContent = "Ver Detalhes ⌄";
-                btnExpand.style.background = 'none';
-                btnExpand.style.border = 'none';
-                btnExpand.style.color = 'var(--text-muted)';
-                btnExpand.style.fontSize = '0.72rem';
-                btnExpand.style.cursor = 'pointer';
-                btnExpand.style.marginRight = 'auto';
-                btnExpand.onclick = (e) => {
-                    e.stopPropagation();
-                    const p = document.getElementById(`ws-expand-${item.sys_type}-${item.id}`);
-                    if (p.style.display === 'none') {
-                        p.style.display = 'block';
-                        btnExpand.textContent = "Recolher Detalhes ⌃";
-                        card.style.background = 'rgba(255,255,255,0.025)';
-                    } else {
-                        p.style.display = 'none';
-                        btnExpand.textContent = "Ver Detalhes ⌄";
-                        card.style.background = 'rgba(255,255,255,0.015)';
-                    }
-                };
-
-                // Ação Primária dependendo do tipo
-                if (item.sys_type === 'link' && item.url) {
-                    const btnOpen = document.createElement('button');
-                    btnOpen.textContent = "Analisar Link 🌐";
-                    btnOpen.style.background = 'rgba(245, 158, 11, 0.15)';
-                    btnOpen.style.color = '#f59e0b';
-                    btnOpen.style.border = 'none';
-                    btnOpen.style.borderRadius = '8px';
-                    btnOpen.style.padding = '4px 10px';
-                    btnOpen.style.fontSize = '0.68rem';
-                    btnOpen.style.fontWeight = 'bold';
-                    btnOpen.style.cursor = 'pointer';
-                    btnOpen.onclick = (e) => {
-                        e.stopPropagation();
-                        const browserInput = document.getElementById('context-url-input');
-                        if (browserInput) browserInput.value = item.url;
-                        switchTab('tab-context-browser');
-                        setTimeout(() => { if (typeof processContextUrlWeb === 'function') processContextUrlWeb(); }, 200);
-                    };
-                    footerActions.appendChild(btnOpen);
-                }
-
-                if (item.sys_type === 'conversa') {
-                    const btnChat = document.createElement('button');
-                    btnChat.textContent = "Abrir no Chat 💬";
-                    btnChat.style.background = 'rgba(59, 130, 246, 0.15)';
-                    btnChat.style.color = '#3b82f6';
-                    btnChat.style.border = 'none';
-                    btnChat.style.borderRadius = '8px';
-                    btnChat.style.padding = '4px 10px';
-                    btnChat.style.fontSize = '0.68rem';
-                    btnChat.style.fontWeight = 'bold';
-                    btnChat.style.cursor = 'pointer';
-                    btnChat.onclick = (e) => {
-                        e.stopPropagation();
-                        // Restaura conversas e navega para Chat
-                        switchTab('tab-chat');
-                    };
-                    footerActions.appendChild(btnChat);
-                }
-
-                // Botão Editar
-                const btnEdit = document.createElement('button');
-                btnEdit.textContent = "Editar ✏️";
-                btnEdit.style.background = 'rgba(255,255,255,0.03)';
-                btnEdit.style.color = 'var(--text-main)';
-                btnEdit.style.border = '1px solid var(--border-color)';
-                btnEdit.style.borderRadius = '8px';
-                btnEdit.style.padding = '4px 10px';
-                btnEdit.style.fontSize = '0.68rem';
-                btnEdit.style.cursor = 'pointer';
-                btnEdit.onclick = (e) => {
-                    e.stopPropagation();
-                    editWorkspaceItem(item.id, item.sys_type);
-                };
-
-                // Botão Excluir
-                const btnDel = document.createElement('button');
-                btnDel.textContent = "Excluir 🗑️";
-                btnDel.style.background = 'rgba(239, 68, 68, 0.12)';
-                btnDel.style.color = '#ef4444';
-                btnDel.style.border = 'none';
-                btnDel.style.borderRadius = '8px';
-                btnDel.style.padding = '4px 10px';
-                btnDel.style.fontSize = '0.68rem';
-                btnDel.style.fontWeight = 'bold';
-                btnDel.style.cursor = 'pointer';
-                btnDel.onclick = (e) => {
-                    e.stopPropagation();
-                    deleteWorkspaceItem(item.id, item.sys_type);
-                };
-
-                footerActions.appendChild(btnEdit);
-                footerActions.appendChild(btnDel);
-
-                // Monta estrutura do card
-                card.appendChild(header);
-                card.appendChild(titleEl);
-                card.appendChild(descEl);
-                card.appendChild(metaRow);
-                card.appendChild(expandPanel);
-                card.appendChild(footerActions);
-
-                grid.appendChild(card);
-            });
         }
+
+        // Função utilitária para ações rápidas com feedback visual instantâneo
+        function triggerQuickAction(action) {
+            triggerPulse();
+            if (action === 'chat') {
+                clearChat();
+                switchTab('tab-chat');
+            } else if (action === 'agent') {
+                if (typeof toggleAgentForm === 'function') {
+                    toggleAgentForm(true);
+                }
+                switchTab('tab-agents');
+            } else if (action === 'resume') {
+                switchTab('tab-resume-builder');
+            } else if (action === 'interview') {
+                switchTab('tab-interview-simulator');
+            }
+        }
+
+        // Função de monitoramento online/offline
+        function updateOnlineOfflineStatus() {
+            const dot = document.getElementById('dashboard-status-dot');
+            const txt = document.getElementById('dashboard-status-text');
+            if (dot && txt) {
+                if (navigator.onLine) {
+                    dot.style.background = '#10b981';
+                    dot.style.boxShadow = '0 0 8px rgba(16, 185, 129, 0.6)';
+                    txt.textContent = 'Sistema Online';
+                    txt.style.color = 'var(--text-main)';
+                } else {
+                    dot.style.background = '#ef4444';
+                    dot.style.boxShadow = '0 0 8px rgba(239, 68, 68, 0.6)';
+                    txt.textContent = 'Modo Offline';
+                    txt.style.color = '#ef4444';
+                }
+            }
+        }
+
+        // Ouvintes globais para atualização dinâmica do status de rede
+        window.addEventListener('online', updateOnlineOfflineStatus);
+        window.addEventListener('offline', updateOnlineOfflineStatus);
 
         function toggleWorkspaceFavorite(id, category) {
             triggerPulse();
