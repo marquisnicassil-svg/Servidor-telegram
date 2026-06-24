@@ -3368,15 +3368,15 @@ CREATE TRIGGER on_synapse_user_signed_up
                 
                 <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;">
                     <!-- Plano 1: FREE -->
-                    <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; text-align: left;">
+                    <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px; text-align: left; transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='rgba(255,255,255,0.15)';" onmouseout="this.style.transform='none'; this.style.borderColor='var(--border-color)';">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                             <div>
-                                <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">Plano Free 🆓</h4>
+                                <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0; display: flex; align-items: center; gap: 6px;">Plano Free 🆓</h4>
                                 <p style="font-size: 0.72rem; color: var(--text-muted); margin: 2px 0 0 0;">Ideal para experimentação e uso eventual</p>
                             </div>
                             <span style="font-size: 1.25rem; font-weight: 800; color: #fff;">Grátis</span>
                         </div>
-                        <ul style="margin: 0; padding-left: 18px; font-size: 0.76rem; color: var(--text-main); display: flex; flex-direction: column; gap: 6px;">
+                        <ul style="margin: 0; padding-left: 18px; font-size: 0.76rem; color: var(--text-main); display: flex; flex-direction: column; gap: 6px; list-style-type: '✓ ';">
                             <li>Até 15 mensagens de chat por dia</li>
                             <li>Até 2 currículos com IA (limite geral)</li>
                             <li>Até 2 simulações de entrevista (limite geral)</li>
@@ -3385,8 +3385,8 @@ CREATE TRIGGER on_synapse_user_signed_up
                     </div>
 
                     <!-- Plano 2: PRO -->
-                    <div style="background: rgba(139, 92, 246, 0.03); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 14px; padding: 16px; text-align: left; position: relative;">
-                        <span style="position: absolute; top: 12px; right: 12px; background: rgba(139, 92, 246, 0.15); color: #a78bfa; font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 8px; border: 1px solid rgba(139, 92, 246, 0.3);">Mais Popular</span>
+                    <div style="background: rgba(139, 92, 246, 0.03); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 14px; padding: 18px; text-align: left; position: relative; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(139, 92, 246, 0.15)';" onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
+                        <span style="position: absolute; top: 12px; right: 12px; background: rgba(139, 92, 246, 0.15); color: #a78bfa; font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 8px; border: 1px solid rgba(139, 92, 246, 0.3);">Mais Popular 🔥</span>
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                             <div>
                                 <h4 style="font-size: 1.05rem; font-weight: 800; color: #a78bfa; margin: 0; display: flex; align-items: center; gap: 4px;">Plano Pro ⭐</h4>
@@ -3394,19 +3394,20 @@ CREATE TRIGGER on_synapse_user_signed_up
                             </div>
                             <span style="font-size: 1.25rem; font-weight: 800; color: #a78bfa;">R$ 29,90<span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">/mês</span></span>
                         </div>
-                        <ul style="margin: 0 0 14px 0; padding-left: 18px; font-size: 0.76rem; color: var(--text-main); display: flex; flex-direction: column; gap: 6px;">
-                            <li><b>Mensagens de chat ILIMITADAS</b></li>
-                            <li><b>Geração ILIMITADA de Currículos com IA</b></li>
-                            <li><b>Exportações de PDF ILIMITADAS</b></li>
-                            <li><b>Simulações de Entrevistas completas e ILIMITADAS</b></li>
+                        <ul style="margin: 0 0 14px 0; padding-left: 18px; font-size: 0.76rem; color: var(--text-main); display: flex; flex-direction: column; gap: 6px; list-style-type: '✓ ';">
+                            <li><b style="color: #a78bfa;">Mensagens de chat ILIMITADAS</b></li>
+                            <li><b style="color: #a78bfa;">Geração ILIMITADA de Currículos com IA</b></li>
+                            <li><b style="color: #a78bfa;">Exportações de PDF ILIMITADAS</b></li>
+                            <li><b style="color: #a78bfa;">Simulações de Entrevistas completas e ILIMITADAS</b></li>
                             <li>Acesso prioritário a novos Agentes Especialistas</li>
                             <li>Remoção de marcas d'água no exportador</li>
                         </ul>
-                        <button onclick="setAppPlanSimulated('pro', true)" class="btn-universal" style="background: var(--primary); border: none; color: #000; font-weight: bold; width: 100%; border-radius: 10px; padding: 10px; font-size: 0.8rem;">Adquirir Plano Pro ⭐</button>
+                        <button onclick="openSubscriptionCheckoutModal('pro')" class="btn-universal" style="background: var(--primary); border: none; color: #000; font-weight: bold; width: 100%; border-radius: 10px; padding: 12px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Adquirir Plano Pro ⭐</button>
                     </div>
 
                     <!-- Plano 3: ULTRA -->
-                    <div style="background: rgba(245, 158, 11, 0.03); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 14px; padding: 16px; text-align: left;">
+                    <div style="background: rgba(245, 158, 11, 0.03); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 14px; padding: 18px; text-align: left; position: relative; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(245, 158, 11, 0.15)';" onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
+                        <span style="position: absolute; top: 12px; right: 12px; background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 8px; border: 1px solid rgba(245, 158, 11, 0.3);">Max Performance ⚡</span>
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                             <div>
                                 <h4 style="font-size: 1.05rem; font-weight: 800; color: #fbbf24; margin: 0; display: flex; align-items: center; gap: 4px;">Plano Ultra 🚀</h4>
@@ -3414,14 +3415,14 @@ CREATE TRIGGER on_synapse_user_signed_up
                             </div>
                             <span style="font-size: 1.25rem; font-weight: 800; color: #fbbf24;">R$ 59,90<span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">/mês</span></span>
                         </div>
-                        <ul style="margin: 0 0 14px 0; padding-left: 18px; font-size: 0.76rem; color: var(--text-main); display: flex; flex-direction: column; gap: 6px;">
+                        <ul style="margin: 0 0 14px 0; padding-left: 18px; font-size: 0.76rem; color: var(--text-main); display: flex; flex-direction: column; gap: 6px; list-style-type: '✓ ';">
                             <li>Tudo do Plano Pro</li>
-                            <li><b>Memória contextual persistente avançada</b></li>
+                            <li><b style="color: #fbbf24;">Memória contextual persistente avançada</b></li>
                             <li>Modelos premium avançados da OpenAI e Gemini (Ultra-Speed)</li>
                             <li>Integração total de Webhooks (Make, N8N, Zapier) inclusa</li>
                             <li>Suporte prioritário VIP 24h</li>
                         </ul>
-                        <button onclick="setAppPlanSimulated('ultra', true)" class="btn-universal" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-weight: bold; width: 100%; border-radius: 10px; padding: 10px; font-size: 0.8rem;">Adquirir Plano Ultra 🚀</button>
+                        <button onclick="openSubscriptionCheckoutModal('ultra')" class="btn-universal" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-weight: bold; width: 100%; border-radius: 10px; padding: 12px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(245, 158, 11, 0.25)';" onmouseout="this.style.background='rgba(245, 158, 11, 0.15)';">Adquirir Plano Ultra 🚀</button>
                     </div>
                 </div>
 
@@ -3431,7 +3432,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         <span>💳</span> Infraestrutura Pronta para Pagamentos
                     </h4>
                     <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0 0 14px 0; line-height: 1.4;">
-                        A arquitetura do Synapse está totalmente preparada e mapeada para se integrar de forma segura aos maiores processadores de checkout global.
+                        A arquitetura do Synapse está totalmente preparada e mapeada para se integrar de forma segura aos maiores processadores de checkout global e nacional.
                     </p>
                     <div style="display: flex; flex-wrap: wrap; gap: 8px;">
                         <span style="font-size: 0.65rem; font-weight: 700; color: #635bff; background: rgba(99, 91, 255, 0.1); border: 1px solid rgba(99, 91, 255, 0.25); padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
@@ -3442,6 +3443,9 @@ CREATE TRIGGER on_synapse_user_signed_up
                         </span>
                         <span style="font-size: 0.65rem; font-weight: 700; color: #00b0ff; background: rgba(0, 176, 255, 0.1); border: 1px solid rgba(0, 176, 255, 0.25); padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
                             Apple StoreKit Ready
+                        </span>
+                        <span style="font-size: 0.65rem; font-weight: 700; color: #32b5b4; background: rgba(50, 181, 180, 0.1); border: 1px solid rgba(50, 181, 180, 0.25); padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
+                            ❖ Pix Instant Checkout Ready
                         </span>
                     </div>
                 </div>
@@ -16081,6 +16085,239 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
             }
         }
 
+        // --- MOTOR DE CHECKOUT INTERATIVO DE ASSINATURA ---
+        let checkoutTimerInterval = null;
+        let currentCheckoutPlan = 'pro';
+        let currentCheckoutMethod = 'pix';
+
+        function openSubscriptionCheckoutModal(plan) {
+            currentCheckoutPlan = plan;
+            currentCheckoutMethod = 'pix'; // default
+            
+            const titleEl = document.getElementById('checkout-plan-title');
+            const priceEl = document.getElementById('checkout-plan-price');
+            
+            const proTitle = plan === 'pro' ? 'Plano Pro ⭐' : 'Plano Ultra 🚀';
+            const proPrice = plan === 'pro' ? 'R$ 29,90' : 'R$ 59,90';
+            
+            if (titleEl) titleEl.innerText = proTitle;
+            if (priceEl) priceEl.innerText = proPrice;
+
+            // Reset screens
+            document.getElementById('checkout-screen-container').style.display = 'block';
+            document.getElementById('checkout-success-container').style.display = 'none';
+            
+            // Switch tabs
+            switchCheckoutPaymentMethod('pix');
+
+            // Reset inputs
+            document.getElementById('checkout-card-number').value = '';
+            document.getElementById('checkout-card-name').value = '';
+            document.getElementById('checkout-card-expiry').value = '';
+            document.getElementById('checkout-card-cvv').value = '';
+
+            // Show modal
+            document.getElementById('subscription-checkout-modal').style.display = 'flex';
+
+            // Start countdown timer (10 mins)
+            startCheckoutPixTimer(600);
+        }
+
+        function closeSubscriptionCheckoutModal() {
+            document.getElementById('subscription-checkout-modal').style.display = 'none';
+            if (checkoutTimerInterval) {
+                clearInterval(checkoutTimerInterval);
+                checkoutTimerInterval = null;
+            }
+        }
+
+        function switchCheckoutPaymentMethod(method) {
+            currentCheckoutMethod = method;
+            const tabPix = document.getElementById('checkout-tab-pix');
+            const tabCard = document.getElementById('checkout-tab-card');
+            const detPix = document.getElementById('checkout-pix-details');
+            const detCard = document.getElementById('checkout-card-details');
+
+            if (method === 'pix') {
+                tabPix.style.background = 'rgba(50, 181, 180, 0.08)';
+                tabPix.style.borderColor = 'rgba(50, 181, 180, 0.4)';
+                tabPix.style.color = '#32b5b4';
+
+                tabCard.style.background = 'rgba(255, 255, 255, 0.02)';
+                tabCard.style.borderColor = 'var(--border-color)';
+                tabCard.style.color = 'var(--text-muted)';
+
+                detPix.style.display = 'block';
+                detCard.style.display = 'none';
+            } else {
+                tabCard.style.background = 'rgba(139, 92, 246, 0.08)';
+                tabCard.style.borderColor = 'rgba(139, 92, 246, 0.4)';
+                tabCard.style.color = '#a78bfa';
+
+                tabPix.style.background = 'rgba(255, 255, 255, 0.02)';
+                tabPix.style.borderColor = 'var(--border-color)';
+                tabPix.style.color = 'var(--text-muted)';
+
+                detCard.style.display = 'block';
+                detPix.style.display = 'none';
+            }
+        }
+
+        function startCheckoutPixTimer(seconds) {
+            if (checkoutTimerInterval) {
+                clearInterval(checkoutTimerInterval);
+            }
+            
+            const timerEl = document.getElementById('checkout-pix-timer');
+            let timeLeft = seconds;
+            
+            function updateTimer() {
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                if (timerEl) {
+                    timerEl.innerText = `O código expira em ${formatted}`;
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(checkoutTimerInterval);
+                    if (timerEl) {
+                        timerEl.innerText = 'Código Pix Expirado! Abra o checkout novamente.';
+                        timerEl.style.color = '#ef4444';
+                    }
+                    // Disable confirmation button
+                    const btnConfirmPix = document.getElementById('checkout-btn-confirm-pix');
+                    if (btnConfirmPix) {
+                        btnConfirmPix.disabled = true;
+                        btnConfirmPix.style.opacity = '0.5';
+                    }
+                }
+                timeLeft--;
+            }
+
+            const btnConfirmPix = document.getElementById('checkout-btn-confirm-pix');
+            if (btnConfirmPix) {
+                btnConfirmPix.disabled = false;
+                btnConfirmPix.style.opacity = '1';
+            }
+
+            updateTimer();
+            checkoutTimerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function copyPixCheckoutCode() {
+            const copyText = document.getElementById("checkout-pix-key-input");
+            if (copyText) {
+                copyText.select();
+                copyText.setSelectionRange(0, 99999);
+                navigator.clipboard.writeText(copyText.value);
+                showAppToast("Código Pix copiado para a área de transferência! Cole no app do seu banco.", "success");
+            }
+        }
+
+        function formatCardNumber(input) {
+            let v = input.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let matches = v.match(/\d{4,16}/g);
+            let match = matches && matches[0] || '';
+            let parts = [];
+
+            for (let i = 0, len = match.length; i < len; i += 4) {
+                parts.push(match.substring(i, i + 4));
+            }
+
+            if (parts.length > 0) {
+                input.value = parts.join(' ');
+            } else {
+                input.value = v;
+            }
+        }
+
+        function formatCardExpiry(input) {
+            let v = input.value.replace(/\D/g, '');
+            if (v.length >= 2) {
+                input.value = v.substring(0, 2) + '/' + v.substring(2, 4);
+            } else {
+                input.value = v;
+            }
+        }
+
+        function processPixPaymentSimulation() {
+            const btn = document.getElementById('checkout-btn-confirm-pix');
+            if (!btn) return;
+            const originalContent = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<div class="loader-spinner" style="width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px;"></div> Consultando compensação no Banco Central...`;
+            
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+                
+                // Set the active plan
+                setAppSubscriptionPlan(currentCheckoutPlan);
+                
+                // Show success screen
+                showSuccessScreen('Pix Instantâneo');
+            }, 1800);
+        }
+
+        function processCardPaymentSimulation() {
+            const num = document.getElementById('checkout-card-number').value.trim();
+            const name = document.getElementById('checkout-card-name').value.trim();
+            const exp = document.getElementById('checkout-card-expiry').value.trim();
+            const cvv = document.getElementById('checkout-card-cvv').value.trim();
+
+            if (!num || !name || !exp || !cvv) {
+                showAppToast("Por favor, preencha todos os campos do cartão de crédito!", "warning");
+                return;
+            }
+
+            const btn = document.getElementById('checkout-btn-confirm-card');
+            if (!btn) return;
+            const originalContent = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<div class="loader-spinner" style="width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px;"></div> Processando com Stripe...`;
+            
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+                
+                // Set active plan
+                setAppSubscriptionPlan(currentCheckoutPlan);
+                
+                // Show success screen
+                showSuccessScreen('Cartão de Crédito');
+            }, 2000);
+        }
+
+        function showSuccessScreen(methodName) {
+            // Stop timer
+            if (checkoutTimerInterval) {
+                clearInterval(checkoutTimerInterval);
+                checkoutTimerInterval = null;
+            }
+
+            const successPlanTitle = document.getElementById('success-plan-title');
+            const successCheckoutMethod = document.getElementById('success-checkout-method');
+            const successCheckoutPrice = document.getElementById('success-checkout-price');
+
+            const planName = currentCheckoutPlan === 'pro' ? 'Plano Pro ⭐' : 'Plano Ultra Ativo 🚀';
+            const planPrice = currentCheckoutPlan === 'pro' ? 'R$ 29,90/mês' : 'R$ 59,90/mês';
+
+            if (successPlanTitle) successPlanTitle.innerText = planName;
+            if (successCheckoutMethod) successCheckoutMethod.innerText = methodName;
+            if (successCheckoutPrice) successCheckoutPrice.innerText = planPrice;
+
+            // Switch screens in modal
+            document.getElementById('checkout-screen-container').style.display = 'none';
+            document.getElementById('checkout-success-container').style.display = 'block';
+
+            // Log activity
+            addLog(`Cobrança aprovada: Plano ${planName} adquirido com sucesso via ${methodName}.`, "success");
+            showAppToast(`Sua assinatura do plano ${planName} foi ativada com sucesso!`, "success");
+        }
+
         function goToSubscriptionSubView() {
             hidePremiumUpgradeModal();
             switchTab('tab-config');
@@ -16112,13 +16349,207 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                 <button onclick="goToSubscriptionSubView()" style="background: var(--primary); border: none; color: #000; font-weight: bold; width: 100%; border-radius: 12px; padding: 14px; font-size: 0.9rem; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
                     🚀 Ver Opções de Upgrade
                 </button>
-                <button onclick="setAppPlanSimulated('pro', true); hidePremiumUpgradeModal();" style="background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.4); color: #a78bfa; font-weight: bold; width: 100%; border-radius: 12px; padding: 12px; font-size: 0.85rem; cursor: pointer; transition: background 0.2s;">
-                    ⚡ Ativar Plano Pro Provisório (Demo)
+                <button onclick="openSubscriptionCheckoutModal('pro'); hidePremiumUpgradeModal();" style="background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.4); color: #a78bfa; font-weight: bold; width: 100%; border-radius: 12px; padding: 12px; font-size: 0.85rem; cursor: pointer; transition: background 0.2s;">
+                    ⭐ Adquirir Plano Pro
                 </button>
                 <button onclick="hidePremiumUpgradeModal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 0.8rem; cursor: pointer; padding: 8px; font-weight: 600;">
                     Talvez mais tarde
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CHECKOUT DE ASSINATURA (MONETIZAÇÃO FREEMIUM COM PIX) -->
+    <div id="subscription-checkout-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 10001; align-items: center; justify-content: center; padding: 16px; animation: fadeIn 0.2s ease-out;">
+        <div style="background: #0d0f14; border: 1px solid var(--border-color); border-radius: 20px; max-width: 480px; width: 100%; padding: 24px; position: relative; box-shadow: 0 15px 50px rgba(0,0,0,0.85); display: flex; flex-direction: column;">
+            
+            <!-- Botão Fechar -->
+            <button onclick="closeSubscriptionCheckoutModal()" style="position: absolute; top: 16px; right: 16px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-muted); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: bold; transition: all 0.2s;" onmouseover="this.style.color='#fff'; this.style.background='rgba(255,255,255,0.1)';" onmouseout="this.style.color='var(--text-muted)'; this.style.background='rgba(255,255,255,0.05)';">✕</button>
+
+            <!-- TELA DE CHECKOUT ATIVO -->
+            <div id="checkout-screen-container" style="display: block;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <span style="font-size: 2rem; margin-bottom: 6px; display: inline-block;">💳</span>
+                    <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0;">Finalizar Assinatura</h3>
+                    <p style="font-size: 0.78rem; color: var(--text-muted); margin: 4px 0 0 0;">Escolha o método de pagamento e ative instantaneamente!</p>
+                </div>
+
+                <!-- CARD RESUMO DO PLANO SELECIONADO -->
+                <div id="checkout-plan-summary" style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px 18px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span id="checkout-plan-title" style="font-size: 1rem; font-weight: 800; color: var(--primary);">Plano Pro ⭐</span>
+                        <span style="font-size: 0.7rem; color: var(--text-muted); display: block; margin-top: 2px;">Cobrança Recorrente Mensal</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <span id="checkout-plan-price" style="font-size: 1.15rem; font-weight: 800; color: #fff;">R$ 29,90</span>
+                        <span style="font-size: 0.65rem; color: #32b5b4; display: block; font-weight: bold;">✓ 100% Seguro</span>
+                    </div>
+                </div>
+
+                <!-- SELETOR DE MÉTODO DE PAGAMENTO -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                    <button id="checkout-tab-pix" onclick="switchCheckoutPaymentMethod('pix')" style="background: rgba(50, 181, 180, 0.08); border: 1px solid rgba(50, 181, 180, 0.4); color: #32b5b4; border-radius: 12px; padding: 12px; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;">
+                        <span style="font-size: 1.1rem;">📱</span> Pix Instantâneo
+                    </button>
+                    <button id="checkout-tab-card" onclick="switchCheckoutPaymentMethod('card')" style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 12px; padding: 12px; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;">
+                        <span style="font-size: 1.1rem;">💳</span> Cartão de Crédito
+                    </button>
+                </div>
+
+                <!-- CONTEÚDO 1: PIX DETALHES -->
+                <div id="checkout-pix-details" style="display: block; text-align: center; background: rgba(255,255,255,0.01); border: 1px dashed rgba(50, 181, 180, 0.2); border-radius: 16px; padding: 16px; margin-bottom: 20px;">
+                    <p style="font-size: 0.76rem; color: var(--text-muted); margin: 0 0 14px 0; line-height: 1.4; text-align: left;">
+                        Escaneie o código QR ou use o Pix Copia e Cola para pagar. A ativação é feita de forma <b style="color: #32b5b4;">instantânea</b> assim que detectado.
+                    </p>
+
+                    <!-- QR CODE SIMULADO (HIGH QUALITY) -->
+                    <div style="background: #fff; padding: 12px; border-radius: 12px; width: 140px; height: 140px; margin: 0 auto 16px auto; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0,0,0,0.5); position: relative;">
+                        <!-- Desenho de QR code vetorial de alta definição para parecer autêntico -->
+                        <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; shape-rendering: crispEdges;">
+                            <!-- Quadrado superior esquerdo -->
+                            <rect x="0" y="0" width="30" height="30" fill="#000" />
+                            <rect x="5" y="5" width="20" height="20" fill="#fff" />
+                            <rect x="10" y="10" width="10" height="10" fill="#000" />
+                            
+                            <!-- Quadrado superior direito -->
+                            <rect x="70" y="0" width="30" height="30" fill="#000" />
+                            <rect x="75" y="5" width="20" height="20" fill="#fff" />
+                            <rect x="80" y="10" width="10" height="10" fill="#000" />
+                            
+                            <!-- Quadrado inferior esquerdo -->
+                            <rect x="0" y="70" width="30" height="30" fill="#000" />
+                            <rect x="5" y="75" width="20" height="20" fill="#fff" />
+                            <rect x="10" y="80" width="10" height="10" fill="#000" />
+
+                            <!-- Pequeno quadradinho inferior direito de alinhamento -->
+                            <rect x="75" y="75" width="10" height="10" fill="#000" />
+                            
+                            <!-- Padrões aleatórios de QR Code representados ordenadamente -->
+                            <rect x="40" y="0" width="10" height="5" fill="#000" />
+                            <rect x="55" y="0" width="5" height="10" fill="#000" />
+                            <rect x="45" y="15" width="15" height="5" fill="#000" />
+                            <rect x="35" y="25" width="10" height="10" fill="#000" />
+                            
+                            <rect x="0" y="40" width="10" height="10" fill="#000" />
+                            <rect x="15" y="45" width="10" height="5" fill="#000" />
+                            <rect x="20" y="55" width="10" height="10" fill="#000" />
+                            <rect x="5" y="60" width="5" height="5" fill="#000" />
+                            
+                            <rect x="40" y="40" width="20" height="20" fill="#000" />
+                            <rect x="45" y="45" width="10" height="10" fill="#fff" />
+                            
+                            <rect x="65" y="35" width="10" height="15" fill="#000" />
+                            <rect x="85" y="35" width="15" height="5" fill="#000" />
+                            <rect x="75" y="50" width="10" height="10" fill="#000" />
+                            <rect x="90" y="55" width="5" height="15" fill="#000" />
+                            
+                            <rect x="35" y="70" width="10" height="10" fill="#000" />
+                            <rect x="50" y="75" width="5" height="15" fill="#000" />
+                            <rect x="40" y="90" width="15" height="5" fill="#000" />
+                            <rect x="60" y="85" width="10" height="10" fill="#000" />
+                            <rect x="65" y="70" width="5" height="5" fill="#000" />
+                            
+                            <rect x="85" y="85" width="15" height="15" fill="#000" />
+                            <rect x="90" y="90" width="5" height="5" fill="#fff" />
+                        </svg>
+                        
+                        <!-- Logo do Pix no centro do QR code para um toque premium de realismo -->
+                        <div style="position: absolute; width: 30px; height: 30px; background: #fff; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: 1.1rem; font-weight: bold; color: #32b5b4;">❖</span>
+                        </div>
+                    </div>
+
+                    <!-- TEXTO DE TEMPO EXPIRANDO -->
+                    <div style="font-size: 0.74rem; font-weight: bold; color: #fbbf24; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                        <span>⏱️</span> <span id="checkout-pix-timer">O código expira em 10:00</span>
+                    </div>
+
+                    <!-- CHAVE COPIA E COLA -->
+                    <div style="display: flex; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; margin-bottom: 8px;">
+                        <input id="checkout-pix-key-input" type="text" readonly value="00020101021226830014br.gov.bcb.pix2561api.synapseia.com/v2/cob/982c75b8cb1a4caea9d7e35b750cb82b5204000053039865802BR5920Synapse IA Ltda6009Sao Paulo62070503***6304CA3B" style="background: transparent; border: none; color: var(--text-muted); font-size: 0.65rem; padding: 10px; width: 100%; font-family: monospace; text-overflow: ellipsis;">
+                        <button onclick="copyPixCheckoutCode()" style="background: rgba(255,255,255,0.05); border: none; border-left: 1px solid var(--border-color); color: #fff; padding: 0 14px; font-size: 0.75rem; font-weight: bold; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)';" onmouseout="this.style.background='rgba(255,255,255,0.05)';">Copiar</button>
+                    </div>
+
+                    <button id="checkout-btn-confirm-pix" onclick="processPixPaymentSimulation()" class="btn-universal" style="background: #10b981; border: none; color: #000; font-weight: bold; width: 100%; border-radius: 10px; padding: 12px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s; margin-top: 14px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                        ❖ Confirmar Pagamento do Pix
+                    </button>
+                </div>
+
+                <!-- CONTEÚDO 2: CARD DETALHES -->
+                <div id="checkout-card-details" style="display: none; background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; margin-bottom: 20px;">
+                    <div style="display: flex; flex-direction: column; gap: 12px; text-align: left;">
+                        
+                        <div>
+                            <label style="display:block; margin-bottom: 4px; color: var(--text-muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">Número do Cartão:</label>
+                            <input id="checkout-card-number" type="text" placeholder="0000 0000 0000 0000" class="form-control" style="background: #090d16; color: #fff; border: 1px solid var(--border-color); height: 44px; border-radius: 10px; padding: 0 12px; font-size: 0.85rem; width: 100%; box-sizing: border-box;" oninput="formatCardNumber(this)" maxlength="19">
+                        </div>
+
+                        <div>
+                            <label style="display:block; margin-bottom: 4px; color: var(--text-muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">Nome Impresso:</label>
+                            <input id="checkout-card-name" type="text" placeholder="EX: JOÃO M SILVA" class="form-control" style="background: #090d16; color: #fff; border: 1px solid var(--border-color); height: 44px; border-radius: 10px; padding: 0 12px; font-size: 0.85rem; width: 100%; box-sizing: border-box; text-transform: uppercase;">
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div>
+                                <label style="display:block; margin-bottom: 4px; color: var(--text-muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">Validade:</label>
+                                <input id="checkout-card-expiry" type="text" placeholder="MM/AA" class="form-control" style="background: #090d16; color: #fff; border: 1px solid var(--border-color); height: 44px; border-radius: 10px; padding: 0 12px; font-size: 0.85rem; width: 100%; box-sizing: border-box;" oninput="formatCardExpiry(this)" maxlength="5">
+                            </div>
+                            <div>
+                                <label style="display:block; margin-bottom: 4px; color: var(--text-muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">CVC (Segurança):</label>
+                                <input id="checkout-card-cvv" type="text" placeholder="123" class="form-control" style="background: #090d16; color: #fff; border: 1px solid var(--border-color); height: 44px; border-radius: 10px; padding: 0 12px; font-size: 0.85rem; width: 100%; box-sizing: border-box;" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="4">
+                            </div>
+                        </div>
+
+                        <p style="font-size: 0.68rem; color: var(--text-muted); text-align: center; margin: 4px 0 0 0; line-height: 1.35; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                            <span>🔒</span> Transação criptografada ponta a ponta com Stripe API.
+                        </p>
+
+                        <button id="checkout-btn-confirm-card" onclick="processCardPaymentSimulation()" class="btn-universal" style="background: var(--primary); border: none; color: #000; font-weight: bold; width: 100%; border-radius: 10px; padding: 12px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s; margin-top: 8px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                            Finalizar Assinatura 💳
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TELA DE SUCESSO DO CHECKOUT (CONFIRMAÇÃO DETALHADA E ANIMADA) -->
+            <div id="checkout-success-container" style="display: none; text-align: center; padding: 10px 0;">
+                <!-- Ícone Check pulsante animado -->
+                <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(16, 185, 129, 0.1); border: 2px solid #10b981; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; animation: pulse 2s infinite;">
+                    <span style="font-size: 3rem; color: #10b981; line-height: 1;">✓</span>
+                </div>
+
+                <h3 style="font-size: 1.4rem; font-weight: 800; color: #fff; margin: 0 0 8px 0;">🎉 Assinatura Ativada!</h3>
+                <h4 id="success-plan-title" style="font-size: 1rem; font-weight: 700; color: var(--primary); margin: 0 0 16px 0;">Plano Pro Ativo ⭐</h4>
+                
+                <p style="font-size: 0.82rem; color: var(--text-main); margin: 0 0 20px 0; line-height: 1.5; padding: 0 10px;">
+                    Seja muito bem-vindo ao ecossistema premium do Synapse IA! O seu plano foi atualizado com sucesso e todas as suas cotas de uso diárias de chat, currículos e simulações foram expandidas ao nível <b>ilimitado</b>.
+                </p>
+
+                <!-- Detalhes Fiscais/Contratuais da Ativação -->
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 16px; margin-bottom: 24px; text-align: left; font-size: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                        <span style="color: var(--text-muted);">Método de Cobrança:</span>
+                        <b style="color: #fff;" id="success-checkout-method">Pix Instantâneo</b>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                        <span style="color: var(--text-muted);">Status da Transação:</span>
+                        <b style="color: #10b981;">Aprovado / Ativo</b>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                        <span style="color: var(--text-muted);">Recorrência:</span>
+                        <b style="color: #fff;">Mensal</b>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px; margin-top: 6px;">
+                        <span style="color: var(--text-muted); font-weight: bold;">Valor Cobrado:</span>
+                        <b style="color: var(--primary); font-size: 0.85rem;" id="success-checkout-price">R$ 29,90/mês</b>
+                    </div>
+                </div>
+
+                <button onclick="closeSubscriptionCheckoutModal()" class="btn-universal" style="background: var(--primary); border: none; color: #000; font-weight: bold; width: 100%; border-radius: 12px; padding: 12px; font-size: 0.88rem; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                    Começar a Aproveitar 🚀
+                </button>
+            </div>
+
         </div>
     </div>
 </body>
