@@ -115,10 +115,10 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px 20px;
+            padding: 10px 14px;
             background: rgba(255, 255, 255, 0.012);
             border: 1px solid var(--border-color);
-            border-radius: 14px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
             text-align: left;
@@ -2007,93 +2007,93 @@
         </section>
 
         <!-- ABA WORKSPACE (DASHBOARD FINAL MINIMALISTA SaaS PREMIUM) -->
-        <section id="tab-workspace" class="tab-section active" style="padding: 24px 16px 80px; max-width: 1000px; margin: 0 auto;">
+        <section id="tab-workspace" class="tab-section active" style="padding: 16px 16px 50px; max-width: 1000px; margin: 0 auto;">
             <!-- SKELETON LOADER CONTAINER -->
-            <div id="dashboard-skeleton" style="display: flex; flex-direction: column; gap: 32px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 24px;">
-                    <div style="display: flex; flex-direction: column; gap: 10px; width: 60%;">
-                        <div class="skeleton-shimmer" style="height: 32px; width: 50%; border-radius: 8px;"></div>
-                        <div class="skeleton-shimmer" style="height: 16px; width: 90%; border-radius: 6px;"></div>
+            <div id="dashboard-skeleton" style="display: flex; flex-direction: column; gap: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 14px;">
+                    <div style="display: flex; flex-direction: column; gap: 6px; width: 60%;">
+                        <div class="skeleton-shimmer" style="height: 28px; width: 50%; border-radius: 8px;"></div>
+                        <div class="skeleton-shimmer" style="height: 14px; width: 90%; border-radius: 6px;"></div>
                     </div>
-                    <div class="skeleton-shimmer" style="height: 36px; width: 120px; border-radius: 18px;"></div>
+                    <div class="skeleton-shimmer" style="height: 32px; width: 110px; border-radius: 16px;"></div>
                 </div>
                 <div>
-                    <div class="skeleton-shimmer" style="height: 20px; width: 140px; border-radius: 6px; margin-bottom: 16px;"></div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
-                        <div class="skeleton-shimmer" style="height: 140px; border-radius: 16px;"></div>
-                        <div class="skeleton-shimmer" style="height: 140px; border-radius: 16px;"></div>
-                        <div class="skeleton-shimmer" style="height: 140px; border-radius: 16px;"></div>
-                        <div class="skeleton-shimmer" style="height: 140px; border-radius: 16px;"></div>
+                    <div class="skeleton-shimmer" style="height: 16px; width: 120px; border-radius: 6px; margin-bottom: 12px;"></div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+                        <div class="skeleton-shimmer" style="height: 68px; border-radius: 12px;"></div>
+                        <div class="skeleton-shimmer" style="height: 68px; border-radius: 12px;"></div>
+                        <div class="skeleton-shimmer" style="height: 68px; border-radius: 12px;"></div>
+                        <div class="skeleton-shimmer" style="height: 68px; border-radius: 12px;"></div>
                     </div>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 12px;">
-                    <div class="skeleton-shimmer" style="height: 20px; width: 160px; border-radius: 6px;"></div>
-                    <div class="skeleton-shimmer" style="height: 72px; border-radius: 14px;"></div>
-                    <div class="skeleton-shimmer" style="height: 72px; border-radius: 14px;"></div>
-                    <div class="skeleton-shimmer" style="height: 72px; border-radius: 14px;"></div>
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 6px;">
+                    <div class="skeleton-shimmer" style="height: 16px; width: 140px; border-radius: 6px;"></div>
+                    <div class="skeleton-shimmer" style="height: 58px; border-radius: 12px;"></div>
+                    <div class="skeleton-shimmer" style="height: 58px; border-radius: 12px;"></div>
+                    <div class="skeleton-shimmer" style="height: 58px; border-radius: 12px;"></div>
                 </div>
             </div>
 
             <!-- ACTUAL PREMIUM DASHBOARD CONTENT -->
-            <div id="dashboard-actual-content" style="display: none; opacity: 0; transition: opacity 0.4s ease; flex-direction: column; gap: 32px;">
+            <div id="dashboard-actual-content" style="display: none; opacity: 0; transition: opacity 0.4s ease; flex-direction: column; gap: 20px;">
                 <!-- 👋 CABEÇALHO LIMPO -->
-                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 14px; flex-wrap: wrap; gap: 12px;">
                     <div>
-                        <h2 style="font-size: 1.85rem; font-weight: 800; color: #fff; margin: 0; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px;">
+                        <h2 style="font-size: 1.6rem; font-weight: 800; color: #fff; margin: 0; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px;">
                             <span id="dashboard-greeting-text">Olá</span>, <span id="dashboard-user-name" style="color: var(--primary);">Explorador</span> 👋
                         </h2>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin: 6px 0 0 0; line-height: 1.45;">
+                        <p style="color: var(--text-muted); font-size: 0.8rem; margin: 4px 0 0 0; line-height: 1.4;">
                             Sua central de operações e inteligência no Synapse Console.
                         </p>
                     </div>
                     <!-- Indicator Discreto de Status -->
-                    <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
-                        <span id="dashboard-status-dot" class="pulse-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); display: inline-block;"></span>
-                        <span id="dashboard-status-text" style="font-size: 0.7rem; font-weight: 700; color: var(--text-main); letter-spacing: 0.5px; text-transform: uppercase;">Sistema Online</span>
+                    <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
+                        <span id="dashboard-status-dot" class="pulse-indicator" style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); display: inline-block;"></span>
+                        <span id="dashboard-status-text" style="font-size: 0.65rem; font-weight: 700; color: var(--text-main); letter-spacing: 0.5px; text-transform: uppercase;">Sistema Online</span>
                     </div>
                 </div>
 
                 <!-- ⚡ AÇÕES RÁPIDAS (FOCO PRINCIPAL) -->
                 <div>
-                    <h3 style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; margin: 0 0 16px 4px;">⚡ Ações Rápidas</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+                    <h3 style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; margin: 0 0 12px 4px;">⚡ Ações Rápidas</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
                         <!-- Card 1: Nova Conversa -->
-                        <div class="dashboard-action-card" onclick="triggerQuickAction('chat')" style="padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+                        <div class="dashboard-action-card" onclick="triggerQuickAction('chat')" style="padding: 12px; display: flex; align-items: center; gap: 12px;">
                             <div class="dashboard-card-glow" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.06), transparent 60%); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;"></div>
-                            <div style="font-size: 1.8rem; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(56, 189, 248, 0.1); border-radius: 12px; color: #38bdf8; z-index: 2;">💬</div>
-                            <div style="z-index: 2;">
-                                <h4 style="font-size: 1rem; font-weight: 700; color: #fff; margin: 0 0 4px 0;">Nova Conversa</h4>
-                                <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0; line-height: 1.4;">Inicie um diálogo neural com a IA geral do console.</p>
+                            <div style="font-size: 1.4rem; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(56, 189, 248, 0.1); border-radius: 10px; color: #38bdf8; z-index: 2; flex-shrink: 0;">💬</div>
+                            <div style="z-index: 2; min-width: 0; flex: 1;">
+                                <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0 0 2px 0;">Nova Conversa</h4>
+                                <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Diálogo neural com a IA geral do console.</p>
                             </div>
                         </div>
 
                         <!-- Card 2: Criar Agente -->
-                        <div class="dashboard-action-card" onclick="triggerQuickAction('agent')" style="padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+                        <div class="dashboard-action-card" onclick="triggerQuickAction('agent')" style="padding: 12px; display: flex; align-items: center; gap: 12px;">
                             <div class="dashboard-card-glow" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 10% 10%, rgba(139, 92, 246, 0.06), transparent 60%); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;"></div>
-                            <div style="font-size: 1.8rem; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(139, 92, 246, 0.1); border-radius: 12px; color: #8b5cf6; z-index: 2;">🤖</div>
-                            <div style="z-index: 2;">
-                                <h4 style="font-size: 1rem; font-weight: 700; color: #fff; margin: 0 0 4px 0;">Criar Agente</h4>
-                                <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0; line-height: 1.4;">Construa e customize novos especialistas neurais.</p>
+                            <div style="font-size: 1.4rem; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(139, 92, 246, 0.1); border-radius: 10px; color: #8b5cf6; z-index: 2; flex-shrink: 0;">🤖</div>
+                            <div style="z-index: 2; min-width: 0; flex: 1;">
+                                <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0 0 2px 0;">Criar Agente</h4>
+                                <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Customize novos especialistas neurais.</p>
                             </div>
                         </div>
 
                         <!-- Card 3: Criar Currículo -->
-                        <div class="dashboard-action-card" onclick="triggerQuickAction('resume')" style="padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+                        <div class="dashboard-action-card" onclick="triggerQuickAction('resume')" style="padding: 12px; display: flex; align-items: center; gap: 12px;">
                             <div class="dashboard-card-glow" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.06), transparent 60%); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;"></div>
-                            <div style="font-size: 1.8rem; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(16, 185, 129, 0.1); border-radius: 12px; color: #10b981; z-index: 2;">📄</div>
-                            <div style="z-index: 2;">
-                                <h4 style="font-size: 1rem; font-weight: 700; color: #fff; margin: 0 0 4px 0;">Criar Currículo</h4>
-                                <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0; line-height: 1.4;">Monte seu currículo sob medida otimizado com IA.</p>
+                            <div style="font-size: 1.4rem; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(16, 185, 129, 0.1); border-radius: 10px; color: #10b981; z-index: 2; flex-shrink: 0;">📄</div>
+                            <div style="z-index: 2; min-width: 0; flex: 1;">
+                                <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0 0 2px 0;">Criar Currículo</h4>
+                                <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Monte seu currículo otimizado com IA.</p>
                             </div>
                         </div>
 
                         <!-- Card 4: Simular Entrevista -->
-                        <div class="dashboard-action-card" onclick="triggerQuickAction('interview')" style="padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+                        <div class="dashboard-action-card" onclick="triggerQuickAction('interview')" style="padding: 12px; display: flex; align-items: center; gap: 12px;">
                             <div class="dashboard-card-glow" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 10% 10%, rgba(245, 158, 11, 0.06), transparent 60%); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;"></div>
-                            <div style="font-size: 1.8rem; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(245, 158, 11, 0.1); border-radius: 12px; color: #f59e0b; z-index: 2;">💼</div>
-                            <div style="z-index: 2;">
-                                <h4 style="font-size: 1rem; font-weight: 700; color: #fff; margin: 0 0 4px 0;">Simular Entrevista</h4>
-                                <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0; line-height: 1.4;">Treine com sabatinas e receba feedback imediato.</p>
+                            <div style="font-size: 1.4rem; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(245, 158, 11, 0.1); border-radius: 10px; color: #f59e0b; z-index: 2; flex-shrink: 0;">💼</div>
+                            <div style="z-index: 2; min-width: 0; flex: 1;">
+                                <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0 0 2px 0;">Simular Entrevista</h4>
+                                <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Treine com simulações e feedbacks.</p>
                             </div>
                         </div>
                     </div>
@@ -9491,18 +9491,18 @@ WITH CHECK (true);</code>
                     };
 
                     row.innerHTML = `
-                        <div style="display: flex; align-items: center; gap: 16px; overflow: hidden; width: 75%;">
-                            <div style="font-size: 1.5rem; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--border-color); flex-shrink: 0;">
-                                ${item.icon}
+                        <div style="display: flex; align-items: center; gap: 12px; overflow: hidden; flex: 1; min-width: 0; margin-right: 12px;">
+                            <div style="font-size: 1.25rem; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.02); border-radius: 10px; border: 1px solid var(--border-color); flex-shrink: 0;">
+                                \${item.icon}
                             </div>
-                            <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0 0 2px 0;">${item.title}</h4>
-                                <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.desc}</p>
+                            <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0;">
+                                <h4 style="font-size: 0.9rem; font-weight: 700; color: #fff; margin: 0 0 2px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">\${item.title}</h4>
+                                <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">\${item.desc}</p>
                             </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; background: rgba(255,255,255,0.02); padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border-color); white-space: nowrap;">
-                                ${item.date}
+                        <div style="flex-shrink: 0; display: flex; align-items: center;">
+                            <span style="font-size: 0.68rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; background: rgba(255,255,255,0.02); padding: 3px 8px; border-radius: 10px; border: 1px solid var(--border-color); white-space: nowrap;">
+                                \${item.date}
                             </span>
                         </div>
                     `;
