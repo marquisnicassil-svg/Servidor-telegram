@@ -839,6 +839,52 @@
             box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2);
         }
 
+        /* Botão de Salvar Premium Consistente para as Outras Subviews */
+        .btn-save-premium {
+            width: 100%;
+            background-color: var(--primary, #38bdf8) !important;
+            color: var(--primary-contrast, #020617) !important;
+            border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08)) !important;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 16px rgba(56, 189, 248, 0.2);
+        }
+
+        .btn-save-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.35);
+            opacity: 0.95;
+        }
+
+        .btn-save-premium:active {
+            transform: translateY(0);
+        }
+
+        .btn-save-premium.saving {
+            background-color: var(--primary, #38bdf8) !important;
+            color: var(--primary-contrast, #020617) !important;
+            cursor: wait !important;
+            opacity: 0.8 !important;
+        }
+
+        .btn-save-premium.saved-success {
+            background-color: #10b981 !important;
+            color: #020617 !important;
+            cursor: default !important;
+            opacity: 1 !important;
+            font-weight: 700;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2);
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -3125,7 +3171,7 @@ CREATE TRIGGER on_synapse_user_signed_up
 
                 </div>
 
-                <button class="btn-universal" onclick="saveConfiguration()" data-i18n="aplicar_ajustes_conta">
+                <button class="btn-save-premium" onclick="saveConfigWithPremiumFeedback(this)" data-i18n="aplicar_ajustes_conta">
                     Aplicar Ajustes
                 </button>
             </div>
@@ -3720,8 +3766,8 @@ CREATE TRIGGER on_synapse_user_signed_up
                     </div>
                 </div>
 
-                <button class="btn-universal" onclick="saveConfiguration()" style="background: #38bdf8; color: #020617; font-weight: black; height: 50px;">
-                    Salvar Configurações
+                <button class="btn-save-premium" onclick="saveConfigWithPremiumFeedback(this)">
+                    <span>Salvar Configurações ✨</span>
                 </button>
             </div>
 
@@ -3784,8 +3830,8 @@ CREATE TRIGGER on_synapse_user_signed_up
                     <textarea id="system-prompt" class="form-control" rows="3">Você é uma Inteligência Artificial direta e precisa. Responda sucintamente como um aplicativo nativo faria.</textarea>
                 </div>
 
-                <button class="btn-universal" onclick="saveConfiguration()">
-                    Aplicar Ajustes
+                <button class="btn-save-premium" onclick="saveConfigWithPremiumFeedback(this)">
+                    <span>Aplicar Ajustes ✨</span>
                 </button>
             </div>
 
@@ -3883,8 +3929,8 @@ WITH CHECK (true);</code>
                     </div>
                 </div>
 
-                <button class="btn-universal" onclick="saveConfiguration()">
-                    Aplicar Ajustes
+                <button class="btn-save-premium" onclick="saveConfigWithPremiumFeedback(this)">
+                    <span>Aplicar Ajustes ✨</span>
                 </button>
             </div>
 
@@ -3960,8 +4006,8 @@ WITH CHECK (true);</code>
                     💡 <b>Dica de Acessibilidade:</b> Se o seu dispositivo for mais antigo ou estiver lento, desative os <i>Efeitos de Transição Visual</i> para navegação instantânea e economia imediata de bateria!
                 </div>
 
-                <button class="btn-universal" onclick="saveConfiguration()">
-                    Aplicar Ajustes de Aprimoramentos
+                <button class="btn-save-premium" onclick="saveConfigWithPremiumFeedback(this)">
+                    <span>Aplicar Ajustes de Aprimoramentos ✨</span>
                 </button>
             </div>
 
@@ -4012,8 +4058,8 @@ WITH CHECK (true);</code>
                     </div>
                 </div>
 
-                <button class="btn-universal" onclick="saveConfiguration()">
-                    Aplicar Ajustes
+                <button class="btn-save-premium" onclick="saveConfigWithPremiumFeedback(this)">
+                    <span>Aplicar Ajustes ✨</span>
                 </button>
             </div>
 
@@ -5392,6 +5438,7 @@ WITH CHECK (true);</code>
                 const g = parseInt(hex.substring(2,4), 16);
                 const b = parseInt(hex.substring(4,6), 16);
                 document.documentElement.style.setProperty('--primary-bg', `rgba(${r}, ${g}, ${b}, 0.15)`);
+                document.documentElement.style.setProperty('--primary-rgb', `${r}, ${g}, ${b}`);
             }
             
             // Auto Update manual accent color picker input
@@ -5478,6 +5525,7 @@ WITH CHECK (true);</code>
                 const g = parseInt(hex.substring(2,4), 16);
                 const b = parseInt(hex.substring(4,6), 16);
                 document.documentElement.style.setProperty('--primary-bg', `rgba(${r}, ${g}, ${b}, 0.15)`);
+                document.documentElement.style.setProperty('--primary-rgb', `${r}, ${g}, ${b}`);
             }
             
             const picker = document.getElementById('manual-accent-picker');
@@ -7573,6 +7621,49 @@ WITH CHECK (true);</code>
                 btn.classList.add('dirty');
                 btn.disabled = false;
                 btn.innerHTML = `<span>Erro ao Salvar ❌ Tentar Novamente</span>`;
+            }
+        }
+
+        async function saveConfigWithPremiumFeedback(btn) {
+            if (!btn || btn.disabled || btn.classList.contains('saving')) return;
+
+            triggerPulse();
+
+            const originalHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.classList.add('saving');
+            btn.innerHTML = `
+                <svg class="animate-spin" style="width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 3;" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-dasharray="40 20" fill="none"></circle>
+                </svg>
+                <span>${currentLanguage === 'pt' ? "Salvando..." : currentLanguage === 'en' ? "Saving..." : "Guardando..."}</span>
+            `;
+
+            // Wait 1.2s to simulate real-time processing and allow the user to see the premium feedback
+            await new Promise(resolve => setTimeout(resolve, 1200));
+
+            try {
+                saveConfiguration();
+
+                btn.classList.remove('saving');
+                btn.classList.add('saved-success');
+                btn.innerHTML = `<span>${currentLanguage === 'pt' ? "Salvo com Sucesso! ✓" : currentLanguage === 'en' ? "Successfully Saved! ✓" : "¡Guardado con Éxito! ✓"}</span>`;
+
+                showAppToast(currentLanguage === 'pt' ? "Configurações salvas com sucesso! ✓" : "Settings saved successfully! ✓", "success");
+
+                setTimeout(() => {
+                    btn.classList.remove('saved-success');
+                    btn.disabled = false;
+                    btn.innerHTML = originalHTML;
+                    captureSavedAppearance();
+                    checkAppearanceChanges();
+                }, 2500);
+            } catch (err) {
+                console.error("Erro ao salvar configurações:", err);
+                btn.classList.remove('saving');
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+                showAppToast(currentLanguage === 'pt' ? "Erro ao salvar configurações ❌" : "Error saving settings ❌", "error");
             }
         }
 
