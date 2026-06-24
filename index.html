@@ -784,6 +784,69 @@
             opacity: 0.7;
         }
 
+        /* Botão de Salvar Aparência Premium */
+        #btn-save-appearance {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.03) !important;
+            color: var(--text-muted, #71717a) !important;
+            border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08)) !important;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 14px;
+            border-radius: 12px;
+            cursor: not-allowed;
+            opacity: 0.6;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 1.5rem;
+        }
+
+        #btn-save-appearance.dirty {
+            background-color: var(--primary, #38bdf8) !important;
+            color: var(--bg-color, #020617) !important;
+            cursor: pointer !important;
+            opacity: 1 !important;
+            font-weight: 700;
+            box-shadow: 0 4px 16px rgba(56, 189, 248, 0.2);
+            transform: translateY(0);
+        }
+
+        #btn-save-appearance.dirty:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.35);
+        }
+
+        #btn-save-appearance.dirty:active {
+            transform: translateY(0);
+        }
+
+        #btn-save-appearance.saving {
+            background-color: var(--primary, #38bdf8) !important;
+            color: var(--bg-color, #020617) !important;
+            cursor: wait !important;
+            opacity: 0.8 !important;
+        }
+
+        #btn-save-appearance.saved-success {
+            background-color: #10b981 !important;
+            color: #020617 !important;
+            cursor: default !important;
+            opacity: 1 !important;
+            font-weight: 700;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+
         /* Botão de Instalação PWA */
         .btn-install {
             background-color: var(--success);
@@ -3346,8 +3409,8 @@ CREATE TRIGGER on_synapse_user_signed_up
                     💡 <b>Consistência Estética:</b> Os estilos operam de forma transparente em todas as telas, guias de comando, caixas de diálogo, notificações de sistema (toasts) e logs de terminal!
                 </div>
 
-                <button class="btn-universal" onclick="saveConfiguration()">
-                    Aplicar Ajustes Visuais
+                <button id="btn-save-appearance" onclick="saveConfigurationWithFeedback()" disabled>
+                    <span>Ajustes Visuais Salvos ✓</span>
                 </button>
             </div>
 
@@ -5366,7 +5429,7 @@ WITH CHECK (true);</code>
                 showAppToast(`${theme.name} Ativado! ✨`, "success");
             }
             if (!isConfigLoading) {
-                saveConfiguration();
+                checkAppearanceChanges();
             }
         }
 
@@ -5397,7 +5460,7 @@ WITH CHECK (true);</code>
             }
             addLog(`Modo AMOLED Super Black ${!isOn ? 'Ativado' : 'Desativado'}`, "info");
             if (!isConfigLoading) {
-                saveConfiguration();
+                checkAppearanceChanges();
             }
         }
 
@@ -5426,7 +5489,7 @@ WITH CHECK (true);</code>
                 element.classList.add('active');
             }
             if (!isConfigLoading) {
-                saveConfiguration();
+                checkAppearanceChanges();
             }
         }
 
@@ -5451,7 +5514,7 @@ WITH CHECK (true);</code>
             document.documentElement.style.setProperty('--input-border-radius', inputRadius);
             addLog(`Estilo de bordas alterado para: ${radiusKey}`, "info");
             if (!isConfigLoading) {
-                saveConfiguration();
+                checkAppearanceChanges();
             }
         }
 
@@ -5474,7 +5537,7 @@ WITH CHECK (true);</code>
             }
             addLog(`Acabamento decorativo alterado para: ${finishKey}`, "info");
             if (!isConfigLoading) {
-                saveConfiguration();
+                checkAppearanceChanges();
             }
         }
 
@@ -5507,7 +5570,7 @@ WITH CHECK (true);</code>
             
             addLog(`Intensidade de saturação otimizada fisicamente para: ${val}%`, "info");
             if (!isConfigLoading) {
-                saveConfiguration();
+                checkAppearanceChanges();
             }
         }
 
@@ -5744,13 +5807,13 @@ WITH CHECK (true);</code>
         function applyFontFamily(val) {
             selectedFontFamily = val;
             updateDynamicStyles();
-            if (!isConfigLoading) saveConfiguration();
+            if (!isConfigLoading) checkAppearanceChanges();
         }
 
         function applyFontSize(val) {
             selectedFontSize = val;
             updateDynamicStyles();
-            if (!isConfigLoading) saveConfiguration();
+            if (!isConfigLoading) checkAppearanceChanges();
         }
 
         function applyAnimationIntensity(val) {
@@ -5786,25 +5849,25 @@ WITH CHECK (true);</code>
                 `;
             }
             styleEl.innerHTML = css;
-            if (!isConfigLoading) saveConfiguration();
+            if (!isConfigLoading) checkAppearanceChanges();
         }
 
         function applyIconSize(val) {
             selectedIconSize = val;
             updateDynamicStyles();
-            if (!isConfigLoading) saveConfiguration();
+            if (!isConfigLoading) checkAppearanceChanges();
         }
 
         function applyCardShadow(val) {
             selectedCardShadow = val;
             updateDynamicStyles();
-            if (!isConfigLoading) saveConfiguration();
+            if (!isConfigLoading) checkAppearanceChanges();
         }
 
         function applyCardPadding(val) {
             selectedCardPadding = val;
             updateDynamicStyles();
-            if (!isConfigLoading) saveConfiguration();
+            if (!isConfigLoading) checkAppearanceChanges();
         }
 
         function toggleTransparency() {
@@ -5812,7 +5875,7 @@ WITH CHECK (true);</code>
             const sw = document.getElementById('transparency-switch');
             if (sw) sw.classList.toggle('on', selectedTransparency);
             updateDynamicStyles();
-            if (!isConfigLoading) saveConfiguration();
+            if (!isConfigLoading) checkAppearanceChanges();
         }
 
         function applyBlurDepth(val) {
@@ -5820,7 +5883,7 @@ WITH CHECK (true);</code>
             const label = document.getElementById('config-blur-depth-val');
             if (label) label.textContent = `${val}px`;
             updateDynamicStyles();
-            if (!isConfigLoading) saveConfiguration();
+            if (!isConfigLoading) checkAppearanceChanges();
         }
 
         function toggleVisualDepth() {
@@ -5828,13 +5891,13 @@ WITH CHECK (true);</code>
             const sw = document.getElementById('visual-depth-switch');
             if (sw) sw.classList.toggle('on', selectedVisualDepth);
             updateDynamicStyles();
-            if (!isConfigLoading) saveConfiguration();
+            if (!isConfigLoading) checkAppearanceChanges();
         }
 
         function applyInterfaceDensity(val) {
             selectedInterfaceDensity = val;
             updateDynamicStyles();
-            if (!isConfigLoading) saveConfiguration();
+            if (!isConfigLoading) checkAppearanceChanges();
         }
 
         function toggleAccessibilityContrast() {
@@ -5842,7 +5905,7 @@ WITH CHECK (true);</code>
             const sw = document.getElementById('access-contrast-switch');
             if (sw) sw.classList.toggle('on', accessHighContrast);
             updateDynamicStyles();
-            if (!isConfigLoading) saveConfiguration();
+            if (!isConfigLoading) checkAppearanceChanges();
         }
 
         function toggleAccessibilityLargeText() {
@@ -5850,7 +5913,7 @@ WITH CHECK (true);</code>
             const sw = document.getElementById('access-largetext-switch');
             if (sw) sw.classList.toggle('on', accessLargeText);
             updateDynamicStyles();
-            if (!isConfigLoading) saveConfiguration();
+            if (!isConfigLoading) checkAppearanceChanges();
         }
 
         function toggleAccessibilityLargeIcons() {
@@ -5858,7 +5921,7 @@ WITH CHECK (true);</code>
             const sw = document.getElementById('access-largeicons-switch');
             if (sw) sw.classList.toggle('on', accessLargeIcons);
             updateDynamicStyles();
-            if (!isConfigLoading) saveConfiguration();
+            if (!isConfigLoading) checkAppearanceChanges();
         }
 
         function toggleAccessibilityAnimations() {
@@ -5866,7 +5929,7 @@ WITH CHECK (true);</code>
             const sw = document.getElementById('access-animations-switch');
             if (sw) sw.classList.toggle('on', accessReduceAnimations);
             updateDynamicStyles();
-            if (!isConfigLoading) saveConfiguration();
+            if (!isConfigLoading) checkAppearanceChanges();
         }
 
         function toggleAccessibilityReadingMode() {
@@ -5874,7 +5937,7 @@ WITH CHECK (true);</code>
             const sw = document.getElementById('access-reading-switch');
             if (sw) sw.classList.toggle('on', accessReadingMode);
             updateDynamicStyles();
-            if (!isConfigLoading) saveConfiguration();
+            if (!isConfigLoading) checkAppearanceChanges();
         }
 
         function getVisualProfiles() {
@@ -6747,6 +6810,8 @@ WITH CHECK (true);</code>
                 console.error("Erro ao carregar configurações: ", e);
             } finally {
                 isConfigLoading = false;
+                captureSavedAppearance();
+                checkAppearanceChanges();
             }
         }
 
@@ -7366,6 +7431,148 @@ WITH CHECK (true);</code>
                 const originalText = btn.innerText;
                 btn.innerText = currentLanguage === 'pt' ? "Salvo com sucesso ✓" : currentLanguage === 'en' ? "Successfully Saved ✓" : "¡Guardado con éxito! ✓";
                 setTimeout(() => btn.innerText = originalText, 2000);
+            }
+            
+            // Sync saved appearance state and update save button
+            captureSavedAppearance();
+            checkAppearanceChanges();
+        }
+
+        // --- SISTEMA DE POLIMENTO VISUAL DE CONFIGURAÇÕES ---
+        let savedAppearance = {};
+
+        function captureSavedAppearance() {
+            const currentAmoled = document.getElementById('amoled-switch')?.classList.contains('on') || false;
+            const currentTransparency = document.getElementById('transparency-switch')?.classList.contains('on') || false;
+            const currentVisualDepth = document.getElementById('visual-depth-switch')?.classList.contains('on') || false;
+            const currentAccessContrast = document.getElementById('access-contrast-switch')?.classList.contains('on') || false;
+            const currentAccessLargeText = document.getElementById('access-largetext-switch')?.classList.contains('on') || false;
+            const currentAccessLargeIcons = document.getElementById('access-largeicons-switch')?.classList.contains('on') || false;
+            const currentAccessReduceAnimations = document.getElementById('access-animations-switch')?.classList.contains('on') || false;
+            const currentAccessReadingMode = document.getElementById('access-reading-switch')?.classList.contains('on') || false;
+
+            savedAppearance = {
+                selectedThemeId: selectedThemeId || 'escuro_premium',
+                currentAccentColor: currentAccentColor || '#38bdf8',
+                selectedBorders: selectedBorders || 'rounded',
+                selectedFinish: selectedFinish || 'flat',
+                selectedSaturation: selectedSaturation !== undefined ? parseInt(selectedSaturation) : 100,
+                selectedFontFamily: selectedFontFamily || 'modern',
+                selectedFontSize: selectedFontSize || 'normal',
+                selectedAnimationIntensity: selectedAnimationIntensity || 'normal',
+                selectedIconSize: selectedIconSize || 'medium',
+                selectedCardShadow: selectedCardShadow || 'subtle',
+                selectedCardPadding: selectedCardPadding || 'normal',
+                selectedTransparency: currentTransparency,
+                selectedBlurDepth: selectedBlurDepth !== undefined ? parseInt(selectedBlurDepth) : 0,
+                selectedVisualDepth: currentVisualDepth,
+                selectedInterfaceDensity: selectedInterfaceDensity || 'normal',
+                accessHighContrast: currentAccessContrast,
+                accessLargeText: currentAccessLargeText,
+                accessLargeIcons: currentAccessLargeIcons,
+                accessReduceAnimations: currentAccessReduceAnimations,
+                accessReadingMode: currentAccessReadingMode,
+                isAmoled: currentAmoled
+            };
+        }
+
+        function checkAppearanceChanges() {
+            if (isConfigLoading) return; // ignore during loading
+            
+            const currentAmoled = document.getElementById('amoled-switch')?.classList.contains('on') || false;
+            const currentTransparency = document.getElementById('transparency-switch')?.classList.contains('on') || false;
+            const currentVisualDepth = document.getElementById('visual-depth-switch')?.classList.contains('on') || false;
+            const currentAccessContrast = document.getElementById('access-contrast-switch')?.classList.contains('on') || false;
+            const currentAccessLargeText = document.getElementById('access-largetext-switch')?.classList.contains('on') || false;
+            const currentAccessLargeIcons = document.getElementById('access-largeicons-switch')?.classList.contains('on') || false;
+            const currentAccessReduceAnimations = document.getElementById('access-animations-switch')?.classList.contains('on') || false;
+            const currentAccessReadingMode = document.getElementById('access-reading-switch')?.classList.contains('on') || false;
+
+            const currentSettings = {
+                selectedThemeId: selectedThemeId || 'escuro_premium',
+                currentAccentColor: currentAccentColor || '#38bdf8',
+                selectedBorders: selectedBorders || 'rounded',
+                selectedFinish: selectedFinish || 'flat',
+                selectedSaturation: selectedSaturation !== undefined ? parseInt(selectedSaturation) : 100,
+                selectedFontFamily: selectedFontFamily || 'modern',
+                selectedFontSize: selectedFontSize || 'normal',
+                selectedAnimationIntensity: selectedAnimationIntensity || 'normal',
+                selectedIconSize: selectedIconSize || 'medium',
+                selectedCardShadow: selectedCardShadow || 'subtle',
+                selectedCardPadding: selectedCardPadding || 'normal',
+                selectedTransparency: currentTransparency,
+                selectedBlurDepth: selectedBlurDepth !== undefined ? parseInt(selectedBlurDepth) : 0,
+                selectedVisualDepth: currentVisualDepth,
+                selectedInterfaceDensity: selectedInterfaceDensity || 'normal',
+                accessHighContrast: currentAccessContrast,
+                accessLargeText: currentAccessLargeText,
+                accessLargeIcons: currentAccessLargeIcons,
+                accessReduceAnimations: currentAccessReduceAnimations,
+                accessReadingMode: currentAccessReadingMode,
+                isAmoled: currentAmoled
+            };
+
+            let hasChanges = false;
+            for (const key in savedAppearance) {
+                if (savedAppearance[key] !== currentSettings[key]) {
+                    hasChanges = true;
+                    break;
+                }
+            }
+
+            const saveBtn = document.getElementById('btn-save-appearance');
+            if (saveBtn) {
+                if (hasChanges) {
+                    saveBtn.disabled = false;
+                    saveBtn.classList.add('dirty');
+                    saveBtn.innerHTML = `<span>Salvar Alterações Visuais ✨</span>`;
+                } else {
+                    saveBtn.disabled = true;
+                    saveBtn.classList.remove('dirty');
+                    saveBtn.innerHTML = `<span>Ajustes Visuais Salvos ✓</span>`;
+                }
+            }
+        }
+
+        async function saveConfigurationWithFeedback() {
+            const btn = document.getElementById('btn-save-appearance');
+            if (!btn || btn.disabled || btn.classList.contains('saving')) return;
+
+            triggerPulse();
+
+            btn.disabled = true;
+            btn.classList.remove('dirty');
+            btn.classList.add('saving');
+            btn.innerHTML = `
+                <svg class="animate-spin" style="width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 3;" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-dasharray="40 20" fill="none"></circle>
+                </svg>
+                <span>Salvando Ajustes Visuais...</span>
+            `;
+
+            // Wait 1.2s to simulate real-time processing and allow the user to see the premium feedback
+            await new Promise(resolve => setTimeout(resolve, 1200));
+
+            try {
+                saveConfiguration();
+
+                btn.classList.remove('saving');
+                btn.classList.add('saved-success');
+                btn.innerHTML = `<span>Ajustes Visuais Salvos com Sucesso! ✓</span>`;
+
+                showAppToast(currentLanguage === 'pt' ? "Estilo visual salvo com sucesso! ✓" : "Visual settings saved successfully! ✓", "success");
+
+                setTimeout(() => {
+                    btn.classList.remove('saved-success');
+                    captureSavedAppearance();
+                    checkAppearanceChanges();
+                }, 2500);
+            } catch (err) {
+                console.error("Erro ao salvar configuração de aparência:", err);
+                btn.classList.remove('saving');
+                btn.classList.add('dirty');
+                btn.disabled = false;
+                btn.innerHTML = `<span>Erro ao Salvar ❌ Tentar Novamente</span>`;
             }
         }
 
