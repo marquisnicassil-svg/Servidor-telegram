@@ -1323,18 +1323,34 @@
         .drawer-section {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
+        }
+        .drawer-section:not(:first-child) {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
         .drawer-section-title {
-            font-size: 0.68rem;
-            font-weight: 700;
-            color: var(--text-muted, #8e8e93);
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: var(--text-muted, #71717a);
             text-transform: uppercase;
-            letter-spacing: 0.12em;
-            padding-left: 14px;
-            margin-bottom: 4px;
+            letter-spacing: 0.16em;
+            padding: 4px 14px 8px;
+            margin: 0;
             user-select: none;
-            opacity: 0.8;
+            pointer-events: none;
+            opacity: 0.7;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            white-space: nowrap;
+        }
+        .drawer-section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 100%);
         }
         .drawer-menu {
             list-style: none;
@@ -1665,18 +1681,6 @@
                             <svg class="drawer-icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                         </span>
                         <span class="drawer-label" data-i18n="configuracoes_ajustes">Configurações</span>
-                    </li>
-                    <li class="drawer-item" onclick="switchTab('tab-config'); openConfigSubView('appearance'); toggleDrawer(false);">
-                        <span class="drawer-icon">
-                            <svg class="drawer-icon-svg" viewBox="0 0 24 24"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 14.7255 3.09032 17.1962 4.85857 19C5.03455 19.176 5.12254 19.264 5.16785 19.3703C5.21316 19.4767 5.21316 19.5962 5.21316 19.8351V20.5C5.21316 21.3284 5.88473 22 6.71316 22H12Z"></path><circle cx="7.5" cy="10.5" r="1.5"></circle><circle cx="11.5" cy="7.5" r="1.5"></circle><circle cx="16.5" cy="9.5" r="1.5"></circle><circle cx="15.5" cy="14.5" r="1.5"></circle></svg>
-                        </span>
-                        <span class="drawer-label" data-i18n="aparencia_temas">Aparência e Temas</span>
-                    </li>
-                    <li class="drawer-item" onclick="switchTab('tab-config'); openConfigSubView('languages'); toggleDrawer(false);">
-                        <span class="drawer-icon">
-                            <svg class="drawer-icon-svg" viewBox="0 0 24 24"><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                        </span>
-                        <span class="drawer-label" data-i18n="idiomas_menu">Idiomas</span>
                     </li>
                 </ul>
             </div>
@@ -4142,43 +4146,12 @@ WITH CHECK (true);</code>
                 activeTabId = activeTabEl ? activeTabEl.id : 'tab-chat';
             }
             
-            // Determine active subview if we are in tab-config
-            let activeConfigSubview = null;
-            if (activeTabId === 'tab-config') {
-                const indexEl = document.getElementById('config-index-view');
-                const indexVisible = indexEl && indexEl.style.display !== 'none';
-                if (!indexVisible) {
-                    document.querySelectorAll('.config-subview').forEach(el => {
-                        if (el.style.display === 'block' || el.style.display === 'flex') {
-                            activeConfigSubview = el.id.replace('config-subview-', '');
-                        }
-                    });
-                }
-            }
-            
             document.querySelectorAll('.drawer-item').forEach(item => {
                 item.classList.remove('active');
                 const clickAttr = item.getAttribute('onclick') || '';
                 
-                if (activeTabId === 'tab-config') {
-                    if (activeConfigSubview === 'appearance') {
-                        if (clickAttr.includes('appearance')) {
-                            item.classList.add('active');
-                        }
-                    } else if (activeConfigSubview === 'languages') {
-                        if (clickAttr.includes('languages')) {
-                            item.classList.add('active');
-                        }
-                    } else {
-                        // Main config index
-                        if (clickAttr.includes('tab-config') && !clickAttr.includes('appearance') && !clickAttr.includes('languages')) {
-                            item.classList.add('active');
-                        }
-                    }
-                } else {
-                    if (clickAttr.includes(activeTabId)) {
-                        item.classList.add('active');
-                    }
+                if (clickAttr.includes(activeTabId)) {
+                    item.classList.add('active');
                 }
             });
         }
