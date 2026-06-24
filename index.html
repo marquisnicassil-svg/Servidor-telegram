@@ -1730,9 +1730,9 @@
             <button id="menu-drawer-btn" onclick="toggleDrawer(true)" style="background: transparent; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; outline: none; margin-right: 15px;">
                 ☰
             </button>
-            <h1 id="topbar-section-title" style="font-size: 1.05rem; font-weight: 700; text-align: center; margin: 0; flex: 1; color: var(--text-main);">💬 Conversas</h1>
+            <h1 id="topbar-section-title" style="font-size: 1.05rem; font-weight: 700; text-align: center; margin: 0; flex: 1; color: var(--text-main);">💼 Início</h1>
             <div style="display: flex; align-items: center; gap: 12px; min-width: 60px; justify-content: flex-end;">
-                <button id="header-clear-chat-btn" onclick="clearChat()" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; outline: none; color: var(--text-muted); opacity: 0.8; transition: opacity 0.2s;" title="Apagar Conversa" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+                <button id="header-clear-chat-btn" onclick="clearChat()" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; display: none; align-items: center; justify-content: center; width: 36px; height: 36px; outline: none; color: var(--text-muted); opacity: 0.8; transition: opacity 0.2s;" title="Apagar Conversa" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
                     🗑️
                 </button>
                 <div class="badge-live" style="margin: 0;">Online</div>
@@ -1774,7 +1774,13 @@
             <div class="drawer-section">
                 <div class="drawer-section-title" data-i18n="menu_sec_principal">Principal</div>
                 <ul class="drawer-menu">
-                    <li class="drawer-item active" onclick="clickDrawerItem('tab-chat')">
+                    <li class="drawer-item active" onclick="clickDrawerItem('tab-workspace')" id="drawer-tab-workspace">
+                        <span class="drawer-icon">
+                            <svg class="drawer-icon-svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        </span>
+                        <span class="drawer-label" data-i18n="workspace">Início</span>
+                    </li>
+                    <li class="drawer-item" onclick="clickDrawerItem('tab-chat')">
                         <span class="drawer-icon">
                             <svg class="drawer-icon-svg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                         </span>
@@ -1785,12 +1791,6 @@
                             <svg class="drawer-icon-svg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4M8 15h.01M16 15h.01"></path></svg>
                         </span>
                         <span class="drawer-label" data-i18n="agents_menu">Agentes</span>
-                    </li>
-                    <li class="drawer-item" onclick="clickDrawerItem('tab-workspace')" id="drawer-tab-workspace">
-                        <span class="drawer-icon">
-                            <svg class="drawer-icon-svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                        </span>
-                        <span class="drawer-label" data-i18n="workspace">Início</span>
                     </li>
                 </ul>
             </div>
@@ -1869,10 +1869,10 @@
 
     <!-- Sistema de Abas no Topo -->
     <nav class="tabs-container" style="display: none !important;">
-        <button class="tab-btn active" id="btn-tab-chat" onclick="switchTab('tab-chat')">
+        <button class="tab-btn" id="btn-tab-chat" onclick="switchTab('tab-chat')">
             <span>💬</span><span>Chat</span>
         </button>
-        <button class="tab-btn" id="btn-tab-workspace" onclick="switchTab('tab-workspace')">
+        <button class="tab-btn active" id="btn-tab-workspace" onclick="switchTab('tab-workspace')">
             <span>💼</span><span>Workspace</span>
         </button>
         <button class="tab-btn" id="btn-tab-context-browser" onclick="switchTab('tab-context-browser')">
@@ -1893,7 +1893,7 @@
     <main>
         
         <!-- ABA 1: CONSOLE DE CHAT (Playground) -->
-        <section id="tab-chat" class="tab-section active">
+        <section id="tab-chat" class="tab-section">
             <div class="chat-wrapper">
                 <div class="chat-messages" id="chat-messages">
                     <div class="chat-message bot">
@@ -2007,7 +2007,7 @@
         </section>
 
         <!-- ABA WORKSPACE (DASHBOARD FINAL MINIMALISTA SaaS PREMIUM) -->
-        <section id="tab-workspace" class="tab-section" style="padding: 24px 16px 80px; max-width: 1000px; margin: 0 auto;">
+        <section id="tab-workspace" class="tab-section active" style="padding: 24px 16px 80px; max-width: 1000px; margin: 0 auto;">
             <!-- SKELETON LOADER CONTAINER -->
             <div id="dashboard-skeleton" style="display: flex; flex-direction: column; gap: 32px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 24px;">
@@ -4325,7 +4325,7 @@ WITH CHECK (true);</code>
         function syncDrawerActiveStates(activeTabId = null) {
             if (!activeTabId) {
                 const activeTabEl = document.querySelector('.tab-section.active');
-                activeTabId = activeTabEl ? activeTabEl.id : 'tab-chat';
+                activeTabId = activeTabEl ? activeTabEl.id : 'tab-workspace';
             }
             
             document.querySelectorAll('.drawer-item').forEach(item => {
