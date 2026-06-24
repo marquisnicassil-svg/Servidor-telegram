@@ -2157,26 +2157,44 @@
                     <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.4;">Selecione suas preferências e simule conversas com nosso recrutador virtual em rodadas dinâmicas. Ao final, ganhe uma sabatina analítica com notas e pontos de melhoria personalizados!</p>
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
-                    <div>
+                <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
+                    <!-- Campo Inteligente de Profissão (Cargo) com Autocomplete -->
+                    <div style="position: relative;">
                         <label style="display:block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Cargo Desejado:</label>
-                        <input id="int-input-cargo" type="text" class="form-control" value="Desenvolvedor Mobile Android" placeholder="Ex: Desenvolvedor React Native, Product Manager...">
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <span style="position: absolute; left: 14px; font-size: 1.15rem; color: var(--text-muted); line-height: 1; user-select: none;" id="int-cargo-icon">💻</span>
+                            <input id="int-input-cargo" type="text" class="form-control" value="Desenvolvedor Mobile Android" placeholder="Digite para buscar profissão... Ex: med, des, adv..." style="padding-left: 42px; width: 100%; border-radius: 12px; height: 48px; background: #0f172a; color: #fff; border: 1px solid var(--border-color);" autocomplete="off" onfocus="showIntAutocomplete()" oninput="filterIntAutocomplete()">
+                        </div>
+                        
+                        <!-- Painel Dropdown de Autocomplete -->
+                        <div id="int-autocomplete-panel" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #090d16; border: 1px solid var(--border-color); border-radius: 12px; z-index: 1000; max-height: 280px; overflow-y: auto; box-shadow: 0 12px 36px rgba(0,0,0,0.7); margin-top: 6px; padding: 4px;">
+                            <!-- Carregado via JS -->
+                        </div>
                     </div>
                     
+                    <!-- Seção de Profissões Recentes -->
+                    <div id="int-recent-container" style="display: none; flex-direction: column; gap: 6px;">
+                        <span style="color: var(--text-muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; text-align: left;">Profissões Utilizadas Recentemente</span>
+                        <div id="int-recent-chips" style="display: flex; flex-wrap: wrap; gap: 6px; text-align: left;">
+                            <!-- Injetado via JS -->
+                        </div>
+                    </div>
+
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                         <div>
                             <label style="display:block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Área Profissional:</label>
-                            <select id="int-select-area" class="form-control" style="background: #0f172a; color: #fff; border: 1px solid var(--border-color);">
-                                <option value="Tecnologia">Tecnologia</option>
-                                <option value="Design">Design</option>
-                                <option value="Negócios / Gestão">Negócios</option>
-                                <option value="Vendas / Marketing">Marketing</option>
-                                <option value="Finanças">Finanças</option>
+                            <select id="int-select-area" class="form-control" style="background: #0f172a; color: #fff; border: 1px solid var(--border-color); height: 48px; border-radius: 12px; padding: 0 14px;" onchange="updateIntAreaIcon()">
+                                <option value="Tecnologia">💻 Tecnologia</option>
+                                <option value="Saúde">⚕️ Saúde</option>
+                                <option value="Jurídico">⚖️ Jurídico</option>
+                                <option value="Administração e Negócios">📊 Administração e Negócios</option>
+                                <option value="Design e Comunicação">🎨 Design e Comunicação</option>
+                                <option value="Educação">📚 Educação</option>
                             </select>
                         </div>
                         <div>
                             <label style="display:block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Nível de Experiência:</label>
-                            <select id="int-select-nivel" class="form-control" style="background: #0f172a; color: #fff; border: 1px solid var(--border-color);">
+                            <select id="int-select-nivel" class="form-control" style="background: #0f172a; color: #fff; border: 1px solid var(--border-color); height: 48px; border-radius: 12px; padding: 0 14px;">
                                 <option value="Estágio">Estágio</option>
                                 <option value="Júnior">Júnior</option>
                                 <option value="Pleno" selected>Pleno</option>
@@ -2240,7 +2258,7 @@
                     
                     <div>
                         <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size: 0.85rem;">
-                            <span>🗣️ Comunicação</span>
+                            <span id="int-lbl-comm">🗣️ Comunicação</span>
                             <strong id="int-score-comm">90 / 100</strong>
                         </div>
                         <div style="width:100%; height:8px; background: rgba(255,255,255,0.05); border-radius:4px; overflow:hidden;">
@@ -2250,7 +2268,7 @@
 
                     <div>
                         <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size: 0.85rem;">
-                            <span>🎯 Clareza de Respostas</span>
+                            <span id="int-lbl-clar">🎯 Clareza de Respostas</span>
                             <strong id="int-score-clar">80 / 100</strong>
                         </div>
                         <div style="width:100%; height:8px; background: rgba(255,255,255,0.05); border-radius:4px; overflow:hidden;">
@@ -2260,7 +2278,7 @@
 
                     <div>
                         <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size: 0.85rem;">
-                            <span>💻 Conhecimento Técnico</span>
+                            <span id="int-lbl-tech">💻 Conhecimento Técnico</span>
                             <strong id="int-score-tech">85 / 100</strong>
                         </div>
                         <div style="width:100%; height:8px; background: rgba(255,255,255,0.05); border-radius:4px; overflow:hidden;">
@@ -2270,7 +2288,7 @@
 
                     <div>
                         <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size: 0.85rem;">
-                            <span>🧠 Confiança Demonstrada</span>
+                            <span id="int-lbl-conf">🧠 Confiança Demonstrada</span>
                             <strong id="int-score-conf">85 / 100</strong>
                         </div>
                         <div style="width:100%; height:8px; background: rgba(255,255,255,0.05); border-radius:4px; overflow:hidden;">
@@ -10746,6 +10764,152 @@ WITH CHECK (true);</code>
         }
  
         // --- SIMULADOR DE ENTREVISTAS IA ---
+        const INT_PROFESSIONS_DATA = {
+            "Tecnologia": {
+                icon: "💻",
+                professions: [
+                    "Desenvolvedor Front-End",
+                    "Desenvolvedor Back-End",
+                    "Desenvolvedor Mobile",
+                    "Desenvolvedor Full Stack",
+                    "Analista de Dados",
+                    "Cientista de Dados",
+                    "DevOps"
+                ]
+            },
+            "Saúde": {
+                icon: "⚕️",
+                professions: [
+                    "Médico Clínico Geral",
+                    "Médico Cardiologista",
+                    "Médico Pediatra",
+                    "Médico Cirurgião",
+                    "Médico",
+                    "Enfermeiro",
+                    "Fisioterapeuta",
+                    "Psicólogo",
+                    "Dentista",
+                    "Farmacêutico"
+                ]
+            },
+            "Jurídico": {
+                icon: "⚖️",
+                professions: [
+                    "Advogado",
+                    "Promotor",
+                    "Defensor Público",
+                    "Analista Jurídico"
+                ]
+            },
+            "Administração e Negócios": {
+                icon: "📊",
+                professions: [
+                    "Administrador",
+                    "Analista Financeiro",
+                    "Product Manager",
+                    "Gerente de Projetos",
+                    "Recursos Humanos"
+                ]
+            },
+            "Design e Comunicação": {
+                icon: "🎨",
+                professions: [
+                    "UX Designer",
+                    "UI Designer",
+                    "Designer Gráfico",
+                    "Social Media",
+                    "Redator"
+                ]
+            },
+            "Educação": {
+                icon: "📚",
+                professions: [
+                    "Professor",
+                    "Coordenador Pedagógico",
+                    "Tutor",
+                    "Instrutor"
+                ]
+            }
+        };
+
+        const INT_QUESTIONS_TEMPLATES = {
+            "Saúde": [
+                "Olá! Seja muito bem-vindo ao Simulador de Entrevistas Synapse IA. Identifiquei que você está pleiteando a vaga de {CARGO} ({NIVEL}) na área de Saúde. Para iniciar, por favor, conte-me qual foi o caso clínico, atendimento ou projeto de saúde mais complexo e gratificante que você conduziu nos últimos meses?",
+                "Excelente. Sendo um profissional {NIVEL} na área da saúde, como você gerencia situações de alta pressão emocional ou emergências clínicas onde decisões rápidas e precisas são de vida ou morte?",
+                "Muito importante. Em relação à ética e humanização: como você estabelece uma relação de confiança com os pacientes (ou equipe) e lida com comunicações difíceis, como diagnósticos graves ou conflitos familiares?",
+                "Entendido. Sob a perspectiva de protocolo e qualidade: quais são as diretrizes de segurança do paciente, melhores práticas clínicas ou inovações de tratamento que você considera indispensáveis para a excelência do seu atendimento?",
+                "Para finalizar: como você se atualiza cientificamente e quais novas metodologias, pesquisas clínicas ou tecnologias em saúde você tem estudado atualmente para aprimorar sua prática?"
+            ],
+            "Jurídico": [
+                "Olá! Seja muito bem-vindo ao Simulador de Entrevistas Synapse IA. Identifiquei que você está pleiteando a vaga de {CARGO} ({NIVEL}) na área Jurídica. Para iniciar nossa sabatina, por favor, descreva qual foi a estratégia jurídica, parecer ou peça processual de maior impacto que você desenvolveu recentemente?",
+                "Excelente colocação. Como profissional {NIVEL}, como você se prepara para audiências, sustentações orais ou negociações de alto impacto, e como mantém a compostura diante de contra-argumentos agressivos?",
+                "Muito bem. Pensando na parte analítica e ética: de que forma você realiza a gestão de riscos legais preventivos para seus clientes ou organização, mantendo o mais estrito padrão ético e de integridade?",
+                "Compreendido. Em relação à fundamentação: quais são as principais correntes doutrinárias, jurisprudências recentes ou alterações na legislação da sua área de atuação que você considera vitais para o sucesso das suas demandas?",
+                "Para fecharmos: como você acompanha as transformações do ecossistema de direito digital ou novas jurisprudências, e qual curso ou tema do meio jurídico você está estudando neste momento?"
+            ],
+            "Administração e Negócios": [
+                "Olá! Seja muito bem-vindo ao Simulador de Entrevistas Synapse IA. Identifiquei que você está pleiteando a vaga de {CARGO} ({NIVEL}) na área de Administração e Negócios. Para dar início, por favor, compartilhe qual foi a principal meta de negócios, projeto de eficiência operacional ou reestruturação de processos que você liderou com sucesso nos últimos 12 meses?",
+                "Excelente. Como profissional {NIVEL}, como você lida com a gestão de recursos (financeiros, humanos ou temporais) sob cenários de alta incerteza econômica ou restrição de orçamento?",
+                "Muito bom. Sobre liderança e pessoas: de que maneira você motiva sua equipe para atingir metas audaciosas, resolve conflitos internos e gerencia o alinhamento de expectativas com os principais stakeholders da empresa?",
+                "Entendido. Do ponto de vista analítico: quais indicadores de performance (KPIs), ferramentas de inteligência de negócios ou frameworks de gestão você utiliza para embasar suas tomadas de decisão?",
+                "Para encerrar: quais são as principais tendências de governança, sustentabilidade corporativa ou modelos de negócios que você está estudando atualmente para manter a organização competitiva?"
+            ],
+            "Design e Comunicação": [
+                "Olá! Seja muito bem-vindo ao Simulador de Entrevistas Synapse IA. Identifiquei que você está pleiteando a vaga de {CARGO} ({NIVEL}) na área de Design e Comunicação. Para iniciar, por favor, descreva o projeto de criação, campanha ou interface (UI/UX) de maior sucesso que você idealizou e executou recentemente, destacando seu papel nele?",
+                "Excelente. Sendo um profissional {NIVEL}, como você traduz as necessidades de negócios do cliente ou os dados de comportamento dos usuários em conceitos criativos práticos e funcionais?",
+                "Muito legal. Em relação ao feedback: como você lida com críticas pesadas a suas criações por parte de clientes ou diretores de arte, e de que forma defende suas decisões de design com argumentos técnicos ou comportamentais?",
+                "Compreendido. Em termos práticos e técnicos: quais metodologias de design, ferramentas de criação ou estratégias de engajamento de comunicação você considera vitais para entregar alta qualidade estética e de conversão?",
+                "Para finalizar: como você busca novas referências visuais e tendências de mercado, e qual técnica, ferramenta inovadora ou conceito de design/comunicação você está se dedicando a aprender atualmente?"
+            ],
+            "Educação": [
+                "Olá! Seja muito bem-vindo ao Simulador de Entrevistas Synapse IA. Identifiquei que você está pleiteando a vaga de {CARGO} ({NIVEL}) na área de Educação. Para começarmos, poderia compartilhar um projeto pedagógico, plano de aula inovador ou momento de ensino em que você obteve o maior engajamento e impacto positivo na aprendizagem dos alunos?",
+                "Excelente. Como educador {NIVEL}, qual é a sua abordagem pedagógica para lidar com turmas heterogêneas, onde os alunos possuem ritmos de aprendizagem e necessidades individuais totalmente diferentes?",
+                "Muito importante. Em termos socioemocionais: como você cultiva um ambiente de sala de aula seguro, empático e inclusivo, e de que forma gerencia conflitos ou desinteresse por parte de alunos e responsáveis?",
+                "Entendido. Do ponto de vista metodológico: como você integra as tecnologias educacionais, metodologias ativas de aprendizagem ou novos sistemas de avaliação diagnóstica no seu dia a dia?",
+                "Para encerrarmos: quais são as principais discussões sobre neuroeducação, novas diretrizes curriculares ou teorias pedagógicas contemporâneas que você tem estudado atualmente para aprimorar sua prática docente?"
+            ],
+            "Tecnologia": [
+                "Olá! Seja muito bem-vindo ao Simulador de Entrevistas Synapse IA. Identifiquei que você está pleiteando a vaga de {CARGO} ({NIVEL}) na área de Tecnologia. Para dar o primeiro passo, por favor, compartilhe qual foi a maior conquista técnica em desenvolvimento de software ou infraestrutura que você realizou nos últimos 12 meses?",
+                "Excelente. Como profissional {NIVEL}, você poderia descrever qual foi o desafio de arquitetura, algoritmos ou integração de sistemas mais complexo que enfrentou recentemente e como o resolveu?",
+                "Perfeito. Do ponto de vista comportamental, como você lida com prazos apertados de entrega de produto, mudança repentina de requisitos e alinhamento com stakeholders de negócios?",
+                "Entendido. Focando em tecnologia: quais padrões de projeto (Design Patterns), frameworks de escalabilidade ou práticas contemporâneas de desenvolvimento de software você considera fundamentais hoje para a estabilidade de soluções?",
+                "Para encerrarmos nossa conversa: como você se mantém atualizado com as constantes transformações tecnológicas e quais linguagens, ferramentas ou temas específicos está estudando ou aprofundando neste momento?"
+            ]
+        };
+
+        const OFFLINE_EVALUATIONS = {
+            "Tecnologia": {
+                strengths: "Excelente clareza expositiva ao detalhar fluxos lógicos, uso correto de jargões técnicos modernos e foco estruturado na resolução de desafios complexos.",
+                improvements: "Poderia focar um pouco mais em documentação, testes unitários, automação de processos e padrões de arquitetura sustentável de longo prazo.",
+                recommendations: "Aprofunde-se em padrões de Clean Architecture, concorrência, boas práticas de Clean Code e simulações regulares de live coding corporativo."
+            },
+            "Saúde": {
+                strengths: "Demonstrou excelente percepção humanizada do atendimento, alto rigor ético na conduta diagnóstica e clareza para lidar com tomada de decisão crítica sob pressão.",
+                improvements: "Importante aprimorar o registro detalhado de prontuários, comunicação interprofissional hospitalar e adoção de inovações de telemedicina/tecnologia assistiva.",
+                recommendations: "Recomenda-se participar de simulações realísticas de emergência multiprofissional, estudar diretrizes atualizadas de segurança do paciente e cursos de comunicação de más notícias."
+            },
+            "Jurídico": {
+                strengths: "Excelente capacidade de persuasão argumentativa, sólido conhecimento de jurisprudência e grande clareza técnica ao delinear teses de defesa ou prevenção.",
+                improvements: "Poderia expandir a atuação prática em conciliação e arbitragem pré-contenciosa, além de ferramentas modernas de visual law e automação jurídica.",
+                recommendations: "Aprofunde-se nas novas tendências de tribunais superiores, faça cursos avançados de oratória forense e estude compliance e segurança de dados aplicados ao Direito."
+            },
+            "Administração e Negócios": {
+                strengths: "Forte orientação para resultados tangíveis e KPIs, clareza no alinhamento de expectativas de stakeholders e sólida visão de otimização operacional.",
+                improvements: "Sugerimos aprimorar metodologias de gestão de riscos corporativos mais profundas e estratégias ágeis de desenvolvimento de equipes autogerenciáveis.",
+                recommendations: "Estude frameworks modernos de governança corporativa, ferramentas avançadas de business intelligence e curse certificações em gestão ágil (OKRs, Scrum, PMP)."
+            },
+            "Design e Comunicação": {
+                strengths: "Altíssimo senso estético e capacidade inovadora na conceituação de marcas/telas, com bom entendimento de comportamento do consumidor e usabilidade de projetos.",
+                improvements: "Poderia melhorar a fundamentação técnica das decisões criativas usando dados quantitativos de testes de mercado e ferramentas de análise estatística de engajamento.",
+                recommendations: "Estude Design Ops, metodologias ágeis de pesquisa de usuário (UX Research), testes de usabilidade avançados e métricas de conversão aplicadas ao design."
+            },
+            "Educação": {
+                strengths: "Excelente domínio didático e sensibilidade para personalização do aprendizado, com foco louvável no desenvolvimento socioemocional e engajamento dos alunos.",
+                improvements: "Recomendamos explorar novas formas de avaliação formativa digital e a gamificação de conteúdos curriculares complexos para maior interatividade.",
+                recommendations: "Estude as últimas tendências em Neuroeducação, metodologias de sala de aula invertida e faça treinamentos voltados para ferramentas digitais de aprendizagem ativa."
+            }
+        };
+
         let webInterviewState = {
             cargo: "",
             area: "",
@@ -10754,6 +10918,175 @@ WITH CHECK (true);</code>
             history: [],
             isRunning: false
         };
+
+        function getRecentProfessions() {
+            try {
+                return JSON.parse(localStorage.getItem('synapse_recent_professions') || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveRecentProfession(profName) {
+            if (!profName) return;
+            try {
+                let list = getRecentProfessions();
+                list = list.filter(p => p.toLowerCase() !== profName.toLowerCase());
+                list.unshift(profName);
+                list = list.slice(0, 5);
+                localStorage.setItem('synapse_recent_professions', JSON.stringify(list));
+                renderRecentProfessions();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function renderRecentProfessions() {
+            const container = document.getElementById('int-recent-container');
+            const listEl = document.getElementById('int-recent-chips');
+            if (!container || !listEl) return;
+
+            const list = getRecentProfessions();
+            if (list.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'flex';
+            listEl.innerHTML = list.map(prof => {
+                let icon = "💼";
+                for (const area in INT_PROFESSIONS_DATA) {
+                    if (INT_PROFESSIONS_DATA[area].professions.includes(prof)) {
+                        icon = INT_PROFESSIONS_DATA[area].icon;
+                        break;
+                    }
+                }
+                return `<span class="recent-chip" onclick="selectIntProfession('${prof}')" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 16px; padding: 6px 12px; font-size: 0.78rem; color: #fff; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;">${icon} ${prof}</span>`;
+            }).join('');
+        }
+
+        function selectIntProfession(profName) {
+            const input = document.getElementById('int-input-cargo');
+            if (input) {
+                input.value = profName;
+            }
+
+            let selectedArea = "Tecnologia";
+            let icon = "💻";
+            for (const area in INT_PROFESSIONS_DATA) {
+                if (INT_PROFESSIONS_DATA[area].professions.includes(profName)) {
+                    selectedArea = area;
+                    icon = INT_PROFESSIONS_DATA[area].icon;
+                    break;
+                }
+            }
+
+            const selectArea = document.getElementById('int-select-area');
+            if (selectArea) {
+                selectArea.value = selectedArea;
+            }
+
+            const iconEl = document.getElementById('int-cargo-icon');
+            if (iconEl) {
+                iconEl.innerText = icon;
+            }
+
+            const panel = document.getElementById('int-autocomplete-panel');
+            if (panel) {
+                panel.style.display = 'none';
+            }
+        }
+
+        function showIntAutocomplete() {
+            const panel = document.getElementById('int-autocomplete-panel');
+            if (!panel) return;
+            panel.style.display = 'block';
+            filterIntAutocomplete();
+        }
+
+        function filterIntAutocomplete() {
+            const panel = document.getElementById('int-autocomplete-panel');
+            const input = document.getElementById('int-input-cargo');
+            if (!panel || !input) return;
+
+            const query = input.value.toLowerCase().trim();
+            let html = "";
+
+            if (!query) {
+                for (const area in INT_PROFESSIONS_DATA) {
+                    const icon = INT_PROFESSIONS_DATA[area].icon;
+                    const professions = INT_PROFESSIONS_DATA[area].professions;
+                    
+                    html += `<div class="autocomplete-header" style="padding: 6px 10px; background: rgba(255,255,255,0.02); font-size: 0.68rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.04); text-align: left; margin-top: 4px;">${icon} ${area}</div>`;
+                    professions.forEach(prof => {
+                        html += `<div class="autocomplete-item" onclick="selectIntProfession('${prof}')" style="padding: 8px 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.15s; font-size: 0.85rem; color: #fff; text-align: left; border-radius: 6px;">
+                            <span style="font-size: 1rem;">${icon}</span>
+                            <span>${prof}</span>
+                        </div>`;
+                    });
+                }
+            } else {
+                let matches = [];
+                for (const area in INT_PROFESSIONS_DATA) {
+                    const icon = INT_PROFESSIONS_DATA[area].icon;
+                    const professions = INT_PROFESSIONS_DATA[area].professions;
+                    professions.forEach(prof => {
+                        if (prof.toLowerCase().includes(query)) {
+                            matches.push({ area, icon, name: prof });
+                        }
+                    });
+                }
+
+                if (matches.length === 0) {
+                    html = `<div style="padding: 14px; text-align: center; color: var(--text-muted); font-size: 0.82rem;">Nenhuma profissão correspondente. Digite livremente!</div>`;
+                } else {
+                    matches.forEach(item => {
+                        html += `<div class="autocomplete-item" onclick="selectIntProfession('${item.name}')" style="padding: 8px 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.15s; font-size: 0.85rem; color: #fff; text-align: left; border-radius: 6px;">
+                            <span style="font-size: 1rem;">${item.icon}</span>
+                            <div>
+                                <span style="display: block; font-weight: 600;">${item.name}</span>
+                                <small style="color: var(--text-muted); font-size: 0.72rem;">${item.area}</small>
+                            </div>
+                        </div>`;
+                    });
+                }
+            }
+
+            panel.innerHTML = html;
+        }
+
+        // Close autocomplete when clicking outside
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('int-autocomplete-panel');
+            const input = document.getElementById('int-input-cargo');
+            if (panel && input && !input.contains(e.target) && !panel.contains(e.target)) {
+                panel.style.display = 'none';
+            }
+        });
+
+        function updateIntAreaIcon() {
+            const selectArea = document.getElementById('int-select-area');
+            const iconEl = document.getElementById('int-cargo-icon');
+            if (selectArea && iconEl) {
+                const area = selectArea.value;
+                const data = INT_PROFESSIONS_DATA[area];
+                if (data) {
+                    iconEl.innerText = data.icon;
+                } else {
+                    iconEl.innerText = "💼";
+                }
+            }
+        }
+
+        function getTemplateQuestion(area, cargo, nivel, roundIndex) {
+            const category = INT_QUESTIONS_TEMPLATES[area] ? area : "Tecnologia";
+            const templateList = INT_QUESTIONS_TEMPLATES[category];
+            const template = templateList[roundIndex];
+            return template
+                .replace(/{CARGO}/g, cargo)
+                .replace(/{NIVEL}/g, nivel)
+                .replace(/{AREA}/g, area);
+        }
 
         function getWebInterviews() {
             try {
@@ -10816,7 +11149,6 @@ WITH CHECK (true);</code>
         }
 
         function startWebInterview() {
-            // Verificar limite de simulações do plano Freemium
             if (typeof checkSubscriptionLimit === 'function' && !checkSubscriptionLimit('interview')) {
                 return;
             }
@@ -10835,7 +11167,8 @@ WITH CHECK (true);</code>
                 isRunning: true
             };
 
-            // Incrementar uso de simulações de entrevista do plano Freemium
+            saveRecentProfession(cargo);
+
             if (typeof incrementAppSubscriptionUsage === 'function') {
                 incrementAppSubscriptionUsage('interview');
             }
@@ -10850,7 +11183,8 @@ WITH CHECK (true);</code>
             const chatScroll = document.getElementById('int-chat-scroll');
             chatScroll.innerHTML = "";
 
-            addWebRecruiterMessage("Olá! Seja muito bem-vindo ao Simulador de Entrevistas Synapse IA. É um prazer falar com você! Identifiquei que você está pleiteando a vaga de " + cargo + " (" + nivel + ") na área profissional de " + area + ". Para dar o primeiro passo na nossa sabatina, por favor compartilhe comigo qual foi sua maior conquista técnica de projeto nos últimos 12 meses?");
+            const firstQuestion = getTemplateQuestion(area, cargo, nivel, 0);
+            addWebRecruiterMessage(firstQuestion);
         }
 
         function addWebRecruiterMessage(text) {
@@ -10900,6 +11234,121 @@ WITH CHECK (true);</code>
             }
         }
 
+        function addWebRecruiterLoadingBubble() {
+            const chatScroll = document.getElementById('int-chat-scroll');
+            const bubble = document.createElement('div');
+            bubble.id = "int-recruiter-loading";
+            bubble.style.alignSelf = 'flex-start';
+            bubble.style.maxWidth = '80%';
+            bubble.style.display = 'flex';
+            bubble.style.flexDirection = 'column';
+            bubble.style.alignItems = 'flex-start';
+            bubble.style.marginBottom = '12px';
+            bubble.innerHTML = `
+                <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: bold; margin-bottom: 2px;">👨‍💼 Recrutador IA (Digitando...)</div>
+                <div style="background: var(--card-bg-primary); border: 1px solid var(--border-color); color: #fff; padding: 12px 18px; border-radius: 4px 12px 12px 12px; font-size: 0.88rem; display: flex; align-items: center; gap: 8px;">
+                    <div class="loader-spinner" style="width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <span>Formulando pergunta personalizada para sua resposta anterior...</span>
+                </div>
+            `;
+            chatScroll.appendChild(bubble);
+            chatScroll.scrollTop = chatScroll.scrollHeight;
+        }
+
+        function removeWebRecruiterLoadingBubble() {
+            const bubble = document.getElementById('int-recruiter-loading');
+            if (bubble) bubble.remove();
+        }
+
+        async function fetchNextRecruiterQuestionAI() {
+            addWebRecruiterLoadingBubble();
+            const { key, url, model, type: activeApiType } = getActiveApiCredentials();
+            const promptConfig = `Você é um recrutador técnico e de RH sênior extremamente experiente e focado na área de ${webInterviewState.cargo}.`;
+
+            const prompt = `Você é um recrutador sênior conduzindo uma entrevista virtual inteligente e personalizada.
+O candidato está pleiteando a vaga de **${webInterviewState.cargo}** (${webInterviewState.nivel}) na área de **${webInterviewState.area}**.
+Estamos na Rodada ${webInterviewState.progress} de 5 da nossa sabatina.
+
+DIRETRIZ CRÍTICA DE PROFISSÃO:
+Você deve focar EXCLUSIVAMENTE na profissão de **${webInterviewState.cargo}**.
+SE a profissão não for da área de TI/tecnologia (como Medicina, Enfermagem, Direito, Administração, Psicologia, etc.), você está STRICTAMENTE PROIBIDO de usar jargões de software, código, linguagens de programação, arquitetura de sistemas, bugs ou termos de desenvolvimento. Adapte as perguntas para o ambiente, conduta e ética real da profissão do candidato!
+
+PLANEJAMENTO DA RODADA ${webInterviewState.progress}:
+- Rodada 2: Aprofundar em um desafio técnico/operacional prático da profissão de ${webInterviewState.cargo} e como o candidato resolveu.
+- Rodada 3: Questão de inteligência emocional, ética profissional, pressão por prazos/emergências ou mediação de conflitos na área de ${webInterviewState.cargo}.
+- Rodada 4: Perguntar sobre o domínio de frameworks conceituais, normas, diretrizes regulamentares, ferramentas de trabalho ou metodologias indispensáveis para a excelência na profissão do candidato.
+- Rodada 5: Tendências futuras de inovação, novas diretrizes reguladoras e auto-atualização contínua na profissão de ${webInterviewState.cargo}.
+
+HISTÓRICO DA CONVERSA:
+${JSON.stringify(webInterviewState.history)}
+
+Sua tarefa: Escreva a pergunta da Rodada ${webInterviewState.progress} em português.
+A pergunta deve ser contextualizada de forma inteligente com base na resposta anterior do candidato, sendo amigável, direta e profissional.
+Retorne APENAS a pergunta crua do Recrutador em no máximo 3 ou 4 linhas. Não interaja fora do personagem nem adicione "Aqui está a pergunta:".`;
+
+            try {
+                let aiReply = "";
+                if (activeApiType === "GEMINI") {
+                    const cleanUrl = url.endsWith('/') ? url : url + '/';
+                    const fetchUrl = `${cleanUrl}v1beta/models/${model}:generateContent?key=${key}`;
+                    
+                    const response = await fetch(fetchUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: prompt }] }],
+                            generationConfig: { temperature: 0.7 },
+                            systemInstruction: { parts: [{ text: promptConfig }] }
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    } else {
+                        throw new Error("HTTP " + response.status);
+                    }
+                } else {
+                    const fetchUrl = sanitizeChatCompletionsUrl(url);
+                    const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
+                    const response = await fetch(fetchUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + cleanKey
+                        },
+                        body: JSON.stringify({
+                            model: model,
+                            messages: [
+                                { role: "system", content: promptConfig },
+                                { role: "user", content: prompt }
+                            ],
+                            temperature: 0.7
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        aiReply = data.choices?.[0]?.message?.content;
+                    } else {
+                        throw new Error("HTTP " + response.status);
+                    }
+                }
+
+                removeWebRecruiterLoadingBubble();
+                if (aiReply && aiReply.trim() !== "") {
+                    addWebRecruiterMessage(aiReply.trim());
+                } else {
+                    throw new Error("Resposta de IA vazia");
+                }
+            } catch (err) {
+                console.error("Falha ao gerar pergunta por IA:", err);
+                removeWebRecruiterLoadingBubble();
+                const fallbackQ = getTemplateQuestion(webInterviewState.area, webInterviewState.cargo, webInterviewState.nivel, webInterviewState.progress - 1);
+                addWebRecruiterMessage(fallbackQ);
+            }
+        }
+
         function submitWebAnswer() {
             const inputEl = document.getElementById('int-chat-input');
             const text = inputEl.value.trim();
@@ -10912,15 +11361,15 @@ WITH CHECK (true);</code>
                 evaluateAndFinishWebInterview();
             } else {
                 webInterviewState.progress++;
-                setTimeout(() => {
-                    const questions = [
-                        "Perfeito. Como profissional " + webInterviewState.nivel + ", você poderia compartilhar qual foi o desafio mais complexo de equipe ou produto que você ajudou a solucionar recentemente de forma cooperada?",
-                        "Excelente colocação. Entrando na vertente comportamental e situacional: como você lida com frustrações de prazos urgentes ou escopos indefinidos estabelecidos pelos clientes?",
-                        "Entendido. Em termos mais técnicos: focando na área de " + webInterviewState.area + ", quais são os principais padrões arquiteturais ou frameworks que você considera fundamentais para escalabilidade das soluções contemporâneas?",
-                        "Para fecharmos: de que maneira você se atualiza continuamente com as novas tendências tecnológicas e qual curso ou tema você está aprofundando neste exato momento?"
-                    ];
-                    addWebRecruiterMessage(questions[webInterviewState.progress - 2]);
-                }, 1000);
+                const { key } = getActiveApiCredentials();
+                if (key) {
+                    fetchNextRecruiterQuestionAI();
+                } else {
+                    setTimeout(() => {
+                        const nextQuestion = getTemplateQuestion(webInterviewState.area, webInterviewState.cargo, webInterviewState.nivel, webInterviewState.progress - 1);
+                        addWebRecruiterMessage(nextQuestion);
+                    }, 1000);
+                }
             }
         }
 
@@ -10928,7 +11377,6 @@ WITH CHECK (true);</code>
             document.getElementById('int-chat-container').style.display = 'none';
             document.getElementById('int-setup-container').style.display = 'none';
             
-            // Simular loading de análise
             const container = document.getElementById('tab-interview-simulator');
             const preResult = document.createElement('div');
             preResult.id = "int-eval-loader";
@@ -10941,40 +11389,234 @@ WITH CHECK (true);</code>
             `;
             container.appendChild(preResult);
 
-            setTimeout(() => {
-                const loader = document.getElementById('int-eval-loader');
-                if (loader) loader.remove();
+            const { key, url, model, type: activeApiType } = getActiveApiCredentials();
 
-                const userResponses = webInterviewState.history.filter(h => h.sender === "CANDIDATO").map(h => h.text).join(" ");
-                const answersLength = userResponses.length;
-                
-                // Métrica adaptativa baseada no tamanho das respostas
-                const scoreGeneral = Math.min(100, Math.max(50, 72 + Math.floor(answersLength / 22)));
-                const scoreComm = Math.min(100, Math.max(50, 68 + Math.floor(answersLength / 20)));
-                const scoreClar = Math.min(100, Math.max(50, 75 + (answersLength > 150 ? 15 : 5)));
-                const scoreTech = Math.min(100, Math.max(50, 70 + (webInterviewState.nivel === 'Sênior' ? 18 : 22)));
-                const scoreConf = Math.min(100, Math.max(50, 74 + Math.floor(answersLength / 35)));
+            if (!key) {
+                setTimeout(() => {
+                    const loader = document.getElementById('int-eval-loader');
+                    if (loader) loader.remove();
 
-                const newRecord = {
-                    id: webInterviewState.id,
-                    cargo: webInterviewState.cargo,
-                    area: webInterviewState.area,
-                    nivel: webInterviewState.nivel,
-                    scoreGeneral: scoreGeneral,
-                    scoreCommunication: scoreComm,
-                    scoreClarity: scoreClar,
-                    scoreTechnical: scoreTech,
-                    scoreConfidence: scoreConf,
-                    strengths: "Excelente clareza expositiva, foco correto nos resultados e ótimas qualidades conceituais.",
-                    improvements: "Poderia expandir mais a parte prática de codificação ou padrões de arquitetura de software de grande escala.",
-                    recommendations: "Estudar conceitos sólidos de desenvolvimento escalável (Clean Architecture, padrões de microsserviços) e praticar simulados de live coding.",
-                    timestamp: Date.now()
-                };
+                    const userResponses = webInterviewState.history.filter(h => h.sender === "CANDIDATO").map(h => h.text).join(" ");
+                    const answersLength = userResponses.length;
+                    
+                    const scoreGeneral = Math.min(100, Math.max(50, 72 + Math.floor(answersLength / 22)));
+                    const scoreComm = Math.min(100, Math.max(50, 68 + Math.floor(answersLength / 20)));
+                    const scoreClar = Math.min(100, Math.max(50, 75 + (answersLength > 150 ? 15 : 5)));
+                    const scoreTech = Math.min(100, Math.max(50, 70 + (webInterviewState.nivel === 'Sênior' ? 18 : 22)));
+                    const scoreConf = Math.min(100, Math.max(50, 74 + Math.floor(answersLength / 35)));
 
-                saveWebInterview(newRecord);
-                showWebInterviewResult(newRecord);
-                renderWebInterviewHistory();
-            }, 2500);
+                    const area = webInterviewState.area;
+                    const evalData = OFFLINE_EVALUATIONS[area] || OFFLINE_EVALUATIONS["Tecnologia"];
+
+                    const newRecord = {
+                        id: webInterviewState.id,
+                        cargo: webInterviewState.cargo,
+                        area: webInterviewState.area,
+                        nivel: webInterviewState.nivel,
+                        scoreGeneral: scoreGeneral,
+                        scoreCommunication: scoreComm,
+                        scoreClarity: scoreClar,
+                        scoreTechnical: scoreTech,
+                        scoreConfidence: scoreConf,
+                        strengths: evalData.strengths,
+                        improvements: evalData.improvements,
+                        recommendations: evalData.recommendations,
+                        timestamp: Date.now()
+                    };
+
+                    saveWebInterview(newRecord);
+                    showWebInterviewResult(newRecord);
+                    renderWebInterviewHistory();
+                }, 2500);
+            } else {
+                setTimeout(async () => {
+                    const transcript = webInterviewState.history.map(h => `${h.sender}: ${h.text}`).join("\n");
+                    const prompt = `Você é um avaliador profissional de RH sênior extremamente criterioso e analítico.
+Analise a transcrição completa da entrevista de simulado a seguir para a vaga de **${webInterviewState.cargo}** (${webInterviewState.nivel}) na área de **${webInterviewState.area}**:
+
+[TRANSCRIÇÃO]
+${transcript}
+
+DIRETRIZ CRÍTICA DE PROFISSÃO:
+Sua avaliação deve focar TOTALMENTE na profissão de **${webInterviewState.cargo}**.
+Não avalie jargões de software, código, infraestrutura de TI ou programação se a vaga não for de tecnologia. Adapte a análise para os critérios específicos desta profissão!
+
+Você deve responder rigorosamente em formato JSON estrito em português contendo exatamente o seguinte formato (sem barra de comentários ou barra de blocos de códigos):
+{
+  "scoreGeneral": 85,
+  "scoreCommunication": 90,
+  "scoreClarity": 80,
+  "scoreTechnical": 85,
+  "scoreConfidence": 88,
+  "strengths": "Resumo detalhado dos pontos fortes demonstrados pelo candidato de acordo com as exigências da profissão de ${webInterviewState.cargo}",
+  "improvements": "Resumo detalhado dos pontos a melhorar específicos da profissão de ${webInterviewState.cargo}",
+  "recommendations": "Recomendações reais de estudo, ética, metodologias ou certificações para um profissional de nível ${webInterviewState.nivel} em ${webInterviewState.cargo}"
+}
+
+Retorne APENAS o objeto JSON acima, sem nenhum bloco de código markdown (\`\`\`json) ou comentários explicativos fora do JSON. Certifique-se de que o JSON seja perfeitamente válido para ser parseado por JSON.parse().`;
+
+                    try {
+                        let aiReply = "";
+                        if (activeApiType === "GEMINI") {
+                            const cleanUrl = url.endsWith('/') ? url : url + '/';
+                            const fetchUrl = `${cleanUrl}v1beta/models/${model}:generateContent?key=${key}`;
+                            
+                            const response = await fetch(fetchUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    contents: [{ parts: [{ text: prompt }] }],
+                                    generationConfig: { temperature: 0.2 }
+                                })
+                            });
+                            
+                            if (response.ok) {
+                                const data = await response.json();
+                                aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                            } else {
+                                throw new Error("HTTP " + response.status);
+                            }
+                        } else {
+                            const fetchUrl = sanitizeChatCompletionsUrl(url);
+                            const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
+                            const response = await fetch(fetchUrl, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': 'Bearer ' + cleanKey
+                                },
+                                body: JSON.stringify({
+                                    model: model,
+                                    messages: [
+                                        { role: "user", content: prompt }
+                                    ],
+                                    temperature: 0.2
+                                })
+                            });
+                            
+                            if (response.ok) {
+                                const data = await response.json();
+                                aiReply = data.choices?.[0]?.message?.content;
+                            } else {
+                                throw new Error("HTTP " + response.status);
+                            }
+                        }
+
+                        const loader = document.getElementById('int-eval-loader');
+                        if (loader) loader.remove();
+
+                        let cleaned = aiReply.trim();
+                        if (cleaned.startsWith("```json")) {
+                            cleaned = cleaned.substring(7);
+                        } else if (cleaned.startsWith("```")) {
+                            cleaned = cleaned.substring(3);
+                        }
+                        if (cleaned.endsWith("```")) {
+                            cleaned = cleaned.substring(0, cleaned.length - 3);
+                        }
+                        cleaned = cleaned.trim();
+                        
+                        const parsed = JSON.parse(cleaned);
+                        const newRecord = {
+                            id: webInterviewState.id,
+                            cargo: webInterviewState.cargo,
+                            area: webInterviewState.area,
+                            nivel: webInterviewState.nivel,
+                            scoreGeneral: Number(parsed.scoreGeneral) || 80,
+                            scoreCommunication: Number(parsed.scoreCommunication) || 80,
+                            scoreClarity: Number(parsed.scoreClarity) || 80,
+                            scoreTechnical: Number(parsed.scoreTechnical) || 80,
+                            scoreConfidence: Number(parsed.scoreConfidence) || 80,
+                            strengths: parsed.strengths || "Boa desenvoltura e respostas consistentes.",
+                            improvements: parsed.improvements || "Pode expandir mais nos exemplos práticos do cotidiano.",
+                            recommendations: parsed.recommendations || "Pratique mais simulações de entrevista focadas em estudos de caso reais.",
+                            timestamp: Date.now()
+                        };
+
+                        saveWebInterview(newRecord);
+                        showWebInterviewResult(newRecord);
+                        renderWebInterviewHistory();
+
+                    } catch (err) {
+                        console.error("Falha ao gerar avaliação via IA:", err);
+                        const loader = document.getElementById('int-eval-loader');
+                        if (loader) loader.remove();
+                        
+                        const userResponses = webInterviewState.history.filter(h => h.sender === "CANDIDATO").map(h => h.text).join(" ");
+                        const answersLength = userResponses.length;
+                        
+                        const scoreGeneral = Math.min(100, Math.max(50, 72 + Math.floor(answersLength / 22)));
+                        const scoreComm = Math.min(100, Math.max(50, 68 + Math.floor(answersLength / 20)));
+                        const scoreClar = Math.min(100, Math.max(50, 75 + (answersLength > 150 ? 15 : 5)));
+                        const scoreTech = Math.min(100, Math.max(50, 70 + (webInterviewState.nivel === 'Sênior' ? 18 : 22)));
+                        const scoreConf = Math.min(100, Math.max(50, 74 + Math.floor(answersLength / 35)));
+
+                        const area = webInterviewState.area;
+                        const evalData = OFFLINE_EVALUATIONS[area] || OFFLINE_EVALUATIONS["Tecnologia"];
+
+                        const newRecord = {
+                            id: webInterviewState.id,
+                            cargo: webInterviewState.cargo,
+                            area: webInterviewState.area,
+                            nivel: webInterviewState.nivel,
+                            scoreGeneral: scoreGeneral,
+                            scoreCommunication: scoreComm,
+                            scoreClarity: scoreClar,
+                            scoreTechnical: scoreTech,
+                            scoreConfidence: scoreConf,
+                            strengths: evalData.strengths,
+                            improvements: evalData.improvements,
+                            recommendations: evalData.recommendations,
+                            timestamp: Date.now()
+                        };
+
+                        saveWebInterview(newRecord);
+                        showWebInterviewResult(newRecord);
+                        renderWebInterviewHistory();
+                    }
+                }, 2500);
+            }
+        }
+
+        function updateResultLabels(area) {
+            const lblComm = document.getElementById('int-lbl-comm');
+            const lblClar = document.getElementById('int-lbl-clar');
+            const lblTech = document.getElementById('int-lbl-tech');
+            const lblConf = document.getElementById('int-lbl-conf');
+            
+            if (!lblComm || !lblClar || !lblTech || !lblConf) return;
+
+            if (area === "Saúde") {
+                lblComm.innerText = "🗣️ Comunicação com Pacientes";
+                lblClar.innerText = "🎯 Conduta Profissional";
+                lblTech.innerText = "⚕️ Conhecimento Clínico";
+                lblConf.innerText = "🧠 Tomada de Decisão";
+            } else if (area === "Jurídico") {
+                lblComm.innerText = "🗣️ Argumentação e Retórica";
+                lblClar.innerText = "🎯 Clareza e Fluidez";
+                lblTech.innerText = "⚖️ Conhecimento Jurídico";
+                lblConf.innerText = "🧠 Estratégia Processual";
+            } else if (area === "Administração e Negócios") {
+                lblComm.innerText = "🗣️ Comunicação Executiva";
+                lblClar.innerText = "🎯 Planejamento Estratégico";
+                lblTech.innerText = "📊 Liderança e Gestão";
+                lblConf.innerText = "🧠 Resolução de Problemas";
+            } else if (area === "Design e Comunicação") {
+                lblComm.innerText = "🗣️ Comunicação Visual";
+                lblClar.innerText = "🎯 Colaboração e UX";
+                lblTech.innerText = "🎨 Criatividade e Estilo";
+                lblConf.innerText = "🧠 Metodologia de Design";
+            } else if (area === "Educação") {
+                lblComm.innerText = "🗣️ Comunicação e Empatia";
+                lblClar.innerText = "🎯 Gestão de Sala de Aula";
+                lblTech.innerText = "📚 Didática de Ensino";
+                lblConf.innerText = "🧠 Planejamento Pedagógico";
+            } else {
+                lblComm.innerText = "🗣️ Comunicação Técnica";
+                lblClar.innerText = "🎯 Clareza de Respostas";
+                lblTech.innerText = "💻 Conhecimento Técnico";
+                lblConf.innerText = "🧠 Arquitetura e Escopo";
+            }
         }
 
         function showWebInterviewResult(rec) {
@@ -10988,8 +11630,10 @@ WITH CHECK (true);</code>
             document.getElementById('int-res-meta').innerText = `${rec.nivel} • ${rec.area}`;
             document.getElementById('int-res-nota').innerText = rec.scoreGeneral;
 
-            document.getElementById('int-score-comm').innerText = `${rec.scoreGeneral} / 100`;
-            document.getElementById('int-bar-comm').style.width = `${rec.scoreGeneral}%`;
+            updateResultLabels(rec.area);
+
+            document.getElementById('int-score-comm').innerText = `${rec.scoreCommunication} / 100`;
+            document.getElementById('int-bar-comm').style.width = `${rec.scoreCommunication}%`;
 
             document.getElementById('int-score-clar').innerText = `${rec.scoreClarity} / 100`;
             document.getElementById('int-bar-clar').style.width = `${rec.scoreClarity}%`;
@@ -11013,7 +11657,7 @@ WITH CHECK (true);</code>
             const rec = webInterviewState.activeRecord;
             if (!rec) return;
 
-            const text = `🎯 Simulador de Entrevistas Synapse IA 🎯\n\nCargo: ${rec.cargo} (${rec.nivel})\nPontuação Geral: ${rec.scoreGeneral}/100\n\n🗣️ Comunicação: ${rec.scoreGeneral}\n🎯 Clareza: ${rec.scoreClarity}\n💻 Técnico: ${rec.scoreTechnical}\n🧠 Confiança: ${rec.scoreConfidence}\n\n✅ Pontos Fortes:\n${rec.strengths}\n\n💡 Recomendações:\n${rec.recommendations}\n\nEnviado através do Synapse PWA.`;
+            const text = `🎯 Simulador de Entrevistas Synapse IA 🎯\n\nCargo: ${rec.cargo} (${rec.nivel})\nPontuação Geral: ${rec.scoreGeneral}/100\n\n🗣️ Comunicação: ${rec.scoreCommunication}\n🎯 Clareza: ${rec.scoreClarity}\n💻 Técnico/Específico: ${rec.scoreTechnical}\n🧠 Confiança/Estratégia: ${rec.scoreConfidence}\n\n✅ Pontos Fortes:\n${rec.strengths}\n\n💡 Recomendações:\n${rec.recommendations}\n\nEnviado através do Synapse PWA.`;
             
             navigator.clipboard.writeText(text).then(() => {
                 alert("Relatório de performance copiado para a área de transferência!");
@@ -11028,9 +11672,10 @@ WITH CHECK (true);</code>
             document.getElementById('int-result-container').style.display = 'none';
         }
 
-        // Initialize table on load
+        // Initialize table and recents on load
         setTimeout(() => {
             renderWebInterviewHistory();
+            renderRecentProfessions();
         }, 1500);
 
         function switchResumeAiTab(tabId) {
