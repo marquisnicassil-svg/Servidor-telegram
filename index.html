@@ -2034,6 +2034,16 @@
                 </div>
             </div>
 
+            <!-- DASHBOARD ERROR CONTAINER -->
+            <div id="dashboard-error-container" style="display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 40px 20px; text-align: center; background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 16px; margin: 20px 0;">
+                <span style="font-size: 3rem;">⚠️</span>
+                <h3 style="color: #fff; margin: 0; font-size: 1.2rem;">Não foi possível carregar os dados do Dashboard</h3>
+                <p id="dashboard-error-message" style="color: var(--text-muted); font-size: 0.9rem; margin: 0; max-width: 400px; line-height: 1.4;">Ocorreu um erro ao processar as informações locais do workspace.</p>
+                <button class="btn-universal" onclick="retryDashboardLoad()" style="background-color: var(--primary); color: #000; border: none; border-radius: 20px; padding: 10px 24px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                    🔄 Tentar Novamente
+                </button>
+            </div>
+
             <!-- ACTUAL PREMIUM DASHBOARD CONTENT -->
             <div id="dashboard-actual-content" style="display: none; opacity: 0; transition: opacity 0.4s ease; flex-direction: column; gap: 20px;">
                 <!-- 👋 CABEÇALHO LIMPO -->
@@ -9617,200 +9627,331 @@ WITH CHECK (true);</code>
             renderWorkspace(currentWorkspaceFilter, currentWorkspaceSearch);
         }
 
+        let isRenderingWorkspace = false;
+        let dashboardSafetyTimeout = null;
+
+        function startDashboardSafetyTimeout() {
+            if (dashboardSafetyTimeout) clearTimeout(dashboardSafetyTimeout);
+            dashboardSafetyTimeout = setTimeout(() => {
+                const skeleton = document.getElementById('dashboard-skeleton');
+                if (skeleton && skeleton.style.display !== 'none') {
+                    console.warn("[DIAG] TIMEOUT: Carregamento do Dashboard excedeu o limite de segurança de 3 segundos.");
+                    showDashboardError("O carregamento do Dashboard excedeu o limite de tempo de segurança (3 segundos).");
+                }
+            }, 3000);
+        }
+
+        function clearDashboardSafetyTimeout() {
+            if (dashboardSafetyTimeout) {
+                clearTimeout(dashboardSafetyTimeout);
+                dashboardSafetyTimeout = null;
+            }
+        }
+
+        function showDashboardError(errorMsg) {
+            console.error("[DIAG] showDashboardError chamado:", errorMsg);
+            const skeleton = document.getElementById('dashboard-skeleton');
+            const content = document.getElementById('dashboard-actual-content');
+            const errorContainer = document.getElementById('dashboard-error-container');
+            const errorText = document.getElementById('dashboard-error-message');
+            
+            if (skeleton) skeleton.style.display = 'none';
+            if (content) content.style.display = 'none';
+            
+            if (errorContainer) {
+                errorContainer.style.display = 'flex';
+                if (errorText) errorText.textContent = errorMsg;
+            }
+        }
+
+        function retryDashboardLoad() {
+            console.log("[DIAG] Tentando carregar o Dashboard novamente...");
+            const skeleton = document.getElementById('dashboard-skeleton');
+            const content = document.getElementById('dashboard-actual-content');
+            const errorContainer = document.getElementById('dashboard-error-container');
+            
+            if (errorContainer) errorContainer.style.display = 'none';
+            if (content) content.style.display = 'none';
+            if (skeleton) skeleton.style.display = 'flex';
+            
+            isRenderingWorkspace = false;
+            renderWorkspace(currentWorkspaceFilter, currentWorkspaceSearch);
+        }
+
         function renderWorkspace(filter = 'all', search = '') {
-            // Sincroniza dados
-            syncConversasFromChatHistory();
-
-            // Atualiza cabeçalho limpo do dashboard
-            const greetingEl = document.getElementById('dashboard-greeting-text');
-            const userNameEl = document.getElementById('dashboard-user-name');
-            if (greetingEl) {
-                const hour = new Date().getHours();
-                let greeting = "Bem-vindo";
-                if (hour >= 5 && hour < 12) greeting = "Bom dia";
-                else if (hour >= 12 && hour < 18) greeting = "Boa tarde";
-                else if (hour >= 18 || hour < 5) greeting = "Boa noite";
-                greetingEl.textContent = greeting;
+            if (isRenderingWorkspace) {
+                console.warn("[DIAG] renderWorkspace já em execução. Ignorando chamada duplicada para prevenir loops infinitos.");
+                return;
             }
-            if (userNameEl) {
-                let userName = "Explorador";
-                if (typeof supabaseSession !== 'undefined' && supabaseSession && supabaseSession.user) {
-                    userName = (typeof getDisplayName === 'function' ? getDisplayName(supabaseSession) : "") || supabaseSession.user.email.split('@')[0];
-                } else {
-                    try {
-                        const s = localStorage.getItem('supabase_auth_session');
-                        if (s) {
-                            const parsed = JSON.parse(s);
-                            if (parsed && parsed.user) {
-                                userName = (typeof getDisplayName === 'function' ? getDisplayName(parsed) : "") || parsed.user.email.split('@')[0];
-                            }
-                        }
-                    } catch(e) {}
-                }
-                userNameEl.textContent = userName;
-            }
+            isRenderingWorkspace = true;
+            const startTime = performance.now();
+            console.log(`[DIAG] Início do carregamento do Dashboard. Filtro: ${filter}, Pesquisa: ${search}`);
 
-            // Monitora status online/offline
-            updateOnlineOfflineStatus();
+            // Inicia timeout de segurança
+            startDashboardSafetyTimeout();
 
-            // Montar itens de atividade recente
-            const container = document.getElementById('dashboard-recent-activity-container');
-            if (container) {
-                container.innerHTML = '';
-                const activityItems = [];
+            try {
+                // Sincroniza dados
+                syncConversasFromChatHistory();
 
-                // 1. Última conversa
-                const lastChat = workspaceData.conversas ? workspaceData.conversas[0] : null;
-                if (lastChat) {
-                    activityItems.push({
-                        icon: "💬",
-                        title: lastChat.title || "Conversa do Console",
-                        desc: lastChat.snippet || "Nenhum resumo de conversa.",
-                        date: lastChat.date || "Recente",
-                        action: "switchTab('tab-chat')"
-                    });
-                }
+                // Garantir sanidade estrutural dos dados locais do Workspace
+                if (!workspaceData) workspaceData = {};
+                if (!Array.isArray(workspaceData.conversas)) workspaceData.conversas = [];
+                if (!Array.isArray(workspaceData.arquivos)) workspaceData.arquivos = [];
+                if (!Array.isArray(workspaceData.links)) workspaceData.links = [];
+                if (!Array.isArray(workspaceData.memorias)) workspaceData.memorias = [];
 
-                // 2. Último agente usado
-                let lastAgentName = "Geral";
-                let lastAgentDesc = "Assistente Geral do Synapse Console";
-                let lastAgentIcon = "🤖";
-                if (typeof getAllAgents === 'function') {
-                    try {
-                        const agents = getAllAgents();
-                        if (typeof selectedAssistantId !== 'undefined') {
-                            const selected = agents.find(a => a.id === selectedAssistantId);
-                            if (selected) {
-                                lastAgentName = selected.name;
-                                lastAgentDesc = selected.description || selected.prompt || lastAgentDesc;
-                                lastAgentIcon = selected.icon || lastAgentIcon;
-                            }
-                        }
-                    } catch (e) {
-                        console.error("Falha ao recuperar informações de agentes para o dashboard:", e);
+                // Validar estado vazio / sem dados reais
+                const hasRealData = 
+                    workspaceData.conversas.length > 0 ||
+                    workspaceData.arquivos.length > 0 ||
+                    workspaceData.links.length > 0 ||
+                    workspaceData.memorias.length > 0;
+
+                if (!hasRealData) {
+                    const duration = performance.now() - startTime;
+                    console.log(`[DIAG] Sucesso (Estado Vazio). Tempo de resposta: ${duration.toFixed(2)}ms. Sem dados reais no workspace.`);
+                    
+                    const skeleton = document.getElementById('dashboard-skeleton');
+                    const content = document.getElementById('dashboard-actual-content');
+                    const errorContainer = document.getElementById('dashboard-error-container');
+                    
+                    if (errorContainer) errorContainer.style.display = 'none';
+                    if (skeleton) skeleton.style.display = 'none';
+                    if (content) {
+                        content.style.display = 'flex';
+                        content.style.opacity = '1';
                     }
-                }
-                activityItems.push({
-                    icon: lastAgentIcon,
-                    title: lastAgentName,
-                    desc: lastAgentDesc,
-                    date: "Ativo",
-                    action: "switchTab('tab-agents')"
-                });
-
-                // 3. Último currículo editado
-                const cvName = document.getElementById('rb-input-name')?.value || "";
-                const cvTitle = document.getElementById('rb-input-title')?.value || "";
-                if (cvName || cvTitle) {
-                    activityItems.push({
-                        icon: "📄",
-                        title: cvName || "Seu Currículo",
-                        desc: cvTitle || "Editor de Currículo IA ativo.",
-                        date: "Editado",
-                        action: "switchTab('tab-resume-builder')"
-                    });
-                } else {
-                    activityItems.push({
-                        icon: "📄",
-                        title: "Currículo Profissional",
-                        desc: "Crie um currículo sob medida otimizado com inteligência artificial.",
-                        date: "Criar",
-                        action: "switchTab('tab-resume-builder')"
-                    });
-                }
-
-                // 4. Última entrevista realizada
-                let lastInterview = null;
-                if (typeof getWebInterviews === 'function') {
-                    try {
-                        const interviews = getWebInterviews();
-                        if (interviews && interviews.length > 0) {
-                            lastInterview = interviews[0];
-                        }
-                    } catch (e) {
-                        console.error("Falha ao recuperar histórico de entrevistas para o dashboard:", e);
+                    
+                    const container = document.getElementById('dashboard-recent-activity-container');
+                    if (container) {
+                        container.innerHTML = `
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 16px; border: 1px dashed var(--border-color); border-radius: 16px; background: rgba(255, 255, 255, 0.01); text-align: center; gap: 12px; margin-top: 10px; width: 100%;">
+                                <span style="font-size: 2.5rem; line-height: 1;">📭</span>
+                                <h4 style="margin: 0; font-size: 1rem; color: #fff; font-weight: 700;">Nenhuma atividade recente</h4>
+                                <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted); max-width: 320px; line-height: 1.4;">Nenhum dado disponível no momento. Suas interações com as IAs e simulações aparecerão aqui.</p>
+                            </div>
+                        `;
                     }
-                }
-                if (lastInterview) {
-                    activityItems.push({
-                        icon: "💼",
-                        title: lastInterview.cargo || "Simulação de Entrevista",
-                        desc: `Nota Geral: ${lastInterview.scoreGeneral} • ${lastInterview.nivel} (${lastInterview.area})`,
-                        date: new Date(lastInterview.timestamp || Date.now()).toLocaleDateString('pt-BR'),
-                        action: "switchTab('tab-interview-simulator'); setTimeout(() => { if (typeof loadWebResultFromHistory === 'function') loadWebResultFromHistory('" + lastInterview.id + "'); }, 200);"
-                    });
-                } else {
-                    activityItems.push({
-                        icon: "💼",
-                        title: "Simulação de Entrevistas",
-                        desc: "Prepare-se para sabatinas e testes técnicos de forma autônoma.",
-                        date: "Simular",
-                        action: "switchTab('tab-interview-simulator')"
-                    });
+                    
+                    clearDashboardSafetyTimeout();
+                    isRenderingWorkspace = false;
+                    return;
                 }
 
-                // Renderiza itens na tela
-                activityItems.forEach(item => {
-                    const row = document.createElement('div');
-                    row.className = 'activity-row';
-                    row.onclick = () => {
-                        triggerPulse();
-                        // Executa ação de navegação
-                        if (item.action.startsWith('switchTab')) {
-                            const match = item.action.match(/'([^']+)'/);
-                            if (match) {
-                                switchTab(match[1]);
-                                if (item.action.includes('loadWebResultFromHistory')) {
-                                    const idMatch = item.action.match(/loadWebResultFromHistory\('([^']+)'\)/);
-                                    if (idMatch) {
-                                        setTimeout(() => {
-                                            if (typeof loadWebResultFromHistory === 'function') loadWebResultFromHistory(idMatch[1]);
-                                        }, 200);
+                // Atualiza cabeçalho limpo do dashboard
+                const greetingEl = document.getElementById('dashboard-greeting-text');
+                const userNameEl = document.getElementById('dashboard-user-name');
+                if (greetingEl) {
+                    const hour = new Date().getHours();
+                    let greeting = "Bem-vindo";
+                    if (hour >= 5 && hour < 12) greeting = "Bom dia";
+                    else if (hour >= 12 && hour < 18) greeting = "Boa tarde";
+                    else if (hour >= 18 || hour < 5) greeting = "Boa noite";
+                    greetingEl.textContent = greeting;
+                }
+                if (userNameEl) {
+                    let userName = "Explorador";
+                    if (typeof supabaseSession !== 'undefined' && supabaseSession && supabaseSession.user) {
+                        userName = (typeof getDisplayName === 'function' ? getDisplayName(supabaseSession) : "") || supabaseSession.user.email.split('@')[0];
+                    } else {
+                        try {
+                            const s = localStorage.getItem('supabase_auth_session');
+                            if (s) {
+                                const parsed = JSON.parse(s);
+                                if (parsed && parsed.user) {
+                                    userName = (typeof getDisplayName === 'function' ? getDisplayName(parsed) : "") || parsed.user.email.split('@')[0];
+                                }
+                            }
+                        } catch(e) {}
+                    }
+                    userNameEl.textContent = userName;
+                }
+
+                // Monitora status online/offline
+                updateOnlineOfflineStatus();
+
+                // Montar itens de atividade recente
+                const container = document.getElementById('dashboard-recent-activity-container');
+                if (container) {
+                    container.innerHTML = '';
+                    const activityItems = [];
+
+                    // 1. Última conversa
+                    const lastChat = workspaceData.conversas ? workspaceData.conversas[0] : null;
+                    if (lastChat) {
+                        activityItems.push({
+                            icon: "💬",
+                            title: lastChat.title || "Conversa do Console",
+                            desc: lastChat.snippet || "Nenhum resumo de conversa.",
+                            date: lastChat.date || "Recente",
+                            action: "switchTab('tab-chat')"
+                        });
+                    }
+
+                    // 2. Último agente usado
+                    let lastAgentName = "Geral";
+                    let lastAgentDesc = "Assistente Geral do Synapse Console";
+                    let lastAgentIcon = "🤖";
+                    if (typeof getAllAgents === 'function') {
+                        try {
+                            const agents = getAllAgents();
+                            if (typeof selectedAssistantId !== 'undefined') {
+                                const selected = agents.find(a => a.id === selectedAssistantId);
+                                if (selected) {
+                                    lastAgentName = selected.name;
+                                    lastAgentDesc = selected.description || selected.prompt || lastAgentDesc;
+                                    lastAgentIcon = selected.icon || lastAgentIcon;
+                                }
+                            }
+                        } catch (e) {
+                            console.error("Falha ao recuperar informações de agentes para o dashboard:", e);
+                        }
+                    }
+                    activityItems.push({
+                        icon: lastAgentIcon,
+                        title: lastAgentName,
+                        desc: lastAgentDesc,
+                        date: "Ativo",
+                        action: "switchTab('tab-agents')"
+                    });
+
+                    // 3. Último currículo editado
+                    const cvName = document.getElementById('rb-input-name')?.value || "";
+                    const cvTitle = document.getElementById('rb-input-title')?.value || "";
+                    if (cvName || cvTitle) {
+                        activityItems.push({
+                            icon: "📄",
+                            title: cvName || "Seu Currículo",
+                            desc: cvTitle || "Editor de Currículo IA ativo.",
+                            date: "Editado",
+                            action: "switchTab('tab-resume-builder')"
+                        });
+                    } else {
+                        activityItems.push({
+                            icon: "📄",
+                            title: "Currículo Profissional",
+                            desc: "Crie um currículo sob medida otimizado com inteligência artificial.",
+                            date: "Criar",
+                            action: "switchTab('tab-resume-builder')"
+                        });
+                    }
+
+                    // 4. Última entrevista realizada
+                    let lastInterview = null;
+                    if (typeof getWebInterviews === 'function') {
+                        try {
+                            const interviews = getWebInterviews();
+                            if (interviews && interviews.length > 0) {
+                                lastInterview = interviews[0];
+                            }
+                        } catch (e) {
+                            console.error("Falha ao recuperar histórico de entrevistas para o dashboard:", e);
+                        }
+                    }
+                    if (lastInterview) {
+                        activityItems.push({
+                            icon: "💼",
+                            title: lastInterview.cargo || "Simulação de Entrevista",
+                            desc: `Nota Geral: ${lastInterview.scoreGeneral} • ${lastInterview.nivel} (${lastInterview.area})`,
+                            date: new Date(lastInterview.timestamp || Date.now()).toLocaleDateString('pt-BR'),
+                            action: "switchTab('tab-interview-simulator'); setTimeout(() => { if (typeof loadWebResultFromHistory === 'function') loadWebResultFromHistory('" + lastInterview.id + "'); }, 200);"
+                        });
+                    } else {
+                        activityItems.push({
+                            icon: "💼",
+                            title: "Simulação de Entrevistas",
+                            desc: "Prepare-se para sabatinas e testes técnicos de forma autônoma.",
+                            date: "Simular",
+                            action: "switchTab('tab-interview-simulator')"
+                        });
+                    }
+
+                    // Renderiza itens na tela
+                    activityItems.forEach(item => {
+                        const row = document.createElement('div');
+                        row.className = 'activity-row';
+                        row.onclick = () => {
+                            triggerPulse();
+                            // Executa ação de navegação
+                            if (item.action.startsWith('switchTab')) {
+                                const match = item.action.match(/'([^']+)'/);
+                                if (match) {
+                                    switchTab(match[1]);
+                                    if (item.action.includes('loadWebResultFromHistory')) {
+                                        const idMatch = item.action.match(/loadWebResultFromHistory\('([^']+)'\)/);
+                                        if (idMatch) {
+                                            setTimeout(() => {
+                                                if (typeof loadWebResultFromHistory === 'function') loadWebResultFromHistory(idMatch[1]);
+                                            }, 200);
+                                        }
                                     }
                                 }
                             }
-                        }
-                    };
+                        };
 
-                    row.innerHTML = `
-                        <div style="display: flex; align-items: center; gap: 12px; overflow: hidden; flex: 1; min-width: 0; margin-right: 12px;">
-                            <div style="font-size: 1.25rem; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.02); border-radius: 10px; border: 1px solid var(--border-color); flex-shrink: 0;">
-                                ${item.icon}
+                        row.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 12px; overflow: hidden; flex: 1; min-width: 0; margin-right: 12px;">
+                                <div style="font-size: 1.25rem; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.02); border-radius: 10px; border: 1px solid var(--border-color); flex-shrink: 0;">
+                                    ${item.icon}
+                                </div>
+                                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0;">
+                                    <h4 style="font-size: 0.9rem; font-weight: 700; color: #fff; margin: 0 0 2px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.title}</h4>
+                                    <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.desc}</p>
+                                </div>
                             </div>
-                            <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0;">
-                                <h4 style="font-size: 0.9rem; font-weight: 700; color: #fff; margin: 0 0 2px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.title}</h4>
-                                <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.desc}</p>
+                            <div style="flex-shrink: 0; display: flex; align-items: center;">
+                                <span style="font-size: 0.68rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; background: rgba(255,255,255,0.02); padding: 3px 8px; border-radius: 10px; border: 1px solid var(--border-color); white-space: nowrap;">
+                                    ${item.date}
+                                </span>
                             </div>
-                        </div>
-                        <div style="flex-shrink: 0; display: flex; align-items: center;">
-                            <span style="font-size: 0.68rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; background: rgba(255,255,255,0.02); padding: 3px 8px; border-radius: 10px; border: 1px solid var(--border-color); white-space: nowrap;">
-                                ${item.date}
-                            </span>
-                        </div>
-                    `;
-                    container.appendChild(row);
-                });
-            }
+                        `;
+                        container.appendChild(row);
+                    });
+                }
 
-            // Exibir skeleton por um tempo curtíssimo (450ms) para simular o carregamento SaaS premium e suave
-            const skeleton = document.getElementById('dashboard-skeleton');
-            const content = document.getElementById('dashboard-actual-content');
-            if (skeleton && content) {
-                if (skeleton.style.display !== 'none' && content.style.display === 'none') {
-                    // Primeiro carregamento
-                    setTimeout(() => {
+                // Exibir skeleton por um tempo curtíssimo (450ms) para simular o carregamento SaaS premium e suave
+                const skeleton = document.getElementById('dashboard-skeleton');
+                const content = document.getElementById('dashboard-actual-content');
+                const errorContainer = document.getElementById('dashboard-error-container');
+                
+                if (errorContainer) errorContainer.style.display = 'none';
+
+                if (skeleton && content) {
+                    if (skeleton.style.display !== 'none' && content.style.display === 'none') {
+                        // Primeiro carregamento
+                        setTimeout(() => {
+                            skeleton.style.display = 'none';
+                            content.style.display = 'flex';
+                            setTimeout(() => {
+                                content.style.opacity = '1';
+                            }, 50);
+                            
+                            clearDashboardSafetyTimeout();
+                            isRenderingWorkspace = false;
+                            const duration = performance.now() - startTime;
+                            console.log(`[DIAG] Sucesso (Primeiro Carregamento). Tempo de resposta: ${duration.toFixed(2)}ms.`);
+                        }, 450);
+                    } else {
+                        // Atualização instantânea sem flickers
                         skeleton.style.display = 'none';
                         content.style.display = 'flex';
-                        setTimeout(() => {
-                            content.style.opacity = '1';
-                        }, 50);
-                    }, 450);
+                        content.style.opacity = '1';
+                        
+                        clearDashboardSafetyTimeout();
+                        isRenderingWorkspace = false;
+                        const duration = performance.now() - startTime;
+                        console.log(`[DIAG] Sucesso (Atualização Instantânea). Tempo de resposta: ${duration.toFixed(2)}ms.`);
+                    }
                 } else {
-                    // Atualização instantânea sem flickers
-                    skeleton.style.display = 'none';
-                    content.style.display = 'flex';
-                    content.style.opacity = '1';
+                    clearDashboardSafetyTimeout();
+                    isRenderingWorkspace = false;
                 }
+            } catch (err) {
+                clearDashboardSafetyTimeout();
+                isRenderingWorkspace = false;
+                console.error("[DIAG] Falha catastrófica ao renderizar o Dashboard:", err);
+                showDashboardError("Não foi possível carregar os dados: " + err.message);
             }
         }
 
