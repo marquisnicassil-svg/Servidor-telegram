@@ -3196,6 +3196,18 @@ CREATE TRIGGER on_synapse_user_signed_up
                         <span style="color: var(--text-muted); font-weight: bold; font-family: monospace; font-size: 1.1rem; padding-left: 10px;">&gt;</span>
                     </div>
 
+                    <!-- Opção Nova: Assinatura e Planos (Freemium) -->
+                    <div class="config-index-item" onclick="openConfigSubView('subscription')" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(245, 158, 11, 0.04); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 14px; cursor: pointer; transition: background 0.2s; min-height: 72px;">
+                        <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
+                            <span style="font-size: 1.5rem; line-height: 1;">⭐</span>
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-weight: 700; font-size: 0.95rem; color: #fbbf24;">Assinatura &amp; Planos</span>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;">Gerencie limites do plano Freemium e faça upgrade para Pro ou Ultra</span>
+                            </div>
+                        </div>
+                        <span style="color: #fbbf24; font-weight: bold; font-family: monospace; font-size: 1.1rem; padding-left: 10px;">&gt;</span>
+                    </div>
+
                 </div>
 
                 <!-- Botões secundários que ficam no índice principal de ajustes -->
@@ -3247,6 +3259,175 @@ CREATE TRIGGER on_synapse_user_signed_up
                 <button class="btn-save-premium" onclick="saveConfigWithPremiumFeedback(this)" data-i18n="aplicar_ajustes_conta">
                     Aplicar Ajustes
                 </button>
+            </div>
+
+            <!-- SUB-VIEW: ASSINATURA E PLANOS (MONETIZAÇÃO FREEMIUM) -->
+            <div id="config-subview-subscription" class="config-subview" style="display: none;">
+                <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;">⬅️ Voltar para Ajustes</button>
+                
+                <div class="section-header" style="text-align: left; margin-bottom: 16px;">
+                    <h2 style="font-size: 1.4rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px;">⭐ Assinatura e Planos</h2>
+                    <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; line-height: 1.3;">Gerencie sua cota de uso, escolha o plano ideal e prepare-se para os recursos profissionais.</p>
+                </div>
+
+                <!-- CARD DO PLANO ATUAL -->
+                <div id="subscription-status-card" style="margin-bottom: 24px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 16px; padding: 18px; text-align: left; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(245, 158, 11, 0.08); border-radius: 50%; filter: blur(30px);"></div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; position: relative; z-index: 2;">
+                        <div>
+                            <span style="font-size: 0.7rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 2px;">Status do Plano</span>
+                            <span id="subscription-active-plan-name" style="font-size: 1.35rem; font-weight: 800; color: #fff;">Plano Gratuito (Free) 🆓</span>
+                        </div>
+                        <span id="subscription-active-plan-badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 0.68rem; font-weight: 700; padding: 4px 10px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Básico</span>
+                    </div>
+
+                    <!-- COTAS E PROGRESSOS -->
+                    <div style="display: flex; flex-direction: column; gap: 12px; position: relative; z-index: 2;">
+                        <!-- Medidor 1: Chats -->
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 0.78rem;">
+                                <span style="color: #fff; font-weight: 600;">💬 Mensagens de Chat (Diário)</span>
+                                <span id="usage-text-chat" style="color: var(--text-muted); font-weight: bold;">0 / 15</span>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.04); height: 6px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.02);">
+                                <div id="usage-progress-chat" style="height: 100%; width: 0%; background: linear-gradient(90deg, #10b981, #34d399); transition: width 0.4s ease; border-radius: 3px;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Medidor 2: Currículos -->
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 0.78rem;">
+                                <span style="color: #fff; font-weight: 600;">📄 Currículos Inteligentes IA</span>
+                                <span id="usage-text-resume" style="color: var(--text-muted); font-weight: bold;">0 / 2</span>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.04); height: 6px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.02);">
+                                <div id="usage-progress-resume" style="height: 100%; width: 0%; background: linear-gradient(90deg, #8b5cf6, #a78bfa); transition: width 0.4s ease; border-radius: 3px;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Medidor 3: Simulações Entrevista -->
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 0.78rem;">
+                                <span style="color: #fff; font-weight: 600;">💼 Simulações de Entrevista</span>
+                                <span id="usage-text-interview" style="color: var(--text-muted); font-weight: bold;">0 / 2</span>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.04); height: 6px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.02);">
+                                <div id="usage-progress-interview" style="height: 100%; width: 0%; background: linear-gradient(90deg, #f59e0b, #fbbf24); transition: width 0.4s ease; border-radius: 3px;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Medidor 4: Exportação PDF -->
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 0.78rem;">
+                                <span style="color: #fff; font-weight: 600;">📥 Exportações PDF de Currículo</span>
+                                <span id="usage-text-export_pdf" style="color: var(--text-muted); font-weight: bold;">0 / 1</span>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.04); height: 6px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.02);">
+                                <div id="usage-progress-export_pdf" style="height: 100%; width: 0%; background: linear-gradient(90deg, #3b82f6, #60a5fa); transition: width 0.4s ease; border-radius: 3px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SELETOR DE PLANO PARA TESTES / DEMO -->
+                <div style="margin-bottom: 24px; padding: 14px; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 12px; text-align: left;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 1.1rem;">⚡</span>
+                        <span style="font-weight: 700; font-size: 0.82rem; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.5px;">Simulação do Console</span>
+                    </div>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0 0 12px 0; line-height: 1.35;">
+                        Selecione seu plano ativo para testar a experiência real e as travas de limites instantaneamente:
+                    </p>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                        <button onclick="setAppPlanSimulated('free')" class="btn-universal" style="padding: 8px; font-size: 0.75rem; font-weight: 700; background: rgba(255,255,255,0.03); border-color: var(--border-color); color: #fff;">Plano Free</button>
+                        <button onclick="setAppPlanSimulated('pro', true)" class="btn-universal" style="padding: 8px; font-size: 0.75rem; font-weight: 700; background: rgba(139, 92, 246, 0.08); border-color: rgba(139, 92, 246, 0.4); color: #a78bfa;">Plano Pro ⭐</button>
+                        <button onclick="setAppPlanSimulated('ultra')" class="btn-universal" style="padding: 8px; font-size: 0.75rem; font-weight: 700; background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.4); color: #fbbf24;">Plano Ultra 🚀</button>
+                    </div>
+                </div>
+
+                <!-- CARDS DE COMPARAÇÃO DE PLANOS -->
+                <h3 style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: left; margin: 0 0 12px 4px;">Comparação de Planos</h3>
+                
+                <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;">
+                    <!-- Plano 1: FREE -->
+                    <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; text-align: left;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                            <div>
+                                <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">Plano Free 🆓</h4>
+                                <p style="font-size: 0.72rem; color: var(--text-muted); margin: 2px 0 0 0;">Ideal para experimentação e uso eventual</p>
+                            </div>
+                            <span style="font-size: 1.25rem; font-weight: 800; color: #fff;">Grátis</span>
+                        </div>
+                        <ul style="margin: 0; padding-left: 18px; font-size: 0.76rem; color: var(--text-main); display: flex; flex-direction: column; gap: 6px;">
+                            <li>Até 15 mensagens de chat por dia</li>
+                            <li>Até 2 currículos com IA (limite geral)</li>
+                            <li>Até 2 simulações de entrevista (limite geral)</li>
+                            <li>Até 1 exportação PDF de currículo</li>
+                        </ul>
+                    </div>
+
+                    <!-- Plano 2: PRO -->
+                    <div style="background: rgba(139, 92, 246, 0.03); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 14px; padding: 16px; text-align: left; position: relative;">
+                        <span style="position: absolute; top: 12px; right: 12px; background: rgba(139, 92, 246, 0.15); color: #a78bfa; font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 8px; border: 1px solid rgba(139, 92, 246, 0.3);">Mais Popular</span>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                            <div>
+                                <h4 style="font-size: 1.05rem; font-weight: 800; color: #a78bfa; margin: 0; display: flex; align-items: center; gap: 4px;">Plano Pro ⭐</h4>
+                                <p style="font-size: 0.72rem; color: var(--text-muted); margin: 2px 0 0 0;">Aceleração de carreira sem limites</p>
+                            </div>
+                            <span style="font-size: 1.25rem; font-weight: 800; color: #a78bfa;">R$ 29,90<span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">/mês</span></span>
+                        </div>
+                        <ul style="margin: 0 0 14px 0; padding-left: 18px; font-size: 0.76rem; color: var(--text-main); display: flex; flex-direction: column; gap: 6px;">
+                            <li><b>Mensagens de chat ILIMITADAS</b></li>
+                            <li><b>Geração ILIMITADA de Currículos com IA</b></li>
+                            <li><b>Exportações de PDF ILIMITADAS</b></li>
+                            <li><b>Simulações de Entrevistas completas e ILIMITADAS</b></li>
+                            <li>Acesso prioritário a novos Agentes Especialistas</li>
+                            <li>Remoção de marcas d'água no exportador</li>
+                        </ul>
+                        <button onclick="setAppPlanSimulated('pro', true)" class="btn-universal" style="background: var(--primary); border: none; color: #000; font-weight: bold; width: 100%; border-radius: 10px; padding: 10px; font-size: 0.8rem;">Adquirir Plano Pro ⭐</button>
+                    </div>
+
+                    <!-- Plano 3: ULTRA -->
+                    <div style="background: rgba(245, 158, 11, 0.03); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 14px; padding: 16px; text-align: left;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                            <div>
+                                <h4 style="font-size: 1.05rem; font-weight: 800; color: #fbbf24; margin: 0; display: flex; align-items: center; gap: 4px;">Plano Ultra 🚀</h4>
+                                <p style="font-size: 0.72rem; color: var(--text-muted); margin: 2px 0 0 0;">Supremacia em IA, automação e memória</p>
+                            </div>
+                            <span style="font-size: 1.25rem; font-weight: 800; color: #fbbf24;">R$ 59,90<span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">/mês</span></span>
+                        </div>
+                        <ul style="margin: 0 0 14px 0; padding-left: 18px; font-size: 0.76rem; color: var(--text-main); display: flex; flex-direction: column; gap: 6px;">
+                            <li>Tudo do Plano Pro</li>
+                            <li><b>Memória contextual persistente avançada</b></li>
+                            <li>Modelos premium avançados da OpenAI e Gemini (Ultra-Speed)</li>
+                            <li>Integração total de Webhooks (Make, N8N, Zapier) inclusa</li>
+                            <li>Suporte prioritário VIP 24h</li>
+                        </ul>
+                        <button onclick="setAppPlanSimulated('ultra', true)" class="btn-universal" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-weight: bold; width: 100%; border-radius: 10px; padding: 10px; font-size: 0.8rem;">Adquirir Plano Ultra 🚀</button>
+                    </div>
+                </div>
+
+                <!-- PREPARAÇÃO DE PAGAMENTO COM STRIPE, PLAY STORE, APP STORE -->
+                <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 16px; padding: 18px; text-align: left; margin-bottom: 20px;">
+                    <h4 style="font-size: 0.8rem; font-weight: 700; color: #fff; margin: 0 0 4px 0; display: flex; align-items: center; gap: 6px;">
+                        <span>💳</span> Infraestrutura Pronta para Pagamentos
+                    </h4>
+                    <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0 0 14px 0; line-height: 1.4;">
+                        A arquitetura do Synapse está totalmente preparada e mapeada para se integrar de forma segura aos maiores processadores de checkout global.
+                    </p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                        <span style="font-size: 0.65rem; font-weight: 700; color: #635bff; background: rgba(99, 91, 255, 0.1); border: 1px solid rgba(99, 91, 255, 0.25); padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
+                            Stripe API Ready
+                        </span>
+                        <span style="font-size: 0.65rem; font-weight: 700; color: #00e676; background: rgba(0, 230, 118, 0.1); border: 1px solid rgba(0, 230, 118, 0.25); padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
+                            Google Play Billing API
+                        </span>
+                        <span style="font-size: 0.65rem; font-weight: 700; color: #00b0ff; background: rgba(0, 176, 255, 0.1); border: 1px solid rgba(0, 176, 255, 0.25); padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
+                            Apple StoreKit Ready
+                        </span>
+                    </div>
+                </div>
+
             </div>
 
             <!-- SUB-VIEW 1: APARÊNCIA E TEMAS (UPGRADED) -->
@@ -10103,6 +10284,11 @@ WITH CHECK (true);</code>
             }
             if (!txt || !dotFreeTxt) return;
 
+            // Verificar limite de mensagens do plano Freemium
+            if (typeof checkSubscriptionLimit === 'function' && !checkSubscriptionLimit('chat')) {
+                return;
+            }
+
             // Check if user is banned
             const userEmail = (supabaseSession && supabaseSession.user) ? supabaseSession.user.email : null;
             const banStatus = typeof isUserBanned === 'function' ? isUserBanned(userEmail) : null;
@@ -10146,6 +10332,11 @@ WITH CHECK (true);</code>
             // Registra atividade no log administrativo
             if (typeof logAdminActivity === 'function') {
                 logAdminActivity(userEmail || "usuario-local", "Mensagem de Chat", txt);
+            }
+
+            // Incrementar uso de chat do plano Freemium
+            if (typeof incrementAppSubscriptionUsage === 'function') {
+                incrementAppSubscriptionUsage('chat');
             }
 
             // Memória: adiciona input do usuário
@@ -10625,6 +10816,11 @@ WITH CHECK (true);</code>
         }
 
         function startWebInterview() {
+            // Verificar limite de simulações do plano Freemium
+            if (typeof checkSubscriptionLimit === 'function' && !checkSubscriptionLimit('interview')) {
+                return;
+            }
+
             const cargo = document.getElementById('int-input-cargo').value || "Desenvolvedor Mobile Android";
             const area = document.getElementById('int-select-area').value;
             const nivel = document.getElementById('int-select-nivel').value;
@@ -10638,6 +10834,11 @@ WITH CHECK (true);</code>
                 history: [],
                 isRunning: true
             };
+
+            // Incrementar uso de simulações de entrevista do plano Freemium
+            if (typeof incrementAppSubscriptionUsage === 'function') {
+                incrementAppSubscriptionUsage('interview');
+            }
 
             document.getElementById('int-setup-container').style.display = 'none';
             document.getElementById('int-chat-container').style.display = 'flex';
@@ -11314,6 +11515,11 @@ WITH CHECK (true);</code>
                 return;
             }
 
+            // Verificar limite de currículos do plano Freemium
+            if (typeof checkSubscriptionLimit === 'function' && !checkSubscriptionLimit('resume')) {
+                return;
+            }
+
             // Check if user is banned
             const userEmail = (supabaseSession && supabaseSession.user) ? supabaseSession.user.email : null;
             const banStatus = typeof isUserBanned === 'function' ? isUserBanned(userEmail) : null;
@@ -11477,6 +11683,11 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem código markdown, 
                 updateResumePreview();
                 showAppToast("Novo currículo adaptado gerado com sucesso pela inteligência artificial!", "success");
                 addLog("Currículo inteligente criado pela IA com sucesso.", "success");
+
+                // Incrementar uso de currículo do plano Freemium
+                if (typeof incrementAppSubscriptionUsage === 'function') {
+                    incrementAppSubscriptionUsage('resume');
+                }
 
             } catch (err) {
                 console.error(err);
@@ -11680,6 +11891,11 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
         }
 
         function exportResumePDF() {
+            // Verificar limite de exportações de PDF do plano Freemium
+            if (typeof checkSubscriptionLimit === 'function' && !checkSubscriptionLimit('export_pdf')) {
+                return;
+            }
+
             addLog("Preparando exportação do arquivo de currículo em PDF...", "info");
             
             const previewContent = document.getElementById('rb-preview-container').innerHTML;
@@ -11784,6 +12000,11 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                 </html>
             `);
             doc.close();
+
+            // Incrementar uso de exportações de PDF do plano Freemium
+            if (typeof incrementAppSubscriptionUsage === 'function') {
+                incrementAppSubscriptionUsage('export_pdf');
+            }
         }
 
         // ==========================================================================
@@ -15017,6 +15238,243 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown nem código ext
                 console.error("Erro ao sincronizar API Mestre do Supabase:", err);
             }
         }
+
+        // --- MOTOR DE MONETIZAÇÃO FREEMIUM SYNAPSE ---
+        const SYNAPSE_PLANS = {
+            free: {
+                name: "Plano Gratuito",
+                badge: "Básico",
+                limits: { chat: 15, resume: 2, interview: 2, export_pdf: 1 }
+            },
+            pro: {
+                name: "Plano Pro",
+                badge: "Premium",
+                limits: { chat: 999999, resume: 999999, interview: 999999, export_pdf: 999999 }
+            },
+            ultra: {
+                name: "Plano Ultra",
+                badge: "VIP",
+                limits: { chat: 999999, resume: 999999, interview: 999999, export_pdf: 999999 }
+            }
+        };
+
+        function getAppSubscriptionPlan() {
+            return localStorage.getItem('synapse_subscription_plan') || 'free';
+        }
+
+        function setAppSubscriptionPlan(plan) {
+            localStorage.setItem('synapse_subscription_plan', plan);
+            updateSubscriptionUI();
+        }
+
+        function getAppSubscriptionUsage() {
+            const todayStr = new Date().toDateString();
+            let usage = null;
+            try {
+                usage = JSON.parse(localStorage.getItem('synapse_subscription_usage'));
+            } catch(e){}
+
+            if (!usage || usage.date !== todayStr) {
+                const oldUsage = usage || { chat: 0, resume: 0, interview: 0, export_pdf: 0 };
+                usage = {
+                    date: todayStr,
+                    chat: 0,
+                    resume: oldUsage.resume || 0,
+                    interview: oldUsage.interview || 0,
+                    export_pdf: oldUsage.export_pdf || 0
+                };
+                localStorage.setItem('synapse_subscription_usage', JSON.stringify(usage));
+            }
+            return usage;
+        }
+
+        function incrementAppSubscriptionUsage(feature) {
+            const usage = getAppSubscriptionUsage();
+            if (usage[feature] !== undefined) {
+                usage[feature]++;
+            }
+            localStorage.setItem('synapse_subscription_usage', JSON.stringify(usage));
+            updateSubscriptionUI();
+        }
+
+        function checkSubscriptionLimit(feature) {
+            const planKey = getAppSubscriptionPlan();
+            if (planKey === 'pro' || planKey === 'ultra') return true;
+
+            const plan = SYNAPSE_PLANS[planKey];
+            const usage = getAppSubscriptionUsage();
+            const currentUsage = usage[feature] || 0;
+            const limit = plan.limits[feature];
+
+            if (currentUsage >= limit) {
+                showPremiumUpgradeModal(feature, limit);
+                return false;
+            }
+            return true;
+        }
+
+        function showPremiumUpgradeModal(feature, limit) {
+            triggerPulse();
+            const modal = document.getElementById('subscription-upgrade-modal');
+            if (!modal) return;
+
+            let featureName = "este recurso";
+            let featureDesc = "Você atingiu o limite de uso permitido no plano gratuito.";
+            if (feature === 'chat') {
+                featureName = "Mensagens de Chat";
+                featureDesc = `Você atingiu o limite de <b>${limit} mensagens diárias</b> do plano gratuito. Faça upgrade para continuar conversando com a inteligência do console.`;
+            } else if (feature === 'resume') {
+                featureName = "Criação de Currículos";
+                featureDesc = `Você atingiu o limite de <b>${limit} currículos gerados</b> com IA do plano gratuito. Faça upgrade para desbloquear gerações e otimizações infinitas.`;
+            } else if (feature === 'interview') {
+                featureName = "Simulação de Entrevistas";
+                featureDesc = `Você atingiu o limite de <b>${limit} simulações de entrevista</b> do plano gratuito. Faça upgrade para praticar quantas vezes quiser e receber feedback especializado detalhado.`;
+            } else if (feature === 'export_pdf') {
+                featureName = "Exportação de PDF";
+                featureDesc = `Você atingiu o limite de <b>${limit} exportação de PDF</b> do plano gratuito. Faça upgrade para exportar seus currículos criados sem qualquer limite ou marca d'água.`;
+            }
+
+            document.getElementById('modal-upgrade-feature-title').innerText = featureName;
+            document.getElementById('modal-upgrade-feature-desc').innerHTML = featureDesc;
+            modal.style.display = 'flex';
+        }
+
+        function hidePremiumUpgradeModal() {
+            triggerPulse();
+            const modal = document.getElementById('subscription-upgrade-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function updateSubscriptionUI() {
+            const planKey = getAppSubscriptionPlan();
+            const plan = SYNAPSE_PLANS[planKey];
+            const usage = getAppSubscriptionUsage();
+
+            const planNameEl = document.getElementById('subscription-active-plan-name');
+            const planBadgeEl = document.getElementById('subscription-active-plan-badge');
+            const cardEl = document.getElementById('subscription-status-card');
+
+            if (planNameEl) {
+                if (planKey === 'free') {
+                    planNameEl.innerHTML = `Plano Gratuito (Free) 🆓`;
+                    if (planBadgeEl) {
+                        planBadgeEl.innerText = "Básico";
+                        planBadgeEl.style.background = "rgba(255,255,255,0.06)";
+                        planBadgeEl.style.color = "var(--text-muted)";
+                        planBadgeEl.style.borderColor = "var(--border-color)";
+                    }
+                    if (cardEl) {
+                        cardEl.style.background = "rgba(255,255,255,0.02)";
+                        cardEl.style.borderColor = "var(--border-color)";
+                    }
+                } else if (planKey === 'pro') {
+                    planNameEl.innerHTML = `Plano Pro Ativo ⭐`;
+                    if (planBadgeEl) {
+                        planBadgeEl.innerText = "Premium";
+                        planBadgeEl.style.background = "rgba(139, 92, 246, 0.15)";
+                        planBadgeEl.style.color = "#a78bfa";
+                        planBadgeEl.style.borderColor = "rgba(139, 92, 246, 0.3)";
+                    }
+                    if (cardEl) {
+                        cardEl.style.background = "linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(99, 102, 241, 0.15) 100%)";
+                        cardEl.style.borderColor = "rgba(139, 92, 246, 0.3)";
+                    }
+                } else if (planKey === 'ultra') {
+                    planNameEl.innerHTML = `Plano Ultra Ativo 🚀`;
+                    if (planBadgeEl) {
+                        planBadgeEl.innerText = "VIP";
+                        planBadgeEl.style.background = "rgba(245, 158, 11, 0.15)";
+                        planBadgeEl.style.color = "#fbbf24";
+                        planBadgeEl.style.borderColor = "rgba(245, 158, 11, 0.3)";
+                    }
+                    if (cardEl) {
+                        cardEl.style.background = "linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)";
+                        cardEl.style.borderColor = "rgba(245, 158, 11, 0.35)";
+                    }
+                }
+            }
+
+            const features = ['chat', 'resume', 'interview', 'export_pdf'];
+            features.forEach(f => {
+                const textEl = document.getElementById(`usage-text-${f}`);
+                const progressEl = document.getElementById(`usage-progress-${f}`);
+                if (textEl && progressEl) {
+                    const current = usage[f] || 0;
+                    const limit = SYNAPSE_PLANS[planKey].limits[f];
+                    
+                    if (planKey === 'pro' || planKey === 'ultra') {
+                        textEl.innerText = `${current} / Ilimitado`;
+                        progressEl.style.width = `100%`;
+                        progressEl.style.background = planKey === 'pro' ? 'linear-gradient(90deg, #8b5cf6, #a78bfa)' : 'linear-gradient(90deg, #f59e0b, #fbbf24)';
+                    } else {
+                        textEl.innerText = `${current} / ${limit}`;
+                        const pct = Math.min(100, (current / limit) * 100);
+                        progressEl.style.width = `${pct}%`;
+                        
+                        if (pct >= 100) {
+                            progressEl.style.background = 'linear-gradient(90deg, #ef4444, #f87171)';
+                        } else if (pct >= 75) {
+                            progressEl.style.background = 'linear-gradient(90deg, #f59e0b, #fbbf24)';
+                        } else {
+                            progressEl.style.background = f === 'chat' ? 'linear-gradient(90deg, #10b981, #34d399)' :
+                                                 f === 'resume' ? 'linear-gradient(90deg, #8b5cf6, #a78bfa)' :
+                                                 f === 'interview' ? 'linear-gradient(90deg, #f59e0b, #fbbf24)' :
+                                                                   'linear-gradient(90deg, #3b82f6, #60a5fa)';
+                        }
+                    }
+                }
+            });
+        }
+
+        function setAppPlanSimulated(plan, feedback = false) {
+            triggerPulse();
+            setAppSubscriptionPlan(plan);
+            if (feedback) {
+                let planName = plan === 'pro' ? "Pro ⭐" : plan === 'ultra' ? "Ultra 🚀" : "Gratuito 🆓";
+                showAppToast(`Plano ${planName} ativado com sucesso! Aproveite os novos limites.`, "success");
+                addLog(`Assinatura atualizada: plano ${planName} ativado via console de simulação.`, "success");
+            }
+        }
+
+        function goToSubscriptionSubView() {
+            hidePremiumUpgradeModal();
+            switchTab('tab-config');
+            openConfigSubView('subscription');
+        }
+
+        // Registrar inicialização da carteira
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                getAppSubscriptionUsage();
+                updateSubscriptionUI();
+            }, 1000);
+        });
     </script>
+
+    <!-- MODAL DE UPGRADE PREMIUM (CONTRATO DE MONETIZAÇÃO) -->
+    <div id="subscription-upgrade-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 10000; align-items: center; justify-content: center; padding: 16px; animation: fadeIn 0.2s ease-out;">
+        <div style="background: #0d0d0d; border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 20px; max-width: 440px; width: 100%; padding: 24px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.8); text-align: center;">
+            <div style="background: rgba(245, 158, 11, 0.1); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 30px; padding: 4px 14px; font-size: 0.72rem; font-weight: 700; width: fit-content; margin: 0 auto 16px auto; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 6px;">
+                <span>⭐</span> Recurso Premium Limitado
+            </div>
+            <div style="font-size: 3rem; margin-bottom: 12px; line-height: 1;">👑</div>
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: #fff; margin: 0 0 8px 0;">Limite Excedido</h3>
+            <h4 id="modal-upgrade-feature-title" style="font-size: 0.95rem; font-weight: 700; color: #fbbf24; margin: 0 0 12px 0;">Mensagens de Chat</h4>
+            <p id="modal-upgrade-feature-desc" style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 24px 0; line-height: 1.5;">
+                Você atingiu o limite de consultas diárias permitidas no plano gratuito. Faça upgrade para continuar conversando sem interrupções.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button onclick="goToSubscriptionSubView()" style="background: var(--primary); border: none; color: #000; font-weight: bold; width: 100%; border-radius: 12px; padding: 14px; font-size: 0.9rem; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                    🚀 Ver Opções de Upgrade
+                </button>
+                <button onclick="setAppPlanSimulated('pro', true); hidePremiumUpgradeModal();" style="background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.4); color: #a78bfa; font-weight: bold; width: 100%; border-radius: 12px; padding: 12px; font-size: 0.85rem; cursor: pointer; transition: background 0.2s;">
+                    ⚡ Ativar Plano Pro Provisório (Demo)
+                </button>
+                <button onclick="hidePremiumUpgradeModal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 0.8rem; cursor: pointer; padding: 8px; font-weight: 600;">
+                    Talvez mais tarde
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
