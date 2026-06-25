@@ -2528,7 +2528,7 @@
             </div>
 
             <!-- TAB CONTAINER FOR INTEGRATION -->
-            <div class="rb-container">
+            <div class="rb-container" style="max-width: 780px; margin: 0 auto;">
                 
                 <!-- PANEL 1: EDITORES & CUSTOMIZADORES (WIZARD COMPLETO) -->
                 <div class="rb-panel" style="padding: 18px; display: flex; flex-direction: column; gap: 14px;">
@@ -2548,12 +2548,12 @@
                         <div class="rb-wizard-step" id="rb-step-indicator-3" onclick="switchResumeWizardStep(3)" style="flex: 1; text-align: center; cursor: pointer; border-bottom: 2px solid transparent; padding-bottom: 8px; transition: all 0.3s;">
                             <span style="font-size: 1.1rem; display: block; color: var(--text-muted);">✨</span>
                             <span style="font-size: 0.72rem; font-weight: bold; text-transform: uppercase; color: var(--text-muted);">Etapa 3</span>
-                            <small style="font-size: 0.62rem; color: var(--text-muted); display: block;">Escolha de Modo</small>
+                            <small style="font-size: 0.62rem; color: var(--text-muted); display: block;">Tipo de Currículo</small>
                         </div>
                         <div class="rb-wizard-step" id="rb-step-indicator-4" onclick="switchResumeWizardStep(4)" style="flex: 1; text-align: center; cursor: pointer; border-bottom: 2px solid transparent; padding-bottom: 8px; transition: all 0.3s;">
                             <span style="font-size: 1.1rem; display: block; color: var(--text-muted);">🎨</span>
                             <span style="font-size: 0.72rem; font-weight: bold; text-transform: uppercase; color: var(--text-muted);">Etapa 4</span>
-                            <small style="font-size: 0.62rem; color: var(--text-muted); display: block;">Estilo & Exportação</small>
+                            <small style="font-size: 0.62rem; color: var(--text-muted); display: block;">Resultado Final</small>
                         </div>
                     </div>
 
@@ -2561,6 +2561,10 @@
                     <div id="rb-step-container-1" style="display: flex; flex-direction: column; gap: 12px;">
                         <div class="rb-section-title" style="margin-bottom: 4px;">
                             <span>👤</span> Dados Pessoais e Contato
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn-universal" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); font-size: 0.65rem; padding: 4px 8px; border-radius: 6px; color: #fff; cursor: pointer;" onclick="loadSampleResumeData()">💡 Carregar Exemplo</button>
+                                <button class="btn-universal" style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.15); font-size: 0.65rem; padding: 4px 8px; border-radius: 6px; color: #ef4444; cursor: pointer;" onclick="clearResumeToBlank()">🧹 Limpar</button>
+                            </div>
                         </div>
                         
                         <div style="display: flex; gap: 14px; align-items: center; margin-bottom: 4px; background: rgba(255,255,255,0.01); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04);">
@@ -2578,39 +2582,63 @@
 
                         <div class="rb-row">
                             <div class="rb-input-group">
-                                <label class="rb-input-label">Nome Completo:</label>
+                                <label class="rb-input-label">Nome Completo <span style="color:var(--primary);">*</span>:</label>
                                 <input type="text" id="rb-input-name" class="form-control" placeholder="Seu Nome Completo" oninput="updateResumePreview()">
                             </div>
                             <div class="rb-input-group">
-                                <label class="rb-input-label">Cargo / Profissão Alvo:</label>
-                                <input type="text" id="rb-input-title" class="form-control" placeholder="Ex: Advogado, Médico, Administrador, etc." oninput="updateResumePreview()">
-                            </div>
-                        </div>
-
-                        <div class="rb-row">
-                            <div class="rb-input-group">
-                                <label class="rb-input-label">E-mail:</label>
+                                <label class="rb-input-label">E-mail <span style="color:var(--primary);">*</span>:</label>
                                 <input type="email" id="rb-input-email" class="form-control" placeholder="seuemail@provedor.com" oninput="updateResumePreview()">
                             </div>
+                        </div>
+
+                        <div class="rb-row">
                             <div class="rb-input-group">
-                                <label class="rb-input-label">Telefone:</label>
+                                <label class="rb-input-label">Telefone <span style="color:var(--primary);">*</span>:</label>
                                 <input type="text" id="rb-input-phone" class="form-control" placeholder="(DD) 99999-9999" oninput="updateResumePreview()">
+                            </div>
+                            <div class="rb-input-group">
+                                <label class="rb-input-label">Cidade/UF ou País <span style="color:var(--primary);">*</span>:</label>
+                                <input type="text" id="rb-input-location" class="form-control" placeholder="Ex: São Paulo - SP" oninput="updateResumePreview()">
                             </div>
                         </div>
 
                         <div class="rb-row">
                             <div class="rb-input-group">
-                                <label class="rb-input-label">Cidade/UF ou País:</label>
-                                <input type="text" id="rb-input-location" class="form-control" placeholder="Ex: São Paulo - SP" oninput="updateResumePreview()">
+                                <label class="rb-input-label">LinkedIn (Opcional):</label>
+                                <input type="text" id="rb-input-website" class="form-control" placeholder="Ex: linkedin.com/in/seuusuario" oninput="updateResumePreview()">
                             </div>
                             <div class="rb-input-group">
-                                <label class="rb-input-label">LinkedIn ou Website:</label>
-                                <input type="text" id="rb-input-website" class="form-control" placeholder="Ex: linkedin.com/in/seuusuario" oninput="updateResumePreview()">
+                                <label class="rb-input-label">Portfólio (Opcional):</label>
+                                <input type="text" id="rb-input-portfolio" class="form-control" placeholder="Ex: github.com/seuusuario ou portfolioweb.com" oninput="updateResumePreview()">
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+                            <button class="btn-universal" style="background-color: var(--primary); color: #000; font-weight: bold; padding: 10px 24px; border-radius: 20px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="switchResumeWizardStep(2)">
+                                Continuar ➡️
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ETAPA 2: PERFIL PROFISSIONAL -->
+                    <div id="rb-step-container-2" style="display: none; flex-direction: column; gap: 12px;">
+                        <div class="rb-section-title" style="margin-bottom: 4px;">
+                            <span>💼</span> Perfil Profissional & Histórico
+                        </div>
+
+                        <div class="rb-row">
+                            <div class="rb-input-group">
+                                <label class="rb-input-label">Profissão / Cargo Alvo <span style="color:var(--primary);">*</span>:</label>
+                                <input type="text" id="rb-input-title" class="form-control" placeholder="Ex: Advogado, Médico, Administrador..." oninput="updateResumePreview()">
+                            </div>
+                            <div class="rb-input-group">
+                                <label class="rb-input-label">Área de Atuação <span style="color:var(--primary);">*</span>:</label>
+                                <input type="text" id="rb-input-field" class="form-control" placeholder="Ex: Jurídico, Saúde, Tecnologia da Informação..." oninput="updateResumePreview()">
                             </div>
                         </div>
 
                         <div class="rb-input-group" style="margin-top: 4px;">
-                            <label class="rb-input-label" style="color: var(--primary); font-weight: bold;">Nível de Experiência (Obrigatório):</label>
+                            <label class="rb-input-label" style="color: var(--primary); font-weight: bold;">Nível de Experiência <span style="color:var(--primary);">*</span>:</label>
                             <select id="rb-input-level" class="form-control" onchange="updateResumePreview()" style="background: #0f172a; color: #fff; border: 1px solid var(--border-color); height: 44px; border-radius: 10px; padding: 0 12px; font-size: 0.85rem;">
                                 <option value="">-- Selecione seu Nível --</option>
                                 <option value="Estudante">🎓 Estudante (Focado em projetos acadêmicos, sem experiência anterior)</option>
@@ -2621,22 +2649,9 @@
                             </select>
                         </div>
 
-                        <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
-                            <button class="btn-universal" style="background-color: var(--primary); color: #000; font-weight: bold; padding: 10px 24px; border-radius: 20px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="switchResumeWizardStep(2)">
-                                Avançar ➡️
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- ETAPA 2: INFORMAÇÕES PROFISSIONAIS -->
-                    <div id="rb-step-container-2" style="display: none; flex-direction: column; gap: 12px;">
-                        <div class="rb-section-title" style="margin-bottom: 4px;">
-                            <span>📝</span> Informações Profissionais
-                        </div>
-
-                        <div class="rb-input-group">
-                            <label class="rb-input-label">Sobre Mim / Resumo Profissional:</label>
-                            <textarea id="rb-input-summary" class="form-control" rows="3" placeholder="Escreva um breve resumo de suas principais qualificações e objetivos..." oninput="updateResumePreview()"></textarea>
+                        <div class="rb-input-group" style="margin-top: 4px;">
+                            <label class="rb-input-label">Sobre Mim / Resumo Profissional (Opcional, a IA pode otimizar para você):</label>
+                            <textarea id="rb-input-summary" class="form-control" rows="3" placeholder="Escreva um breve resumo de suas qualificações e objetivos..." oninput="updateResumePreview()"></textarea>
                         </div>
 
                         <div>
@@ -2657,7 +2672,7 @@
 
                         <div>
                             <div class="rb-section-title" style="font-size: 0.95rem; margin-bottom: 8px;">
-                                <span>🚀</span> Projetos em Destaque
+                                <span>🚀</span> Projetos em Destaque (Opcional)
                                 <button class="rb-add-btn" onclick="addResumeRepeaterItem('proj')">+ Add</button>
                             </div>
                             <div id="rb-repeater-proj"></div>
@@ -2665,53 +2680,63 @@
 
                         <div>
                             <div class="rb-section-title" style="font-size: 0.95rem; margin-bottom: 8px;">
-                                <span>📜</span> Certificações e Títulos
+                                <span>📜</span> Certificações e Títulos (Opcional)
                                 <button class="rb-add-btn" onclick="addResumeRepeaterItem('cert')">+ Add</button>
                             </div>
                             <div id="rb-repeater-cert"></div>
                         </div>
 
-                        <div class="rb-input-group">
+                        <div class="rb-input-group" style="margin-top: 4px;">
                             <label class="rb-input-label">Habilidades (Separadas por vírgula):</label>
                             <input type="text" id="rb-input-skills" class="form-control" placeholder="Ex: Comunicação, Liderança, Organização, React" oninput="updateResumePreview()">
                         </div>
 
-                        <div style="display: flex; justify-content: space-between; margin-top: 10px; gap: 10px;">
+                        <div style="display: flex; justify-content: space-between; margin-top: 14px; gap: 10px;">
                             <button class="btn-universal" style="background-color: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="switchResumeWizardStep(1)">
                                 ⬅️ Voltar
                             </button>
                             <button class="btn-universal" style="background-color: var(--primary); color: #000; font-weight: bold; padding: 10px 24px; border-radius: 20px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="switchResumeWizardStep(3)">
-                                Avançar ➡️
+                                Continuar ➡️
                             </button>
                         </div>
                     </div>
 
-                    <!-- ETAPA 3: ESCOLHA DO MODO IA -->
+                    <!-- ETAPA 3: TIPO DE CURRÍCULO (AI MODE) -->
                     <div id="rb-step-container-3" style="display: none; flex-direction: column; gap: 12px;">
                         <div class="rb-section-title" style="margin-bottom: 4px;">
-                            <span>✨</span> Escolha do Modo de Geração
+                            <span>✨</span> Tipo de Currículo e Inteligência Artificial
                         </div>
 
-                        <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px;">Selecione como deseja trabalhar com nossa inteligência artificial para otimizar e construir seu currículo.</p>
+                        <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px;">Selecione abaixo como nossa inteligência artificial deve estruturar, polir e otimizar seu documento.</p>
 
-                        <!-- AI TABS NAVIGATION IN WIZARD -->
-                        <div class="rb-ai-tab-header" style="margin-bottom: 10px;">
-                            <button class="rb-ai-tab-btn active" id="btn-rb-ai-gen" onclick="switchResumeAiTab('ai-gen')">📄 Currículo Padrão</button>
-                            <button class="rb-ai-tab-btn" id="btn-rb-ai-adapt" onclick="switchResumeAiTab('ai-adapt')">🎯 Adaptar para Vaga</button>
-                            <button class="rb-ai-tab-btn" id="btn-rb-ai-suggest" onclick="switchResumeAiTab('ai-suggest')">💡 Dicas & Sugestões</button>
+                        <!-- INTERACTIVE MODE SELECTION CARDS -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 12px;">
+                            <!-- CARD 1: CURRÍCULO PADRÃO -->
+                            <div id="rb-mode-card-standard" class="rb-mode-card active" onclick="switchResumeAiTab('ai-gen')" style="background: rgba(255,255,255,0.02); border: 2px solid var(--primary); padding: 16px; border-radius: 12px; cursor: pointer; transition: all 0.2s; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                                <span style="font-size: 1.8rem; display: block; margin-bottom: 2px;">📄</span>
+                                <strong style="color: #fff; font-size: 0.9rem; display: block;">Currículo Padrão</strong>
+                                <span style="font-size: 0.7rem; color: var(--text-muted); line-height: 1.3; display: block;">Gera um currículo otimizado com IA focado no seu perfil e nível profissional de forma limpa.</span>
+                            </div>
+
+                            <!-- CARD 2: ADAPTADO PARA VAGA -->
+                            <div id="rb-mode-card-vacancy" class="rb-mode-card" onclick="switchResumeAiTab('ai-adapt')" style="background: rgba(255,255,255,0.02); border: 2px solid rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; cursor: pointer; transition: all 0.2s; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                                <span style="font-size: 1.8rem; display: block; margin-bottom: 2px;">🎯</span>
+                                <strong style="color: #fff; font-size: 0.9rem; display: block;">Adaptado para Vaga</strong>
+                                <span style="font-size: 0.7rem; color: var(--text-muted); line-height: 1.3; display: block;">Adapta seu resumo e competências sob medida para passar em filtros de RH (ATS).</span>
+                            </div>
                         </div>
 
                         <!-- MODAL AI 1: GERAR/POLIR CURRICULO PADRAO -->
                         <div id="rb-ai-tab-gen" style="display: flex; flex-direction: column; gap: 12px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); padding: 14px; border-radius: 12px;">
                             <div class="rb-input-group">
-                                <label class="rb-input-label" style="color: var(--primary);">Instruções para a IA (Opcional se já preencheu a Etapa 1 e 2):</label>
-                                <textarea id="rb-ai-prompt" class="form-control" rows="4" placeholder="Descreva sua trajetória, cursos, ou envie observações adicionais. Ex: Quero dar foco no meu curso de Medicina que iniciei e destacar minhas monitorias acadêmicas..."></textarea>
+                                <label class="rb-input-label" style="color: var(--primary);">Instruções para a IA (Opcional):</label>
+                                <textarea id="rb-ai-prompt" class="form-control" rows="4" placeholder="Descreva sua trajetória, cursos, ou envie observações adicionais para focar no currículo..."></textarea>
                             </div>
                             <div style="background: rgba(37, 99, 235, 0.05); border: 1px solid rgba(37, 99, 235, 0.15); padding: 10px; border-radius: 8px; font-size: 0.72rem; color: #93c5fd; line-height: 1.35;">
                                 💡 A IA irá estruturar um currículo de altíssima qualidade técnica respeitando estritamente a verdade dos seus dados e a senioridade escolhida (ex: estudantes não terão experiências corporativas fictícias criadas).
                             </div>
                             <button class="btn-universal" style="background-color: var(--primary); color: #000; font-weight: bold; border-radius: 12px; padding: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="generateResumeWithAI()">
-                                🚀 Otimizar e Gerar com IA
+                                ✨ Gerar Currículo Padrão com IA
                             </button>
                         </div>
 
@@ -2719,39 +2744,27 @@
                         <div id="rb-ai-tab-adapt" style="display: none; flex-direction: column; gap: 12px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); padding: 14px; border-radius: 12px;">
                             <div class="rb-input-group">
                                 <label class="rb-input-label" style="color: #8b5cf6;">Descrição ou Requisitos da Vaga Alvo:</label>
-                                <textarea id="rb-ai-vacancy" class="form-control" rows="4" placeholder="Cole aqui a descrição completa da vaga obtida no LinkedIn, Gupy ou portais de emprego..."></textarea>
+                                <textarea id="rb-ai-vacancy" class="form-control" rows="4" placeholder="Cole aqui a descrição completa da vaga, requisitos ou anúncio obtido nos portais de emprego..."></textarea>
                             </div>
                             <div style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.15); padding: 10px; border-radius: 8px; font-size: 0.72rem; color: #c084fc; line-height: 1.35;">
-                                💡 A IA adaptará sutilmente o seu Resumo Profissional ("Sobre Mim") e destacará as competências e experiências que dão match com a vaga, de forma honesta, sem inventar mentiras.
+                                💡 A IA adaptará sutilmente o seu Resumo Profissional ("Sobre Mim") e destacará as competências e experiências que dão match com a vaga de forma honesta, sem inventar mentiras.
                             </div>
                             <button class="btn-universal" style="background-color: #8b5cf6; color: #fff; font-weight: bold; border-radius: 12px; padding: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="adaptResumeToVacancy()">
-                                🎯 Adaptar Currículo para Vaga
+                                ✨ Gerar Currículo Adaptado com IA
                             </button>
                         </div>
 
-                        <!-- MODAL AI 3: DICAS & SUGESTÕES -->
-                        <div id="rb-ai-tab-suggest" style="display: none; flex-direction: column; gap: 12px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); padding: 14px; border-radius: 12px;">
-                            <p style="font-size:0.75rem; color: var(--text-muted); margin:0; line-height:1.4;">A IA analisará seu rascunho de currículo atual, localizando competências chaves e oferecendo sugestões práticas de melhoria.</p>
-                            <button class="btn-universal" style="background-color: #f59e0b; color: #1a1a1a; width:100%; border: none; font-weight: bold; padding:12px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="getSmartResumeSuggestions()">
-                                🔍 Analisar Currículo Atual
-                            </button>
-                            <div id="rb-ai-suggestions-box" style="display:none; background: rgba(0,0,0,0.3) !important; border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; font-size: 0.8rem; line-height: 1.5; color:#fff; max-height: 200px; overflow-y:auto; -webkit-overflow-scrolling:touch;"></div>
-                        </div>
-
-                        <div style="display: flex; justify-content: space-between; margin-top: 10px; gap: 10px;">
+                        <div style="display: flex; justify-content: space-between; margin-top: 14px; gap: 10px;">
                             <button class="btn-universal" style="background-color: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="switchResumeWizardStep(2)">
                                 ⬅️ Voltar
-                            </button>
-                            <button class="btn-universal" style="background-color: var(--primary); color: #000; font-weight: bold; padding: 10px 24px; border-radius: 20px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="switchResumeWizardStep(4)">
-                                Avançar ➡️
                             </button>
                         </div>
                     </div>
 
-                    <!-- ETAPA 4: GERAÇÃO FINAL & CUSTOMIZAÇÃO DE DESIGN -->
+                    <!-- ETAPA 4: RESULTADO FINAL & CUSTOMIZAÇÃO -->
                     <div id="rb-step-container-4" style="display: none; flex-direction: column; gap: 12px;">
                         <div class="rb-section-title" style="margin-bottom: 4px;">
-                            <span>🎨</span> Estilo, Cores e Apresentação Visual
+                            <span>🎨</span> Estilo, Design e Apresentação Visual
                         </div>
 
                         <div class="rb-row">
@@ -2809,10 +2822,23 @@
 
                         <div style="background: rgba(34, 197, 94, 0.05); border: 1px solid rgba(34, 197, 94, 0.15); padding: 12px; border-radius: 12px; text-align: center; margin-top: 6px;">
                             <span style="font-size: 0.78rem; font-weight: bold; color: #4ade80; display: block; margin-bottom: 6px;">🎉 Seu Currículo está Pronto!</span>
-                            <p style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.35; margin: 0 0 8px 0;">Você pode pré-visualizar a folha A4 em tempo real e clicar em exportar para salvar seu PDF profissional.</p>
-                            <button class="btn-universal" style="background-color: #22c55e; color: #fff; border: none; font-weight: bold; padding: 10px 18px; border-radius: 10px; display: flex; align-items: center; gap: 8px; justify-content: center; width: 100%; box-shadow: 0 4px 12px rgba(34,197,94,0.2);" onclick="exportResumePDF()">
-                                <span>📄</span> Exportar como PDF (Imprimir)
-                            </button>
+                            <p style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.35; margin: 0 0 10px 0;">Você pode pré-visualizar a folha A4 ao lado em tempo real e exportá-la ou salvá-la.</p>
+                            
+                            <!-- ACTIONS PANEL GRID -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                <button class="btn-universal" style="background-color: #22c55e; color: #fff; border: none; font-weight: bold; padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 6px; justify-content: center; font-size: 0.78rem; cursor: pointer; box-shadow: 0 2px 8px rgba(34,197,94,0.15);" onclick="exportResumePDF()">
+                                    <span>📄</span> Exportar PDF
+                                </button>
+                                <button class="btn-universal" style="background-color: #3b82f6; color: #fff; border: none; font-weight: bold; padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 6px; justify-content: center; font-size: 0.78rem; cursor: pointer;" onclick="shareResume()">
+                                    <span>🔗</span> Compartilhar
+                                </button>
+                                <button class="btn-universal" style="background-color: #6366f1; color: #fff; border: none; font-weight: bold; padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 6px; justify-content: center; font-size: 0.78rem; cursor: pointer;" onclick="copyResumeContent()">
+                                    <span>📋</span> Copiar Texto
+                                </button>
+                                <button class="btn-universal" style="background-color: #e2e8f0; color: #0f172a; border: none; font-weight: bold; padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 6px; justify-content: center; font-size: 0.78rem; cursor: pointer;" onclick="saveResumeData()">
+                                    <span>💾</span> Salvar Progresso
+                                </button>
+                            </div>
                         </div>
 
                         <div style="display: flex; justify-content: space-between; margin-top: 10px; gap: 10px;">
@@ -2825,7 +2851,7 @@
                 </div>
 
                 <!-- PANEL 2: LIVE PREVIEW & EXPORT -->
-                <div style="display: flex; flex-direction: column; gap:16px;">
+                <div id="rb-panel-preview" style="display: none; flex-direction: column; gap:16px;">
                     
                     <div class="rb-action-bar">
                         <button class="btn-universal" style="background-color: #22c55e; color: #fff; border: none; font-weight: bold; padding: 12px 18px; border-radius: 12px; display: flex; align-items: center; gap: 8px; flex: 1; justify-content: center; box-shadow: 0 4px 12px rgba(34,197,94,0.35);" onclick="exportResumePDF()">
@@ -12157,12 +12183,46 @@ Retorne APENAS o objeto JSON acima, sem nenhum bloco de código markdown (\`\`\`
         }
 
         function switchResumeWizardStep(stepNum) {
-            // Validation: if moving past Step 1, make sure Experience Level is selected!
+            // Validações da Etapa 1 ao tentar ir para Etapa 2, 3 ou 4
             if (stepNum > 1) {
-                const levelVal = document.getElementById('rb-input-level').value;
-                if (!levelVal) {
-                    showAppToast("Por favor, selecione seu Nível de Experiência obrigatório antes de prosseguir!", "warning");
+                const nameVal = document.getElementById('rb-input-name').value.trim();
+                const emailVal = document.getElementById('rb-input-email').value.trim();
+                const phoneVal = document.getElementById('rb-input-phone').value.trim();
+                const locationVal = document.getElementById('rb-input-location').value.trim();
+                
+                if (!nameVal || !emailVal || !phoneVal || !locationVal) {
+                    showAppToast("Por favor, preencha todos os campos obrigatórios (*) da Etapa 1 antes de prosseguir!", "warning");
                     return;
+                }
+            }
+            
+            // Validações da Etapa 2 ao tentar ir para Etapa 3 ou 4
+            if (stepNum > 2) {
+                const titleVal = document.getElementById('rb-input-title').value.trim();
+                const fieldVal = document.getElementById('rb-input-field') ? document.getElementById('rb-input-field').value.trim() : '';
+                const levelVal = document.getElementById('rb-input-level').value;
+                
+                if (!titleVal || !fieldVal || !levelVal) {
+                    showAppToast("Por favor, preencha Profissão, Área de Atuação e Nível de Experiência obrigatórios (*) na Etapa 2!", "warning");
+                    return;
+                }
+            }
+
+            // Controlar visibilidade do painel de pré-visualização e layout do container
+            const previewPanel = document.getElementById('rb-panel-preview');
+            const rbContainer = document.querySelector('.rb-container');
+            
+            if (stepNum === 4) {
+                if (previewPanel) previewPanel.style.display = 'flex';
+                if (rbContainer) {
+                    rbContainer.style.maxWidth = '100%';
+                    rbContainer.style.margin = '0';
+                }
+            } else {
+                if (previewPanel) previewPanel.style.display = 'none';
+                if (rbContainer) {
+                    rbContainer.style.maxWidth = '780px';
+                    rbContainer.style.margin = '0 auto';
                 }
             }
 
@@ -12191,6 +12251,9 @@ Retorne APENAS o objeto JSON acima, sem nenhum bloco de código markdown (\`\`\`
                     }
                 }
             }
+            
+            // Garantir que a prévia se atualize ao alternar etapas
+            updateResumePreview();
         }
 
         function updateResumePreview() {
@@ -12468,11 +12531,6 @@ Retorne APENAS o objeto JSON acima, sem nenhum bloco de código markdown (\`\`\`
             const userPrompt = document.getElementById('rb-ai-prompt').value.trim();
             const expLevel = document.getElementById('rb-input-level').value || 'Não Especificado';
 
-            if (!userPrompt) {
-                showAppToast("Descreva sobre você no prompt para criarmos!", "warning");
-                return;
-            }
-
             // Verificar limite de currículos do plano Freemium
             if (typeof checkSubscriptionLimit === 'function' && !checkSubscriptionLimit('resume')) {
                 return;
@@ -12495,44 +12553,120 @@ Retorne APENAS o objeto JSON acima, sem nenhum bloco de código markdown (\`\`\`
             addLog("Gerando novo currículo inteligente com IA - Processando...", "info");
             showAppToast("IA processando seu currículo... Aguarde uns segundos.", "info");
 
+            // Coletar dados preenchidos pelo usuário para evitar alucinação
+            const nameVal = document.getElementById('rb-input-name').value.trim();
+            const emailVal = document.getElementById('rb-input-email').value.trim();
+            const phoneVal = document.getElementById('rb-input-phone').value.trim();
+            const locationVal = document.getElementById('rb-input-location').value.trim();
+            const websiteVal = document.getElementById('rb-input-website').value.trim();
+            const portfolioVal = document.getElementById('rb-input-portfolio') ? document.getElementById('rb-input-portfolio').value.trim() : '';
+            const professionVal = document.getElementById('rb-input-title').value.trim();
+            const fieldVal = document.getElementById('rb-input-field') ? document.getElementById('rb-input-field').value.trim() : '';
+
+            const currentExperiences = [];
+            document.querySelectorAll('.rb-exp-item').forEach(el => {
+                const role = el.querySelector('.rb-exp-role').value.trim();
+                const company = el.querySelector('.rb-exp-company').value.trim();
+                const period = el.querySelector('.rb-exp-period').value.trim();
+                const desc = el.querySelector('.rb-exp-desc').value.trim();
+                if (role || company) {
+                    currentExperiences.push({ role, company, period, desc });
+                }
+            });
+            
+            const currentEducation = [];
+            document.querySelectorAll('.rb-edu-item').forEach(el => {
+                const degree = el.querySelector('.rb-edu-degree').value.trim();
+                const school = el.querySelector('.rb-edu-school').value.trim();
+                const period = el.querySelector('.rb-edu-period').value.trim();
+                const desc = el.querySelector('.rb-edu-desc').value.trim();
+                if (degree || school) {
+                    currentEducation.push({ degree, school, period, desc });
+                }
+            });
+
+            const currentProjects = [];
+            document.querySelectorAll('.rb-proj-item').forEach(el => {
+                const name = el.querySelector('.rb-proj-name').value.trim();
+                const subtitle = el.querySelector('.rb-proj-subtitle').value.trim();
+                const desc = el.querySelector('.rb-proj-desc').value.trim();
+                if (name) {
+                    currentProjects.push({ name, subtitle, desc });
+                }
+            });
+
+            const currentCertifications = [];
+            document.querySelectorAll('.rb-cert-item').forEach(el => {
+                const name = el.querySelector('.rb-cert-name').value.trim();
+                const institution = el.querySelector('.rb-cert-institution').value.trim();
+                const year = el.querySelector('.rb-cert-year').value.trim();
+                if (name) {
+                    currentCertifications.push({ name, institution, year });
+                }
+            });
+
+            const currentSkills = document.getElementById('rb-input-skills').value.trim();
+
             const modelPrompt = `
 Você é o assistente neural sênior de recrutamento do Synapse Console.
-Sua missão é ler o perfil e as informações profissionais descritas pelo usuário abaixo e gerar um currículo profissional impecável, estruturado EXCLUSIVAMENTE como um JSON.
+Sua missão é polir, reescrever e otimizar profissionalmente o currículo do usuário, gerando EXCLUSIVAMENTE um JSON estruturado.
 
-REGRAS DE CONTEXTO, PROFISSÃO E SENIORIDADE (CRÍTICO - MANDATÓRIO):
-1. PROFISSÃO ALVO & ÁREA DE ATUAÇÃO: Descubra e respeite estritamente a profissão e a área do usuário (ex: Medicina, Enfermagem, Direito, Psicologia, Administração, Engenharia Civil, etc.).
-   - NÃO assuma tecnologia, programação, desenvolvimento de software ou linguagens de código como padrão. Se o usuário for médico, o currículo deve ter jargões médicos e foco em atendimento clínico ou saúde, sem NENHUMA menção a desenvolvimento de sistemas.
-2. NÍVEL DE EXPERIÊNCIA (SENIORIDADE): O nível selecionado é "${expLevel}".
-   - Se o nível for "🎓 Estudante" ou "🟢 Estagiário": Use linguagem apropriada para quem está começando. NÃO invente experiências corporativas fictícias de cargos seniores. Destaque disciplinas acadêmicas, participação em ligas ou eventos acadêmicos, projetos práticos de faculdade e soft skills relevantes.
-   - Se o nível for "🔵 Júnior", "🟣 Pleno" ou "🔴 Sênior": Adote um tom de maturidade profissional progressiva, verbos de ação adequados ao nível de entrega técnica, conquistas realistas, e organização de responsabilidades condizentes com a senioridade selecionada.
-3. POLÍTICA DE FIDELIDADE (PROIBIÇÃO DE ALUCINAÇÃO):
-   - Você deve organizar informações, melhorar a redação, corrigir erros de gramática e de concordância, estruturar os tópicos e aprimorar a apresentação técnica.
-   - É TERMINANTEMENTE PROIBIDO inventar novas experiências corporativas, criar nomes de empresas onde o usuário nunca trabalhou, inventar certificados que ele não possui, ou simular que trabalhou em cargos ou projetos fictícios. Use exclusivamente o histórico e dados fornecidos pelo usuário no prompt, refinando-os e melhorando a redação, sem criar mentiras de currículo. Se ele não informou experiências de trabalho anteriores, foque em educação, projetos acadêmicos e habilidades descritas.
+DIRETRIZES IMPORTANTES DE RESPEITO E FIDELIDADE (CRÍTICO - MANDATÓRIO):
+1. PROFISSÃO ALVO & ÁREA DE ATUAÇÃO:
+   - Profissão Alvo: "${professionVal}"
+   - Área de Atuação: "${fieldVal}"
+   - Respeite estritamente a profissão e área de atuação descritas. NÃO assuma TI ou programação como padrão. Se for Medicina, Direito ou Administração, use termos e jargões adequados da área, sem referências a desenvolvimento ou código.
+2. NÍVEL DE EXPERIÊNCIA (SENIORIDADE):
+   - Nível Selecionado: "${expLevel}"
+   - ESTUDANTE: Foque inteiramente na parte acadêmica, projetos acadêmicos, dedicação a estudos e soft skills. É PROIBIDO inventar cargos corporativos ou experiências profissionais que o usuário não realizou.
+   - ESTAGIÁRIO: Use linguagem de aprendizado ativo e suporte profissional supervisionado.
+   - JÚNIOR: Foco em execução básica operacional e tarefas iniciais (até 2 anos de experiência).
+   - PLENO: Autonomia em projetos, maturidade técnica e soluções consolidadas (2 a 5 anos de experiência).
+   - SÊNIOR: Foco estratégico, liderança, tomadas de decisões complexas e mentoria de equipes.
+3. PROIBIÇÃO DE ALUCINAÇÃO (NÃO INVENTE):
+   - É expressamente proibido criar empresas fictícias onde o usuário nunca trabalhou, inventar certificados inexistentes, mentir sobre períodos de trabalho ou simular cargos falsos. Use estritamente as experiências fornecidas abaixo pelo usuário, melhorando apenas a redação gramatical, a formatação técnica e aplicando verbos de ação adequados ao nível de senioridade selecionado.
 
-DADOS FORNECIDOS PELO USUÁRIO:
-"${userPrompt}"
+DADOS PESSOAIS DO USUÁRIO:
+- Nome: "${nameVal}"
+- E-mail: "${emailVal}"
+- Telefone: "${phoneVal}"
+- Localidade: "${locationVal}"
+- LinkedIn: "${websiteVal}"
+- Portfólio: "${portfolioVal}"
+
+DADOS DE CONTEXTO ATUAIS (POLIR E MELHORAR REDAÇÃO):
+- Resumo / Sobre Mim Atual: "${document.getElementById('rb-input-summary').value.trim()}"
+- Instruções Extras do Usuário para IA: "${userPrompt}"
+- Habilidades Atuais: "${currentSkills}"
+- Experiências Profissionais Cadastradas: ${JSON.stringify(currentExperiences)}
+- Formações Cadastradas: ${JSON.stringify(currentEducation)}
+- Projetos Cadastrados: ${JSON.stringify(currentProjects)}
+- Certificações Cadastradas: ${JSON.stringify(currentCertifications)}
+
+Sua tarefa é ler estes dados, polir os textos das experiências e do resumo profissional para torná-los sofisticados e adequados ao nível "${expLevel}", corrigir eventuais erros gramaticais, e retornar o JSON correspondente.
 
 O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem wraps do tipo \`\`\`json ou \`\`\`), seguindo precisamente esta estrutura:
 {
-  "name": "Nome Completo do Usuário (se não souber, use 'Nome Completo')",
-  "title": "Cargo Alvo ou Profissão em conformidade com o perfil do usuário",
-  "email": "email fornecido ou contato@exemplo.com",
-  "phone": "telefone fornecido ou (99) 99999-9999",
-  "location": "cidade/estado fornecidos ou Cidade - Estado",
-  "website": "linkedin ou portfolio se fornecido, senão linkedin.com/in/usuario",
-  "summary": "Resumo de perfil profissional altamente sofisticado, atraente, sem erros gramaticais, focado exclusivamente na área real e no nível de senioridade selecionado (${expLevel}).",
+  "name": "Nome do Usuário",
+  "title": "Cargo Alvo em conformidade com o perfil",
+  "email": "E-mail",
+  "phone": "Telefone",
+  "location": "Localidade",
+  "website": "LinkedIn se fornecido, senão linkedin.com/in/usuario",
+  "portfolio": "Portfólio se fornecido ou vazio",
+  "summary": "Resumo de perfil profissional altamente sofisticado, atraente, sem erros gramaticais, focado na área de atuação e adequado ao nível ${expLevel}.",
   "skills": ["Competência 1", "Competência 2", "etc - condizente com a profissão e o nível"],
   "experience": [
-    { "role": "Cargo profissional", "company": "Empresa ou Organização", "period": "Período (ex: Jan/2022 - Atual ou Ano)", "desc": "Refinamento das atribuições descritas pelo usuário, sem inventar novas empresas ou cargos. Se o usuário for estudante sem experiência prévia, deixe este array vazio ou descreva atividades voluntárias/estágios descritos pelo usuário." }
+    { "role": "Cargo", "company": "Empresa", "period": "Período", "desc": "Texto polido e aprimorado das atribuições sem inventar informações novas." }
   ],
   "education": [
-    { "degree": "Curso / Formação", "school": "Instituição de Ensino", "period": "Período", "desc": "Detalhes acadêmicos, foco de estudo ou conquistas reais." }
+    { "degree": "Curso / Formação", "school": "Instituição", "period": "Período", "desc": "Detalhes acadêmicos polidos." }
   ],
   "projects": [
-    { "name": "Nome do Projeto em Destaque", "subtitle": "Explicativo ou Link", "desc": "Atividades práticas, ligas acadêmicas, artigos publicados, ou projetos do usuário de forma organizada." }
+    { "name": "Nome do Projeto", "subtitle": "Explicativo ou Link", "desc": "Detalhes polidos do projeto." }
   ],
   "certifications": [
-    { "name": "Nome da Certificação ou Licença (ex: CRM, OAB, COREN se aplicável ou cursos)", "institution": "Órgão ou Escola Emissora", "year": "Ano de obtenção" }
+    { "name": "Nome da Certificação", "institution": "Órgão Emissor", "year": "Ano" }
   ]
 }
 `;
@@ -12663,6 +12797,9 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem wraps do tipo \`\`
                     incrementAppSubscriptionUsage('resume');
                 }
 
+                // Avança automaticamente para o passo 4 do Wizard (Resultado Final & Exportação)
+                switchResumeWizardStep(4);
+
             } catch (err) {
                 console.error(err);
                 showAppToast("Ocorreu um erro ao gerar com IA: " + err.message, "error");
@@ -12682,10 +12819,206 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem wraps do tipo \`\`
             suggestionBox.innerHTML = 'Analisando Currículo... Aguarde análise de RH...';
 
             const userText = `Profissão Alvo: ${document.getElementById('rb-input-title').value}\nSobre mim: ${summary}\nHabilidades: ${skills}\nHistórico: ${expRoles.join(', ')}`;
-            const systemPrompt = `Você é um gestor experiente de recrutamento técnico (Tech Recruiter). Analise o resumo e histórico do candidato e ofereça 4 dicas valiosas, realistas e animadoras para melhorar a descrição do perfil, focar mais em termos-chave, adicionar métricas plausíveis ou enriquecer as hard skills. Seja direto e encorajador. Retorne no idioma português brasileiro formate a resposta apenas no formato HTML simples de lista (com <li>).`;
+            const systemPrompt = `Você é um gestor experiente de recrutamento técnico (Tech Recruiter). Analise o resumo e histórico do candidato e ofereça 4 dicas valiosas, realistas and animadoras para melhorar a descrição do perfil, focar mais em termos-chave, adicionar métricas plausíveis ou enriquecer as hard skills. Seja direto e encorajador. Retorne no idioma português brasileiro formate a resposta apenas no formato HTML simples de lista (com <li>).`;
 
             try {
                 const { key, url, model, type: activeApiType } = getActiveApiCredentials();
+
+                if (!key || key === "") {
+                    suggestionBox.innerHTML = `⚠️ API Key Ausente em Configurações. Ative a chave para obter análise em tempo real. No entanto, aqui vai uma bela dica padrão: <b>Destaque seus projetos e as metas de entrega no início do seu Sobre Mim!</b>`;
+                    return;
+                }
+
+                let reply = "";
+                if (activeApiType === "GEMINI") {
+                    const cleanUrl = url.endsWith('/') ? url : url + '/';
+                    const fetchUrl = `${cleanUrl}v1beta/models/${model}:generateContent?key=${key}`;
+                    const res = await fetch(fetchUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: userText }] }],
+                            generationConfig: { temperature: 0.3 },
+                            systemInstruction: { parts: [{ text: systemPrompt }] }
+                        })
+                    });
+                    const rData = await res.json();
+                    if (rData.error) throw new Error(rData.error.message);
+                    reply = rData.candidates[0].content.parts[0].text;
+                } else {
+                    const fetchUrl = sanitizeChatCompletionsUrl(url);
+                    
+                    const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
+                    const headers = {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + cleanKey
+                    };
+                    if (activeApiType === "OPENROUTER") {
+                        try {
+                            headers['HTTP-Referer'] = window.location.origin;
+                        } catch(e) {
+                            console.warn("Não foi possível registrar o HTTP-Referer:", e);
+                        }
+                        headers['X-Title'] = 'Synapse AI';
+                    }
+
+                    const res = await fetch(fetchUrl, {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify({
+                            model: model,
+                            messages: [
+                                { role: "system", content: systemPrompt },
+                                { role: "user", content: userText }
+                            ],
+                            temperature: 0.3
+                        })
+                    });
+                    const rData = await res.json();
+                    if (rData.error) throw new Error(rData.error.message);
+                    reply = rData.choices[0].message.content;
+                }
+
+                suggestionBox.innerHTML = `<ul style="margin:0; padding-left:20px;">${reply}</ul>`;
+                addLog("Análise de dicas inteligentes do currículo concluída.", "success");
+
+            } catch (err) {
+                console.error(err);
+                suggestionBox.innerHTML = `Desculpe, ocorreu um problema na conexão IA: ${err.message}.`;
+            }
+        }
+
+        async function adaptResumeToVacancy() {
+            triggerPulse();
+            const vacancy = document.getElementById('rb-ai-vacancy').value.trim();
+            if (!vacancy) {
+                showAppToast("Por favor, cole os detalhes ou descrição da vaga alvo!", "warning");
+                return;
+            }
+
+            // Verificar limite de currículos do plano Freemium
+            if (typeof checkSubscriptionLimit === 'function' && !checkSubscriptionLimit('resume')) {
+                return;
+            }
+
+            addLog("Adaptando currículo para vaga específica usando IA...", "info");
+            showAppToast("IA sintonizando seu perfil com as canais da vaga...", "info");
+
+            const currentResume = {
+                name: document.getElementById('rb-input-name').value,
+                title: document.getElementById('rb-input-title').value,
+                summary: document.getElementById('rb-input-summary').value,
+                skills: document.getElementById('rb-input-skills').value,
+            };
+
+            const expLevel = document.getElementById('rb-input-level').value || 'Não Especificado';
+
+            const systemPrompt = `
+Você é uma inteligência de outplacement especializada em sintonia fina de currículos para ATS.
+Seu trabalho é ajustar o título, o resumo de perfil ("Sobre Mim") e as competências ("Skills") para obter o melhor alinhamento técnico com a vaga fornecida, respeitando obrigatoriamente as seguintes premissas:
+
+REGRAS CRÍTICAS:
+1. SENIORIDADE EXIGIDA: O nível profissional do usuário é "${expLevel}". Respeite estritamente esse nível (estudantes não devem ter experiências corporativas simuladas).
+2. NUNCA INVENTE OU ALUCINE: Não invente experiências de emprego que ele não informou, não invente certificações que ele não possui, e não mude seu histórico de empresas. Adapte apenas o foco, a ênfase textual das sentenças e a ordem de prioridade das habilidades reais para destacar o que a vaga prioriza de forma íntegra e honesta.
+
+Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
+{
+  "title": "Cargo ajustado de forma adequada à vaga",
+  "summary": "Nova redação sofisticada do Sobre Mim focada nas competências e trajetórias reais do usuário que dão match com a vaga",
+  "skills": ["Competências reais do candidato selecionadas e reordenadas de acordo com as necessidades da vaga"]
+}
+`;
+
+            const userText = `Currículo Ativa:\nTitle: ${currentResume.title}\nSummary: ${currentResume.summary}\nSkills: ${currentResume.skills}\n\nVaga Pretendida:\n${vacancy}`;
+
+            try {
+                const { key, url, model, type: activeApiType } = getActiveApiCredentials();
+
+                if (!key || key === "") {
+                    showAppToast("Insira a chave de API para obter adaptação real para vagas específicas.", "warning");
+                    return;
+                }
+
+                let reply = "";
+                if (activeApiType === "GEMINI") {
+                    const cleanUrl = url.endsWith('/') ? url : url + '/';
+                    const fetchUrl = `${cleanUrl}v1beta/models/${model}:generateContent?key=${key}`;
+                    const res = await fetch(fetchUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: userText }] }],
+                            generationConfig: { temperature: 0.1 },
+                            systemInstruction: { parts: [{ text: systemPrompt }] }
+                        })
+                    });
+                    const rData = await res.json();
+                    if (rData.error) throw new Error(rData.error.message);
+                    reply = rData.candidates[0].content.parts[0].text;
+                } else {
+                    const fetchUrl = sanitizeChatCompletionsUrl(url);
+                    
+                    const cleanKey = String(key).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
+                    const headers = {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + cleanKey
+                    };
+                    if (activeApiType === "OPENROUTER") {
+                        try {
+                            headers['HTTP-Referer'] = window.location.origin;
+                        } catch(e) {
+                            console.warn("Não foi possível registrar o HTTP-Referer:", e);
+                        }
+                        headers['X-Title'] = 'Synapse AI';
+                    }
+
+                    const res = await fetch(fetchUrl, {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify({
+                            model: model,
+                            messages: [
+                                { role: "system", content: systemPrompt },
+                                { role: "user", content: userText }
+                            ],
+                            temperature: 0.1
+                        })
+                    });
+                    const rData = await res.json();
+                    if (rData.error) throw new Error(rData.error.message);
+                    reply = rData.choices[0].message.content;
+                }
+
+                let cleanJson = reply.trim();
+                if (cleanJson.startsWith('```')) {
+                    cleanJson = cleanJson.replace(/^```[a-zA-Z]*\n/, '').replace(/\n```$/, '');
+                }
+
+                const data = JSON.parse(cleanJson);
+                
+                document.getElementById('rb-input-title').value = data.title || currentResume.title;
+                document.getElementById('rb-input-summary').value = data.summary || currentResume.summary;
+                if (data.skills) {
+                    document.getElementById('rb-input-skills').value = data.skills.join(', ');
+                }
+
+                updateResumePreview();
+                showAppToast("Sucesso! Seu currículo foi adaptado às prioridades da vaga.", "success");
+                addLog("Otimização para vaga efetuada.", "success");
+
+                // Incrementar uso de currículo do plano Freemium
+                if (typeof incrementAppSubscriptionUsage === 'function') {
+                    incrementAppSubscriptionUsage('resume');
+                }
+
+                // Avança automaticamente para o passo 4 do Wizard (Resultado Final & Exportação)
+                switchResumeWizardStep(4);
+
+            } catch (err) {
+                console.error(err);
+                showAppToast("Erro na otimização de vaga de IA: " + err.message, "error");
+            }
+        }               const { key, url, model, type: activeApiType } = getActiveApiCredentials();
 
                 if (!key || key === "") {
                     suggestionBox.innerHTML = `⚠️ API Key Ausente em Configurações. Ative a chave para obter análise em tempo real. No entanto, aqui vai uma bela dica padrão: <b>Destaque seus projetos e as metas de entrega no início do seu Sobre Mim!</b>`;
