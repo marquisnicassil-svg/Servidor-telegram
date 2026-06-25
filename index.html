@@ -147,12 +147,67 @@
         }
 
         /* Classes de herança estética global para alteração instantânea */
-        .supabase-card, .config-subview-card, .config-subview .supabase-card {
+        .supabase-card, .config-subview-card, .config-subview .supabase-card, .card {
             border-radius: var(--card-border-radius) !important;
             border: var(--border-weight) solid var(--border-color) !important;
             box-shadow: var(--glow-shadow) !important;
             backdrop-filter: var(--backdrop-filter) !important;
             -webkit-backdrop-filter: var(--backdrop-filter) !important;
+        }
+
+        .dashboard-action-card {
+            border-radius: var(--card-border-radius) !important;
+            border: var(--border-weight) solid var(--border-color) !important;
+            background: var(--card-bg-primary) !important;
+            box-shadow: var(--glow-shadow) !important;
+        }
+
+        .activity-row {
+            border-radius: var(--input-border-radius) !important;
+            border: var(--border-weight) solid var(--border-color) !important;
+            background: var(--card-bg-secondary) !important;
+        }
+        
+        /* Estilos de layout das configurações customizáveis */
+        .config-index-list.settings-layout-grid {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+            gap: 12px !important;
+        }
+        .config-index-list.settings-layout-grid .config-index-item {
+            min-height: 100px !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            justify-content: space-between !important;
+            padding: 12px !important;
+        }
+        .config-index-list.settings-layout-grid .config-index-item > svg {
+            align-self: flex-end !important;
+            margin-top: 6px !important;
+        }
+        
+        .config-index-list.settings-layout-compact {
+            gap: 0px !important;
+            border: var(--border-weight) solid var(--border-color) !important;
+            border-radius: var(--card-border-radius) !important;
+            background: var(--card-bg-primary) !important;
+            overflow: hidden !important;
+        }
+        .config-index-list.settings-layout-compact .config-index-item {
+            border: none !important;
+            border-bottom: 1px solid var(--border-color) !important;
+            border-radius: 0px !important;
+            background: transparent !important;
+            min-height: 54px !important;
+            padding: 10px 14px !important;
+            box-shadow: none !important;
+        }
+        .config-index-list.settings-layout-compact .config-index-item:last-child {
+            border-bottom: none !important;
+        }
+        .config-index-list.settings-layout-compact .config-index-item:hover {
+            background: var(--card-bg-secondary) !important;
+            transform: none !important;
         }
         
         .btn-supabase-action {
@@ -3256,13 +3311,22 @@ CREATE TRIGGER on_synapse_user_signed_up
             
             <!-- TELA DE ÍNDICE (Menu Principal de Ajustes) -->
             <div id="config-index-view">
-                <div class="section-header" style="margin-bottom: 20px; text-align: left;">
-                    <h2 data-i18n="ajustes_sistema_titulo">⚙️ Ajustes do Sistema</h2>
-                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;" data-i18n="ajustes_sistema_subtitle">Gerencie recursos visuais, inteligência e dados de nuvem</p>
+                <div class="section-header" style="margin-bottom: 20px; text-align: left; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <h2 data-i18n="ajustes_sistema_titulo">⚙️ Ajustes do Sistema</h2>
+                        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;" data-i18n="ajustes_sistema_subtitle">Gerencie recursos visuais, inteligência e dados de nuvem</p>
+                    </div>
+                    <!-- Pílulas de controle de layout do menu de configurações -->
+                    <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 4px; border-radius: 10px; box-shadow: var(--glow-shadow);">
+                        <span style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700; padding: 0 4px; text-transform: uppercase; letter-spacing: 0.5px;">Visual:</span>
+                        <button onclick="applySettingsLayoutStyle('cards', true)" class="layout-pill" id="layout-pill-cards" style="background: var(--primary); color: var(--primary-contrast, #000); border: none; border-radius: 6px; padding: 4px 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">Cards</button>
+                        <button onclick="applySettingsLayoutStyle('grid', true)" class="layout-pill" id="layout-pill-grid" style="background: transparent; color: var(--text-muted); border: none; border-radius: 6px; padding: 4px 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">Grid</button>
+                        <button onclick="applySettingsLayoutStyle('compact', true)" class="layout-pill" id="layout-pill-compact" style="background: transparent; color: var(--text-muted); border: none; border-radius: 6px; padding: 4px 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">Compact</button>
+                    </div>
                 </div>
 
                 <!-- Lista Minimalista / Menu de Lista com fundo Super Black -->
-                <div class="config-index-list" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+                <div class="config-index-list" id="main-settings-list" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
                     
                     <!-- Opção 1: Aparência e Temas -->
                     <div class="config-index-item" onclick="openConfigSubView('appearance')">
@@ -3796,6 +3860,16 @@ CREATE TRIGGER on_synapse_user_signed_up
                             <option value="small">Pequenos (Foco em dados)</option>
                             <option value="medium" selected>Médios (Padrão)</option>
                             <option value="large">Grandes (Toque facilitado)</option>
+                        </select>
+                    </div>
+
+                    <!-- Estilo do Layout dos Ajustes -->
+                    <div class="supabase-card" style="text-align: left; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 16px; padding: 14px; margin-bottom: 12px;">
+                        <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">⚙️ Estilo Visual das Configurações</label>
+                        <select id="config-settings-layout-style" class="form-control" style="background: var(--card-bg-secondary); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="applySettingsLayoutStyle(this.value, true)">
+                            <option value="cards" selected>Lista de Cards (Padrão)</option>
+                            <option value="grid">Grade de Cards (Compacto)</option>
+                            <option value="compact">Lista Ultra Clean (Minimalista)</option>
                         </select>
                     </div>
 
@@ -6114,6 +6188,51 @@ WITH CHECK (true);</code>
             }
         }
 
+        let selectedSettingsLayoutStyle = 'cards';
+
+        function applySettingsLayoutStyle(styleKey, userClicked = false) {
+            selectedSettingsLayoutStyle = styleKey || 'cards';
+            const listEl = document.getElementById('main-settings-list');
+            if (listEl) {
+                listEl.className = 'config-index-list';
+                if (styleKey === 'grid') {
+                    listEl.classList.add('settings-layout-grid');
+                } else if (styleKey === 'compact') {
+                    listEl.classList.add('settings-layout-compact');
+                } else {
+                    listEl.classList.add('settings-layout-cards');
+                }
+            }
+            
+            // Sincroniza o dropdown correspondente
+            const select = document.getElementById('config-settings-layout-style');
+            if (select) select.value = selectedSettingsLayoutStyle;
+
+            // Sincroniza as pílulas de layout da página principal
+            const pills = ['cards', 'grid', 'compact'];
+            pills.forEach(p => {
+                const pill = document.getElementById('layout-pill-' + p);
+                if (pill) {
+                    if (p === selectedSettingsLayoutStyle) {
+                        pill.style.background = 'var(--primary)';
+                        pill.style.color = 'var(--primary-contrast, #000)';
+                    } else {
+                        pill.style.background = 'transparent';
+                        pill.style.color = 'var(--text-muted)';
+                    }
+                }
+            });
+            
+            if (userClicked) {
+                triggerPulse();
+                addLog(`Layout dos Ajustes alterado para: ${styleKey}`, "success");
+                showAppToast(`Layout de Ajustes atualizado! ✨`, "success");
+            }
+            if (!isConfigLoading) {
+                checkAppearanceChanges();
+            }
+        }
+
         function applyColorSaturation(val) {
             selectedSaturation = parseInt(val);
             document.documentElement.style.setProperty('--global-saturation', `${val}%`);
@@ -7366,12 +7485,17 @@ WITH CHECK (true);</code>
                         const sw = document.getElementById('access-reading-switch');
                         if (sw) sw.classList.toggle('on', accessReadingMode);
                     }
+                    if (data.selectedSettingsLayoutStyle) {
+                        selectedSettingsLayoutStyle = data.selectedSettingsLayoutStyle;
+                    }
+                    applySettingsLayoutStyle(selectedSettingsLayoutStyle);
                     updateDynamicStyles();
                 } else {
                     applyThemePreset('escuro_premium');
                     applyBordersStyle('rounded');
                     applyVisualFinish('flat');
                     applyColorSaturation(100);
+                    applySettingsLayoutStyle('cards');
                     updateDynamicStyles();
                 }
                 renderThemesGrid();
@@ -8137,7 +8261,8 @@ WITH CHECK (true);</code>
                 accessLargeText: accessLargeText,
                 accessLargeIcons: accessLargeIcons,
                 accessReduceAnimations: accessReduceAnimations,
-                accessReadingMode: accessReadingMode
+                accessReadingMode: accessReadingMode,
+                selectedSettingsLayoutStyle: selectedSettingsLayoutStyle
             };
             
             localStorage.setItem('ai_console_settings', JSON.stringify(data));
@@ -8214,6 +8339,7 @@ WITH CHECK (true);</code>
                 accessLargeIcons: currentAccessLargeIcons,
                 accessReduceAnimations: currentAccessReduceAnimations,
                 accessReadingMode: currentAccessReadingMode,
+                selectedSettingsLayoutStyle: selectedSettingsLayoutStyle || 'cards',
                 isAmoled: currentAmoled
             };
         }
@@ -8251,6 +8377,7 @@ WITH CHECK (true);</code>
                 accessLargeIcons: currentAccessLargeIcons,
                 accessReduceAnimations: currentAccessReduceAnimations,
                 accessReadingMode: currentAccessReadingMode,
+                selectedSettingsLayoutStyle: selectedSettingsLayoutStyle || 'cards',
                 isAmoled: currentAmoled
             };
 
