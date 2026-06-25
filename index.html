@@ -1305,12 +1305,18 @@
             width: 100px;
             height: 100px;
             animation: pulse-logo 2s infinite ease-in-out;
-            filter: drop-shadow(0 0 20px rgba(138, 92, 246, 0.4));
+            box-shadow: 0 0 25px rgba(138, 92, 246, 0.5);
+            border-radius: 20px;
+            will-change: transform;
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
         .splash-icon img {
             width: 100px;
             height: 100px;
             object-fit: contain;
+            border-radius: 20px;
         }
         .splash-title {
             font-size: 1.8rem;
@@ -1320,14 +1326,14 @@
             margin-top: 10px;
         }
         @keyframes splash-intro {
-            0% { transform: scale(0.9); opacity: 0; }
-            50% { transform: scale(1.02); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
+            0% { transform: scale(0.9) translate3d(0, 0, 0); opacity: 0; }
+            50% { transform: scale(1.02) translate3d(0, 0, 0); opacity: 1; }
+            100% { transform: scale(1) translate3d(0, 0, 0); opacity: 1; }
         }
         @keyframes pulse-logo {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); filter: drop-shadow(0 0 35px rgba(138, 92, 246, 0.8)); }
-            100% { transform: scale(1); }
+            0% { transform: scale(1) translate3d(0, 0, 0); }
+            50% { transform: scale(1.05) translate3d(0, 0, 0); }
+            100% { transform: scale(1) translate3d(0, 0, 0); }
         }
 
         /* ==========================================================================
@@ -1742,7 +1748,7 @@
     <!-- Splash Screen Dinâmica -->
     <div id="splash-screen" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: #000000; z-index: 99999; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);">
         <div class="splash-content" style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
-            <div class="splash-icon" style="width: 100px; height: 100px; filter: drop-shadow(0 0 20px rgba(138, 92, 246, 0.4)); animation: pulse-logo 2s infinite ease-in-out;">
+            <div class="splash-icon" style="width: 100px; height: 100px; box-shadow: 0 0 25px rgba(138, 92, 246, 0.5); border-radius: 20px; animation: pulse-logo 2s infinite ease-in-out; will-change: transform; transform: translate3d(0, 0, 0); backface-visibility: hidden; -webkit-backface-visibility: hidden;">
                 <img src="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg" alt="Synapse Console Icon" style="width: 100px; height: 100px; object-fit: contain; border-radius: 20px;">
             </div>
             <div class="splash-title" style="font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; color: #ffffff; margin-top: 10px; font-family: system-ui, -apple-system, sans-serif;">Synapse Console</div>
