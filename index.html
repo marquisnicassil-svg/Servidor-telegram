@@ -6690,7 +6690,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=6')
+                navigator.serviceWorker.register('./sw.js?v=7')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -12655,19 +12655,6 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem wraps do tipo \`\`
                 }
 
                 updateResumePreview();
-                showAppToast("Novo currículo adaptado gerado com sucesso pela inteligência artificial!", "success");
-                addLog("Currículo inteligente criado pela IA com sucesso.", "success");
-
-                // Incrementar uso de currículo do plano Freemium
-                if (typeof incrementAppSubscriptionUsage === 'function') {
-                    incrementAppSubscriptionUsage('resume');
-                }
-
-            } catch (err) {
-                console.error(err);
-                showAppToast("Ocorreu um erro ao gerar com IA: " + err.message, "error");
-            }
-        }
                 showAppToast("Novo currículo adaptado gerado com sucesso pela inteligência artificial!", "success");
                 addLog("Currículo inteligente criado pela IA com sucesso.", "success");
 
