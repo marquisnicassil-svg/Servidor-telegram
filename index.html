@@ -3341,6 +3341,18 @@ CREATE TRIGGER on_synapse_user_signed_up
                         <span style="color: #fbbf24; font-weight: bold; font-family: monospace; font-size: 1.1rem; padding-left: 10px;">&gt;</span>
                     </div>
 
+                    <!-- Opção Nova: Compartilhar Synapse -->
+                    <div class="config-index-item" onclick="shareSynapseApp()" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 14px; cursor: pointer; transition: background 0.2s; min-height: 72px;">
+                        <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
+                            <span style="font-size: 1.5rem; line-height: 1;">🔗</span>
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-weight: 700; font-size: 0.95rem; color: #10b981;" data-i18n="compartilhar_synapse">Compartilhar Synapse</span>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;" data-i18n="compartilhar_synapse_desc">Envie o aplicativo para amigos, grupos do WhatsApp e outras redes</span>
+                            </div>
+                        </div>
+                        <span style="color: #10b981; font-weight: bold; font-family: monospace; font-size: 1.1rem; padding-left: 10px;">&gt;</span>
+                    </div>
+
                 </div>
 
                 <!-- Botões secundários que ficam no índice principal de ajustes -->
@@ -4759,6 +4771,8 @@ WITH CHECK (true);</code>
                 "minha_conta_desc": "Dados do usuário conectado, chaves de acesso e gerenciamento de login",
                 "idioma_selector_title": "Idioma do Sistema / Language",
                 "idioma_selector_desc": "Altere o idioma de toda a interface do aplicativo para PT, EN ou ES",
+                "compartilhar_synapse": "Compartilhar Synapse",
+                "compartilhar_synapse_desc": "Envie o aplicativo para amigos, grupos do WhatsApp e outras redes",
                 "baixar_pwa": "⬇️ Baixar / Instalar App (PWA)",
                 "limpar_cache": "🔄 Limpar Cache & Forçar Atualização",
                 "voltar_ajustes": "⬅️ Voltar para Ajustes",
@@ -4837,6 +4851,8 @@ WITH CHECK (true);</code>
                 "minha_conta_desc": "Review currently logged session details and credential safety",
                 "idioma_selector_title": "System Language / Idioma",
                 "idioma_selector_desc": "Migrate your workspace interface language instantly to EN, PT, or ES",
+                "compartilhar_synapse": "Share Synapse",
+                "compartilhar_synapse_desc": "Send the application to friends, WhatsApp groups, and other networks",
                 "baixar_pwa": "⬇️ Download App (PWA)",
                 "limpar_cache": "🔄 Force Update & Flush Local Storage",
                 "voltar_ajustes": "⬅️ Back to Settings",
@@ -7580,6 +7596,175 @@ WITH CHECK (true);</code>
                     window.location.reload();
                 }
             });
+        }
+
+        function shareSynapseApp() {
+            triggerPulse();
+            const appLink = window.location.origin + window.location.pathname;
+            
+            let shareText = `Estou usando o Synapse para currículos, entrevistas e produtividade com IA. Confira: ${appLink}`;
+            if (currentLanguage === 'en') {
+                shareText = `I am using Synapse for resumes, interviews, and productivity with AI. Check it out: ${appLink}`;
+            } else if (currentLanguage === 'es') {
+                shareText = `Estoy usando Synapse para currículums, entrevistas y productividad con IA. Compruébalo: ${appLink}`;
+            }
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Synapse AI',
+                    text: currentLanguage === 'en' ? 'I am using Synapse for resumes, interviews, and productivity with AI.' : currentLanguage === 'es' ? 'Estoy usando Synapse para currículums, entrevistas y productividad con IA.' : 'Estou usando o Synapse para currículos, entrevistas e produtividade com IA.',
+                    url: appLink
+                }).then(() => {
+                    addLog("Aplicativo compartilhado com sucesso!", "success");
+                }).catch((err) => {
+                    if (err.name !== 'AbortError') {
+                        console.error("Erro no compartilhamento nativo:", err);
+                        openCustomShareModal(shareText, appLink);
+                    }
+                });
+            } else {
+                openCustomShareModal(shareText, appLink);
+            }
+        }
+
+        function openCustomShareModal(shareText, appLink) {
+            const existing = document.getElementById('app-share-modal');
+            if (existing) existing.remove();
+
+            const modal = document.createElement('div');
+            modal.id = 'app-share-modal';
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100vw';
+            modal.style.height = '100vh';
+            modal.style.backgroundColor = 'rgba(3, 4, 6, 0.85)';
+            modal.style.backdropFilter = 'blur(12px)';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.style.zIndex = '100000';
+            modal.style.opacity = '0';
+            modal.style.transition = 'opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)';
+            modal.style.padding = '20px';
+
+            const card = document.createElement('div');
+            card.style.background = 'rgba(21, 23, 30, 0.98)';
+            card.style.border = '1px solid rgba(255, 255, 255, 0.08)';
+            card.style.borderRadius = '16px';
+            card.style.padding = '24px';
+            card.style.maxWidth = '440px';
+            card.style.width = '100%';
+            card.style.boxShadow = '0 24px 60px rgba(0,0,0,0.8)';
+            card.style.transform = 'scale(0.96)';
+            card.style.transition = 'transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.15)';
+            card.style.fontFamily = 'system-ui, -apple-system, sans-serif';
+            card.style.color = '#ffffff';
+
+            const encodedText = encodeURIComponent(shareText);
+            const encodedUrl = encodeURIComponent(appLink);
+
+            // Multilingual text strings
+            let titleText = "Compartilhar Synapse";
+            let descText = "Compartilhe o Synapse com seus amigos e conexões profissionais! Escolha uma das opções abaixo:";
+            let msgTitle = "Mensagem de Compartilhamento";
+            let copyBtnText = "Copiar Link";
+            let closeBtnText = "Fechar";
+            let successToast = "Link copiado com sucesso! ✓";
+            let errorToast = "Não foi possível copiar automaticamente.";
+
+            if (currentLanguage === 'en') {
+                titleText = "Share Synapse";
+                descText = "Share Synapse with your friends and professional networks! Choose an option below:";
+                msgTitle = "Share Message";
+                copyBtnText = "Copy Link";
+                closeBtnText = "Close";
+                successToast = "Link copied successfully! ✓";
+                errorToast = "Could not copy automatically.";
+            } else if (currentLanguage === 'es') {
+                titleText = "Compartir Synapse";
+                descText = "¡Comparte Synapse con tus amigos y redes profesionales! Elige una opción a continuación:";
+                msgTitle = "Mensaje de Compartido";
+                copyBtnText = "Copiar Enlace";
+                closeBtnText = "Cerrar";
+                successToast = "¡Enlace copiado con éxito! ✓";
+                errorToast = "No se pudo copiar automáticamente.";
+            }
+
+            card.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                    <h3 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px;">
+                        <span>🔗</span> ${titleText}
+                    </h3>
+                    <button id="share-modal-close-icon" style="background: none; border: none; color: #9ca3af; font-size: 1.25rem; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; transition: color 0.2s;">✕</button>
+                </div>
+                
+                <p style="margin: 0 0 16px 0; font-size: 0.85rem; color: #9ca3af; line-height: 1.5;">
+                    ${descText}
+                </p>
+
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 12px; margin-bottom: 20px; text-align: left;">
+                    <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: #10b981; font-weight: bold; margin-bottom: 6px;">${msgTitle}</div>
+                    <div style="font-size: 0.82rem; color: #e5e7eb; line-height: 1.4; word-break: break-word; max-height: 80px; overflow-y: auto;">
+                        ${shareText}
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                    <!-- Copiar Link -->
+                    <button id="share-btn-copy" style="display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 12px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                        <span>📋</span> ${copyBtnText}
+                    </button>
+                    <!-- WhatsApp -->
+                    <a href="https://api.whatsapp.com/send?text=${encodedText}" target="_blank" rel="noopener" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.3); color: #25d366; padding: 12px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; outline: none;">
+                        <span>🟢</span> WhatsApp
+                    </a>
+                    <!-- Telegram -->
+                    <a href="https://t.me/share/url?url=${encodedUrl}&text=${encodedText}" target="_blank" rel="noopener" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(0, 136, 204, 0.1); border: 1px solid rgba(0, 136, 204, 0.3); color: #0088cc; padding: 12px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; outline: none;">
+                        <span>🔵</span> Telegram
+                    </a>
+                    <!-- Email -->
+                    <a href="mailto:?subject=Synapse%20AI&body=${encodedText}" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; padding: 12px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; outline: none;">
+                        <span>✉️</span> E-mail
+                    </a>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end;">
+                    <button id="share-modal-close-btn" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); color: #d1d5db; padding: 10px 18px; border-radius: 10px; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.2s; outline: none; width: 100%;">${closeBtnText}</button>
+                </div>
+            `;
+
+            modal.appendChild(card);
+            document.body.appendChild(modal);
+
+            // Bind Events
+            const closeModal = () => {
+                modal.style.opacity = '0';
+                card.style.transform = 'scale(0.96)';
+                setTimeout(() => modal.remove(), 230);
+            };
+
+            document.getElementById('share-modal-close-icon').onclick = closeModal;
+            document.getElementById('share-modal-close-btn').onclick = closeModal;
+            
+            modal.onclick = (e) => {
+                if (e.target === modal) closeModal();
+            };
+
+            document.getElementById('share-btn-copy').onclick = () => {
+                navigator.clipboard.writeText(appLink).then(() => {
+                    showAppToast(successToast, "success");
+                    addLog("Link do aplicativo copiado para área de transferência.", "success");
+                }).catch(err => {
+                    console.error("Erro ao copiar link:", err);
+                    showAppToast(errorToast, "error");
+                });
+            };
+
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                card.style.transform = 'scale(1)';
+            }, 20);
         }
 
         // Simula tarefas e atividades de rede no Console (Estilo Matrix)
