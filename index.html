@@ -1745,23 +1745,53 @@
         /* Estilos do Modo Live */
         @keyframes pulse-live-idle {
             0% { transform: scale(1); box-shadow: 0 0 20px rgba(107, 114, 128, 0.25), inset 0 0 10px rgba(255, 255, 255, 0.05); }
-            50% { transform: scale(1.03); box-shadow: 0 0 30px rgba(139, 92, 246, 0.2), inset 0 0 15px rgba(139, 92, 246, 0.1); }
+            50% { transform: scale(1.03); box-shadow: 0 0 30px rgba(139, 92, 246, 0.25), inset 0 0 15px rgba(139, 92, 246, 0.1); }
             100% { transform: scale(1); box-shadow: 0 0 20px rgba(107, 114, 128, 0.25), inset 0 0 10px rgba(255, 255, 255, 0.05); }
         }
         @keyframes pulse-live-listening {
-            0% { transform: scale(1); box-shadow: 0 0 35px rgba(138, 92, 246, 0.4), 0 0 0 0px rgba(138, 92, 246, 0.3); }
-            50% { transform: scale(1.1); box-shadow: 0 0 55px rgba(138, 92, 246, 0.75), 0 0 0 15px rgba(138, 92, 246, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 35px rgba(138, 92, 246, 0.4), 0 0 0 0px rgba(138, 92, 246, 0); }
+            0% { 
+                transform: scale(1); 
+                box-shadow: 0 0 25px rgba(139, 92, 246, 0.5), 0 0 50px rgba(139, 92, 246, 0.2), inset 0 0 12px rgba(255, 255, 255, 0.15); 
+            }
+            50% { 
+                transform: scale(1.08); 
+                box-shadow: 0 0 45px rgba(139, 92, 246, 0.8), 0 0 90px rgba(139, 92, 246, 0.45), 0 0 0 14px rgba(139, 92, 246, 0.12), inset 0 0 20px rgba(255, 255, 255, 0.25); 
+            }
+            100% { 
+                transform: scale(1); 
+                box-shadow: 0 0 25px rgba(139, 92, 246, 0.5), 0 0 50px rgba(139, 92, 246, 0.2), inset 0 0 12px rgba(255, 255, 255, 0.15); 
+            }
         }
         @keyframes pulse-live-speaking {
-            0% { transform: scale(1); box-shadow: 0 0 35px rgba(16, 185, 129, 0.4), 0 0 0 0px rgba(16, 185, 129, 0.3); }
-            50% { transform: scale(1.08); box-shadow: 0 0 55px rgba(16, 185, 129, 0.75), 0 0 0 15px rgba(16, 185, 129, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 35px rgba(16, 185, 129, 0.4), 0 0 0 0px rgba(16, 185, 129, 0); }
+            0% { 
+                transform: scale(1); 
+                box-shadow: 0 0 25px rgba(16, 185, 129, 0.5), 0 0 50px rgba(16, 185, 129, 0.2), inset 0 0 12px rgba(255, 255, 255, 0.15); 
+            }
+            50% { 
+                transform: scale(1.06); 
+                box-shadow: 0 0 45px rgba(16, 185, 129, 0.8), 0 0 90px rgba(16, 185, 129, 0.45), 0 0 0 12px rgba(16, 185, 129, 0.12), inset 0 0 20px rgba(255, 255, 255, 0.25); 
+            }
+            100% { 
+                transform: scale(1); 
+                box-shadow: 0 0 25px rgba(16, 185, 129, 0.5), 0 0 50px rgba(16, 185, 129, 0.2), inset 0 0 12px rgba(255, 255, 255, 0.15); 
+            }
         }
         @keyframes pulse-live-thinking {
-            0% { transform: scale(1); box-shadow: 0 0 35px rgba(245, 158, 11, 0.4); filter: hue-rotate(0deg); }
-            50% { transform: scale(1.05); box-shadow: 0 0 55px rgba(245, 158, 11, 0.7), 0 0 20px rgba(239, 68, 68, 0.3); filter: hue-rotate(20deg); }
-            100% { transform: scale(1); box-shadow: 0 0 35px rgba(245, 158, 11, 0.4); filter: hue-rotate(0deg); }
+            0% { 
+                transform: scale(1); 
+                box-shadow: 0 0 25px rgba(245, 158, 11, 0.4), 0 0 50px rgba(245, 158, 11, 0.1), inset 0 0 12px rgba(255, 255, 255, 0.1); 
+                filter: hue-rotate(0deg); 
+            }
+            50% { 
+                transform: scale(1.04); 
+                box-shadow: 0 0 45px rgba(245, 158, 11, 0.75), 0 0 80px rgba(245, 158, 11, 0.35), 0 0 0 10px rgba(245, 158, 11, 0.1), inset 0 0 18px rgba(255, 255, 255, 0.2); 
+                filter: hue-rotate(15deg); 
+            }
+            100% { 
+                transform: scale(1); 
+                box-shadow: 0 0 25px rgba(245, 158, 11, 0.4), 0 0 50px rgba(245, 158, 11, 0.1), inset 0 0 12px rgba(255, 255, 255, 0.1); 
+                filter: hue-rotate(0deg); 
+            }
         }
         @keyframes pulse-live-ended {
             0% { transform: scale(1); box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); }
@@ -2207,6 +2237,14 @@
                         <div>
                             <div id="live-status-text" style="font-size: 0.95rem; font-weight: bold; color: #fff; margin-bottom: 2px;">Pronto</div>
                             <div id="live-mic-hint" style="font-size: 0.75rem; color: var(--text-muted);" data-i18n="live_mode_hint">Clique para começar a falar</div>
+                        </div>
+
+                        <!-- Campo de Texto de Fallback para o Live Mode -->
+                        <div id="live-text-fallback-container" style="display: flex; gap: 8px; width: 100%; max-width: 480px; margin-top: 10px; background: rgba(0,0,0,0.3); padding: 8px 14px; border: 1px solid var(--border-color); border-radius: 14px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); transition: all 0.3s ease;">
+                            <input type="text" id="live-text-input" placeholder="Digite uma mensagem para o Modo Live..." style="flex: 1; background: transparent; border: none; outline: none; color: #fff; font-size: 0.85rem;" onkeydown="if(event.key === 'Enter') sendLiveTextFallback();" onfocus="this.parentElement.style.borderColor='var(--primary)';" onblur="this.parentElement.style.borderColor='var(--border-color)';">
+                            <button onclick="sendLiveTextFallback()" style="background: var(--primary); color: var(--bg-color); border: none; padding: 6px 14px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.78rem; display: flex; align-items: center; gap: 4px; transition: all 0.2s;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='brightness(1)'">
+                                Enviar ➔
+                            </button>
                         </div>
 
                         <!-- Badge de Status Ativo -->
@@ -6206,6 +6244,9 @@ WITH CHECK (true);</code>
         let liveVisualizerInterval = null;
         let currentLiveState = LIVE_STATES.READY;
         let thinkingMessageInterval = null;
+        let liveAudioContext = null;
+        let liveAnalyser = null;
+        let liveMicrophoneStream = null;
 
         function toggleLiveMode() {
             switchTab('tab-live');
@@ -6224,26 +6265,36 @@ WITH CHECK (true);</code>
             if (statusTextEl) statusTextEl.textContent = stateLabel.title;
             if (hintTextEl) hintTextEl.textContent = stateLabel.hint;
 
-            // Update classes for animations on the orbe microphone button
+            // Update classes for animations and icons on the orbe microphone button
             if (micBtnEl) {
                 micBtnEl.className = 'live-mic-orbe';
                 if (state === LIVE_STATES.READY) {
                     micBtnEl.classList.add('live-orbe-paused');
+                    micBtnEl.innerHTML = '🎙️';
                 } else if (state === LIVE_STATES.LISTENING) {
                     micBtnEl.classList.add('live-orbe-listening');
-                } else if (state === LIVE_STATES.PROCESSING || state === LIVE_STATES.THINKING) {
+                    micBtnEl.innerHTML = '🟣';
+                } else if (state === LIVE_STATES.PROCESSING) {
                     micBtnEl.classList.add('live-orbe-thinking');
+                    micBtnEl.innerHTML = '⏳';
+                } else if (state === LIVE_STATES.THINKING) {
+                    micBtnEl.classList.add('live-orbe-thinking');
+                    micBtnEl.innerHTML = '🧠';
                 } else if (state === LIVE_STATES.RESPONDING) {
                     micBtnEl.classList.add('live-orbe-speaking');
+                    micBtnEl.innerHTML = '🟢';
                 } else if (state === LIVE_STATES.ENDED) {
                     micBtnEl.classList.add('live-orbe-ended');
+                    micBtnEl.innerHTML = '🟥';
                 }
             }
 
             // Sync visualizer soundwave movement
             if (state === LIVE_STATES.LISTENING) {
                 startLiveVisualizer('listening');
-            } else if (state === LIVE_STATES.PROCESSING || state === LIVE_STATES.THINKING) {
+            } else if (state === LIVE_STATES.PROCESSING) {
+                startLiveVisualizer('thinking');
+            } else if (state === LIVE_STATES.THINKING) {
                 startLiveVisualizer('thinking');
             } else if (state === LIVE_STATES.RESPONDING) {
                 startLiveVisualizer('speaking');
@@ -6330,7 +6381,50 @@ WITH CHECK (true);</code>
             return 'neutral';
         }
 
-        function startLiveVisualizer(mode) {
+        async function startRealAudioAnalyzer() {
+            try {
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    liveMicrophoneStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    liveAudioContext = new AudioContext();
+                    liveAnalyser = liveAudioContext.createAnalyser();
+                    liveAnalyser.fftSize = 64;
+                    const source = liveAudioContext.createMediaStreamSource(liveMicrophoneStream);
+                    source.connect(liveAnalyser);
+                    
+                    const bufferLength = liveAnalyser.frequencyBinCount;
+                    const dataArray = new Uint8Array(bufferLength);
+                    
+                    const bars = document.querySelectorAll('.wave-bar');
+                    if (bars.length === 0) return;
+                    
+                    function draw() {
+                        if (currentLiveState !== LIVE_STATES.LISTENING) return;
+                        requestAnimationFrame(draw);
+                        
+                        if (liveAnalyser) {
+                            liveAnalyser.getByteFrequencyData(dataArray);
+                            bars.forEach((bar, index) => {
+                                const dataIndex = Math.min(Math.floor((index / bars.length) * bufferLength), bufferLength - 1);
+                                const value = dataArray[dataIndex] || 0;
+                                // Smooth transition from current height to new height
+                                const targetHeight = 6 + (value / 255) * 32;
+                                bar.style.height = targetHeight + 'px';
+                                bar.style.backgroundColor = '#8b5cf6'; // premium violet
+                            });
+                        }
+                    }
+                    requestAnimationFrame(draw);
+                } else {
+                    startMockVisualizer('listening');
+                }
+            } catch (err) {
+                console.warn("Could not start real audio analyzer:", err);
+                startMockVisualizer('listening');
+            }
+        }
+
+        function startMockVisualizer(mode) {
             stopLiveVisualizer();
             const bars = document.querySelectorAll('.wave-bar');
             if (bars.length === 0) return;
@@ -6353,11 +6447,33 @@ WITH CHECK (true);</code>
             }, 80);
         }
 
+        function startLiveVisualizer(mode) {
+            stopLiveVisualizer();
+            if (mode === 'listening') {
+                startRealAudioAnalyzer();
+            } else {
+                startMockVisualizer(mode);
+            }
+        }
+
         function stopLiveVisualizer() {
             if (liveVisualizerInterval) {
                 clearInterval(liveVisualizerInterval);
                 liveVisualizerInterval = null;
             }
+            if (liveAudioContext) {
+                try {
+                    liveAudioContext.close();
+                } catch(e){}
+                liveAudioContext = null;
+            }
+            if (liveMicrophoneStream) {
+                try {
+                    liveMicrophoneStream.getTracks().forEach(track => track.stop());
+                } catch(e){}
+                liveMicrophoneStream = null;
+            }
+            liveAnalyser = null;
             const bars = document.querySelectorAll('.wave-bar');
             bars.forEach(bar => {
                 bar.style.height = '6px';
@@ -6496,6 +6612,30 @@ WITH CHECK (true);</code>
             };
 
             liveRecognition.start();
+        }
+
+        async function sendLiveTextFallback() {
+            const inputEl = document.getElementById('live-text-input');
+            if (!inputEl) return;
+            const text = inputEl.value.trim();
+            if (!text) return;
+            
+            // Clear input
+            inputEl.value = '';
+            
+            // Cancel speaking if active
+            if (window.speechSynthesis && window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+            }
+
+            // Stop recognition if active
+            if (isLiveListening) {
+                shouldStopContinuousListening = true;
+                if (liveRecognition) liveRecognition.stop();
+            }
+            
+            appendLiveMessage('user', text);
+            await sendLiveMessageToAI(text);
         }
 
         function appendLiveMessage(role, text) {
@@ -11454,14 +11594,16 @@ Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`
                 if (userNameEl) {
                     let userName = "Explorador";
                     if (typeof supabaseSession !== 'undefined' && supabaseSession && supabaseSession.user) {
-                        userName = (typeof getDisplayName === 'function' ? getDisplayName(supabaseSession) : "") || supabaseSession.user.email.split('@')[0];
+                        const email = supabaseSession.user.email || "";
+                        userName = (typeof getDisplayName === 'function' ? getDisplayName(supabaseSession) : "") || (email ? email.split('@')[0] : "Explorador");
                     } else {
                         try {
                             const s = localStorage.getItem('supabase_auth_session');
                             if (s) {
                                 const parsed = JSON.parse(s);
                                 if (parsed && parsed.user) {
-                                    userName = (typeof getDisplayName === 'function' ? getDisplayName(parsed) : "") || parsed.user.email.split('@')[0];
+                                    const email = parsed.user.email || "";
+                                    userName = (typeof getDisplayName === 'function' ? getDisplayName(parsed) : "") || (email ? email.split('@')[0] : "Explorador");
                                 }
                             }
                         } catch(e) {}
@@ -14824,7 +14966,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             if (!session || !session.user) return null;
             const user = session.user;
             const meta = user.user_metadata || user.raw_user_meta_data || {};
-            return meta.display_name || meta.username || user.email.split('@')[0];
+            const email = user.email || "";
+            return meta.display_name || meta.username || (email ? email.split('@')[0] : "Explorador");
         }
 
         function showAppToast(message, type = "info") {
