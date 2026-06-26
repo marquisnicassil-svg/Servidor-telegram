@@ -1743,39 +1743,80 @@
         }
 
         /* Estilos do Modo Live */
+        @keyframes pulse-live-idle {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(107, 114, 128, 0.25), inset 0 0 10px rgba(255, 255, 255, 0.05); }
+            50% { transform: scale(1.03); box-shadow: 0 0 30px rgba(139, 92, 246, 0.2), inset 0 0 15px rgba(139, 92, 246, 0.1); }
+            100% { transform: scale(1); box-shadow: 0 0 20px rgba(107, 114, 128, 0.25), inset 0 0 10px rgba(255, 255, 255, 0.05); }
+        }
         @keyframes pulse-live-listening {
-            0% { transform: scale(1); box-shadow: 0 0 40px rgba(138, 92, 246, 0.4); }
-            50% { transform: scale(1.08); box-shadow: 0 0 60px rgba(138, 92, 246, 0.7), 0 0 15px rgba(167, 139, 250, 0.4); }
-            100% { transform: scale(1); box-shadow: 0 0 40px rgba(138, 92, 246, 0.4); }
+            0% { transform: scale(1); box-shadow: 0 0 35px rgba(138, 92, 246, 0.4), 0 0 0 0px rgba(138, 92, 246, 0.3); }
+            50% { transform: scale(1.1); box-shadow: 0 0 55px rgba(138, 92, 246, 0.75), 0 0 0 15px rgba(138, 92, 246, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 35px rgba(138, 92, 246, 0.4), 0 0 0 0px rgba(138, 92, 246, 0); }
         }
         @keyframes pulse-live-speaking {
-            0% { transform: scale(1); box-shadow: 0 0 40px rgba(16, 185, 129, 0.4); }
-            50% { transform: scale(1.05); box-shadow: 0 0 50px rgba(16, 185, 129, 0.6), 0 0 10px rgba(52, 211, 153, 0.3); }
-            100% { transform: scale(1); box-shadow: 0 0 40px rgba(16, 185, 129, 0.4); }
+            0% { transform: scale(1); box-shadow: 0 0 35px rgba(16, 185, 129, 0.4), 0 0 0 0px rgba(16, 185, 129, 0.3); }
+            50% { transform: scale(1.08); box-shadow: 0 0 55px rgba(16, 185, 129, 0.75), 0 0 0 15px rgba(16, 185, 129, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 35px rgba(16, 185, 129, 0.4), 0 0 0 0px rgba(16, 185, 129, 0); }
         }
         @keyframes pulse-live-thinking {
-            0% { transform: scale(1); box-shadow: 0 0 40px rgba(245, 158, 11, 0.4); }
-            50% { transform: scale(1.03); box-shadow: 0 0 50px rgba(245, 158, 11, 0.6); }
-            100% { transform: scale(1); box-shadow: 0 0 40px rgba(245, 158, 11, 0.4); }
+            0% { transform: scale(1); box-shadow: 0 0 35px rgba(245, 158, 11, 0.4); filter: hue-rotate(0deg); }
+            50% { transform: scale(1.05); box-shadow: 0 0 55px rgba(245, 158, 11, 0.7), 0 0 20px rgba(239, 68, 68, 0.3); filter: hue-rotate(20deg); }
+            100% { transform: scale(1); box-shadow: 0 0 35px rgba(245, 158, 11, 0.4); filter: hue-rotate(0deg); }
+        }
+        @keyframes pulse-live-ended {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); }
+            50% { transform: scale(1.02); box-shadow: 0 0 30px rgba(239, 68, 68, 0.4); }
+            100% { transform: scale(1); box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); }
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+        .live-mic-orbe {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            color: #fff;
+            font-size: 2.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+            position: relative;
         }
         .live-orbe-listening {
-            animation: pulse-live-listening 1.8s infinite ease-in-out !important;
-            background: radial-gradient(circle, #8b5cf6 0%, #6d28d9 70%) !important;
+            animation: pulse-live-listening 1.8s infinite cubic-bezier(0.4, 0, 0.2, 1) !important;
+            background: radial-gradient(circle, #a78bfa 0%, #6d28d9 75%, #4c1d95 100%) !important;
+            border-color: rgba(167, 139, 250, 0.3) !important;
         }
         .live-orbe-speaking {
-            animation: pulse-live-speaking 1.5s infinite ease-in-out !important;
-            background: radial-gradient(circle, #10b981 0%, #047857 70%) !important;
+            animation: pulse-live-speaking 1.5s infinite cubic-bezier(0.4, 0, 0.2, 1) !important;
+            background: radial-gradient(circle, #34d399 0%, #047857 75%, #064e3b 100%) !important;
+            border-color: rgba(52, 211, 153, 0.3) !important;
         }
         .live-orbe-thinking {
-            animation: pulse-live-thinking 2s infinite linear !important;
-            background: radial-gradient(circle, #fbbf24 0%, #b45309 70%) !important;
+            animation: pulse-live-thinking 2.5s infinite linear !important;
+            background: radial-gradient(circle, #fbbf24 0%, #b45309 75%, #78350f 100%) !important;
+            border-color: rgba(251, 191, 36, 0.3) !important;
         }
         .live-orbe-paused {
-            background: radial-gradient(circle, #6b7280 0%, #374151 70%) !important;
-            box-shadow: 0 0 20px rgba(107, 114, 128, 0.3) !important;
+            animation: pulse-live-idle 3s infinite ease-in-out !important;
+            background: radial-gradient(circle, #4b5563 0%, #1f2937 75%, #111827 100%) !important;
+            border-color: rgba(156, 163, 175, 0.2) !important;
+        }
+        .live-orbe-ended {
+            animation: pulse-live-ended 2.5s infinite ease-in-out !important;
+            background: radial-gradient(circle, #f87171 0%, #991b1b 75%, #7f1d1d 100%) !important;
+            border-color: rgba(248, 113, 113, 0.3) !important;
         }
         .wave-bar {
-            transition: height 0.1s ease;
+            transition: height 0.1s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+        }
+        .typing-cursor {
+            display: inline-block;
+            animation: blink 0.8s infinite;
         }
         @media (max-width: 768px) {
             .live-grid {
@@ -2140,20 +2181,26 @@
                         
                         <!-- Ondas de Áudio Animadas (Soundwave) -->
                         <div id="live-soundwave" style="display: flex; align-items: center; justify-content: center; gap: 4px; height: 40px; width: 100%; margin-bottom: 10px;">
-                            <span class="wave-bar" style="height: 6px; width: 3px; background: #ef4444; border-radius: 3px;"></span>
-                            <span class="wave-bar" style="height: 6px; width: 3px; background: #ef4444; border-radius: 3px;"></span>
-                            <span class="wave-bar" style="height: 6px; width: 3px; background: #ef4444; border-radius: 3px;"></span>
-                            <span class="wave-bar" style="height: 6px; width: 3px; background: #ef4444; border-radius: 3px;"></span>
-                            <span class="wave-bar" style="height: 6px; width: 3px; background: #ef4444; border-radius: 3px;"></span>
-                            <span class="wave-bar" style="height: 6px; width: 3px; background: #ef4444; border-radius: 3px;"></span>
-                            <span class="wave-bar" style="height: 6px; width: 3px; background: #ef4444; border-radius: 3px;"></span>
-                            <span class="wave-bar" style="height: 6px; width: 3px; background: #ef4444; border-radius: 3px;"></span>
-                            <span class="wave-bar" style="height: 6px; width: 3px; background: #ef4444; border-radius: 3px;"></span>
-                            <span class="wave-bar" style="height: 6px; width: 3px; background: #ef4444; border-radius: 3px;"></span>
+                            <span class="wave-bar" style="height: 6px; width: 3px; background: rgba(139, 92, 246, 0.4); border-radius: 3px;"></span>
+                            <span class="wave-bar" style="height: 6px; width: 3px; background: rgba(139, 92, 246, 0.4); border-radius: 3px;"></span>
+                            <span class="wave-bar" style="height: 6px; width: 3px; background: rgba(139, 92, 246, 0.4); border-radius: 3px;"></span>
+                            <span class="wave-bar" style="height: 6px; width: 3px; background: rgba(139, 92, 246, 0.4); border-radius: 3px;"></span>
+                            <span class="wave-bar" style="height: 6px; width: 3px; background: rgba(139, 92, 246, 0.4); border-radius: 3px;"></span>
+                            <span class="wave-bar" style="height: 6px; width: 3px; background: rgba(139, 92, 246, 0.4); border-radius: 3px;"></span>
+                            <span class="wave-bar" style="height: 6px; width: 3px; background: rgba(139, 92, 246, 0.4); border-radius: 3px;"></span>
+                            <span class="wave-bar" style="height: 6px; width: 3px; background: rgba(139, 92, 246, 0.4); border-radius: 3px;"></span>
+                            <span class="wave-bar" style="height: 6px; width: 3px; background: rgba(139, 92, 246, 0.4); border-radius: 3px;"></span>
+                            <span class="wave-bar" style="height: 6px; width: 3px; background: rgba(139, 92, 246, 0.4); border-radius: 3px;"></span>
+                            <span class="wave-bar" style="height: 6px; width: 3px; background: rgba(139, 92, 246, 0.4); border-radius: 3px;"></span>
+                            <span class="wave-bar" style="height: 6px; width: 3px; background: rgba(139, 92, 246, 0.4); border-radius: 3px;"></span>
+                            <span class="wave-bar" style="height: 6px; width: 3px; background: rgba(139, 92, 246, 0.4); border-radius: 3px;"></span>
+                            <span class="wave-bar" style="height: 6px; width: 3px; background: rgba(139, 92, 246, 0.4); border-radius: 3px;"></span>
+                            <span class="wave-bar" style="height: 6px; width: 3px; background: rgba(139, 92, 246, 0.4); border-radius: 3px;"></span>
+                            <span class="wave-bar" style="height: 6px; width: 3px; background: rgba(139, 92, 246, 0.4); border-radius: 3px;"></span>
                         </div>
 
                         <!-- Botão Redondo Grande de Microfone Pulsante -->
-                        <button id="live-mic-btn" onclick="toggleLiveMic()" class="live-orbe-paused" style="width: 76px; height: 76px; border-radius: 50%; border: none; color: #fff; font-size: 2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none; position: relative;">
+                        <button id="live-mic-btn" onclick="toggleLiveMic()" class="live-mic-orbe live-orbe-paused">
                             🎙️
                         </button>
                         
@@ -2192,10 +2239,18 @@
                         <!-- Perfil Masculino/Feminino -->
                         <div class="form-group">
                             <label style="font-size: 0.72rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 4px;">Gênero Preferido</label>
-                            <select id="live-voice-gender" class="form-control" style="background: var(--card-bg-secondary); color: #fff; border: 1px solid var(--border-color); border-radius: 8px; width: 100%; height: 36px; padding: 0 8px; font-size: 0.8rem; cursor: pointer;" onchange="populateVoices(); saveLiveGender(this.value);">
+                            <select id="live-voice-gender" class="form-control" style="background: var(--card-bg-secondary); color: #fff; border: 1px solid var(--border-color); border-radius: 8px; width: 100%; height: 36px; padding: 0 8px; font-size: 0.8rem; cursor: pointer;" onchange="saveLiveGender(this.value);">
                                 <option value="all">Todas as Vozes</option>
                                 <option value="female">♀️ Feminina</option>
                                 <option value="male">♂️ Masculina</option>
+                            </select>
+                        </div>
+
+                        <!-- Seletor de Voz Direto (TTS Voice) -->
+                        <div class="form-group" style="margin-bottom: 4px;">
+                            <label style="font-size: 0.72rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 4px;">Voz Selecionada</label>
+                            <select id="live-speech-voice" class="form-control" style="background: var(--card-bg-secondary); color: #fff; border: 1px solid var(--border-color); border-radius: 8px; width: 100%; height: 36px; padding: 0 8px; font-size: 0.8rem; cursor: pointer;" onchange="handleVoiceChange(this.value)">
+                                <option value="">Carregando vozes do sistema...</option>
                             </select>
                         </div>
 
@@ -2206,13 +2261,18 @@
                         </div>
 
                         <!-- Toggle Hands-Free continuous listening -->
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.05);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.05); margin-bottom: 4px;">
                             <div>
                                 <span style="font-size: 0.78rem; font-weight: 600; color: #fff; display: block;">Escuta Contínua (Hands-free)</span>
                                 <span style="font-size: 0.65rem; color: var(--text-muted); display: block; margin-top: 2px;">Ouvir continuamente após responder</span>
                             </div>
                             <div class="toggle-switch" id="live-hands-free-switch" onclick="toggleLiveSwitch('live-hands-free-switch')" style="cursor: pointer;"></div>
                         </div>
+
+                        <!-- Botão Limpar Conversa -->
+                        <button id="live-clear-btn" onclick="confirmClearLiveChat()" style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.25); color: #f87171; width: 100%; padding: 10px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; margin-top: 4px;" onmouseover="this.style.background='rgba(239, 68, 68, 0.22)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.12)'">
+                            🗑️ Limpar Conversa
+                        </button>
 
                     </div>
 
@@ -5954,52 +6014,80 @@ WITH CHECK (true);</code>
         function applyAppLanguage(lang) {
             triggerPulse();
             updateAppLanguage(lang);
-            showAppToast(lang === 'pt' ? 'Idioma atualizado com sucesso!' : lang === 'en' ? 'System language updated!' : '¡Idioma actualizado correctamente!', 'success');
+            
+            // Sincroniza seletores em todo o DOM
+            const mainSel = document.getElementById('app-language-select');
+            const liveSel = document.getElementById('live-lang-select');
+            if (mainSel) mainSel.value = lang;
+            if (liveSel) liveSel.value = lang;
+
+            // Salva de forma persistente e imediata
+            localStorage.setItem('currentLanguage', lang);
+            try {
+                const saved = localStorage.getItem('ai_console_settings');
+                let config = saved ? JSON.parse(saved) : {};
+                config.currentLanguage = lang;
+                localStorage.setItem('ai_console_settings', JSON.stringify(config));
+            } catch (e) {
+                console.error("Erro ao salvar idioma no LocalStorage:", e);
+            }
+
+            // Atualiza vozes disponíveis para o novo idioma
+            populateVoices();
+
+            const toastMsg = lang === 'pt' ? 'Idioma atualizado com sucesso!' : lang === 'en' ? 'System language updated!' : '¡Idioma actualizado correctamente!';
+            showAppToast(toastMsg, 'success');
         }
 
         function populateVoices() {
             if (typeof window === 'undefined' || !window.speechSynthesis) return;
             const select = document.getElementById('speech-voice');
-            if (!select) return;
+            const liveSelect = document.getElementById('live-speech-voice');
+            if (!select && !liveSelect) return;
 
             let voices = window.speechSynthesis.getVoices();
-            select.innerHTML = '';
+            if (select) select.innerHTML = '';
+            if (liveSelect) liveSelect.innerHTML = '';
 
+            const loadingText = currentLanguage === 'en' ? 'Loading system voices...' : currentLanguage === 'es' ? 'Cargando voces del sistema...' : 'Carregando vozes...';
+            
             if (voices.length === 0) {
-                const opt = document.createElement('option');
-                opt.value = '';
-                opt.textContent = 'Carregando vozes...';
-                if (currentLanguage === 'en') opt.textContent = 'Loading system voices...';
-                if (currentLanguage === 'es') opt.textContent = 'Cargando voces del sistema...';
-                select.appendChild(opt);
+                [select, liveSelect].forEach(sel => {
+                    if (sel) {
+                        const opt = document.createElement('option');
+                        opt.value = '';
+                        opt.textContent = loadingText;
+                        sel.appendChild(opt);
+                    }
+                });
                 return;
             }
 
-            const genderSelect = document.getElementById('ai-voice-gender-select');
-            const preferredGender = genderSelect ? genderSelect.value : 'female';
+            // Detecta gênero preferido
+            const liveGenderSelect = document.getElementById('live-voice-gender');
+            const mainGenderSelect = document.getElementById('ai-voice-gender-select');
+            const preferredGender = liveGenderSelect ? liveGenderSelect.value : (mainGenderSelect ? mainGenderSelect.value : 'all');
 
-            // Custom sort: language match first, then preferred gender profile match
-            voices.sort((a, b) => {
+            // Ordenação inteligente: idioma atual primeiro, depois gênero correspondente
+            const langCode = currentLanguage === 'en' ? 'en' : currentLanguage === 'es' ? 'es' : 'pt';
+            
+            let sortedVoices = [...voices].sort((a, b) => {
                 const aName = a.name.toLowerCase();
                 const bName = b.name.toLowerCase();
                 const aLang = a.lang.toLowerCase();
                 const bLang = b.lang.toLowerCase();
                 
-                // 1. Language matching
-                const langCode = currentLanguage === 'en' ? 'en' : currentLanguage === 'es' ? 'es' : 'pt';
                 const aMatchesLang = aLang.startsWith(langCode);
                 const bMatchesLang = bLang.startsWith(langCode);
+                
                 if (aMatchesLang && !bMatchesLang) return -1;
                 if (!aMatchesLang && bMatchesLang) return 1;
 
-                // 2. Gender matching
-                const femaleKeywords = ['zira', 'maria', 'hazel', 'female', 'feminino', 'helen', 'helena', 'sabina', 'susan', 'elena', 'lisa', 'haruka', 'he-il'];
-                const maleKeywords = ['daniel', 'david', 'male', 'masculino', 'richard', 'george', 'ravi', 'sean', 'stefan', 'filippo', 'pablo', 'he-lh'];
-
-                const aIsFemale = femaleKeywords.some(kw => aName.includes(kw));
-                const aIsMale = maleKeywords.some(kw => aName.includes(kw));
-                const bIsFemale = femaleKeywords.some(kw => bName.includes(kw));
-                const bIsMale = maleKeywords.some(kw => bName.includes(kw));
+                // Gender matching
+                const aIsFemale = getVoiceGender(a.name) === 'female';
+                const aIsMale = getVoiceGender(a.name) === 'male';
+                const bIsFemale = getVoiceGender(b.name) === 'female';
+                const bIsMale = getVoiceGender(b.name) === 'male';
 
                 if (preferredGender === 'female') {
                     if (aIsFemale && !bIsFemale) return -1;
@@ -6008,28 +6096,34 @@ WITH CHECK (true);</code>
                     if (aIsMale && !bIsMale) return -1;
                     if (!aIsMale && bIsMale) return 1;
                 }
-
                 return 0;
             });
 
-            voices.forEach((voice) => {
+            sortedVoices.forEach((voice) => {
                 const opt = document.createElement('option');
                 opt.value = voice.name;
                 opt.textContent = `${voice.name} (${voice.lang})${voice.default ? ' [Padrão]' : ''}`;
-                select.appendChild(opt);
+                
+                if (select) select.appendChild(opt);
+                if (liveSelect) liveSelect.appendChild(opt.cloneNode(true));
             });
 
-            // Restore previously saved voice selection
+            // Restaura seleção de voz salva
             try {
-                const saved = localStorage.getItem('ai_console_settings');
-                if (saved) {
-                    const data = JSON.parse(saved);
-                    if (data.speechVoice) {
-                        select.value = data.speechVoice;
+                let savedVoice = localStorage.getItem('speech_voice_selected');
+                if (!savedVoice) {
+                    const savedSettings = localStorage.getItem('ai_console_settings');
+                    if (savedSettings) {
+                        const data = JSON.parse(savedSettings);
+                        savedVoice = data.speechVoice;
                     }
                 }
+                if (savedVoice) {
+                    if (select) select.value = savedVoice;
+                    if (liveSelect) liveSelect.value = savedVoice;
+                }
             } catch (err) {
-                console.error("Falha ao sincronizar voz de restauração:", err);
+                console.error("Falha ao sincronizar voz restaurada:", err);
             }
         }
 
@@ -6043,6 +6137,66 @@ WITH CHECK (true);</code>
         // ==========================================================================
         // LÓGICA DO MODO LIVE CHAT (SYNAPSE LIVE VOICE LOOP)
         // ==========================================================================
+        // ==========================================================================
+        // LÓGICA DO MODO LIVE CHAT (SYNAPSE LIVE VOICE LOOP - PREMIUM REFINEMENT)
+        // ==========================================================================
+        const LIVE_STATES = {
+            READY: 'ready',
+            LISTENING: 'listening',
+            PROCESSING: 'processing',
+            THINKING: 'thinking',
+            RESPONDING: 'speaking',
+            ENDED: 'ended'
+        };
+
+        const LIVE_STATE_LABELS = {
+            pt: {
+                ready: { title: "Pronto para ouvir", hint: "Clique no microfone para conversar" },
+                listening: { title: "Ouvindo...", hint: "Fale agora, o assistente está ouvindo" },
+                processing: { title: "Processando áudio...", hint: "Analisando voz..." },
+                thinking: { title: "Pensando na resposta...", hint: "A IA está processando..." },
+                speaking: { title: "Respondendo...", hint: "O assistente está falando" },
+                ended: { title: "Conversa finalizada", hint: "Selecione o microfone para reiniciar" }
+            },
+            en: {
+                ready: { title: "Ready to listen", hint: "Click the microphone to talk" },
+                listening: { title: "Listening...", hint: "Speak now, the AI is listening" },
+                processing: { title: "Processing audio...", hint: "Analyzing voice..." },
+                thinking: { title: "Thinking...", hint: "AI is thinking..." },
+                speaking: { title: "Responding...", hint: "Assistant is speaking" },
+                ended: { title: "Conversation ended", hint: "Click the mic to restart" }
+            },
+            es: {
+                ready: { title: "Listo para escuchar", hint: "Haga clic para hablar" },
+                listening: { title: "Escuchando...", hint: "Hable ahora, la IA está escuchando" },
+                processing: { title: "Procesando audio...", hint: "Analizando voz..." },
+                thinking: { title: "Pensando...", hint: "La IA está procesando..." },
+                speaking: { title: "Respondiendo...", hint: "El asistente está hablando" },
+                ended: { title: "Conversación finalizada", hint: "Haga clic para reiniciar" }
+            }
+        };
+
+        const THINKING_MESSAGES = {
+            pt: [
+                "Analisando voz...",
+                "Processando áudio...",
+                "Pensando na resposta...",
+                "Conectando ao cérebro..."
+            ],
+            en: [
+                "Analyzing voice...",
+                "Processing audio...",
+                "Thinking of response...",
+                "Connecting to brain..."
+            ],
+            es: [
+                "Analizando voz...",
+                "Procesando audio...",
+                "Pensando en la respuesta...",
+                "Conectando al cerebro..."
+            ]
+        };
+
         let liveChatHistoryObjects = [];
         let liveRecognition = null;
         let isLiveListening = false;
@@ -6050,9 +6204,52 @@ WITH CHECK (true);</code>
         let liveResumeContext = null;
         let liveSettingsContext = null;
         let liveVisualizerInterval = null;
+        let currentLiveState = LIVE_STATES.READY;
+        let thinkingMessageInterval = null;
 
         function toggleLiveMode() {
             switchTab('tab-live');
+        }
+
+        function setLiveState(state) {
+            currentLiveState = state;
+            const lang = currentLanguage === 'en' ? 'en' : currentLanguage === 'es' ? 'es' : 'pt';
+            const labelGroup = LIVE_STATE_LABELS[lang] || LIVE_STATE_LABELS.pt;
+            const stateLabel = labelGroup[state] || labelGroup.ready;
+
+            const statusTextEl = document.getElementById('live-status-text');
+            const hintTextEl = document.getElementById('live-mic-hint');
+            const micBtnEl = document.getElementById('live-mic-btn');
+
+            if (statusTextEl) statusTextEl.textContent = stateLabel.title;
+            if (hintTextEl) hintTextEl.textContent = stateLabel.hint;
+
+            // Update classes for animations on the orbe microphone button
+            if (micBtnEl) {
+                micBtnEl.className = 'live-mic-orbe';
+                if (state === LIVE_STATES.READY) {
+                    micBtnEl.classList.add('live-orbe-paused');
+                } else if (state === LIVE_STATES.LISTENING) {
+                    micBtnEl.classList.add('live-orbe-listening');
+                } else if (state === LIVE_STATES.PROCESSING || state === LIVE_STATES.THINKING) {
+                    micBtnEl.classList.add('live-orbe-thinking');
+                } else if (state === LIVE_STATES.RESPONDING) {
+                    micBtnEl.classList.add('live-orbe-speaking');
+                } else if (state === LIVE_STATES.ENDED) {
+                    micBtnEl.classList.add('live-orbe-ended');
+                }
+            }
+
+            // Sync visualizer soundwave movement
+            if (state === LIVE_STATES.LISTENING) {
+                startLiveVisualizer('listening');
+            } else if (state === LIVE_STATES.PROCESSING || state === LIVE_STATES.THINKING) {
+                startLiveVisualizer('thinking');
+            } else if (state === LIVE_STATES.RESPONDING) {
+                startLiveVisualizer('speaking');
+            } else {
+                stopLiveVisualizer();
+            }
         }
 
         function toggleLiveSwitch(id) {
@@ -6071,14 +6268,57 @@ WITH CHECK (true);</code>
                 shouldStopContinuousListening = true;
                 if (liveRecognition) liveRecognition.stop();
             }
+            // Persistence
+            localStorage.setItem(id, isOn ? 'off' : 'on');
         }
 
         function saveLiveGender(val) {
+            triggerPulse();
             const mainGenderSelect = document.getElementById('ai-voice-gender-select');
-            if (mainGenderSelect) {
-                mainGenderSelect.value = val;
+            const liveGenderSelect = document.getElementById('live-voice-gender');
+            if (mainGenderSelect) mainGenderSelect.value = val;
+            if (liveGenderSelect) liveGenderSelect.value = val;
+
+            localStorage.setItem('voice_gender_preferred', val);
+            try {
+                const saved = localStorage.getItem('ai_console_settings');
+                let config = saved ? JSON.parse(saved) : {};
+                config.voiceGender = val;
+                localStorage.setItem('ai_console_settings', JSON.stringify(config));
+            } catch (e) {
+                console.error("Erro ao salvar gênero no LocalStorage:", e);
             }
-            saveConfiguration();
+            populateVoices();
+            showAppToast(currentLanguage === 'en' ? 'Gender preference updated!' : currentLanguage === 'es' ? '¡Preferencia de género actualizada!' : 'Preferência de gênero atualizada!', 'success');
+        }
+
+        function handleVoiceChange(voiceName) {
+            triggerPulse();
+            if (!voiceName) return;
+            localStorage.setItem('speech_voice_selected', voiceName);
+            
+            const mainVoiceSelect = document.getElementById('speech-voice');
+            const liveVoiceSelect = document.getElementById('live-speech-voice');
+            if (mainVoiceSelect) mainVoiceSelect.value = voiceName;
+            if (liveVoiceSelect) liveVoiceSelect.value = voiceName;
+
+            try {
+                const saved = localStorage.getItem('ai_console_settings');
+                let config = saved ? JSON.parse(saved) : {};
+                config.speechVoice = voiceName;
+                localStorage.setItem('ai_console_settings', JSON.stringify(config));
+            } catch (e) {
+                console.error("Erro ao salvar voz no LocalStorage:", e);
+            }
+            
+            showAppToast(currentLanguage === 'en' ? 'Voice updated!' : currentLanguage === 'es' ? '¡Voz actualizada!' : 'Voz atualizada com sucesso!', 'success');
+            
+            // Brief vocal test feedback to confirm
+            if (window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+                const testText = currentLanguage === 'en' ? 'Voice updated' : currentLanguage === 'es' ? 'Voz actualizada' : 'Voz atualizada';
+                speakLiveText(testText);
+            }
         }
 
         function getVoiceGender(voiceName) {
@@ -6095,34 +6335,22 @@ WITH CHECK (true);</code>
             const bars = document.querySelectorAll('.wave-bar');
             if (bars.length === 0) return;
 
-            const btn = document.getElementById('live-mic-btn');
-            if (btn) {
-                btn.className = '';
-                if (mode === 'listening') {
-                    btn.classList.add('live-orbe-listening');
-                } else if (mode === 'thinking') {
-                    btn.classList.add('live-orbe-thinking');
-                } else if (mode === 'speaking') {
-                    btn.classList.add('live-orbe-speaking');
-                }
-            }
-
             liveVisualizerInterval = setInterval(() => {
                 bars.forEach((bar) => {
                     let height = 6;
                     if (mode === 'listening') {
-                        height = Math.floor(Math.random() * 26) + 8;
-                        bar.style.backgroundColor = '#8b5cf6'; // purple wave
+                        height = Math.floor(Math.random() * 28) + 8;
+                        bar.style.backgroundColor = '#8b5cf6'; // premium violet
                     } else if (mode === 'speaking') {
-                        height = Math.floor(Math.random() * 18) + 6;
-                        bar.style.backgroundColor = '#10b981'; // green wave
+                        height = Math.floor(Math.random() * 22) + 8;
+                        bar.style.backgroundColor = '#10b981'; // emerald green
                     } else if (mode === 'thinking') {
                         height = Math.floor(Math.random() * 12) + 6;
-                        bar.style.backgroundColor = '#fbbf24'; // yellow wave
+                        bar.style.backgroundColor = '#fbbf24'; // beautiful amber
                     }
                     bar.style.height = height + 'px';
                 });
-            }, 100);
+            }, 80);
         }
 
         function stopLiveVisualizer() {
@@ -6133,13 +6361,8 @@ WITH CHECK (true);</code>
             const bars = document.querySelectorAll('.wave-bar');
             bars.forEach(bar => {
                 bar.style.height = '6px';
-                bar.style.backgroundColor = '#ef4444'; // red wave for idle
+                bar.style.backgroundColor = 'rgba(139, 92, 246, 0.4)'; // subtle inactive wave color
             });
-            const btn = document.getElementById('live-mic-btn');
-            if (btn) {
-                btn.className = '';
-                btn.classList.add('live-orbe-paused');
-            }
         }
 
         function speakLiveText(text, onEndCallback) {
@@ -6160,7 +6383,8 @@ WITH CHECK (true);</code>
             utterance.rate = rateVal;
             utterance.pitch = pitchVal;
 
-            const voiceSelect = document.getElementById('speech-voice');
+            // Resolve selected speech voice
+            const voiceSelect = document.getElementById('live-speech-voice') || document.getElementById('speech-voice');
             const selectedVoiceName = voiceSelect?.value || '';
             
             if (selectedVoiceName) {
@@ -6187,19 +6411,19 @@ WITH CHECK (true);</code>
             }
 
             utterance.onstart = () => {
-                startLiveVisualizer('speaking');
-                document.getElementById('live-status-text').innerText = currentLanguage === 'en' ? "Speaking..." : currentLanguage === 'es' ? "Hablando..." : "Falando...";
+                setLiveState(LIVE_STATES.RESPONDING);
             };
 
             utterance.onend = () => {
-                stopLiveVisualizer();
-                document.getElementById('live-status-text').innerText = currentLanguage === 'en' ? "Ready" : currentLanguage === 'es' ? "Listo" : "Pronto";
+                if (currentLiveState === LIVE_STATES.RESPONDING) {
+                    setLiveState(LIVE_STATES.READY);
+                }
                 if (onEndCallback) onEndCallback();
             };
 
             utterance.onerror = (e) => {
                 console.error("Erro na leitura TTS:", e);
-                stopLiveVisualizer();
+                setLiveState(LIVE_STATES.READY);
                 if (onEndCallback) onEndCallback();
             };
 
@@ -6220,7 +6444,7 @@ WITH CHECK (true);</code>
                 return;
             }
 
-            // Cancel any current speaking
+            // Cancel speaking if active
             if (window.speechSynthesis && window.speechSynthesis.speaking) {
                 window.speechSynthesis.cancel();
             }
@@ -6242,9 +6466,7 @@ WITH CHECK (true);</code>
 
             liveRecognition.onstart = function() {
                 isLiveListening = true;
-                startLiveVisualizer('listening');
-                document.getElementById('live-status-text').innerText = currentLanguage === 'en' ? "Listening..." : currentLanguage === 'es' ? "Escuchando..." : "Escutando...";
-                document.getElementById('live-mic-hint').innerText = currentLanguage === 'en' ? "The AI is listening..." : currentLanguage === 'es' ? "La IA está escuchando..." : "A IA está ouvindo...";
+                setLiveState(LIVE_STATES.LISTENING);
                 addLog("Modo Live: Escutando microfone...", "info");
             };
 
@@ -6259,10 +6481,327 @@ WITH CHECK (true);</code>
                 if (event.error !== 'no-speech') {
                     console.error("Erro no microfone Live:", event.error);
                     addLog("Erro no microfone Live: " + event.error, "error");
-                    stopLiveVisualizer();
-                    resetLiveMicUI();
+                    setLiveState(LIVE_STATES.READY);
                 }
             };
+
+            liveRecognition.onend = function() {
+                isLiveListening = false;
+                if (window.speechSynthesis && window.speechSynthesis.speaking) {
+                    return;
+                }
+                if (currentLiveState === LIVE_STATES.LISTENING) {
+                    setLiveState(LIVE_STATES.READY);
+                }
+            };
+
+            liveRecognition.start();
+        }
+
+        function appendLiveMessage(role, text) {
+            const msgsContainer = document.getElementById('live-chat-messages');
+            if (!msgsContainer) return;
+            
+            const formatted = formatAIResponse ? formatAIResponse(text) : text;
+            const msgHtml = `
+                <div class="chat-message ${role === 'user' ? 'user' : 'bot'}" style="position: relative; padding: 12px 16px; border-radius: 12px; font-size: 0.92rem; line-height: 1.5; ${role === 'user' ? 'align-self: flex-end; background: var(--primary); color: #fff;' : 'align-self: flex-start; background: var(--card-bg-secondary); border: 1px solid var(--border-color);'} width: fit-content; max-width: 85%;">
+                    ${formatted}
+                </div>
+            `;
+            msgsContainer.insertAdjacentHTML('beforeend', msgHtml);
+            msgsContainer.scrollTop = msgsContainer.scrollHeight;
+        }
+
+        // Typing effect function to reveal words sequentially with typing animation
+        function typeLiveResponse(element, text, onComplete) {
+            element.innerHTML = '';
+            const words = text.split(/\s+/);
+            let index = 0;
+            
+            const cursor = document.createElement('span');
+            cursor.className = 'typing-cursor';
+            cursor.innerHTML = '▋';
+            cursor.style.color = 'var(--primary)';
+            cursor.style.marginLeft = '4px';
+            element.appendChild(cursor);
+            
+            const msgsContainer = document.getElementById('live-chat-messages');
+
+            function typeNextWord() {
+                if (index < words.length) {
+                    const span = document.createElement('span');
+                    span.innerText = words[index] + ' ';
+                    span.style.opacity = '0';
+                    span.style.transition = 'opacity 0.25s ease';
+                    element.insertBefore(span, cursor);
+                    
+                    // Force reflow
+                    span.offsetHeight;
+                    span.style.opacity = '1';
+                    
+                    if (msgsContainer) {
+                        msgsContainer.scrollTop = msgsContainer.scrollHeight;
+                    }
+                    
+                    index++;
+                    setTimeout(typeNextWord, 45 + Math.random() * 25);
+                } else {
+                    if (cursor.parentNode) {
+                        cursor.parentNode.removeChild(cursor);
+                    }
+                    if (typeof formatAIResponse === 'function') {
+                        element.innerHTML = formatAIResponse(text);
+                    } else {
+                        element.innerHTML = text;
+                    }
+                    if (msgsContainer) {
+                        msgsContainer.scrollTop = msgsContainer.scrollHeight;
+                    }
+                    if (onComplete) onComplete();
+                }
+            }
+            
+            typeNextWord();
+        }
+
+        async function sendLiveMessageToAI(userText) {
+            if (!userText) return;
+            
+            liveChatHistoryObjects.push({ role: 'user', content: userText });
+            
+            const loaderId = 'live-loader-' + Date.now();
+            const lang = currentLanguage === 'en' ? 'en' : currentLanguage === 'es' ? 'es' : 'pt';
+            const initialThinkingMsg = THINKING_MESSAGES[lang][0];
+
+            const loaderHtml = `
+                <div class="chat-message bot" id="${loaderId}" style="position: relative; padding: 12px 16px; border-radius: 12px; font-size: 0.92rem; line-height: 1.5; align-self: flex-start; background: var(--card-bg-secondary); border: 1px solid var(--border-color); width: fit-content; max-width: 85%;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="pulse-indicator" style="background: var(--primary);"></span>
+                        <span id="${loaderId}-text">${initialThinkingMsg}</span>
+                    </div>
+                </div>
+            `;
+            const msgsContainer = document.getElementById('live-chat-messages');
+            msgsContainer.insertAdjacentHTML('beforeend', loaderHtml);
+            msgsContainer.scrollTop = msgsContainer.scrollHeight;
+
+            setLiveState(LIVE_STATES.PROCESSING);
+
+            // Alternate through thinking messages every 1.5 seconds for premium dynamic feel
+            let thinkingIndex = 1;
+            const messagesList = THINKING_MESSAGES[lang] || THINKING_MESSAGES.pt;
+            
+            if (thinkingMessageInterval) clearInterval(thinkingMessageInterval);
+            thinkingMessageInterval = setInterval(() => {
+                const loaderTextEl = document.getElementById(`${loaderId}-text`);
+                if (loaderTextEl) {
+                    loaderTextEl.textContent = messagesList[thinkingIndex % messagesList.length];
+                    thinkingIndex++;
+                }
+            }, 1500);
+
+            let aiReply = '';
+            try {
+                const key = String(document.getElementById('api-key')?.value || '').trim();
+                const activeApiType = typeof apiType !== 'undefined' ? apiType : 'GEMINI';
+                const model = document.getElementById('model-name')?.value || 'gemini-1.5-flash';
+                const url = document.getElementById('base-url')?.value || 'https://api.openai.com/v1';
+                
+                let liveSystemPrompt = `Você é o Synapse Live, um assistente virtual interativo em tempo real de altíssima velocidade.
+O usuário está conversando com você principalmente por voz. Portanto, responda de forma extremamente concisa, direta, natural e coloquial, como em uma ligação telefônica real. Evite parágrafos longos, listas extensas de tópicos e marcações de formatação markdown complexas, a menos que estritamente necessário.
+
+INTEGRAÇÃO COM O SISTEMA (Módulos do App):
+Você está conectado diretamente com as demais abas do console. Se o usuário solicitar uma ação no sistema, você deve dispará-la acrescentando o comando especial ao final de sua resposta em uma nova linha.
+Formatos de ação de sistema suportados:
+[[SYSTEM_ACTION: {"action": "switch_tab", "tabId": "tab-resume-builder"}]] -> muda para a aba Currículo IA
+[[SYSTEM_ACTION: {"action": "switch_tab", "tabId": "tab-interview-simulator"}]] -> muda para a aba Simulador de Entrevistas
+[[SYSTEM_ACTION: {"action": "switch_tab", "tabId": "tab-workspace"}]] -> navega para o Dashboard Inicial
+[[SYSTEM_ACTION: {"action": "switch_tab", "tabId": "tab-config"}]] -> abre as Configurações
+[[SYSTEM_ACTION: {"action": "clear_memory"}]] -> limpa a memória de conversas do live chat
+[[SYSTEM_ACTION: {"action": "read_resume"}]] -> lê os dados atuais do currículo para te fornecer contexto e você poder sugerir melhorias
+[[SYSTEM_ACTION: {"action": "start_interview"}]] -> inicia o Simulador de Entrevistas imediatamente
+[[SYSTEM_ACTION: {"action": "change_language", "lang": "pt"}]] ou "en" ou "es" -> muda o idioma do console
+[[SYSTEM_ACTION: {"action": "show_active_settings"}]] -> exibe logs de configurações ativas
+
+Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`;
+
+                if (liveResumeContext) {
+                    liveSystemPrompt += `\n\n[CONTEXTO DO CURRÍCULO DO USUÁRIO]:\n${JSON.stringify(liveResumeContext)}`;
+                }
+                if (liveSettingsContext) {
+                    liveSystemPrompt += `\n\n[CONFIGURAÇÕES ATIVAS DO SISTEMA]:\n${JSON.stringify(liveSettingsContext)}`;
+                }
+
+                if (activeApiType === "GEMINI") {
+                    const cleanUrl = url.endsWith('/') ? url : url + '/';
+                    const fetchUrl = `${cleanUrl}v1beta/models/${model}:generateContent?key=${key}`;
+                    
+                    const geminiContents = liveChatHistoryObjects.map(msg => ({
+                        role: msg.role === 'user' ? 'user' : 'model',
+                        parts: [{ text: msg.content }]
+                    }));
+
+                    const response = await fetch(fetchUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: geminiContents,
+                            generationConfig: { temperature: 0.7 },
+                            systemInstruction: { parts: [{ text: liveSystemPrompt }] }
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sem resposta.";
+                    } else {
+                        const err = await response.text();
+                        aiReply = `Erro Gemini: ${err}`;
+                    }
+                } else {
+                    const fetchUrl = sanitizeChatCompletionsUrl(url);
+                    
+                    let openAiMessages = [{ role: "system", content: liveSystemPrompt }];
+                    liveChatHistoryObjects.forEach(msg => {
+                        openAiMessages.push({
+                            role: msg.role === 'user' ? 'user' : 'assistant',
+                            content: msg.content
+                        });
+                    });
+
+                    const headers = {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + key
+                    };
+                    if (activeApiType === "OPENROUTER") {
+                        headers['HTTP-Referer'] = window.location.origin || "https://google.com";
+                        headers['X-Title'] = 'Synapse AI';
+                    }
+
+                    const reqPayload = {
+                        model: model,
+                        messages: openAiMessages,
+                        temperature: 0.7
+                    };
+
+                    const response = await fetch(fetchUrl, {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify(reqPayload)
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        aiReply = data.choices?.[0]?.message?.content || "Sem resposta.";
+                    } else {
+                        const err = await response.text();
+                        aiReply = `Erro ${activeApiType}: ${err}`;
+                    }
+                }
+            } catch(e) {
+                aiReply = `Falha de rede: ${e.message}`;
+            }
+
+            // Stop alternating thinking message interval
+            if (thinkingMessageInterval) {
+                clearInterval(thinkingMessageInterval);
+                thinkingMessageInterval = null;
+            }
+
+            let cleanReply = parseLiveSystemAction(aiReply);
+            liveChatHistoryObjects.push({ role: 'assistant', content: cleanReply });
+
+            // Clear visualizer from thinking
+            stopLiveVisualizer();
+
+            const loaderEl = document.getElementById(loaderId);
+            if (loaderEl) {
+                // Set state to speaking/responding while typing and vocalizing
+                const autoSpeak = document.getElementById('live-auto-speak-switch')?.classList.contains('on');
+                
+                setLiveState(LIVE_STATES.RESPONDING);
+                
+                typeLiveResponse(loaderEl, cleanReply, () => {
+                    if (!autoSpeak) {
+                        setLiveState(LIVE_STATES.READY);
+                    }
+                });
+
+                if (autoSpeak) {
+                    speakLiveText(cleanReply, () => {
+                        const handsFree = document.getElementById('live-hands-free-switch')?.classList.contains('on');
+                        if (handsFree && !shouldStopContinuousListening) {
+                            setTimeout(() => {
+                                toggleLiveMic();
+                            }, 500);
+                        } else {
+                            setLiveState(LIVE_STATES.READY);
+                        }
+                    });
+                }
+            } else {
+                setLiveState(LIVE_STATES.READY);
+            }
+        }
+
+        function parseLiveSystemAction(responseText) {
+            const regex = /\[\[SYSTEM_ACTION:\s*({.*?})\s*\]\]/s;
+            const match = responseText.match(regex);
+            if (!match) return responseText;
+
+            const actionJsonStr = match[1];
+            let actionObj = null;
+            try {
+                actionObj = JSON.parse(actionJsonStr);
+            } catch(e) {
+                console.error("Erro ao analisar JSON de ação do sistema:", e);
+                return responseText.replace(regex, '');
+            }
+
+            executeLiveSystemAction(actionObj);
+            return responseText.replace(regex, '').trim();
+        }
+
+        function confirmClearLiveChat() {
+            triggerPulse();
+            const confirmMsg = currentLanguage === 'en' 
+                ? "Are you sure you want to clear the entire conversation history?" 
+                : currentLanguage === 'es' 
+                ? "¿Estás seguro de que quieres borrar todo el historial de conversación?" 
+                : "Tem certeza de que deseja limpar todo o histórico de conversação?";
+            
+            if (confirm(confirmMsg)) {
+                liveChatHistoryObjects = [];
+                const msgsContainer = document.getElementById('live-chat-messages');
+                if (msgsContainer) {
+                    const initialBotMsg = currentLanguage === 'en'
+                        ? "Hello! I am the Live Mode assistant. Talk to me as if we were on a call. I understand your context and can navigate or change app settings if you ask me by voice!"
+                        : currentLanguage === 'es'
+                        ? "¡Hola! Soy el asistente del Modo Live. Hable conmigo como en una llamada. ¡Entiendo su contexto y puedo navegar o cambiar ajustes si me lo pide por voz!"
+                        : "Olá! Eu sou o assistente do Modo Live. Fale comigo como se estivesse em uma chamada. Eu entendo seu contexto e posso navegar ou alterar configurações do aplicativo se me solicitar por voz!";
+                    
+                    msgsContainer.innerHTML = `
+                        <div class="chat-message bot" style="position: relative; padding: 12px 16px; border-radius: 12px; font-size: 0.92rem; line-height: 1.5; align-self: flex-start; background: var(--card-bg-secondary); border: 1px solid var(--border-color); width: fit-content; max-width: 85%;">
+                            ${initialBotMsg}
+                        </div>
+                    `;
+                }
+                
+                if (window.speechSynthesis) {
+                    window.speechSynthesis.cancel();
+                }
+                if (isLiveListening && liveRecognition) {
+                    shouldStopContinuousListening = true;
+                    liveRecognition.stop();
+                }
+                
+                setLiveState(LIVE_STATES.READY);
+                
+                const successMsg = currentLanguage === 'en' ? "Conversation cleared!" : currentLanguage === 'es' ? "¡Conversación borrada!" : "Conversação limpa com sucesso!";
+                showAppToast(successMsg, 'success');
+                addLog("Modo Live: Histórico de conversa limpo.", "info");
+            }
+        }
 
             liveRecognition.onend = function() {
                 isLiveListening = false;
@@ -8177,7 +8716,9 @@ Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`
                     if (data.currentLanguage !== undefined) {
                         currentLanguage = data.currentLanguage;
                         const appLangSel = document.getElementById('app-language-select');
+                        const liveLangSel = document.getElementById('live-lang-select');
                         if (appLangSel) appLangSel.value = currentLanguage;
+                        if (liveLangSel) liveLangSel.value = currentLanguage;
                         updateAppLanguage(currentLanguage);
                     } else {
                         let defaultLang = 'pt';
@@ -8191,11 +8732,37 @@ Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`
                         currentLanguage = defaultLang;
                         updateAppLanguage(defaultLang);
                     }
+                    
                     if (data.speechVoice !== undefined) {
                         safeSetVal('speech-voice', data.speechVoice);
+                        safeSetVal('live-speech-voice', data.speechVoice);
+                        localStorage.setItem('speech_voice_selected', data.speechVoice);
                     }
                     if (data.aiVoiceGender !== undefined) {
                         safeSetVal('ai-voice-gender-select', data.aiVoiceGender);
+                        safeSetVal('live-voice-gender', data.aiVoiceGender);
+                    }
+
+                    // Restaura estado dos Switches do Modo Live
+                    try {
+                        const autoSpeakVal = localStorage.getItem('live-auto-speak-switch');
+                        if (autoSpeakVal !== null) {
+                            const sw = document.getElementById('live-auto-speak-switch');
+                            if (sw) {
+                                if (autoSpeakVal === 'on') sw.classList.add('on');
+                                else sw.classList.remove('on');
+                            }
+                        }
+                        const handsFreeVal = localStorage.getItem('live-hands-free-switch');
+                        if (handsFreeVal !== null) {
+                            const sw = document.getElementById('live-hands-free-switch');
+                            if (sw) {
+                                if (handsFreeVal === 'on') sw.classList.add('on');
+                                else sw.classList.remove('on');
+                            }
+                        }
+                    } catch(swErr) {
+                        console.error("Erro ao sincronizar switches salvos:", swErr);
                     }
 
                     // Se temos dados válidos, testa conexão e atualiza indicadores em background após o boot
