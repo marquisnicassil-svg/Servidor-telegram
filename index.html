@@ -6033,11 +6033,6 @@ WITH CHECK (true);</code>
             }
         }
 
-            } catch (err) {
-                console.error("Falha ao sincronizar voz de restauração:", err);
-            }
-        }
-
         if (typeof window !== 'undefined' && window.speechSynthesis) {
             window.speechSynthesis.onvoiceschanged = () => {
                 populateVoices();
