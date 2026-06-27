@@ -11740,6 +11740,31 @@ Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`
             
             if (saved) {
                 document.getElementById('chat-messages').innerHTML = saved;
+                
+                // Clean up any old welcome messages from cached DOM
+                const uName = getUserDisplayName();
+                const cleanText = uName ? `✨ Olá, ${uName}!\n\nComo posso ajudar você hoje?` : `✨ Olá! Como posso ajudar você hoje?`;
+                const escapedForSpeech = cleanText.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
+                const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
+                const activeId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
+
+                const allBotMessages = document.getElementById('chat-messages').querySelectorAll('.chat-message.bot');
+                let modified = false;
+                allBotMessages.forEach(msg => {
+                    if (msg.innerHTML.includes("Sua sessão está ativa") || msg.innerHTML.includes("via Supabase") || msg.innerHTML.includes("Sessão segura ativa") || msg.innerHTML.includes("Sessão segura em nuvem ativa")) {
+                        msg.innerHTML = `${getAgentAvatarHtml(activeId)}${formatAIResponse(cleanText)}${readerHtml}`;
+                        modified = true;
+                    }
+                    if (msg.innerText.includes("Memória apagada. Sessão reiniciada.")) {
+                        msg.remove();
+                        modified = true;
+                    }
+                });
+                
+                if (modified) {
+                    saveChatSession();
+                }
+                
                 scrollToBottom();
             } else {
                 const uName = getUserDisplayName();
@@ -11756,6 +11781,23 @@ Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`
             if (savedHistory) {
                 try {
                     chatHistoryObjects = JSON.parse(savedHistory);
+                    // Sanitize memory history as well
+                    let modifiedHistory = false;
+                    chatHistoryObjects = chatHistoryObjects.filter(obj => {
+                        if (obj.role === 'assistant' && obj.content.includes("Memória apagada. Sessão reiniciada.")) {
+                            modifiedHistory = true;
+                            return false;
+                        }
+                        if (obj.role === 'assistant' && (obj.content.includes("Sua sessão está ativa") || obj.content.includes("Sessão segura ativa") || obj.content.includes("via Supabase"))) {
+                            const uName = getUserDisplayName();
+                            obj.content = uName ? `✨ Olá, ${uName}!\n\nComo posso ajudar você hoje?` : `✨ Olá! Como posso ajudar você hoje?`;
+                            modifiedHistory = true;
+                        }
+                        return true;
+                    });
+                    if (modifiedHistory) {
+                        localStorage.setItem('ai_console_chat_history', JSON.stringify(chatHistoryObjects));
+                    }
                 } catch(e) { chatHistoryObjects = []; }
             }
         }
@@ -16244,11 +16286,27 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 if (existingPrompt) existingPrompt.remove();
 
                 const welcomeMsgId = 'auth-welcome-msg-' + displayName.replace(/[^a-zA-Z0-9]/g, '');
-                if (!document.getElementById(welcomeMsgId)) {
-                    const cleanText = displayName ? `✨ Olá, ${displayName}!\n\nComo posso ajudar você hoje?` : `✨ Olá! Como posso ajudar você hoje?`;
-                    const escapedForSpeech = cleanText.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
-                    const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
-                    const activeId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
+                const cleanText = displayName ? `✨ Olá, ${displayName}!\n\nComo posso ajudar você hoje?` : `✨ Olá! Como posso ajudar você hoje?`;
+                const escapedForSpeech = cleanText.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
+                const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
+                const activeId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
+                
+                // Clean up any old messages containing "Sua sessão" or "Supabase" or "Memória apagada"
+                const allBotMessages = container.querySelectorAll('.chat-message.bot');
+                allBotMessages.forEach(msg => {
+                    if (msg.innerHTML.includes("Sua sessão está ativa") || msg.innerHTML.includes("via Supabase") || msg.innerHTML.includes("Sessão segura ativa") || msg.innerHTML.includes("Sessão segura em nuvem ativa")) {
+                        msg.id = welcomeMsgId;
+                        msg.innerHTML = `${getAgentAvatarHtml(activeId)}${formatAIResponse(cleanText)}${readerHtml}`;
+                    }
+                    if (msg.innerText.includes("Memória apagada. Sessão reiniciada.")) {
+                        msg.remove();
+                    }
+                });
+
+                const existingWelcome = document.getElementById(welcomeMsgId);
+                if (existingWelcome) {
+                    existingWelcome.innerHTML = `${getAgentAvatarHtml(activeId)}${formatAIResponse(cleanText)}${readerHtml}`;
+                } else {
                     const msgHtml = `<div class="chat-message bot" id="${welcomeMsgId}">${getAgentAvatarHtml(activeId)}${formatAIResponse(cleanText)}${readerHtml}</div>`;
 
                     if (isFirstLoad && (!chatHistoryObjects || chatHistoryObjects.length <= 1)) {
@@ -16269,9 +16327,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                             content: cleanText 
                         });
                     }
-                    saveChatSession();
-                    scrollToBottom();
                 }
+                saveChatSession();
+                scrollToBottom();
             }
 
             // 3. Exibir notificação brilhante na interface
