@@ -17450,7 +17450,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             text = text.replace(/\s+/g, ' ').trim();
 
             // Auto-corrigir caracteres quebrados por encoding duplo ou corrompido
-            text = text.replace(//g, ''); // remove replacement chars
+            text = text.replace(/\uFFFD/g, ''); // remove replacement chars
             text = text.replace(/Ã³/g, 'ó')
                        .replace(/Ã¹/g, 'ú')
                        .replace(/Ã¡/g, 'á')
