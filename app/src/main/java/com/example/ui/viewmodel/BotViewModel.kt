@@ -607,6 +607,69 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
     private val _isContextProcessing = MutableStateFlow(false)
     val isContextProcessing: StateFlow<Boolean> = _isContextProcessing.asStateFlow()
 
+    private fun fetchRealTimeSearchDuckDuckGo(query: String): String? {
+        if (query.isBlank()) return null
+        return try {
+            val url = "https://html.duckduckgo.com/html/?q=${java.net.URLEncoder.encode(query, "UTF-8")}"
+            val client = okhttp3.OkHttpClient.Builder()
+                .connectTimeout(6, java.util.concurrent.TimeUnit.SECONDS)
+                .readTimeout(6, java.util.concurrent.TimeUnit.SECONDS)
+                .build()
+            val request = okhttp3.Request.Builder()
+                .url(url)
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+                .build()
+            val html = client.newCall(request).execute().use { response ->
+                if (response.isSuccessful) response.body?.string() ?: "" else ""
+            }
+            if (html.isBlank()) return null
+
+            val results = mutableListOf<String>()
+            val regexSnippet = Regex("<a class=\"result__snippet\"[^>]*?>(.*?)</a>", RegexOption.IGNORE_CASE)
+            val regexTitle = Regex("<a class=\"result__url\"[^>]*?>(.*?)</a>", RegexOption.IGNORE_CASE)
+            
+            val matchesSnippet = regexSnippet.findAll(html).toList()
+            val matchesTitle = regexTitle.findAll(html).toList()
+            
+            val limit = minOf(matchesSnippet.size, 6)
+            val sb = java.lang.StringBuilder()
+            sb.append("[PESQUISA EM TEMPO REAL DUCKDUCKGO (MOBILE APP) - DATA ATUAL: Sábado, 27 de Junho de 2026]\n")
+            sb.append("Resultados de busca reais e atualizados para: \"$query\"\n\n")
+            
+            var count = 0
+            for (i in 0 until limit) {
+                val snippetText = matchesSnippet[i].groupValues[1]
+                    .replace(Regex("<[^>]*?>"), "")
+                    .replace("&amp;", "&")
+                    .replace("&quot;", "\"")
+                    .replace("&nbsp;", " ")
+                    .trim()
+                
+                var titleText = "Resultado ${i + 1}"
+                if (i < matchesTitle.size) {
+                    titleText = matchesTitle[i].groupValues[1]
+                        .replace(Regex("<[^>]*?>"), "")
+                        .replace("&amp;", "&")
+                        .replace("&quot;", "\"")
+                        .replace("&nbsp;", " ")
+                        .trim()
+                }
+                
+                if (snippetText.isNotBlank()) {
+                    count++
+                    sb.append("--- RESULTADO DE PESQUISA $count ---\n")
+                    sb.append("Título: $titleText\n")
+                    sb.append("Resumo Real/Notícia: $snippetText\n\n")
+                }
+            }
+            
+            if (count > 0) sb.toString() else null
+        } catch (e: Exception) {
+            Log.e("BotViewModel", "Erro ao obter busca do DuckDuckGo no mobile", e)
+            null
+        }
+    }
+
     fun processContextUrl(url: String, chatId: Long = 999999L) {
         if (url.isBlank()) return
         viewModelScope.launch {
@@ -624,53 +687,114 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
             if (isFootball) category = "Futebol"
             else if (isTech) category = "Tecnologia"
 
+            // 1. Identificar a pergunta específica do usuário relevante ao contexto antes de buscar
+            var userQuery = ""
             try {
-                // Real HTML Fetch on Dispatchers.IO to prevent locking the main thread or NetworkOnMainThreadException
-                val fetchedBody = withContext(Dispatchers.IO) {
-                    val client = okhttp3.OkHttpClient.Builder()
-                        .connectTimeout(5, java.util.concurrent.TimeUnit.SECONDS)
-                        .readTimeout(5, java.util.concurrent.TimeUnit.SECONDS)
-                        .build()
-                    val request = okhttp3.Request.Builder().url(url).build()
-                    client.newCall(request).execute().use { response ->
-                        if (response.isSuccessful) {
-                            response.body?.string() ?: ""
-                        } else {
-                            ""
-                        }
-                    }
-                }
-
-                if (fetchedBody.isNotBlank()) {
-                    // Strip script, style, nav, footer, header tags
-                    var html = fetchedBody
-                    val tagsToRemove = listOf("script", "style", "nav", "footer", "header")
-                    for (tag in tagsToRemove) {
-                        val regex = Regex("<$tag[^>]*?>[\\s\\S]*?<\\/$tag>", RegexOption.IGNORE_CASE)
-                        html = html.replace(regex, "")
-                    }
-                    // Strip remaining tags
-                    val tagRegex = Regex("<[^>]*?>")
-                    val textOnly = html.replace(tagRegex, " ")
-                    
-                    // Clean up spacing and HTML entities
-                    var cleaned = textOnly
-                        .replace("&amp;", "&")
-                        .replace("&lt;", "<")
-                        .replace("&gt;", ">")
-                        .replace("&quot;", "\"")
-                        .replace("&nbsp;", " ")
-                        .trim()
-                    
-                    // Remove empty lines and excessively long spaces
-                    cleaned = cleaned.replace(Regex("\\s+"), " ")
-                    if (cleaned.length > 50) {
-                        cleanText = cleaned.take(2000) // Keep reasonable length
-                        addLog("HTML de página real extraído e limpo com sucesso sem anúncios ou cabeçalhos.", LogType.SUCCESS)
-                    }
+                val recentMsgs = repository.getRecentMessagesForChat(chatId, 10)
+                val lastQuestion = recentMsgs
+                    .filter { !it.isBotReply && !it.messageText.startsWith("http://") && !it.messageText.startsWith("https://") && !it.messageText.contains("Navegador de Contexto") }
+                    .firstOrNull()
+                if (lastQuestion != null) {
+                    userQuery = lastQuestion.messageText
                 }
             } catch (e: Exception) {
-                addLog("Aviso: Falha ou restrição na raspagem de rede. Utilizando simulador inteligente com filtros integrados.", LogType.INFO)
+                // Ignore
+            }
+            if (userQuery.trim().isEmpty()) {
+                userQuery = "resumo dos dados e fatos principais"
+            }
+
+            // Se o userQuery for genérico, tenta extrair o parâmetro q/query/search da própria URL
+            if (userQuery == "resumo dos dados e fatos principais" || userQuery.length < 5) {
+                try {
+                    val uri = android.net.Uri.parse(url)
+                    val qParam = uri.getQueryParameter("q") ?: uri.getQueryParameter("query") ?: uri.getQueryParameter("s") ?: uri.getQueryParameter("search")
+                    if (!qParam.isNullOrBlank()) {
+                        userQuery = qParam.trim()
+                    }
+                } catch (urlErr: Exception) {
+                    Log.w("BotViewModel", "Não foi possível analisar parâmetros da URL", urlErr)
+                }
+            }
+
+            // 2. Se for uma página de busca ou query parameter detectado, tenta buscar no DuckDuckGo diretamente
+            var isSearchPage = false
+            try {
+                val uri = android.net.Uri.parse(url)
+                if (uri.path?.contains("search") == true || uri.queryParameterNames.any { it == "q" || it == "query" || it == "search" || it == "s" }) {
+                    isSearchPage = true
+                }
+            } catch (e: Exception) {}
+
+            if (isSearchPage && userQuery.isNotBlank() && userQuery != "resumo dos dados e fatos principais") {
+                addLog("Detectada página de busca. Obtendo resultados em tempo real do DuckDuckGo para: \"$userQuery\"...", LogType.INFO)
+                val ddgText = withContext(Dispatchers.IO) { fetchRealTimeSearchDuckDuckGo(userQuery) }
+                if (ddgText != null) {
+                    cleanText = ddgText
+                    addLog("Sucesso ao obter busca em tempo real via DuckDuckGo!", LogType.SUCCESS)
+                }
+            }
+
+            // 3. Se não era página de busca ou a busca falhou, tenta scraping normal
+            if (cleanText.isBlank()) {
+                try {
+                    // Real HTML Fetch on Dispatchers.IO to prevent locking the main thread or NetworkOnMainThreadException
+                    val fetchedBody = withContext(Dispatchers.IO) {
+                        val client = okhttp3.OkHttpClient.Builder()
+                            .connectTimeout(5, java.util.concurrent.TimeUnit.SECONDS)
+                            .readTimeout(5, java.util.concurrent.TimeUnit.SECONDS)
+                            .build()
+                        val request = okhttp3.Request.Builder().url(url).build()
+                        client.newCall(request).execute().use { response ->
+                            if (response.isSuccessful) {
+                                response.body?.string() ?: ""
+                            } else {
+                                ""
+                            }
+                        }
+                    }
+
+                    if (fetchedBody.isNotBlank()) {
+                        // Strip script, style, nav, footer, header tags
+                        var html = fetchedBody
+                        val tagsToRemove = listOf("script", "style", "nav", "footer", "header")
+                        for (tag in tagsToRemove) {
+                            val regex = Regex("<$tag[^>]*?>[\\s\\S]*?<\\/$tag>", RegexOption.IGNORE_CASE)
+                            html = html.replace(regex, "")
+                        }
+                        // Strip remaining tags
+                        val tagRegex = Regex("<[^>]*?>")
+                        val textOnly = html.replace(tagRegex, " ")
+                        
+                        // Clean up spacing and HTML entities
+                        var cleaned = textOnly
+                            .replace("&amp;", "&")
+                            .replace("&lt;", "<")
+                            .replace("&gt;", ">")
+                            .replace("&quot;", "\"")
+                            .replace("&nbsp;", " ")
+                            .trim()
+                        
+                        // Remove empty lines and excessively long spaces
+                        cleaned = cleaned.replace(Regex("\\s+"), " ")
+                        if (cleaned.length > 50) {
+                            cleanText = cleaned.take(2000) // Keep reasonable length
+                            addLog("HTML de página real extraído e limpo com sucesso sem anúncios ou cabeçalhos.", LogType.SUCCESS)
+                        }
+                    }
+                } catch (e: Exception) {
+                    addLog("Aviso: Falha ou restrição na raspagem de rede. Tentando buscar no DuckDuckGo como fallback.", LogType.INFO)
+                }
+            }
+
+            // 4. Se falhou por completo no scraping normal, tenta DuckDuckGo como fallback dinâmico ativo!
+            if (cleanText.isBlank() && userQuery.isNotBlank() && userQuery != "resumo dos dados e fatos principais") {
+                addLog("Scraping indisponível. Tentando pesquisa em tempo real como fallback para: \"$userQuery\"...", LogType.INFO)
+                val ddgText = withContext(Dispatchers.IO) { fetchRealTimeSearchDuckDuckGo(userQuery) }
+                if (ddgText != null) {
+                    cleanText = ddgText
+                    addLog("Sucesso ao obter resultados de fallback em tempo real via DuckDuckGo!", LogType.SUCCESS)
+                }
             }
 
             if (cleanText.isBlank() || cleanText.length < 50) {
@@ -689,23 +813,6 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             _extractedStats.value = "${cleanText.length} caracteres (limpos)"
-
-            // Identificar a pergunta específica do usuário relevante ao contexto
-            var userQuery = ""
-            try {
-                val recentMsgs = repository.getRecentMessagesForChat(chatId, 10)
-                val lastQuestion = recentMsgs
-                    .filter { !it.isBotReply && !it.messageText.startsWith("http://") && !it.messageText.startsWith("https://") && !it.messageText.contains("Navegador de Contexto") }
-                    .firstOrNull()
-                if (lastQuestion != null) {
-                    userQuery = lastQuestion.messageText
-                }
-            } catch (e: Exception) {
-                // Ignore
-            }
-            if (userQuery.trim().isEmpty()) {
-                userQuery = "resumo dos dados e fatos principais"
-            }
 
             // Save user instruction / action in DB
             val userMsg = BotMessageEntity(

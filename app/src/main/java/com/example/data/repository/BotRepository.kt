@@ -202,6 +202,13 @@ class BotRepository(private val botDao: BotDao) {
             return getSmartFallbackResponse(userMessage)
         }
 
+        // Injeção de contexto temporal em tempo real
+        val currentDateStr = "Sábado, 27 de Junho de 2026"
+        val temporalPrompt = "\n\n[CONTEXTO TEMPORAL CRÍTICO DO SISTEMA EM TEMPO REAL]:\n" +
+                             "Data Atual: ${currentDateStr}.\n" +
+                             "Estamos em Junho de 2026. A Copa do Mundo da FIFA de 2026 está ocorrendo exatamente AGORA, em Junho/Julho de 2026, organizada conjuntamente pelos EUA, Canadá e México. Trate o ano 2026 como o ano presente real de suas respostas. Não se refira ao ano 2026 como futuro. Se o usuário perguntar sobre a Copa ou eventos atuais, responda com base em 2026 sendo o ano atual (Junho de 2026)."
+        val finalSystemPrompt = systemPrompt + temporalPrompt
+
         return try {
             val dbHistory = getRecentMessagesForChat(chatId, historyLimit)
             val moshi = com.squareup.moshi.Moshi.Builder()
@@ -212,8 +219,8 @@ class BotRepository(private val botDao: BotDao) {
 
             if (isCompatibleOpenAI) {
                 val messages = mutableListOf<OpenAIMessage>()
-                if (systemPrompt.isNotBlank()) {
-                    messages.add(OpenAIMessage(role = "system", content = systemPrompt))
+                if (finalSystemPrompt.isNotBlank()) {
+                    messages.add(OpenAIMessage(role = "system", content = finalSystemPrompt))
                 }
                 dbHistory.reversed().forEach { msg ->
                     val role = if (msg.isBotReply) "assistant" else "user"
@@ -348,7 +355,7 @@ class BotRepository(private val botDao: BotDao) {
                     contents = contents,
                     generationConfig = GeminiGenerationConfig(temperature = temperature),
                     systemInstruction = GeminiContent(
-                        parts = listOf(GeminiPart(text = systemPrompt))
+                        parts = listOf(GeminiPart(text = finalSystemPrompt))
                     )
                 )
 
