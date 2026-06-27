@@ -6577,6 +6577,33 @@ WITH CHECK (true);</code>
             switchTab('tab-live');
         }
 
+        function updateLiveStatusIndicator(status) {
+            const indicator = document.getElementById('live-status-indicator');
+            if (!indicator) return;
+            
+            const lang = currentLanguage === 'en' ? 'en' : currentLanguage === 'es' ? 'es' : 'pt';
+            
+            if (status === 'online') {
+                const text = lang === 'en' ? 'Online' : lang === 'es' ? 'En línea' : 'Online';
+                indicator.textContent = text;
+                indicator.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+                indicator.style.background = 'rgba(16, 185, 129, 0.15)';
+                indicator.style.color = '#10b981';
+            } else if (status === 'offline') {
+                const text = lang === 'en' ? 'Offline' : lang === 'es' ? 'Desconectado' : 'Offline';
+                indicator.textContent = text;
+                indicator.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+                indicator.style.background = 'rgba(239, 68, 68, 0.15)';
+                indicator.style.color = '#ef4444';
+            } else if (status === 'error') {
+                const text = lang === 'en' ? 'API Error' : lang === 'es' ? 'Error de API' : 'Erro de API';
+                indicator.textContent = text;
+                indicator.style.border = '1px solid rgba(245, 158, 11, 0.3)';
+                indicator.style.background = 'rgba(245, 158, 11, 0.15)';
+                indicator.style.color = '#f59e0b';
+            }
+        }
+
         function initLiveModeContext() {
             try {
                 if (typeof getResumeDataSummary === 'function') {
@@ -6586,6 +6613,14 @@ WITH CHECK (true);</code>
                 if (typeof getActiveSettingsSummary === 'function') {
                     liveSettingsContext = getActiveSettingsSummary();
                     addLog("Modo Live: Configurações de sistema pré-carregadas.", "info");
+                }
+                
+                // Verify API Key and set active status dynamically
+                const { key } = getActiveApiCredentials();
+                if (!key) {
+                    updateLiveStatusIndicator('offline');
+                } else {
+                    updateLiveStatusIndicator('online');
                 }
             } catch (e) {
                 console.warn("Erro ao pré-carregar contexto no Modo Live:", e);
@@ -6789,11 +6824,9 @@ WITH CHECK (true);</code>
 
         function startLiveVisualizer(mode) {
             stopLiveVisualizer();
-            if (mode === 'listening') {
-                startRealAudioAnalyzer();
-            } else {
-                startMockVisualizer(mode);
-            }
+            // To avoid microphone resource conflict with SpeechRecognition on mobile/WebView,
+            // we use the mock visualizer which is extremely robust and doesn't hijack the microphone.
+            startMockVisualizer(mode);
         }
 
         function stopLiveVisualizer() {
@@ -6904,6 +6937,18 @@ WITH CHECK (true);</code>
             // Cancel speaking if active
             if (window.speechSynthesis && window.speechSynthesis.speaking) {
                 window.speechSynthesis.cancel();
+            }
+
+            // Thoroughly clean up previous SpeechRecognition instance to avoid memory leak or lockups
+            if (liveRecognition) {
+                try {
+                    liveRecognition.onstart = null;
+                    liveRecognition.onresult = null;
+                    liveRecognition.onerror = null;
+                    liveRecognition.onend = null;
+                    liveRecognition.stop();
+                } catch(e) {}
+                liveRecognition = null;
             }
 
             shouldStopContinuousListening = false;
@@ -7117,6 +7162,8 @@ WITH CHECK (true);</code>
                     showAppToast(errMsg, "error");
                     addLog("Modo Live: Erro - Chave de API não configurada.", "error");
                     
+                    updateLiveStatusIndicator('offline');
+                    
                     if (thinkingMessageInterval) {
                         clearInterval(thinkingMessageInterval);
                         thinkingMessageInterval = null;
@@ -7185,9 +7232,11 @@ Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`
                     if (response.ok) {
                         const data = await response.json();
                         aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sem resposta.";
+                        updateLiveStatusIndicator('online');
                     } else {
                         const err = await response.text();
                         aiReply = `Erro Gemini: ${err}`;
+                        updateLiveStatusIndicator('error');
                     }
                 } else {
                     const fetchUrl = sanitizeChatCompletionsUrl(url);
@@ -7224,13 +7273,16 @@ Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`
                     if (response.ok) {
                         const data = await response.json();
                         aiReply = data.choices?.[0]?.message?.content || "Sem resposta.";
+                        updateLiveStatusIndicator('online');
                     } else {
                         const err = await response.text();
                         aiReply = `Erro ${activeApiType}: ${err}`;
+                        updateLiveStatusIndicator('error');
                     }
                 }
             } catch(e) {
                 aiReply = `Falha de rede: ${e.message}`;
+                updateLiveStatusIndicator('offline');
             }
 
             // Stop alternating thinking message interval
