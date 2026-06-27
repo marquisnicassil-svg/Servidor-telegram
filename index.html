@@ -17765,6 +17765,19 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 userQuery = "resumo dos dados e fatos principais";
             }
 
+            // Se o userQuery for o genérico, tenta extrair o parâmetro q/query/search da própria URL para máxima relevância
+            if (userQuery === "resumo dos dados e fatos principais" || userQuery.length < 5) {
+                try {
+                    const urlObj = new URL(urlVal);
+                    const qParam = urlObj.searchParams.get('q') || urlObj.searchParams.get('query') || urlObj.searchParams.get('s') || urlObj.searchParams.get('search');
+                    if (qParam && qParam.trim().length > 2) {
+                        userQuery = decodeURIComponent(qParam.trim());
+                    }
+                } catch (urlErr) {
+                    console.warn("Não foi possível analisar parâmetros da URL:", urlErr);
+                }
+            }
+
             addLog(`Iniciando extração inteligente para URL: ${urlVal} e pergunta: "${userQuery}"`, "info");
             showAppToast("Iniciando extração inteligente da URL...", "info");
 
@@ -17938,10 +17951,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             chatContainer.appendChild(loader);
             scrollToBottom();
 
-            // 3. Processa a resposta do bot (IA com foco estrito)
-            const apiKey = document.getElementById('api-key').value.trim();
-            const baseUrl = document.getElementById('base-url').value.trim();
-            const modelName = document.getElementById('model-name').value.trim();
+            // 3. Processa a resposta do bot (IA com foco estrito) resolvendo credenciais dinâmicas/master
+            const { key: apiKey, url: baseUrl, model: modelName, type: activeApiType } = getActiveApiCredentials();
             
             const systemPrompt = "Você é uma inteligência artificial cirúrgica e inteligente de notícias em tempo real.\n" +
                                  "Seu objetivo é ler o conteúdo de uma página web fornecida e responder à pergunta do usuário.\n\n" +
@@ -17955,34 +17966,76 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 
                 if (apiKey) {
                     try {
-                        addLog(`Chamando API de inteligência para analisar pergunta: "${userQuery}"...`, "info");
-                        const cleanUrl = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
-                        const fetchUrl = `${cleanUrl}v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+                        addLog(`Chamando API de inteligência (${activeApiType}) para analisar pergunta: "${userQuery}"...`, "info");
                         
-                        const response = await fetch(fetchUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                contents: [
-                                    {
-                                        role: 'user',
-                                        parts: [{ text: `Pergunta do usuário: "${userQuery}"\n\nConteúdo extraído da página:\n---\n${cleanText}\n---\n\nResponda diretamente e com dados reais sobre a pergunta acima. Caso a página web fornecida esteja vazia, indisponível, ou não mostre o resultado exato sobre o assunto consultado, use o seu próprio conhecimento integrado sobre o tema para prover as novidades, placares e notícias verdadeiras em tempo real do evento relacionado à busca: "${userQuery}". Seja assertivo e não responda com desculpas ou erros ou mudando de assunto.` }]
-                                    }
-                                ],
-                                generationConfig: { temperature: 0.2 },
-                                systemInstruction: { parts: [{ text: systemPrompt }] }
-                            })
-                        });
+                        if (activeApiType === "GEMINI") {
+                            const cleanUrl = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
+                            const fetchUrl = `${cleanUrl}v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+                            
+                            const response = await fetch(fetchUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    contents: [
+                                        {
+                                            role: 'user',
+                                            parts: [{ text: `Pergunta do usuário: "${userQuery}"\n\nConteúdo extraído da página:\n---\n${cleanText}\n---\n\nResponda diretamente e com dados reais sobre a pergunta acima. Caso a página web fornecida esteja vazia, indisponível, ou não mostre o resultado exato sobre o assunto consultado, use o seu próprio conhecimento integrado sobre o tema para prover as novidades, placares e notícias verdadeiras em tempo real do evento relacionado à busca: "${userQuery}". Seja assertivo e não responda com desculpas ou erros ou mudando de assunto.` }]
+                                        }
+                                    ],
+                                    generationConfig: { temperature: 0.2 },
+                                    systemInstruction: { parts: [{ text: systemPrompt }] }
+                                })
+                            });
 
-                        if (response.ok) {
-                            const data = await response.json();
-                            summaryReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+                            if (response.ok) {
+                                const data = await response.json();
+                                summaryReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+                            } else {
+                                const errText = await response.text();
+                                console.error("Erro API resumidor Gemini:", errText);
+                                addLog(`Erro API Gemini: ${errText}`, "error");
+                            }
                         } else {
-                            const errText = await response.text();
-                            console.error("Erro API resumidor:", errText);
+                            // Outras APIs (OpenAI, Groq, OpenRouter, DeepSeek, etc.)
+                            const fetchUrl = sanitizeChatCompletionsUrl(baseUrl);
+                            const cleanKey = String(apiKey).trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '');
+                            
+                            const headers = {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + cleanKey
+                            };
+                            if (activeApiType === "OPENROUTER") {
+                                try {
+                                    headers['HTTP-Referer'] = window.location.origin || "https://google.com";
+                                } catch(e) {}
+                                headers['X-Title'] = 'Synapse AI';
+                            }
+                            
+                            const response = await fetch(fetchUrl, {
+                                method: 'POST',
+                                headers: headers,
+                                body: JSON.stringify({
+                                    model: modelName,
+                                    messages: [
+                                        { role: "system", content: systemPrompt },
+                                        { role: "user", content: `Pergunta do usuário: "${userQuery}"\n\nConteúdo extraído da página:\n---\n${cleanText}\n---\n\nResponda diretamente e com dados reais sobre a pergunta acima. Caso a página web fornecida esteja vazia, indisponível, ou não mostre o resultado exato sobre o assunto consultado, use o seu próprio conhecimento integrado sobre o tema para prover as novidades, placares e notícias verdadeiras em tempo real do evento relacionado à busca: "${userQuery}". Seja assertivo e não responda com desculpas ou erros ou mudando de assunto.` }
+                                    ],
+                                    temperature: 0.2
+                                })
+                            });
+                            
+                            if (response.ok) {
+                                const data = await response.json();
+                                summaryReply = data.choices?.[0]?.message?.content || "";
+                            } else {
+                                const errText = await response.text();
+                                console.error(`Erro API resumidor ${activeApiType}:`, errText);
+                                addLog(`Erro API ${activeApiType}: ${errText}`, "error");
+                            }
                         }
                     } catch (apiErr) {
                         console.error("Erro de rede ao resumir via API:", apiErr);
+                        addLog(`Erro de rede ao resumir via API: ${apiErr.message}`, "error");
                     }
                 }
 
