@@ -5579,6 +5579,9 @@ WITH CHECK (true);</code>
             if(tabId === 'tab-resume-builder'){
                 if (typeof initResumeBuilder === 'function') initResumeBuilder();
             }
+            if(tabId === 'tab-live'){
+                if (typeof initLiveModeContext === 'function') initLiveModeContext();
+            }
             if(tabId === 'tab-admin'){
                 if (typeof updateAdminPanel === 'function') updateAdminPanel();
             }
@@ -6568,9 +6571,25 @@ WITH CHECK (true);</code>
         let liveAudioContext = null;
         let liveAnalyser = null;
         let liveMicrophoneStream = null;
+        let activeSpeechUtterance = null;
 
         function toggleLiveMode() {
             switchTab('tab-live');
+        }
+
+        function initLiveModeContext() {
+            try {
+                if (typeof getResumeDataSummary === 'function') {
+                    liveResumeContext = getResumeDataSummary();
+                    addLog("Modo Live: Contexto do currículo pré-carregado.", "info");
+                }
+                if (typeof getActiveSettingsSummary === 'function') {
+                    liveSettingsContext = getActiveSettingsSummary();
+                    addLog("Modo Live: Configurações de sistema pré-carregadas.", "info");
+                }
+            } catch (e) {
+                console.warn("Erro ao pré-carregar contexto no Modo Live:", e);
+            }
         }
 
         function setLiveState(state) {
@@ -6814,6 +6833,7 @@ WITH CHECK (true);</code>
 
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
+            activeSpeechUtterance = utterance; // prevent garbage collection
             
             const rateVal = parseFloat(document.getElementById('speech-rate')?.value || '1.05');
             const pitchVal = parseFloat(document.getElementById('speech-pitch')?.value || '1.0');
@@ -6918,12 +6938,35 @@ WITH CHECK (true);</code>
                 if (event.error !== 'no-speech') {
                     console.error("Erro no microfone Live:", event.error);
                     addLog("Erro no microfone Live: " + event.error, "error");
+                    
+                    // Stop continuous listening on real errors (permission, blocked, etc.)
+                    shouldStopContinuousListening = true;
                     setLiveState(LIVE_STATES.READY);
+                    
+                    const errorMsg = currentLanguage === 'en'
+                        ? "Microphone error: " + event.error
+                        : currentLanguage === 'es'
+                        ? "Error de micrófono: " + event.error
+                        : "Erro de microfone: " + event.error;
+                    showAppToast(errorMsg, "error");
                 }
             };
 
             liveRecognition.onend = function() {
                 isLiveListening = false;
+                
+                const handsFree = document.getElementById('live-hands-free-switch')?.classList.contains('on');
+                if (handsFree && !shouldStopContinuousListening) {
+                    if (currentLiveState === LIVE_STATES.LISTENING) {
+                        setTimeout(() => {
+                            if (!isLiveListening && !shouldStopContinuousListening) {
+                                toggleLiveMic();
+                            }
+                        }, 400);
+                        return;
+                    }
+                }
+
                 if (window.speechSynthesis && window.speechSynthesis.speaking) {
                     return;
                 }
@@ -7063,10 +7106,28 @@ WITH CHECK (true);</code>
 
             let aiReply = '';
             try {
-                const key = String(document.getElementById('api-key')?.value || '').trim();
-                const activeApiType = typeof apiType !== 'undefined' ? apiType : 'GEMINI';
-                const model = document.getElementById('model-name')?.value || 'gemini-1.5-flash';
-                const url = document.getElementById('base-url')?.value || 'https://api.openai.com/v1';
+                const { key, url, model, type: activeApiType } = getActiveApiCredentials();
+                
+                if (!key) {
+                    const errMsg = currentLanguage === 'en' 
+                        ? "API key is not configured. Please set your API Key in Settings." 
+                        : currentLanguage === 'es'
+                        ? "La clave API no está configurada. Por favor, configure su clave API en Ajustes."
+                        : "Chave de API não configurada. Por favor, configure sua Chave de API nas Configurações.";
+                    showAppToast(errMsg, "error");
+                    addLog("Modo Live: Erro - Chave de API não configurada.", "error");
+                    
+                    if (thinkingMessageInterval) {
+                        clearInterval(thinkingMessageInterval);
+                        thinkingMessageInterval = null;
+                    }
+                    const loaderEl = document.getElementById(loaderId);
+                    if (loaderEl) {
+                        loaderEl.innerHTML = `<span style="color: #ef4444;">❌ ${errMsg}</span>`;
+                    }
+                    setLiveState(LIVE_STATES.READY);
+                    return;
+                }
                 
                 let liveSystemPrompt = `Você é o Synapse Live, um assistente virtual interativo em tempo real de altíssima velocidade.
 O usuário está conversando com você principalmente por voz. Portanto, responda de forma extremamente concisa, direta, natural e coloquial, como em uma ligação telefônica real. Evite parágrafos longos, listas extensas de tópicos e marcações de formatação markdown complexas, a menos que estritamente necessário.
@@ -7097,10 +7158,19 @@ Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`
                     const cleanUrl = url.endsWith('/') ? url : url + '/';
                     const fetchUrl = `${cleanUrl}v1beta/models/${model}:generateContent?key=${key}`;
                     
-                    const geminiContents = liveChatHistoryObjects.map(msg => ({
-                        role: msg.role === 'user' ? 'user' : 'model',
-                        parts: [{ text: msg.content }]
-                    }));
+                    // Filter and strictly alternate roles for Gemini API (user -> model -> user -> model)
+                    const geminiContents = [];
+                    liveChatHistoryObjects.forEach(msg => {
+                        const role = msg.role === 'user' ? 'user' : 'model';
+                        if (geminiContents.length > 0 && geminiContents[geminiContents.length - 1].role === role) {
+                            geminiContents[geminiContents.length - 1].parts[0].text += "\n" + msg.content;
+                        } else {
+                            geminiContents.push({
+                                role: role,
+                                parts: [{ text: msg.content }]
+                            });
+                        }
+                    });
 
                     const response = await fetch(fetchUrl, {
                         method: 'POST',
@@ -7184,7 +7254,14 @@ Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`
                 
                 typeLiveResponse(loaderEl, cleanReply, () => {
                     if (!autoSpeak) {
-                        setLiveState(LIVE_STATES.READY);
+                        const handsFree = document.getElementById('live-hands-free-switch')?.classList.contains('on');
+                        if (handsFree && !shouldStopContinuousListening) {
+                            setTimeout(() => {
+                                toggleLiveMic();
+                            }, 500);
+                        } else {
+                            setLiveState(LIVE_STATES.READY);
+                        }
                     }
                 });
 
