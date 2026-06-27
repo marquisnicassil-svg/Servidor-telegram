@@ -11397,7 +11397,11 @@ Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`
             const activeAssis = allAgents.find(a => a.id === id) || allAgents[0];
             const activeName = activeAssis.name;
             const activeIcon = activeAssis.icon || '🤖';
-            const welcomeMsg = activeAssis.welcome || `Olá! Sou seu assistente ${activeName}. Como posso ajudar hoje?`;
+            let welcomeMsg = activeAssis.welcome || `Olá! Sou seu assistente ${activeName}. Como posso ajudar hoje?`;
+            if (id === 'geral') {
+                const uName = getUserDisplayName();
+                welcomeMsg = uName ? `✨ Olá, ${uName}!\n\nComo posso ajudar você hoje?` : `✨ Olá! Como posso ajudar você hoje?`;
+            }
 
             if (!isSameAgent) {
                 incrementAgentChatStat(id);
@@ -16241,24 +16245,30 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
                 const welcomeMsgId = 'auth-welcome-msg-' + displayName.replace(/[^a-zA-Z0-9]/g, '');
                 if (!document.getElementById(welcomeMsgId)) {
-                    const welcomeDiv = document.createElement('div');
-                    welcomeDiv.id = welcomeMsgId;
-                    welcomeDiv.className = 'chat-message bot';
-                    welcomeDiv.style.borderLeft = '3px solid var(--primary)';
-                    welcomeDiv.style.background = 'rgba(56, 189, 248, 0.05)';
-                    welcomeDiv.style.borderRadius = '12px';
-                    welcomeDiv.style.padding = '12px';
-                    welcomeDiv.style.marginTop = '8px';
-                    welcomeDiv.style.marginBottom = '8px';
-                    
                     const cleanText = displayName ? `✨ Olá, ${displayName}!\n\nComo posso ajudar você hoje?` : `✨ Olá! Como posso ajudar você hoje?`;
-                    welcomeDiv.innerHTML = formatAIResponse(cleanText);
-                    container.appendChild(welcomeDiv);
-                    
-                    chatHistoryObjects.push({ 
-                        role: 'assistant', 
-                        content: cleanText 
-                    });
+                    const escapedForSpeech = cleanText.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
+                    const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
+                    const activeId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
+                    const msgHtml = `<div class="chat-message bot" id="${welcomeMsgId}">${getAgentAvatarHtml(activeId)}${formatAIResponse(cleanText)}${readerHtml}</div>`;
+
+                    if (isFirstLoad && (!chatHistoryObjects || chatHistoryObjects.length <= 1)) {
+                        container.innerHTML = msgHtml;
+                        chatHistoryObjects = [{ 
+                            role: 'assistant', 
+                            content: cleanText 
+                        }];
+                    } else {
+                        const welcomeDiv = document.createElement('div');
+                        welcomeDiv.id = welcomeMsgId;
+                        welcomeDiv.className = 'chat-message bot';
+                        welcomeDiv.innerHTML = `${getAgentAvatarHtml(activeId)}${formatAIResponse(cleanText)}${readerHtml}`;
+                        container.appendChild(welcomeDiv);
+                        
+                        chatHistoryObjects.push({ 
+                            role: 'assistant', 
+                            content: cleanText 
+                        });
+                    }
                     saveChatSession();
                     scrollToBottom();
                 }
