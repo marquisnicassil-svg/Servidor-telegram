@@ -1805,41 +1805,110 @@
             width: 88px;
             height: 88px;
             border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.12);
             color: #fff;
-            font-size: 2.2rem;
+            font-size: 2rem;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             outline: none;
             position: relative;
+            background: radial-gradient(circle at 30% 30%, #38bdf8, #8b5cf6, #06b6d4);
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.55), 
+                        inset -4px -4px 12px rgba(0, 0, 0, 0.4),
+                        inset 4px 4px 12px rgba(255, 255, 255, 0.4);
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
-        .live-orbe-listening {
-            animation: pulse-live-listening 1.8s infinite cubic-bezier(0.4, 0, 0.2, 1) !important;
-            background: radial-gradient(circle, #a78bfa 0%, #6d28d9 75%, #4c1d95 100%) !important;
-            border-color: rgba(167, 139, 250, 0.3) !important;
+
+        /* Halo luminoso para o botão live */
+        .live-mic-orbe::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.3) 0%, rgba(139, 92, 246, 0.15) 50%, transparent 70%);
+            animation: haloPulse 2s ease-in-out infinite;
+            z-index: -1;
+            transition: all 0.5s ease;
         }
-        .live-orbe-speaking {
-            animation: pulse-live-speaking 1.5s infinite cubic-bezier(0.4, 0, 0.2, 1) !important;
-            background: radial-gradient(circle, #34d399 0%, #047857 75%, #064e3b 100%) !important;
-            border-color: rgba(52, 211, 153, 0.3) !important;
+
+        /* Brilho gloss */
+        .live-mic-orbe::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            right: 4px;
+            bottom: 4px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.45) 0%, transparent 50%, rgba(0, 0, 0, 0.2) 100%);
+            filter: blur(1px);
+            pointer-events: none;
         }
-        .live-orbe-thinking {
-            animation: pulse-live-thinking 2.5s infinite linear !important;
-            background: radial-gradient(circle, #fbbf24 0%, #b45309 75%, #78350f 100%) !important;
-            border-color: rgba(251, 191, 36, 0.3) !important;
-        }
+
+        /* Classes de Estados do Orbe Live */
         .live-orbe-paused {
-            animation: pulse-live-idle 3s infinite ease-in-out !important;
-            background: radial-gradient(circle, #4b5563 0%, #1f2937 75%, #111827 100%) !important;
-            border-color: rgba(156, 163, 175, 0.2) !important;
+            background: radial-gradient(circle at 30% 30%, #4b5563, #1f2937, #111827) !important;
+            box-shadow: 0 0 15px rgba(107, 114, 128, 0.3), 
+                        inset -4px -4px 12px rgba(0,0,0,0.5), 
+                        inset 4px 4px 12px rgba(255,255,255,0.15) !important;
+            animation: orbePulseIdle 3s ease-in-out infinite !important;
         }
+        .live-orbe-paused::before {
+            background: radial-gradient(circle, rgba(107, 114, 128, 0.15) 0%, transparent 70%) !important;
+        }
+
+        .live-orbe-listening {
+            background: radial-gradient(circle at 30% 30%, #8b5cf6, #d946ef, #3b82f6) !important;
+            box-shadow: 0 0 35px rgba(139, 92, 246, 0.75), 
+                        inset -4px -4px 12px rgba(0,0,0,0.3), 
+                        inset 4px 4px 12px rgba(255,255,255,0.45) !important;
+            animation: orbePulse 1.6s ease-in-out infinite, orbeRotate 5s linear infinite !important;
+        }
+        .live-orbe-listening::before {
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.35) 0%, rgba(217, 70, 239, 0.15) 50%, transparent 70%) !important;
+        }
+
+        .live-orbe-speaking {
+            background: radial-gradient(circle at 30% 30%, #10b981, #059669, #06b6d4) !important;
+            box-shadow: 0 0 35px rgba(16, 185, 129, 0.75), 
+                        inset -4px -4px 12px rgba(0,0,0,0.3), 
+                        inset 4px 4px 12px rgba(255,255,255,0.45) !important;
+            animation: orbePulse 1.4s ease-in-out infinite, orbeRotate 4s linear infinite !important;
+        }
+        .live-orbe-speaking::before {
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.35) 0%, rgba(6, 182, 212, 0.15) 50%, transparent 70%) !important;
+        }
+
+        .live-orbe-thinking {
+            background: radial-gradient(circle at 30% 30%, #38bdf8, #8b5cf6, #06b6d4) !important;
+            box-shadow: 0 0 40px rgba(139, 92, 246, 0.85), 
+                        inset -4px -4px 12px rgba(0,0,0,0.3), 
+                        inset 4px 4px 12px rgba(255,255,255,0.5) !important;
+            animation: orbePulse 2s ease-in-out infinite, orbeRotate 6s linear infinite !important;
+        }
+        .live-orbe-thinking::before {
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.4) 0%, rgba(139, 92, 246, 0.2) 50%, transparent 70%) !important;
+        }
+
         .live-orbe-ended {
-            animation: pulse-live-ended 2.5s infinite ease-in-out !important;
-            background: radial-gradient(circle, #f87171 0%, #991b1b 75%, #7f1d1d 100%) !important;
-            border-color: rgba(248, 113, 113, 0.3) !important;
+            background: radial-gradient(circle at 30% 30%, #ef4444, #b91c1c, #7f1d1d) !important;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5), 
+                        inset -4px -4px 12px rgba(0,0,0,0.5), 
+                        inset 4px 4px 12px rgba(255,255,255,0.2) !important;
+            animation: orbePulseIdle 2.5s ease-in-out infinite !important;
+        }
+        .live-orbe-ended::before {
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.2) 0%, transparent 70%) !important;
+        }
+
+        @keyframes orbePulseIdle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.04); }
         }
         .wave-bar {
             transition: height 0.1s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
@@ -1967,6 +2036,91 @@
         @keyframes pulse-dot-anim {
             0%, 100% { transform: scale(0.85); }
             50% { transform: scale(1.15); }
+        }
+
+        /* --- ORBE IA: IDENTIDADE VISUAL DO SYNAPSE --- */
+        .synapse-orbe {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #38bdf8, #8b5cf6, #06b6d4);
+            box-shadow: 0 0 24px rgba(139, 92, 246, 0.55), 
+                        inset -4px -4px 12px rgba(0, 0, 0, 0.4),
+                        inset 4px 4px 12px rgba(255, 255, 255, 0.4);
+            animation: orbePulse 2s ease-in-out infinite, orbeRotate 6s linear infinite;
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Halo luminoso discreto */
+        .synapse-orbe::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, rgba(139, 92, 246, 0.1) 50%, transparent 70%);
+            animation: haloPulse 2s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        /* Brilho e reflexo de vidro (gloss) */
+        .synapse-orbe::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.45) 0%, transparent 50%, rgba(0, 0, 0, 0.25) 100%);
+            filter: blur(1px);
+            pointer-events: none;
+        }
+
+        @keyframes orbePulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 20px rgba(139, 92, 246, 0.5), 
+                            inset -3px -3px 8px rgba(0,0,0,0.4), 
+                            inset 3px 3px 8px rgba(255,255,255,0.4);
+            }
+            50% {
+                transform: scale(1.06);
+                box-shadow: 0 0 35px rgba(56, 189, 248, 0.75), 
+                            inset -4px -4px 12px rgba(0,0,0,0.3), 
+                            inset 4px 4px 12px rgba(255, 255, 255, 0.5);
+            }
+        }
+
+        @keyframes orbeRotate {
+            0% {
+                filter: hue-rotate(0deg);
+            }
+            100% {
+                filter: hue-rotate(360deg);
+            }
+        }
+
+        @keyframes haloPulse {
+            0%, 100% {
+                transform: scale(0.95);
+                opacity: 0.75;
+            }
+            50% {
+                transform: scale(1.15);
+                opacity: 1;
+            }
+        }
+
+        /* Orbe IA Versão Inline (para Chat, Bubbles de Digitação, etc.) */
+        .synapse-orbe-inline {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
 
         /* 5. Revelação Suave de Resultados (Staggered Fade-in) */
@@ -12611,12 +12765,42 @@ Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`
             scrollToBottom();
             saveChatSession();
 
-            // Insere sinal de processamento
+            // Insere sinal de processamento (Orbe IA com mensagens dinâmicas)
             const loader = document.createElement('div');
             loader.className = 'chat-message bot';
-            loader.innerText = "Processando...";
+            loader.style.display = 'flex';
+            loader.style.alignItems = 'center';
+            loader.style.gap = '12px';
+            loader.style.padding = '14px 20px';
+            loader.innerHTML = `
+                <div class="synapse-orbe-inline">
+                    <div class="synapse-orbe" style="width: 24px; height: 24px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #38bdf8, #8b5cf6, #06b6d4); box-shadow: 0 0 10px rgba(139, 92, 246, 0.5), inset -2px -2px 6px rgba(0,0,0,0.4), inset 2px 2px 6px rgba(255,255,255,0.4); animation: orbePulse 2s ease-in-out infinite, orbeRotate 6s linear infinite; position: relative;"></div>
+                </div>
+                <span class="chat-loading-text-el" style="font-weight: 500; color: var(--text-muted);">Pensando...</span>
+            `;
             container.appendChild(loader);
             scrollToBottom();
+
+            // Alterna mensagens do Chat IA dinamicamente
+            const chatPhrases = [
+                "Pensando...",
+                "Analisando...",
+                "Interpretando contexto...",
+                "Organizando informações...",
+                "Gerando resposta...",
+                "Personalizando resultado...",
+                "Finalizando..."
+            ];
+            let chatPIdx = 0;
+            const chatInterval = setInterval(() => {
+                const textEl = loader.querySelector('.chat-loading-text-el');
+                if (textEl) {
+                    chatPIdx = (chatPIdx + 1) % chatPhrases.length;
+                    textEl.textContent = chatPhrases[chatPIdx];
+                } else {
+                    clearInterval(chatInterval);
+                }
+            }, 1500);
             
             // Check for URL or real-time query
             const urlRegex = /(https?:\/\/[^\s]+)/gi;
@@ -12644,6 +12828,10 @@ Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`
                     const escapedForSpeech = aiReply.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
                     const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
                     
+                    loader.style.display = '';
+                    loader.style.alignItems = '';
+                    loader.style.gap = '';
+                    loader.style.padding = '';
                     loader.innerHTML = formatAIResponse(aiReply) + readerHtml;
                     scrollToBottom();
                     saveChatSession();
@@ -12794,6 +12982,10 @@ Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`
                 const escapedForSpeech = aiReply.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
                 const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
                 
+                loader.style.display = '';
+                loader.style.alignItems = '';
+                loader.style.gap = '';
+                loader.style.padding = '';
                 loader.innerHTML = formatAIResponse(aiReply) + readerHtml;
                 scrollToBottom();
                 saveChatSession();
@@ -13479,14 +13671,35 @@ Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`
             bubble.style.alignItems = 'flex-start';
             bubble.style.marginBottom = '12px';
             bubble.innerHTML = `
-                <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: bold; margin-bottom: 2px;">👨‍💼 Recrutador IA (Digitando...)</div>
-                <div style="background: var(--card-bg-primary); border: 1px solid var(--border-color); color: #fff; padding: 12px 18px; border-radius: 4px 12px 12px 12px; font-size: 0.88rem; display: flex; align-items: center; gap: 8px;">
-                    <div class="loader-spinner" style="width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                    <span>Formulando pergunta personalizada para sua resposta anterior...</span>
+                <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: bold; margin-bottom: 2px;">👨‍💼 Recrutador IA (Processando...)</div>
+                <div style="background: var(--card-bg-primary); border: 1px solid var(--border-color); color: #fff; padding: 14px 20px; border-radius: 4px 12px 12px 12px; font-size: 0.88rem; display: flex; align-items: center; gap: 12px; animation: fadeIn 0.3s ease-out;">
+                    <div class="synapse-orbe-inline">
+                        <div class="synapse-orbe" style="width: 24px; height: 24px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #38bdf8, #8b5cf6, #06b6d4); box-shadow: 0 0 10px rgba(139, 92, 246, 0.5), inset -2px -2px 6px rgba(0,0,0,0.4), inset 2px 2px 6px rgba(255,255,255,0.4); animation: orbePulse 2s ease-in-out infinite, orbeRotate 6s linear infinite; position: relative;"></div>
+                    </div>
+                    <span class="recruiter-loading-text" style="font-weight: 500; color: var(--text-muted);">Formulando pergunta personalizada para sua resposta anterior...</span>
                 </div>
             `;
             chatScroll.appendChild(bubble);
             chatScroll.scrollTop = chatScroll.scrollHeight;
+
+            // Alterna as mensagens dinamicamente na pergunta do recrutador também!
+            const interviewPhrases = [
+                "Formulando pergunta personalizada...",
+                "Analisando sua resposta...",
+                "Identificando palavras-chave técnicas...",
+                "Estruturando cenário prático...",
+                "Preparando questionamento de RH..."
+            ];
+            let pIdx = 0;
+            const intervInterval = setInterval(() => {
+                const textEl = bubble.querySelector('.recruiter-loading-text');
+                if (textEl) {
+                    pIdx = (pIdx + 1) % interviewPhrases.length;
+                    textEl.textContent = interviewPhrases[pIdx];
+                } else {
+                    clearInterval(intervInterval);
+                }
+            }, 1500);
         }
 
         function removeWebRecruiterLoadingBubble() {
@@ -13618,9 +13831,7 @@ Retorne APENAS a pergunta crua do Recrutador em no máximo 3 ou 4 linhas. Não i
             preResult.style.padding = '40px 20px';
             preResult.innerHTML = `
                 <div style="display: flex; justify-content: center; margin-bottom: 24px;">
-                    <div class="ai-pulse-ring" style="width: 56px; height: 56px;">
-                        <div class="ai-pulse-dot" style="width: 24px; height: 24px; box-shadow: 0 0 16px var(--primary);"></div>
-                    </div>
+                    <div class="synapse-orbe" style="width: 56px; height: 56px;"></div>
                 </div>
                 <h3 style="color: #fff; margin-bottom: 12px; font-weight: 800; font-size: 1.25rem;">Avaliando performance...</h3>
                 <div style="height: 24px; margin-bottom: 24px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
@@ -14684,6 +14895,7 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem wraps do tipo \`\`
 }
 `;
 
+            let orbeOverlay = null;
             try {
                 const { key, url, model, type: activeApiType } = getActiveApiCredentials();
 
@@ -14691,6 +14903,8 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem wraps do tipo \`\`
                     showAppToast("Por favor, adicione sua API Key nas configurações para habilitar a geração real.", "error");
                     return;
                 }
+
+                orbeOverlay = showOrbeLoadingOverlay('tab-resume-builder', 'Sintetizando currículo...');
 
                 let responseText = "";
 
@@ -14816,6 +15030,8 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem wraps do tipo \`\`
             } catch (err) {
                 console.error(err);
                 showAppToast("Ocorreu um erro ao gerar com IA: " + err.message, "error");
+            } finally {
+                if (orbeOverlay) orbeOverlay.close();
             }
         }
 
@@ -14944,6 +15160,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
             const userText = `Currículo Ativa:\nTitle: ${currentResume.title}\nSummary: ${currentResume.summary}\nSkills: ${currentResume.skills}\n\nVaga Pretendida:\n${vacancy}`;
 
+            let orbeOverlay = null;
             try {
                 const { key, url, model, type: activeApiType } = getActiveApiCredentials();
 
@@ -14951,6 +15168,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     showAppToast("Insira a chave de API para obter adaptação real para vagas específicas.", "warning");
                     return;
                 }
+
+                orbeOverlay = showOrbeLoadingOverlay('tab-resume-builder', 'Adaptando currículo para vaga...');
 
                 let reply = "";
                 if (activeApiType === "GEMINI") {
@@ -15030,6 +15249,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             } catch (err) {
                 console.error(err);
                 showAppToast("Erro na otimização de vaga de IA: " + err.message, "error");
+            } finally {
+                if (orbeOverlay) orbeOverlay.close();
             }
         }
 
@@ -15164,6 +15385,76 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             const meta = user.user_metadata || user.raw_user_meta_data || {};
             const email = user.email || "";
             return meta.display_name || meta.username || (email ? email.split('@')[0] : "Explorador");
+        }
+
+        function showOrbeLoadingOverlay(containerId, initialText = "Pensando...") {
+            const parent = document.getElementById(containerId);
+            if (!parent) return null;
+            
+            // Ensure relative positioning on parent
+            const originalPos = window.getComputedStyle(parent).position;
+            if (originalPos === 'static') {
+                parent.style.position = 'relative';
+            }
+            
+            const overlay = document.createElement('div');
+            overlay.className = 'orbe-loading-overlay';
+            overlay.style.position = 'absolute';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100%';
+            overlay.style.height = '100%';
+            overlay.style.background = 'rgba(9, 13, 22, 0.9)';
+            overlay.style.backdropFilter = 'blur(8px)';
+            overlay.style.borderRadius = '16px';
+            overlay.style.display = 'flex';
+            overlay.style.flexDirection = 'column';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+            overlay.style.zIndex = '1000';
+            overlay.style.animation = 'fadeIn 0.3s ease-out';
+            
+            overlay.innerHTML = `
+                <div class="synapse-orbe-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+                    <div class="synapse-orbe" style="width: 56px; height: 56px;"></div>
+                    <div class="synapse-orbe-text" style="color: #fff; font-size: 0.9rem; font-weight: 700; margin-top: 16px; letter-spacing: 0.5px; animation: pulse-dot-anim 1.5s infinite;">${initialText}</div>
+                </div>
+            `;
+            
+            parent.appendChild(overlay);
+            
+            const orbeMessages = [
+                "Pensando...",
+                "Analisando...",
+                "Interpretando contexto...",
+                "Organizando informações...",
+                "Gerando resposta...",
+                "Personalizando resultado...",
+                "Finalizando..."
+            ];
+            let msgIdx = 0;
+            const interval = setInterval(() => {
+                const textEl = overlay.querySelector('.synapse-orbe-text');
+                if (textEl) {
+                    msgIdx = (msgIdx + 1) % orbeMessages.length;
+                    textEl.textContent = orbeMessages[msgIdx];
+                } else {
+                    clearInterval(interval);
+                }
+            }, 1500);
+            
+            return {
+                element: overlay,
+                close: () => {
+                    overlay.style.animation = 'fadeOut 0.3s ease-in forwards';
+                    overlay.addEventListener('animationend', () => {
+                        overlay.remove();
+                        if (originalPos === 'static') {
+                            parent.style.position = '';
+                        }
+                    });
+                }
+            };
         }
 
         function showAppToast(message, type = "info") {
