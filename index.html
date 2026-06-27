@@ -11737,6 +11737,17 @@ Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`
             if (saved) {
                 document.getElementById('chat-messages').innerHTML = saved;
                 scrollToBottom();
+            } else {
+                const uName = getUserDisplayName();
+                const welcomeText = uName ? `✨ Olá, ${uName}!\n\nComo posso ajudar você hoje?` : `✨ Olá! Como posso ajudar você hoje?`;
+                chatHistoryObjects = [{ role: 'assistant', content: welcomeText }];
+                
+                const escapedForSpeech = welcomeText.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
+                const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
+                
+                const activeId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
+                document.getElementById('chat-messages').innerHTML = `<div class="chat-message bot">${getAgentAvatarHtml(activeId)}${formatAIResponse(welcomeText)}${readerHtml}</div>`;
+                saveChatSession();
             }
             if (savedHistory) {
                 try {
@@ -12777,7 +12788,18 @@ Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`
         function clearChat() {
             triggerPulse();
             chatHistoryObjects = [];
-            document.getElementById('chat-messages').innerHTML = '<div class="chat-message bot">Memória apagada. Sessão reiniciada.<button class="reader-btn" data-text="Memória apagada. Sessão reiniciada." onclick="speakText(this.getAttribute(\'data-text\'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity=\'1\'" onmouseout="this.style.opacity=\'0.7\'">🔊</button></div>';
+            
+            const uName = getUserDisplayName();
+            const welcomeText = uName ? `✨ Olá, ${uName}!\n\nComo posso ajudar você hoje?` : `✨ Olá! Como posso ajudar você hoje?`;
+            
+            chatHistoryObjects.push({ role: 'assistant', content: welcomeText });
+            
+            const escapedForSpeech = welcomeText.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
+            const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
+            
+            const activeId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
+            document.getElementById('chat-messages').innerHTML = `<div class="chat-message bot">${getAgentAvatarHtml(activeId)}${formatAIResponse(welcomeText)}${readerHtml}</div>`;
+            
             saveChatSession();
             addLog("Memória do chat apagada manualmente.", "info");
             
@@ -15516,6 +15538,40 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             return meta.display_name || meta.username || (email ? email.split('@')[0] : "Explorador");
         }
 
+        function getUserDisplayName() {
+            let name = "";
+            if (typeof supabaseSession !== 'undefined' && supabaseSession && supabaseSession.user) {
+                const email = supabaseSession.user.email || "";
+                name = (typeof getDisplayName === 'function' ? getDisplayName(supabaseSession) : "") || (email ? email.split('@')[0] : "");
+            } else {
+                try {
+                    const s = localStorage.getItem('supabase_auth_session');
+                    if (s) {
+                        const parsed = JSON.parse(s);
+                        if (parsed && parsed.user) {
+                            const email = parsed.user.email || "";
+                            name = (typeof getDisplayName === 'function' ? getDisplayName(parsed) : "") || (email ? email.split('@')[0] : "");
+                        }
+                    }
+                } catch(e) {}
+            }
+            if (!name || name === "Explorador") {
+                try {
+                    const resumeDataStr = localStorage.getItem('synapse_resume_builder_data');
+                    if (resumeDataStr) {
+                        const resumeData = JSON.parse(resumeDataStr);
+                        if (resumeData && resumeData.personalInfo && resumeData.personalInfo.name) {
+                            name = resumeData.personalInfo.name.trim().split(' ')[0];
+                        }
+                    }
+                } catch (e) {}
+            }
+            if (name === "Explorador") {
+                name = "";
+            }
+            return name ? name.trim() : "";
+        }
+
         function showOrbeLoadingOverlay(containerId, initialText = "Pensando...") {
             const parent = document.getElementById(containerId);
             if (!parent) return null;
@@ -16195,12 +16251,13 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     welcomeDiv.style.marginTop = '8px';
                     welcomeDiv.style.marginBottom = '8px';
                     
-                    welcomeDiv.innerHTML = `🌟 Olá, <strong>${displayName}</strong>! Sua sessão está ativa e sincronizada com segurança na nuvem via Supabase. Seu histórico está protegido! Como posso te ajudar hoje?`;
+                    const cleanText = displayName ? `✨ Olá, ${displayName}!\n\nComo posso ajudar você hoje?` : `✨ Olá! Como posso ajudar você hoje?`;
+                    welcomeDiv.innerHTML = formatAIResponse(cleanText);
                     container.appendChild(welcomeDiv);
                     
                     chatHistoryObjects.push({ 
                         role: 'assistant', 
-                        content: `Olá, ${displayName}! Sua sessão está ativa e sincronizada com segurança na nuvem via Supabase. Seu histórico está protegido! Como posso te ajudar hoje?` 
+                        content: cleanText 
                     });
                     saveChatSession();
                     scrollToBottom();
