@@ -16255,7 +16255,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         let val = opt.value;
                         let icon = '✦';
                         
-                        const emojiMatch = label.match(/^([\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|🇧🇷|🇺🇸|🇪🇸|🇫🇷|🇮🇹|🇩🇪|🇨🇳|🇯🇵|🇷🇺|🇸🇦|🇮🇳|🇳🇱|🇵🇱|🇹🇷|🇰🇷|🇻🇳|🇸🇪|🚀|💬|👤|🔑|⚙️|📊|📄|🔴|🟢|🔵|🌍|♊|⚡|🔥|🔧|⚙️|⏱️|🔒)/);
+                        const emojiMatch = label.match(/^(🇧🇷|🇺🇸|🇪🇸|🇫🇷|🇮🇹|🇩🇪|🇨🇳|🇯🇵|🇷🇺|🇸🇦|🇮🇳|🇳🇱|🇵🇱|🇹🇷|(?:\uD83C[\uDDE6-\uDDFF]){2}|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|🚀|💬|👤|🔑|⚙️|📊|📄|🔴|🟢|🔵|🌍|♊|⚡|🔥|🔧|⚙️|⏱️|🔒)/);
                         if (emojiMatch) {
                             icon = emojiMatch[1];
                             label = label.replace(icon, '').trim();
