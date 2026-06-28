@@ -2763,6 +2763,19 @@ fun TranslatorTab(
     var dropdownExpanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val languages = listOf("Inglês", "Espanhol", "Francês", "Alemão", "Italiano", "Japonês", "Mandarim", "Português")
+    val getLanguageFlag = { lang: String ->
+        when (lang.lowercase()) {
+            "inglês" -> "🇺🇸"
+            "espanhol" -> "🇪🇸"
+            "francês" -> "🇫🇷"
+            "alemão" -> "🇩🇪"
+            "italiano" -> "🇮🇹"
+            "japonês" -> "🇯🇵"
+            "mandarim" -> "🇨🇳"
+            "português" -> "🇧🇷"
+            else -> "🌐"
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -2813,7 +2826,7 @@ fun TranslatorTab(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text("Traduzir para: $selectedLanguage", color = Color.White, fontSize = 14.sp)
+                            Text("Traduzir para: ${getLanguageFlag(selectedLanguage)} $selectedLanguage", color = Color.White, fontSize = 14.sp)
                             Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null, tint = Color.White)
                         }
                     }
@@ -2889,7 +2902,7 @@ fun TranslatorTab(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = "TEXTO TRADUZIDO ($selectedLanguage)",
+                        text = "TEXTO TRADUZIDO (${getLanguageFlag(selectedLanguage)} $selectedLanguage)",
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF38BDF8),

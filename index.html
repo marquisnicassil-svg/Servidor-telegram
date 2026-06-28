@@ -2869,14 +2869,14 @@
                 <div>
                     <label style="display:block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;" data-i18n="transl_target_lbl">Traduzir para:</label>
                     <select id="transl-target-lang" class="form-control">
-                        <option value="Português Brasileiro">Português</option>
-                        <option value="Inglês">Inglês</option>
-                        <option value="Espanhol">Espanhol</option>
-                        <option value="Francês">Francês</option>
-                        <option value="Alemão">Alemão</option>
-                        <option value="Italiano">Italiano</option>
-                        <option value="Japonês">Japonês</option>
-                        <option value="Mandarim">Mandarim</option>
+                        <option value="Português Brasileiro">🇧🇷 Português</option>
+                        <option value="Inglês">🇺🇸 Inglês</option>
+                        <option value="Espanhol">🇪🇸 Espanhol</option>
+                        <option value="Francês">🇫🇷 Francês</option>
+                        <option value="Alemão">🇩🇪 Alemão</option>
+                        <option value="Italiano">🇮🇹 Italiano</option>
+                        <option value="Japonês">🇯🇵 Japonês</option>
+                        <option value="Mandarim">🇨🇳 Mandarim</option>
                     </select>
                 </div>
                 
@@ -6471,10 +6471,34 @@ WITH CHECK (true);</code>
                 return 0;
             });
 
+            function getVoiceLangFlag(lang) {
+                if (!lang) return "🌐";
+                const l = lang.toLowerCase();
+                if (l.startsWith("pt")) return "🇧🇷";
+                if (l.startsWith("en")) return "🇺🇸";
+                if (l.startsWith("es")) return "🇪🇸";
+                if (l.startsWith("fr")) return "🇫🇷";
+                if (l.startsWith("de")) return "🇩🇪";
+                if (l.startsWith("it")) return "🇮🇹";
+                if (l.startsWith("zh")) return "🇨🇳";
+                if (l.startsWith("ja")) return "🇯🇵";
+                if (l.startsWith("ru")) return "🇷🇺";
+                if (l.startsWith("ko")) return "🇰🇷";
+                if (l.startsWith("ar")) return "🇸🇦";
+                if (l.startsWith("hi")) return "🇮🇳";
+                if (l.startsWith("nl")) return "🇳🇱";
+                if (l.startsWith("pl")) return "🇵🇱";
+                if (l.startsWith("tr")) return "🇹🇷";
+                if (l.startsWith("vi")) return "🇻🇳";
+                if (l.startsWith("sv")) return "🇸🇪";
+                return "🌐";
+            }
+
             sortedVoices.forEach((voice) => {
                 const opt = document.createElement('option');
                 opt.value = voice.name;
-                opt.textContent = `${voice.name} (${voice.lang})${voice.default ? ' [Padrão]' : ''}`;
+                const flag = getVoiceLangFlag(voice.lang);
+                opt.textContent = `${flag} ${voice.name} (${voice.lang})${voice.default ? ' [Padrão]' : ''}`;
                 
                 if (select) select.appendChild(opt);
                 if (liveSelect) liveSelect.appendChild(opt.cloneNode(true));
