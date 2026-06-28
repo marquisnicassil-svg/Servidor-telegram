@@ -5233,7 +5233,7 @@ WITH CHECK (true);</code>
                     <!-- Configuração Nova: Escolha do Modelo de Voz TTS -->
                     <div class="form-group">
                         <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;" data-i18n="tts_voice_lbl">🗣️ Modelo de Voz Narradora (Web Speech TTS)</label>
-                        <select id="speech-voice" class="form-control" style="background: rgba(255,255,255,0.03); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;">
+                        <select id="speech-voice" class="form-control" style="background: rgba(255,255,255,0.03); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="handleVoiceChange(this.value); saveConfiguration();">
                             <option value="">Carregando vozes do sistema...</option>
                         </select>
                         <span style="color: var(--text-muted); font-size: 0.68rem; margin-top: 4px; display: block;" data-i18n="tts_voice_desc">Selecione um dos modelos de voz instalados no seu dispositivo/navegador.</span>
@@ -6191,24 +6191,21 @@ WITH CHECK (true);</code>
                 });
                 return;
             }
-            /* en: {
-                ready: { title: "Inactive 🔵", hint: "Click the microphone to start" },
-                listening: { title: "Listening 🎧", hint: "Speak now, I'm listening to you..." },
-                processing: { title: "Processing 🧠", hint: "Analyzing your speech..." },
-                thinking: { title: "Processing 🧠", hint: "Generating best response..." },
-                speaking: { title: "Responding 🗣️", hint: "Tuning voice output..." },
-                error: { title: "Error ⚠️", hint: "Microphone or connection failure occurred" },
-                ended: { title: "Inactive 🔵", hint: "Click the mic to restart" }
-            },
-            es: {
-                ready: { title: "Inactivo 🔵", hint: "Haga clic para comenzar" },
-                listening: { title: "Escuchando 🎧", hint: "Hable ahora, le estoy escuchando..." },
-                processing: { title: "Procesando 🧠", hint: "Analizando su voz..." },
-                thinking: { title: "Procesando 🧠", hint: "Generando la mejor resposta..." },
-                speaking: { title: "Respondiendo 🗣️", hint: "Sintonizando salida de voz..." },
-                error: { title: "Error ⚠️", hint: "Ocurrió una falla de micrófono o conexión" },
-                ended: { title: "Inactivo 🔵", hint: "Haga clic para reiniciar" }
-            } */
+
+            // Recupera a voz salva no início
+            let savedVoice = '';
+            try {
+                savedVoice = localStorage.getItem('speech_voice_selected');
+                if (!savedVoice) {
+                    const savedSettings = localStorage.getItem('ai_console_settings');
+                    if (savedSettings) {
+                        const data = JSON.parse(savedSettings);
+                        savedVoice = data.speechVoice;
+                    }
+                }
+            } catch (err) {
+                console.error("Falha ao ler voz salva:", err);
+            }
 
             // Detecta gênero preferido
             const liveGenderSelect = document.getElementById('live-voice-gender');
@@ -6219,6 +6216,14 @@ WITH CHECK (true);</code>
             let sortedVoices = [...voices];
             if (preferredGender !== 'all') {
                 sortedVoices = voices.filter(v => getVoiceGender(v.name) === preferredGender);
+                
+                // Se a voz salva existir no sistema mas foi filtrada pelo gênero, adicione de volta para preservar a seleção do usuário
+                if (savedVoice) {
+                    const savedVoiceObj = voices.find(v => v.name === savedVoice);
+                    if (savedVoiceObj && !sortedVoices.some(v => v.name === savedVoice)) {
+                        sortedVoices.push(savedVoiceObj);
+                    }
+                }
             }
             
             // Ordenação: idioma atual primeiro
@@ -6263,21 +6268,9 @@ WITH CHECK (true);</code>
             });
 
             // Restaura seleção de voz salva
-            try {
-                let savedVoice = localStorage.getItem('speech_voice_selected');
-                if (!savedVoice) {
-                    const savedSettings = localStorage.getItem('ai_console_settings');
-                    if (savedSettings) {
-                        const data = JSON.parse(savedSettings);
-                        savedVoice = data.speechVoice;
-                    }
-                }
-                if (savedVoice) {
-                    if (select) select.value = savedVoice;
-                    if (liveSelect) liveSelect.value = savedVoice;
-                }
-            } catch (err) {
-                console.error("Falha ao sincronizar voz restaurada:", err);
+            if (savedVoice) {
+                if (select) select.value = savedVoice;
+                if (liveSelect) liveSelect.value = savedVoice;
             }
         }
 
@@ -6795,12 +6788,27 @@ WITH CHECK (true);</code>
             };
 
             liveRecognition.onresult = async function(event) {
-                const transcript = event.results?.[0]?.[0]?.transcript || '';
+                const result = event.results?.[0]?.[0];
+                const transcript = result?.transcript || '';
+                const confidence = result?.confidence ?? 1.0;
+                
                 if (!transcript || transcript.trim().length < 2) {
                     addLog(`Modo Live: Áudio ignorado (muito curto ou ruído): "${transcript}"`, "info");
                     return;
                 }
-                addLog(`Modo Live: Áudio reconhecido: "${transcript}"`, "success");
+
+                if (confidence < 0.45) {
+                    addLog(`Modo Live: Áudio ignorado devido a baixa confiança (${(confidence*100).toFixed(0)}%): "${transcript}"`, "info");
+                    return;
+                }
+
+                // Desativa o microfone imediatamente para evitar dupla captura ou escutar a própria resposta da IA
+                shouldStopContinuousListening = true;
+                try {
+                    liveRecognition.stop();
+                } catch(e) {}
+
+                addLog(`Modo Live: Áudio reconhecido: "${transcript}" (Confiança: ${(confidence*100).toFixed(0)}%)`, "success");
                 appendLiveMessage('user', transcript);
                 await sendLiveMessageToAI(transcript);
             };
@@ -7010,7 +7018,55 @@ WITH CHECK (true);</code>
                     return;
                 }
                 
-                let liveSystemPrompt = `Você é o Synapse Live, um assistente virtual interativo em tempo real de altíssima velocidade.
+                let liveSystemPrompt = "";
+                if (currentLanguage === 'en') {
+                    liveSystemPrompt = `You are Synapse Live, a high-speed real-time interactive virtual assistant.
+The user is talking to you mainly by voice. Therefore, respond extremely concisely, directly, naturally, and colloquially, like a real phone call. Avoid long paragraphs, extensive lists, and complex markdown formatting.
+
+SYSTEM INTEGRATION:
+You are directly connected to other tabs of the console. If the user requests an action, trigger it by appending the special command at the end of your response on a new line.
+Supported formats:
+[[SYSTEM_ACTION: {"action": "switch_tab", "tabId": "tab-resume-builder"}]] -> Go to Resume tab
+[[SYSTEM_ACTION: {"action": "switch_tab", "tabId": "tab-interview-simulator"}]] -> Go to Interview tab
+[[SYSTEM_ACTION: {"action": "switch_tab", "tabId": "tab-workspace"}]] -> Go to Dashboard
+[[SYSTEM_ACTION: {"action": "switch_tab", "tabId": "tab-config"}]] -> Go to Settings
+[[SYSTEM_ACTION: {"action": "clear_memory"}]] -> Clear live chat history
+[[SYSTEM_ACTION: {"action": "read_resume"}]] -> Read current resume data for context
+[[SYSTEM_ACTION: {"action": "start_interview"}]] -> Start the Interview Simulator immediately
+[[SYSTEM_ACTION: {"action": "change_language", "lang": "en"}]] -> Change system language
+[[SYSTEM_ACTION: {"action": "show_active_settings"}]] -> Show active settings log
+
+ACCURACY AND CONTEXT RULE:
+If the user asks for analysis, improvement, or actions related to their Resume, Portfolio, or Interview Simulation, but the context ([USER RESUME CONTEXT]) is blank or incomplete, DO NOT invent data. Instead, politely ask the user to provide the data or confirm if they want to navigate to the tab to fill it.
+
+NOISE & ACCIDENTAL TRIGGERS RULE:
+If the user's input is extremely short, nonsensical, or seems like background noise/cut-off speech (e.g. "uh", "the", "and"), ask them to repeat very briefly or ignore it. Never hallucinate responses to unasked questions.
+Always respond in English.`;
+                } else if (currentLanguage === 'es') {
+                    liveSystemPrompt = `Eres Synapse Live, un asistente virtual interactivo en tiempo real de alta velocidad.
+El usuario está hablando contigo principalmente por voz. Por lo tanto, responde de manera extremadamente concisa, directa, natural y coloquial, como en una llamada telefónica real. Evita párrafos largos, listas extensas y formatos markdown complejos.
+
+INTEGRACIÓN CON EL SISTEMA:
+Estás conectado directamente con las demás pestañas del sistema. Si el usuario solicita una acción, actívala agregando el comando especial al final de tu respuesta en una línea nueva.
+Formatos soportados:
+[[SYSTEM_ACTION: {"action": "switch_tab", "tabId": "tab-resume-builder"}]] -> Ir a la pestaña Currículum
+[[SYSTEM_ACTION: {"action": "switch_tab", "tabId": "tab-interview-simulator"}]] -> Ir al Simulador de Entrevistas
+[[SYSTEM_ACTION: {"action": "switch_tab", "tabId": "tab-workspace"}]] -> Ir al Panel Principal
+[[SYSTEM_ACTION: {"action": "switch_tab", "tabId": "tab-config"}]] -> Ir a Configuración
+[[SYSTEM_ACTION: {"action": "clear_memory"}]] -> Borrar historial de chat live
+[[SYSTEM_ACTION: {"action": "read_resume"}]] -> Leer currículum activo para tener contexto
+[[SYSTEM_ACTION: {"action": "start_interview"}]] -> Iniciar Simulador de Entrevistas inmediatamente
+[[SYSTEM_ACTION: {"action": "change_language", "lang": "es"}]] -> Cambiar idioma
+[[SYSTEM_ACTION: {"action": "show_active_settings"}]] -> Mostrar registro de ajustes
+
+REGLA DE PRECISIÓN Y CONFIRMACIÓN DE CONTEXTO:
+Si el usuario solicita análisis, mejoras o acciones relacionadas con su Currículum, Portafolio o Simulación de Entrevistas, pero el contexto ([CONTEXTO DE CURRÍCULUM DEL USUARIO]) está vacío, NO inventes datos. Pide cortésmente que los proporcione o pregúntale si desea ir a la pestaña correspondiente para completarlo.
+
+REGLA DE RUIDO Y DISPAROS ACCIDENTALES:
+Si la entrada parece ruido, frases cortadas o sin sentido, pide amablemente que repita muy brevemente o simplemente ignóralo si es solo ruido. Nunca inventes respuestas para preguntas no formuladas.
+Siempre responde en español.`;
+                } else {
+                    liveSystemPrompt = `Você é o Synapse Live, um assistente virtual interativo em tempo real de altíssima velocidade.
 O usuário está conversando com você principalmente por voz. Portanto, responda de forma extremamente concisa, direta, natural e coloquial, como em uma ligação telefônica real. Evite parágrafos longos, listas extensas de tópicos e marcações de formatação markdown complexas, a menos que estritamente necessário.
 
 INTEGRAÇÃO COM O SISTEMA (Módulos do App):
@@ -7023,13 +7079,16 @@ Formatos de ação de sistema suportados:
 [[SYSTEM_ACTION: {"action": "clear_memory"}]] -> limpa a memória de conversas do live chat
 [[SYSTEM_ACTION: {"action": "read_resume"}]] -> lê os dados atuais do currículo para te fornecer contexto e você poder sugerir melhorias
 [[SYSTEM_ACTION: {"action": "start_interview"}]] -> inicia o Simulador de Entrevistas imediatamente
-[[SYSTEM_ACTION: {"action": "change_language", "lang": "pt"}]] ou "en" ou "es" -> muda o idioma do console
+[[SYSTEM_ACTION: {"action": "change_language", "lang": "pt"}]] -> muda o idioma do console
 [[SYSTEM_ACTION: {"action": "show_active_settings"}]] -> exibe logs de configurações ativas
 
 REGRA DE PRECISÃO E CONFIRMAÇÃO DE CONTEXTO:
 Se o usuário solicitar qualquer análise, melhoria ou ação relacionada ao Currículo (Resume), Portfólio ou Simulação de Entrevista, mas o contexto correspondente (como o [CONTEXTO DO CURRÍCULO DO USUÁRIO]) estiver em branco ou incompleto, você NÃO deve inventar dados. Em vez disso, peça gentilmente que o usuário forneça os dados ou confirme se deseja navegar para a aba correspondente para preenchê-los.
 
-Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`;
+REGRA DE RUÍDO E DISPAROS ACCIDENTAIS:
+Se a entrada parecer ruído de fundo, fragmentos de palavras desconexas ou frases incompletas, peça gentilmente para repetir de forma muito breve ou apenas ignore se parecer ruído completo. Nunca invente respostas para perguntas não formuladas.
+Sempre responda em português.`;
+                }
 
                 if (liveResumeContext) {
                     liveSystemPrompt += `\n\n[CONTEXTO DO CURRÍCULO DO USUÁRIO]:\n${JSON.stringify(liveResumeContext)}`;
@@ -7144,9 +7203,12 @@ Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`
                 typeLiveResponse(loaderEl, cleanReply, () => {
                     if (!autoSpeak) {
                         const handsFree = document.getElementById('live-hands-free-switch')?.classList.contains('on');
-                        if (handsFree && !shouldStopContinuousListening) {
+                        if (handsFree) {
+                            shouldStopContinuousListening = false;
                             setTimeout(() => {
-                                toggleLiveMic();
+                                if (!isLiveListening) {
+                                    toggleLiveMic();
+                                }
                             }, 500);
                         } else {
                             setLiveState(LIVE_STATES.READY);
@@ -7157,9 +7219,12 @@ Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`
                 if (autoSpeak) {
                     speakLiveText(cleanReply, () => {
                         const handsFree = document.getElementById('live-hands-free-switch')?.classList.contains('on');
-                        if (handsFree && !shouldStopContinuousListening) {
+                        if (handsFree) {
+                            shouldStopContinuousListening = false;
                             setTimeout(() => {
-                                toggleLiveMic();
+                                if (!isLiveListening) {
+                                    toggleLiveMic();
+                                }
                             }, 500);
                         } else {
                             setLiveState(LIVE_STATES.READY);
@@ -13057,8 +13122,44 @@ Sempre responda no idioma ativo selecionado pelo usuário (${currentLanguage}).`
                 utterance.rate = inputRate ? parseFloat(inputRate.value) : 1.05;
                 utterance.pitch = inputPitch ? parseFloat(inputPitch.value) : 1.0;
                 
+                // Resolve selected speech voice
+                const voiceSelect = document.getElementById('speech-voice') || document.getElementById('live-speech-voice');
+                let selectedVoiceName = voiceSelect?.value || localStorage.getItem('speech_voice_selected') || '';
+                
+                const voices = window.speechSynthesis.getVoices();
+                let chosenVoice = null;
+
+                if (selectedVoiceName) {
+                    chosenVoice = voices.find(v => v.name === selectedVoiceName);
+                }
+
+                if (!chosenVoice) {
+                    // Tenta achar pelo gênero preferido e pelo idioma atual
+                    const genderVal = document.getElementById('ai-voice-gender-select')?.value || localStorage.getItem('voice_gender_preferred') || 'all';
+                    const langVoices = voices.filter(v => v.lang.toLowerCase().startsWith(currentLanguage.toLowerCase()) || v.lang.toLowerCase().replace('_', '-').startsWith(currentLanguage.toLowerCase()));
+                    
+                    if (genderVal !== 'all' && langVoices.length > 0) {
+                        const matches = langVoices.filter(v => getVoiceGender(v.name) === genderVal);
+                        if (matches.length > 0) {
+                            chosenVoice = matches[0];
+                        }
+                    }
+                    
+                    // Se não achou com gênero, pega qualquer uma do idioma atual
+                    if (!chosenVoice && langVoices.length > 0) {
+                        chosenVoice = langVoices.find(v => v.localService) || langVoices[0];
+                    }
+                }
+
+                if (chosenVoice) {
+                    utterance.voice = chosenVoice;
+                    if (voiceSelect && voiceSelect.value !== chosenVoice.name) {
+                        voiceSelect.value = chosenVoice.name;
+                    }
+                }
+                
                 window.speechSynthesis.speak(utterance);
-                addLog(`Leitura por voz ativada. (Velocidade: ${utterance.rate}x, Tom: ${utterance.pitch})`, "info");
+                addLog(`Leitura por voz ativada. (Voz: ${chosenVoice ? chosenVoice.name : 'Padrão'}, Velocidade: ${utterance.rate}x, Tom: ${utterance.pitch})`, "info");
             } else {
                 addLog("API de voz não suportada neste navegador.", "error");
                 showAppToast("Seu navegador não suporta leitura de voz embutida.", "error");
