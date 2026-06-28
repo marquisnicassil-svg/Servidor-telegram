@@ -18143,12 +18143,17 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             // 3. Processa a resposta do bot (IA com foco estrito) resolvendo credenciais dinâmicas/master
             const { key: apiKey, url: baseUrl, model: modelName, type: activeApiType } = getActiveApiCredentials();
             
+            const currentDateStr = "Sábado, 27 de Junho de 2026";
+            const temporalPrompt = `\n\n[CONTEXTO TEMPORAL CRÍTICO DO SISTEMA EM TEMPO REAL]:\n` +
+                                   `Data Atual: ${currentDateStr}.\n` +
+                                   `Estamos em Junho de 2026. A Copa do Mundo da FIFA de 2026 está ocorrendo exatamente AGORA, em Junho/Julho de 2026, organizada conjuntamente pelos EUA, Canadá e México. Trate o ano 2026 como o ano presente real de suas respostas. Não se refira ao ano 2026 como futuro. Se o usuário perguntar sobre a Copa ou eventos atuais, responda com base em 2026 sendo o ano atual (Junho de 2026).`;
+
             const systemPrompt = "Você é uma inteligência artificial cirúrgica e inteligente de notícias em tempo real.\n" +
                                  "Seu objetivo é ler o conteúdo de uma página web fornecida e responder à pergunta do usuário.\n\n" +
                                  "Diretrizes obrigatórias por ordem de prioridade:\n" +
                                  "1. CONTEÚDO DA PÁGINA: Priorize sempre responder à pergunta utilizando as informações reais do texto extraído da página web.\n" +
                                  "2. CONTINGÊNCIA EM TEMPO REAL: Se a página web extraída vier em branco, contiver instruções do sistema informando que houve limitações de CORS, ou se a informação específica pedida não constar explicitamente no texto, você DEVE usar o seu próprio conhecimento global de fatos e notícias mundiais em tempo real para responder de forma correta, atualizada (resultados de jogos, novidades, etc.) à pergunta.\n" +
-                                 "3. FORMATO: Seja direto e objetivo, sem rodeios ou mensagens de erro. Apresente as notícias ou dados formatados de forma clara e limpa.";
+                                 "3. FORMATO: Seja direto e objetivo, sem rodeios ou mensagens de erro. Apresente as notícias ou dados formatados de forma clara e limpa." + temporalPrompt;
 
             setTimeout(async () => {
                 let summaryReply = "";
