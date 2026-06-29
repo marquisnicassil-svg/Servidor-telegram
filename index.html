@@ -2222,6 +2222,16 @@
         .voice-bar.bar-8 { animation-delay: 0.3s; }
         .voice-bar.bar-9 { animation-delay: 0.1s; }
         .voice-bar.bar-10 { animation-delay: 0.2s; }
+        
+        /* Animações de Entrada/Saída da Barra de Gravação */
+        @keyframes slideInUp {
+            0% { transform: translateY(15px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeOutDown {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(15px); opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -2482,7 +2492,7 @@
                     </div>
                 </div>
                 <div class="chat-input-area" style="position: relative; align-items: center; gap: 8px; padding-top: 10px; padding-bottom: 10px;">
-                    <!-- Botão de Anexos -->
+                    <!-- Botão de Anexos (Lado Esquerdo) -->
                     <div style="position: relative; display: flex; align-items: center;">
                         <button id="btn-attachments" onclick="toggleAttachmentMenu(event)" class="chat-input-action-btn" title="Anexar arquivos" style="outline: none;">
                             📎
@@ -2508,7 +2518,12 @@
                         </div>
                     </div>
 
-                    <!-- Botão de Microfone -->
+                    <!-- Campo de Texto Principal (Centro) -->
+                    <div style="position: relative; flex: 1; display: flex; align-items: center;">
+                        <input type="text" id="chat-input" class="form-control" style="padding-left: 18px; padding-right: 18px; border-radius: 24px; background-color: var(--card-bg-secondary); border: 1px solid var(--border-color); height: 48px; color: var(--text-main); pointer-events: auto !important; -webkit-user-select: text !important; user-select: text !important; position: relative; z-index: 100 !important; cursor: text !important; box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
+                    </div>
+
+                    <!-- Botão de Microfone (Lado Direito) -->
                     <div style="position: relative; display: flex; align-items: center;">
                         <button id="btn-mic-chat" onclick="toggleMic()" class="chat-input-action-btn" title="Ditado por Voz" style="outline: none;">
                             🎤
@@ -2521,12 +2536,7 @@
                         </div>
                     </div>
 
-                    <!-- Campo de Texto Principal -->
-                    <div style="position: relative; flex: 1; display: flex; align-items: center;">
-                        <input type="text" id="chat-input" class="form-control" style="padding-left: 18px; padding-right: 18px; border-radius: 24px; background-color: var(--card-bg-secondary); border: 1px solid var(--border-color); height: 48px; color: var(--text-main); pointer-events: auto !important; -webkit-user-select: text !important; user-select: text !important; position: relative; z-index: 100 !important; cursor: text !important; box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
-                    </div>
-
-                    <!-- Botão de Enviar -->
+                    <!-- Botão de Enviar (Extrema Direita) -->
                     <button class="chat-btn-send" onclick="sendMessage()">
                         <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                     </button>
@@ -12716,10 +12726,13 @@ WITH CHECK (true);</code>
             }
 
             recordingCancelled = false;
+            const inputForm = document.getElementById('chat-input');
+            const preRecordingText = inputForm ? inputForm.value : '';
+
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
             recognition.lang = 'pt-BR';
-            recognition.interimResults = false;
+            recognition.interimResults = true;
             recognition.maxAlternatives = 1;
             recognition.continuous = true;
 
@@ -12759,25 +12772,18 @@ WITH CHECK (true);</code>
             recognition.onresult = function(event) {
                 if (recordingCancelled) return;
                 
-                let transcript = '';
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    if (event.results[i].isFinal) {
-                        transcript += event.results[i][0].transcript;
-                    }
+                let sessionTranscript = '';
+                for (let i = 0; i < event.results.length; ++i) {
+                    sessionTranscript += event.results[i][0].transcript;
                 }
                 
-                if (transcript.trim()) {
+                if (sessionTranscript.trim()) {
                     const inputForm = document.getElementById('chat-input');
                     if (inputForm) {
-                        if (inputForm.value.trim()) {
-                            inputForm.value = inputForm.value.trim() + ' ' + transcript.trim();
-                        } else {
-                            inputForm.value = transcript.trim();
-                        }
+                        const separator = preRecordingText.trim() ? ' ' : '';
+                        inputForm.value = preRecordingText + separator + sessionTranscript.trim();
                         inputForm.focus();
                     }
-                    addLog("Ditado convertido em texto com sucesso.", "success");
-                    showAppToast("Voz convertida em texto!", "success");
                 }
             };
 
@@ -12791,6 +12797,10 @@ WITH CHECK (true);</code>
             recognition.onend = function() {
                 isListening = false;
                 cleanupRecordingUI();
+                if (!recordingCancelled) {
+                    addLog("Ditado de voz finalizado com sucesso.", "success");
+                    showAppToast("Voz convertida em texto!", "success");
+                }
             };
 
             recognition.start();
