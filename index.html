@@ -2493,7 +2493,7 @@
                 </div>
                 <div class="chat-input-area" style="position: relative; align-items: center; gap: 8px; padding-top: 10px; padding-bottom: 10px;">
                     <!-- Botão de Anexos (Lado Esquerdo) -->
-                    <div style="position: relative; display: flex; align-items: center;">
+                    <div style="position: relative; display: flex; align-items: center; order: 1 !important;">
                         <button id="btn-attachments" onclick="toggleAttachmentMenu(event)" class="chat-input-action-btn" title="Anexar arquivos" style="outline: none;">
                             📎
                         </button>
@@ -2519,12 +2519,12 @@
                     </div>
 
                     <!-- Campo de Texto Principal (Centro) -->
-                    <div style="position: relative; flex: 1; display: flex; align-items: center;">
+                    <div style="position: relative; flex: 1; display: flex; align-items: center; order: 2 !important;">
                         <input type="text" id="chat-input" class="form-control" style="padding-left: 18px; padding-right: 18px; border-radius: 24px; background-color: var(--card-bg-secondary); border: 1px solid var(--border-color); height: 48px; color: var(--text-main); pointer-events: auto !important; -webkit-user-select: text !important; user-select: text !important; position: relative; z-index: 100 !important; cursor: text !important; box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
                     </div>
 
                     <!-- Botão de Microfone (Lado Direito) -->
-                    <div style="position: relative; display: flex; align-items: center;">
+                    <div style="position: relative; display: flex; align-items: center; order: 3 !important;">
                         <button id="btn-mic-chat" onclick="toggleMic()" class="chat-input-action-btn" title="Ditado por Voz" style="outline: none;">
                             🎤
                         </button>
@@ -2537,7 +2537,7 @@
                     </div>
 
                     <!-- Botão de Enviar (Extrema Direita) -->
-                    <button class="chat-btn-send" onclick="sendMessage()">
+                    <button class="chat-btn-send" onclick="sendMessage()" style="order: 4 !important;">
                         <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                     </button>
 
@@ -8063,7 +8063,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=8')
+                navigator.serviceWorker.register('./sw.js?v=9')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -12636,73 +12636,18 @@ WITH CHECK (true);</code>
             }
         }
 
-        // Start Speech recording and volume wave analyser
+        // Start Speech recording and volume wave animation
         async function startAudioAnalysing() {
             const voiceBars = document.querySelectorAll('.voice-bar');
-            
-            try {
-                audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                
-                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-                audioContext = new AudioContextClass();
-                audioAnalyser = audioContext.createAnalyser();
-                audioAnalyser.fftSize = 32;
-                
-                audioSourceNode = audioContext.createMediaStreamSource(audioStream);
-                audioSourceNode.connect(audioAnalyser);
-                
-                const bufferLength = audioAnalyser.frequencyBinCount;
-                const dataArray = new Uint8Array(bufferLength);
-                
-                voiceBars.forEach(bar => bar.classList.remove('animating-fallback'));
-                
-                function updateVolumeBars() {
-                    if (!isListening) return;
-                    
-                    audioAnalyser.getByteFrequencyData(dataArray);
-                    
-                    for (let i = 0; i < voiceBars.length; i++) {
-                        const value = dataArray[i] || 0;
-                        const height = Math.max(4, Math.min(28, (value / 255) * 24 + 4));
-                        voiceBars[i].style.height = `${height}px`;
-                    }
-                    
-                    audioAnimationFrameId = requestAnimationFrame(updateVolumeBars);
-                }
-                
-                updateVolumeBars();
-                
-            } catch (err) {
-                console.warn("Navegador bloqueou acesso de áudio ou não há microfone conectado. Usando animação simulada de onda.", err);
-                voiceBars.forEach(bar => {
-                    bar.classList.add('animating-fallback');
-                });
-            }
+            // We use a clean, hardware-isolated simulation of voice waves (CSS fakeWave)
+            // so we don't request a duplicate audioStream, which prevents microphone contention
+            // and allows SpeechRecognition to run 100% perfectly on mobile devices.
+            voiceBars.forEach(bar => {
+                bar.classList.add('animating-fallback');
+            });
         }
 
         function stopAudioAnalysing() {
-            if (audioAnimationFrameId) {
-                cancelAnimationFrame(audioAnimationFrameId);
-                audioAnimationFrameId = null;
-            }
-            
-            if (audioSourceNode) {
-                audioSourceNode.disconnect();
-                audioSourceNode = null;
-            }
-            if (audioContext && audioContext.state !== 'closed') {
-                audioContext.close();
-                audioContext = null;
-            }
-            if (audioAnalyser) {
-                audioAnalyser = null;
-            }
-            
-            if (audioStream) {
-                audioStream.getTracks().forEach(track => track.stop());
-                audioStream = null;
-            }
-            
             const voiceBars = document.querySelectorAll('.voice-bar');
             voiceBars.forEach(bar => {
                 bar.classList.remove('animating-fallback');
@@ -12729,24 +12674,28 @@ WITH CHECK (true);</code>
             const inputForm = document.getElementById('chat-input');
             const preRecordingText = inputForm ? inputForm.value : '';
 
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                addLog("Solicitando permissão de microfone...", "info");
-                navigator.mediaDevices.getUserMedia({ audio: true })
-                .then(stream => {
-                    // Close stream tracks immediately to release the hardware device
-                    stream.getTracks().forEach(track => track.stop());
-                    runActualSpeechRecognition(preRecordingText);
-                })
-                .catch(err => {
-                    addLog("Acesso ao microfone rejeitado ou indisponível: " + err.message, "error");
-                    showAppToast("Por favor, permita o acesso ao microfone nas configurações.", "error");
-                });
-            } else {
-                runActualSpeechRecognition(preRecordingText);
-            }
+            // We directly call runActualSpeechRecognition. The browser's native speech API
+            // handles prompting for permission on demand, which is much more robust
+            // and avoids hardware-level conflicts/delays on mobile devices.
+            runActualSpeechRecognition(preRecordingText);
         }
 
         function runActualSpeechRecognition(preRecordingText) {
+            // Clean up any existing SpeechRecognition instance to prevent overlapping,
+            // ghost listeners, and repeated/duplicated text in onresult.
+            if (recognition) {
+                try {
+                    recognition.onstart = null;
+                    recognition.onresult = null;
+                    recognition.onerror = null;
+                    recognition.onend = null;
+                    recognition.abort();
+                } catch (e) {
+                    console.warn("Erro ao abortar reconhecimento anterior:", e);
+                }
+                recognition = null;
+            }
+
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
             recognition.lang = 'pt-BR';
