@@ -2020,11 +2020,12 @@
                 <p>Para desbloquear o console de IA e sincronizar o histórico, conecte-se com sua conta segura.</p>
             </div>
 
-            <!-- Formulário de Login / Cadastro Unificado -->
+            <!-- Formulário de Login / Cadastro / Recuperação Unificado -->
             <div id="auth-form-container" style="display: flex; flex-direction: column; gap: 12px;">
-                <div style="display: flex; gap: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; margin-bottom: 4px;">
-                    <button class="filter-chip active" id="auth-tab-signin" onclick="setAuthTab('signin')" style="padding: 8px 16px; font-size: 0.78rem; border-radius: 8px; flex: 1; text-align: center;">Login / Entrar</button>
-                    <button class="filter-chip" id="auth-tab-signup" onclick="setAuthTab('signup')" style="padding: 8px 16px; font-size: 0.78rem; border-radius: 8px; flex: 1; text-align: center;">Criar Conta</button>
+                <div style="display: flex; gap: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; margin-bottom: 4px;">
+                    <button class="filter-chip active" id="auth-tab-signin" onclick="setAuthTab('signin')" style="padding: 8px 10px; font-size: 0.75rem; border-radius: 8px; flex: 1; text-align: center; white-space: nowrap;">Login</button>
+                    <button class="filter-chip" id="auth-tab-signup" onclick="setAuthTab('signup')" style="padding: 8px 10px; font-size: 0.75rem; border-radius: 8px; flex: 1; text-align: center; white-space: nowrap;">Criar Conta</button>
+                    <button class="filter-chip" id="auth-tab-recover" onclick="setAuthTab('recover')" style="padding: 8px 10px; font-size: 0.75rem; border-radius: 8px; flex: 1; text-align: center; white-space: nowrap;">Recuperar</button>
                 </div>
 
                 <div id="auth-username-container" style="display: none;">
@@ -2037,12 +2038,16 @@
                     <input type="email" id="auth-email" class="form-control" style="border-radius: 10px; padding: 10px 12px; font-size: 0.85rem;" placeholder="usuario@provedor.com" value="">
                 </div>
 
-                <div>
+                <div id="auth-password-container">
                     <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Senha de Acesso</label>
                     <div style="position: relative; display: flex; align-items: center;">
                         <input type="password" id="auth-password" class="form-control" style="border-radius: 10px; padding: 10px 42px 10px 12px; font-size: 0.85rem;" placeholder="Mínimo 6 caracteres" value="" autocomplete="current-password">
-                        <button type="button" onclick="togglePasswordVisibility('auth-password', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Senha">👁️</button>
+                        <button type="button" onclick="togglePasswordVisibility('auth-password', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10; outline: none;" title="Exibir/Ocultar Senha">👁️</button>
                     </div>
+                </div>
+
+                <div id="auth-forgot-password-link" style="text-align: right; margin-top: -4px;">
+                    <a href="#" onclick="setAuthTab('recover'); return false;" style="font-size: 0.75rem; color: var(--primary); text-decoration: none; font-weight: 600; opacity: 0.9; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.9'">Esqueceu a senha?</a>
                 </div>
 
                 <button class="btn-supabase-action" onclick="executeSupabaseAuth()" id="auth-btn-submit" style="margin-top: 10px; width: 100%; border-color: var(--primary); background: rgba(255,255,255,0.02); padding: 12px; font-weight: bold; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
@@ -15824,22 +15829,95 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             }
         }
 
-         // --- SUBSECÇÃO SUPABASE AUTH (Login/Cadastro) ---
+         // --- SUBSECÇÃO SUPABASE AUTH (Login/Cadastro/Recuperação) ---
         function setAuthTab(type) {
             triggerPulse();
             authMode = type;
+            
+            // Remove classe active de todas as abas de autenticação
+            document.querySelectorAll('#auth-form-container .filter-chip').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('#supabase-auth-card .filter-chip').forEach(c => c.classList.remove('active'));
+            
             const userContainer = document.getElementById('auth-username-container');
+            const passwordContainer = document.getElementById('auth-password-container');
+            const forgotLink = document.getElementById('auth-forgot-password-link');
+            const submitBtn = document.getElementById('auth-btn-submit');
+            
+            // Seleciona a aba correta
+            const activeTabId = `auth-tab-${type}`;
+            const activeTab = document.getElementById(activeTabId);
+            if (activeTab) activeTab.classList.add('active');
+
             if (type === 'signin') {
-                document.getElementById('auth-tab-signin').classList.add('active');
-                document.getElementById('auth-btn-submit').innerText = '🔌 Fazer Login';
-                document.getElementById('auth-password').placeholder = 'Sua senha';
+                if (submitBtn) {
+                    submitBtn.innerHTML = '🔌 Fazer Login';
+                    submitBtn.style.borderColor = 'var(--primary)';
+                }
+                const passInput = document.getElementById('auth-password');
+                if (passInput) passInput.placeholder = 'Sua senha';
                 if (userContainer) userContainer.style.display = 'none';
-            } else {
-                document.getElementById('auth-tab-signup').classList.add('active');
-                document.getElementById('auth-btn-submit').innerText = '✨ Criar Conta';
-                document.getElementById('auth-password').placeholder = 'Mínimo de 6 caracteres';
+                if (passwordContainer) passwordContainer.style.display = 'block';
+                if (forgotLink) forgotLink.style.display = 'block';
+            } else if (type === 'signup') {
+                if (submitBtn) {
+                    submitBtn.innerHTML = '✨ Criar Conta';
+                    submitBtn.style.borderColor = 'var(--primary)';
+                }
+                const passInput = document.getElementById('auth-password');
+                if (passInput) passInput.placeholder = 'Mínimo de 6 caracteres';
                 if (userContainer) userContainer.style.display = 'block';
+                if (passwordContainer) passwordContainer.style.display = 'block';
+                if (forgotLink) forgotLink.style.display = 'none';
+            } else if (type === 'recover') {
+                if (submitBtn) {
+                    submitBtn.innerHTML = '✉️ Enviar Link de Recuperação';
+                    submitBtn.style.borderColor = '#f59e0b';
+                }
+                if (userContainer) userContainer.style.display = 'none';
+                if (passwordContainer) passwordContainer.style.display = 'none';
+                if (forgotLink) forgotLink.style.display = 'none';
+            }
+        }
+
+        async function supabaseRecoverPassword(baseUrl, key, email) {
+            addLog(`Solicitando e-mail de recuperação para ${email}...`, "sys");
+            const submitBtn = document.getElementById('auth-btn-submit');
+            if (submitBtn) {
+                submitBtn.innerText = "Enviando...";
+                submitBtn.disabled = true;
+            }
+
+            try {
+                const response = await fetch(`${baseUrl}auth/v1/recover`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': key,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                if (response.ok) {
+                    addLog(`E-mail de recuperação enviado com sucesso para ${email}!`, "success");
+                    showAppToast("Instruções de recuperação enviadas para o seu e-mail!", "success");
+                    setAuthTab('signin');
+                } else {
+                    const errText = await response.text();
+                    let parsedErr = { message: errText };
+                    try { parsedErr = JSON.parse(errText); } catch(e){}
+                    addLog(`Erro ao solicitar recuperação: ${parsedErr.message || errText}`, "error");
+                    showAppToast(`Erro na Recuperação: ${parsedErr.message || errText}`, "error");
+                }
+            } catch (err) {
+                console.error(err);
+                addLog(`Incapaz de enviar e-mail de recuperação: ${err.message}`, "error");
+                showAppToast("Erro de rede ao solicitar recuperação de senha.", "error");
+            } finally {
+                isAuthLoading = false;
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = "✉️ Enviar Link de Recuperação";
+                }
             }
         }
 
@@ -15850,13 +15928,20 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value;
 
-            if(!email || !password) {
-                showAppToast("Por favor, preencha o e-mail e a senha.", "warning");
-                return;
-            }
-            if(password.length < 6) {
-                showAppToast("A senha precisa ter no mínimo 6 caracteres.", "warning");
-                return;
+            if (authMode === "recover") {
+                if (!email) {
+                    showAppToast("Por favor, preencha o e-mail do usuário.", "warning");
+                    return;
+                }
+            } else {
+                if(!email || !password) {
+                    showAppToast("Por favor, preencha o e-mail e a senha.", "warning");
+                    return;
+                }
+                if(password.length < 6) {
+                    showAppToast("A senha precisa ter no mínimo 6 caracteres.", "warning");
+                    return;
+                }
             }
 
             let username = "";
@@ -15880,7 +15965,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             isAuthLoading = true;
             const cleanUrl = url.endsWith('/') ? url : url + '/';
             
-            if (authMode === "signup") {
+            if (authMode === "recover") {
+                await supabaseRecoverPassword(cleanUrl, key, email);
+            } else if (authMode === "signup") {
                 await supabaseSignUp(cleanUrl, key, email, password, username);
             } else {
                 await supabaseSignIn(cleanUrl, key, email, password);
