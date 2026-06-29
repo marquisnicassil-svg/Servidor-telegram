@@ -4316,145 +4316,41 @@ CREATE TRIGGER on_synapse_user_signed_up
             <!-- SUB-VIEW TELEGRAM: INTEGRAÇÕES E AUTOMAÇÃO -->
             <div id="config-subview-telegram" class="config-subview" style="display: none;">
                 
+                <!-- LOADER OVERLAY FOR TRANSITIONS -->
+                <div id="integration-loading-screen" style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); z-index: 999; flex-direction: column; align-items: center; justify-content: center; border-radius: 20px; gap: 16px; transition: opacity 0.2s ease-out; opacity: 0; pointer-events: none;">
+                    <div class="integration-loader-spinner"></div>
+                    <span style="color: #c084fc; font-weight: bold; font-size: 0.9rem;" id="integration-loading-text">Carregando...</span>
+                </div>
+
                 <!-- MAIN INTEGRATIONS HUB -->
                 <div id="integrations-hub-main">
                     <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;">⬅️ Voltar para Ajustes</button>
                     
-                    <div class="section-header" style="text-align: left; margin-bottom: 24px;">
+                    <div class="section-header" style="text-align: left; margin-bottom: 20px;">
                         <h2>🔗 Hub de Integrações</h2>
                         <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">Gerencie e conecte suas ferramentas de forma independente e isolada</p>
                     </div>
 
+                    <!-- CONTROLS: SEARCH & FILTERS -->
+                    <div class="hub-controls" style="margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px;">
+                        <!-- Search Bar -->
+                        <div class="search-box-wrapper" style="position: relative; display: flex; align-items: center; width: 100%;">
+                            <span style="position: absolute; left: 14px; font-size: 1rem; color: #94a3b8; user-select: none; pointer-events: none;">🔍</span>
+                            <input type="text" id="integration-search-input" placeholder="Pesquisar integração..." oninput="handleIntegrationSearchAndFilter()" style="width: 100%; height: 46px; padding: 0 40px 0 42px; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); color: #fff; font-size: 0.88rem; outline: none; transition: 0.2s; box-sizing: border-box;" />
+                            <button id="search-clear-btn" onclick="clearIntegrationSearch()" style="display: none; position: absolute; right: 14px; background: none; border: none; color: #94a3b8; font-size: 1rem; cursor: pointer; padding: 4px; line-height: 1;">✕</button>
+                        </div>
+                        <!-- Filter Chips -->
+                        <div class="filter-chips-wrapper" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="filter-chip active" data-filter="all" onclick="setIntegrationFilter('all')">Todos</button>
+                            <button class="filter-chip" data-filter="connected" onclick="setIntegrationFilter('connected')">🟢 Conectados</button>
+                            <button class="filter-chip" data-filter="development" onclick="setIntegrationFilter('development')">🟡 Em desenvolvimento</button>
+                            <button class="filter-chip" data-filter="inactive" onclick="setIntegrationFilter('inactive')">🔴 Inativos</button>
+                        </div>
+                    </div>
+
                     <div class="integrations-grid">
-                        
-                        <!-- CARD: TELEGRAM -->
-                        <div class="integration-card" onclick="openIntegrationPage('telegram')">
-                            <div class="integration-icon-wrapper" style="background: rgba(34, 158, 217, 0.1); border-color: rgba(34, 158, 217, 0.2); color: #229ED9;">
-                                <svg style="width: 28px; height: 28px; fill: currentColor;" viewBox="0 0 24 24">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.94-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
-                                </svg>
-                            </div>
-                            <span class="integration-card-title">Telegram Bot</span>
-                            <span class="integration-card-desc">Notificações e comandos remotos</span>
-                            <div id="hub-badge-telegram">
-                                <span class="integration-status-badge integration-status-disconnected">Desconectado</span>
-                            </div>
-                        </div>
+                        <!-- Rendered dynamically by renderIntegrationCards() -->
 
-                        <!-- CARD: WEBHOOKS -->
-                        <div class="integration-card" onclick="openIntegrationPage('webhooks')">
-                            <div class="integration-icon-wrapper" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: #10B981;">
-                                <svg style="width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24">
-                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                                </svg>
-                            </div>
-                            <span class="integration-card-title">Webhooks Gateway</span>
-                            <span class="integration-card-desc">HTTP pública para sincronizar dados</span>
-                            <div id="hub-badge-webhooks">
-                                <span class="integration-status-badge integration-status-disconnected">Desativado</span>
-                            </div>
-                        </div>
-
-                        <!-- CARD: DISCORD -->
-                        <div class="integration-card" onclick="openIntegrationPage('discord')">
-                            <div class="integration-icon-wrapper" style="background: rgba(88, 101, 242, 0.1); border-color: rgba(88, 101, 242, 0.2); color: #5865F2;">
-                                <svg style="width: 24px; height: 24px; fill: currentColor;" viewBox="0 0 127.14 96.36">
-                                    <path d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,52.88,6.83,77.19,77.19,0,0,0,49.58,0,105.15,105.15,0,0,0,19.14,8.07C3,32.22-1.45,55.8,1,79a105.73,105.73,0,0,0,32,16.29,79,79,0,0,0,6.73-11,68.52,68.52,0,0,1-10.64-5.12c.91-.67,1.81-1.37,2.67-2.1a75.56,75.56,0,0,0,71.24,0c.86.73,1.76,1.43,2.67,2.1a68.86,68.86,0,0,1-10.64,5.12,79.05,79.05,0,0,0,6.73,11,105.73,105.73,0,0,0,32-16.29C129.35,55.8,124.62,32.22,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53S36.18,40.36,42.45,40.36,53.83,46,53.83,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.07,46,96.07,53,91,65.69,84.69,65.69Z"/>
-                                </svg>
-                            </div>
-                            <span class="integration-card-title">Discord API</span>
-                            <span class="integration-card-desc">Alertas e logs em canais</span>
-                            <div>
-                                <span class="integration-status-badge integration-status-development">Em breve</span>
-                            </div>
-                        </div>
-
-                        <!-- CARD: WHATSAPP -->
-                        <div class="integration-card" onclick="openIntegrationPage('whatsapp')">
-                            <div class="integration-icon-wrapper" style="background: rgba(37, 211, 102, 0.1); border-color: rgba(37, 211, 102, 0.2); color: #25D366;">
-                                <svg style="width: 24px; height: 24px; fill: currentColor;" viewBox="0 0 24 24">
-                                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.42 9.864-9.864.002-2.637-1.023-5.11-2.884-6.973C16.591 1.888 14.113.86 11.48.858c-5.441 0-9.864 4.42-9.868 9.863-.001 1.765.467 3.491 1.358 5.021l-.993 3.626 3.71-.973zm11.205-7.39c-.276-.139-1.636-.807-1.889-.899-.254-.092-.439-.139-.624.139-.185.276-.716.899-.877 1.083-.162.185-.323.208-.599.069-.276-.139-1.168-.43-2.223-1.372-.82-.732-1.374-1.636-1.535-1.912-.162-.276-.017-.425.121-.563.125-.124.276-.323.415-.484.138-.162.184-.276.276-.462.093-.185.046-.347-.023-.485-.069-.139-.624-1.503-.855-2.057-.225-.54-.473-.466-.649-.475-.167-.008-.36-.01-.553-.01s-.507.072-.773.36c-.266.287-1.016.993-1.016 2.421 0 1.427 1.039 2.805 1.183 2.99.145.185 2.043 3.12 4.949 4.373.691.298 1.231.477 1.652.61.696.22 1.329.19 1.83.115.558-.084 1.636-.669 1.867-1.317.23-.647.23-1.202.162-1.317-.069-.115-.254-.185-.53-.324z"/>
-                                </svg>
-                            </div>
-                            <span class="integration-card-title">WhatsApp API</span>
-                            <span class="integration-card-desc">Notificações instantâneas</span>
-                            <div>
-                                <span class="integration-status-badge integration-status-development">Em breve</span>
-                            </div>
-                        </div>
-
-                        <!-- CARD: GITHUB -->
-                        <div class="integration-card" onclick="openIntegrationPage('github')">
-                            <div class="integration-icon-wrapper" style="background: rgba(240, 246, 252, 0.08); border-color: rgba(240, 246, 252, 0.15); color: #F0F6FC;">
-                                <svg style="width: 24px; height: 24px; fill: currentColor;" viewBox="0 0 24 24">
-                                    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
-                                </svg>
-                            </div>
-                            <span class="integration-card-title">GitHub Actions</span>
-                            <span class="integration-card-desc">Sincronização de deploys</span>
-                            <div>
-                                <span class="integration-status-badge integration-status-development">Em breve</span>
-                            </div>
-                        </div>
-
-                        <!-- CARD: GOOGLE DRIVE -->
-                        <div class="integration-card" onclick="openIntegrationPage('googledrive')">
-                            <div class="integration-icon-wrapper" style="background: rgba(52, 168, 83, 0.1); border-color: rgba(52, 168, 83, 0.2); color: #FBBC05;">
-                                <svg style="width: 24px; height: 24px; fill: currentColor;" viewBox="0 0 24 24">
-                                    <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46.18 14.25 0 14 0h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
-                                </svg>
-                            </div>
-                            <span class="integration-card-title">Google Drive</span>
-                            <span class="integration-card-desc">Backups de logs e históricos</span>
-                            <div>
-                                <span class="integration-status-badge integration-status-development">Em breve</span>
-                            </div>
-                        </div>
-
-                        <!-- CARD: OPENAI -->
-                        <div class="integration-card" onclick="openIntegrationPage('openai')">
-                            <div class="integration-icon-wrapper" style="background: rgba(116, 170, 156, 0.1); border-color: rgba(116, 170, 156, 0.2); color: #74AA9C;">
-                                <svg style="width: 24px; height: 24px; fill: currentColor;" viewBox="0 0 24 24">
-                                    <path d="M22.508 10.42a5.414 5.414 0 0 0-.115-1.94 5.467 5.467 0 0 0-1.468-2.585 5.417 5.417 0 0 0-2.585-1.468 5.385 5.385 0 0 0-3.473.167 5.414 5.414 0 0 0-2.867-2.867 5.441 5.441 0 0 0-3.94 0 5.414 5.414 0 0 0-2.867 2.867 5.4 5.4 0 0 0-.167 3.473 5.45 5.45 0 0 0-1.468 2.585 5.417 5.417 0 0 0-.115 1.94 5.414 5.414 0 0 0 .115 1.94 5.467 5.467 0 0 0 1.468 2.585 5.417 5.417 0 0 0 2.585 1.468 5.385 5.385 0 0 0 3.473-.167 5.414 5.414 0 0 0 2.867 2.867 5.4 5.4 0 0 0 3.94 0 5.414 5.414 0 0 0 2.867-2.867 5.4 5.4 0 0 0 .167-3.473 5.45 5.45 0 0 0 1.468-2.585 5.417 5.417 0 0 0 .115-1.94zm-1.874-.356a3.522 3.522 0 0 1-.365.132l-.01.003-3.003 1.733a.625.625 0 0 1-.624.004l-2.573-1.485v2.969a.625.625 0 0 1-.312.541l-2.573 1.485a3.568 3.568 0 0 1-1.785.478 3.535 3.535 0 0 1-1.787-.478l.006-.003 2.574-1.486a.625.625 0 0 1 .624-.004l2.573 1.485V12.44a.625.625 0 0 1 .312-.541l2.573-1.485a3.568 3.568 0 0 1 1.785-.478c.638 0 1.263.17 1.815.494zm-8.634 8.243v-2.97a.625.625 0 0 1 .312-.541l2.573-1.485a3.568 3.568 0 0 1 1.785-.478c.642 0 1.267.172 1.819.497l-.004-.007a3.522 3.522 0 0 1-.132.365l-.003.01-1.733 3.003a.625.625 0 0 1-.624.312l-2.573-1.485v-2.969a.625.625 0 0 1-.312-.541L12 18.307z"/>
-                                </svg>
-                            </div>
-                            <span class="integration-card-title">OpenAI Client</span>
-                            <span class="integration-card-desc">Chaves e modelos GPT próprios</span>
-                            <div>
-                                <span class="integration-status-badge integration-status-development">Em breve</span>
-                            </div>
-                        </div>
-
-                        <!-- CARD: GEMINI -->
-                        <div class="integration-card" onclick="openIntegrationPage('gemini')">
-                            <div class="integration-icon-wrapper" style="background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.2); color: #8B5CF6;">
-                                <svg style="width: 24px; height: 24px; fill: currentColor;" viewBox="0 0 24 24">
-                                    <path d="M12 2a10 10 0 0 1 7.54 16.54c-.11.13-.25.26-.4.38a1.2 1.2 0 0 1-1.64-.15c-.44-.45-.44-1.18.02-1.63A6 6 0 1 0 8.87 6.44l1.41 1.41a1 1 0 0 1-.7 1.71h-5a1 1 0 0 1-1-1v-5a1 1 0 0 1 1.71-.7l1.53 1.54A9.94 9.94 0 0 1 12 2zm3.3 6.3a1 1 0 0 1 .7.3l5 5a1 1 0 0 1-1.42 1.4l-4.29-4.29-4.29 4.29a1 1 0 0 1-1.42-1.4l5-5a1 1 0 0 1 .7-.3z"/>
-                                </svg>
-                            </div>
-                            <span class="integration-card-title">Gemini Portal</span>
-                            <span class="integration-card-desc">Modelos Gemini isolados</span>
-                            <div>
-                                <span class="integration-status-badge integration-status-development">Em breve</span>
-                            </div>
-                        </div>
-
-                        <!-- CARD: CUSTOM API -->
-                        <div class="integration-card" onclick="openIntegrationPage('customapi')">
-                            <div class="integration-icon-wrapper" style="background: rgba(236, 72, 153, 0.1); border-color: rgba(236, 72, 153, 0.2); color: #EC4899;">
-                                <svg style="width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24">
-                                    <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                                    <polyline points="2 17 12 22 22 17"/>
-                                    <polyline points="2 12 12 17 22 12"/>
-                                </svg>
-                            </div>
-                            <span class="integration-card-title">Custom API</span>
-                            <span class="integration-card-desc">REST, triggers e payloads livres</span>
-                            <div>
-                                <span class="integration-status-badge integration-status-development">Em breve</span>
-                            </div>
-                        </div>
 
                     </div>
                 </div>
@@ -4836,6 +4732,238 @@ CREATE TRIGGER on_synapse_user_signed_up
                         customapi: { title: "💻 Custom API REST Client", desc: "Sincronize eventos de dados enviando payloads para qualquer endpoint REST" }
                     };
 
+                    const INTEGRATIONS_LIST = [
+                        {
+                            id: 'telegram',
+                            title: 'Telegram Bot',
+                            desc: 'Notificações e comandos remotos via Telegram Bot',
+                            icon: `<svg style="width: 24px; height: 24px; fill: currentColor;" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.94-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                            </svg>`,
+                            bg: 'rgba(56, 189, 248, 0.1)',
+                            border: 'rgba(56, 189, 248, 0.2)',
+                            color: '#38bdf8'
+                        },
+                        {
+                            id: 'webhooks',
+                            title: 'Webhooks Gateway',
+                            desc: 'HTTP pública para sincronizar dados',
+                            icon: `<svg style="width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24">
+                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                            </svg>`,
+                            bg: 'rgba(16, 185, 129, 0.1)',
+                            border: 'rgba(16, 185, 129, 0.2)',
+                            color: '#10B981'
+                        },
+                        {
+                            id: 'discord',
+                            title: 'Discord API',
+                            desc: 'Alertas e logs em canais de chat',
+                            icon: `<svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 127.14 96.36">
+                                <path d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,52.88,6.83,77.19,77.19,0,0,0,49.58,0,105.15,105.15,0,0,0,19.14,8.07C3,32.22-1.45,55.8,1,79a105.73,105.73,0,0,0,32,16.29,79,79,0,0,0,6.73-11,68.52,68.52,0,0,1-10.64-5.12c.91-.67,1.81-1.37,2.67-2.1a75.56,75.56,0,0,0,71.24,0c.86.73,1.76,1.43,2.67,2.1a68.86,68.86,0,0,1-10.64,5.12,79.05,79.05,0,0,0,6.73,11,105.73,105.73,0,0,0,32-16.29C129.35,55.8,124.62,32.22,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53S36.18,40.36,42.45,40.36,53.83,46,53.83,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.07,46,96.07,53,91,65.69,84.69,65.69Z"/>
+                            </svg>`,
+                            bg: 'rgba(88, 101, 242, 0.1)',
+                            border: 'rgba(88, 101, 242, 0.2)',
+                            color: '#5865F2'
+                        },
+                        {
+                            id: 'whatsapp',
+                            title: 'WhatsApp API',
+                            desc: 'Notificações instantâneas de eventos',
+                            icon: `<svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 24 24">
+                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.42 9.864-9.864.002-2.637-1.023-5.11-2.884-6.973C16.591 1.888 14.113.86 11.48.858c-5.441 0-9.864 4.42-9.868 9.863-.001 1.765.467 3.491 1.358 5.021l-.993 3.626 3.71-.973zm11.205-7.39c-.276-.139-1.636-.807-1.889-.899-.254-.092-.439-.139-.624.139-.185.276-.716.899-.877 1.083-.162.185-.323.208-.599.069-.276-.139-1.168-.43-2.223-1.372-.82-.732-1.374-1.636-1.535-1.912-.162-.276-.017-.425.121-.563.125-.124.276-.323.415-.484.138-.162.184-.276.276-.462.093-.185.046-.347-.023-.485-.069-.139-.624-1.503-.855-2.057-.225-.54-.473-.466-.649-.475-.167-.008-.36-.01-.553-.01s-.507.072-.773.36c-.266.287-1.016.993-1.016 2.421 0 1.427 1.039 2.805 1.183 2.99.145.185 2.043 3.12 4.949 4.373.691.298 1.231.477 1.652.61.696.22 1.329.19 1.83.115.558-.084 1.636-.669 1.867-1.317.23-.647.23-1.202.162-1.317-.069-.115-.254-.185-.53-.324z"/>
+                            </svg>`,
+                            bg: 'rgba(37, 211, 102, 0.1)',
+                            border: 'rgba(37, 211, 102, 0.2)',
+                            color: '#25D366'
+                        },
+                        {
+                            id: 'github',
+                            title: 'GitHub Actions',
+                            desc: 'Sincronização de deploys e builds',
+                            icon: `<svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 24 24">
+                                <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                            </svg>`,
+                            bg: 'rgba(240, 246, 252, 0.08)',
+                            border: 'rgba(240, 246, 252, 0.15)',
+                            color: '#F0F6FC'
+                        },
+                        {
+                            id: 'googledrive',
+                            title: 'Google Drive',
+                            desc: 'Backups de logs e históricos',
+                            icon: `<svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 24 24">
+                                <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46.18 14.25 0 14 0h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
+                            </svg>`,
+                            bg: 'rgba(251, 188, 5, 0.1)',
+                            border: 'rgba(251, 188, 5, 0.2)',
+                            color: '#FBBC05'
+                        },
+                        {
+                            id: 'openai',
+                            title: 'OpenAI Client',
+                            desc: 'Chaves e modelos GPT próprios',
+                            icon: `<svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 24 24">
+                                <path d="M22.508 10.42a5.414 5.414 0 0 0-.115-1.94 5.467 5.467 0 0 0-1.468-2.585 5.417 5.417 0 0 0-2.585-1.468 5.385 5.385 0 0 0-3.473.167 5.414 5.414 0 0 0-2.867-2.867 5.441 5.441 0 0 0-3.94 0 5.414 5.414 0 0 0-2.867 2.867 5.4 5.4 0 0 0-.167 3.473 5.45 5.45 0 0 0-1.468 2.585 5.417 5.417 0 0 0-.115 1.94 5.414 5.414 0 0 0 .115 1.94 5.467 5.467 0 0 0 1.468 2.585 5.417 5.417 0 0 0 2.585 1.468 5.385 5.385 0 0 0 3.473-.167 5.414 5.414 0 0 0 2.867 2.867 5.4 5.4 0 0 0 3.94 0 5.414 5.414 0 0 0 2.867-2.867 5.4 5.4 0 0 0 .167-3.473 5.45 5.45 0 0 0 1.468-2.585 5.417 5.417 0 0 0 .115-1.94zm-1.874-.356a3.522 3.522 0 0 1-.365.132l-.01.003-3.003 1.733a.625.625 0 0 1-.624.004l-2.573-1.485v2.969a.625.625 0 0 1-.312.541l-2.573 1.485a3.568 3.568 0 0 1-1.785.478 3.535 3.535 0 0 1-1.787-.478l.006-.003 2.574-1.486a.625.625 0 0 1 .624-.004l2.573 1.485V12.44a.625.625 0 0 1 .312-.541l2.573-1.485a3.568 3.568 0 0 1 1.785-.478c.638 0 1.263.17 1.815.494zm-8.634 8.243v-2.97a.625.625 0 0 1 .312-.541l2.573-1.485a3.568 3.568 0 0 1 1.785-.478c.642 0 1.267.172 1.819.497l-.004-.007a3.522 3.522 0 0 1-.132.365l-.003.01-1.733 3.003a.625.625 0 0 1-.624.312l-2.573-1.485v-2.969a.625.625 0 0 1-.312-.541L12 18.307z"/>
+                            </svg>`,
+                            bg: 'rgba(116, 170, 156, 0.1)',
+                            border: 'rgba(116, 170, 156, 0.2)',
+                            color: '#74AA9C'
+                        },
+                        {
+                            id: 'gemini',
+                            title: 'Gemini Portal',
+                            desc: 'Modelos Gemini isolados',
+                            icon: `<svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 24 24">
+                                <path d="M12 2a10 10 0 0 1 7.54 16.54c-.11.13-.25.26-.4.38a1.2 1.2 0 0 1-1.64-.15c-.44-.45-.44-1.18.02-1.63A6 6 0 1 0 8.87 6.44l1.41 1.41a1 1 0 0 1-.7 1.71h-5a1 1 0 0 1-1-1v-5a1 1 0 0 1 1.71-.7l1.53 1.54A9.94 9.94 0 0 1 12 2zm3.3 6.3a1 1 0 0 1 .7.3l5 5a1 1 0 0 1-1.42 1.4l-4.29-4.29-4.29 4.29a1 1 0 0 1-1.42-1.4l5-5a1 1 0 0 1 .7-.3z"/>
+                            </svg>`,
+                            bg: 'rgba(139, 92, 246, 0.1)',
+                            border: 'rgba(139, 92, 246, 0.2)',
+                            color: '#8B5CF6'
+                        },
+                        {
+                            id: 'customapi',
+                            title: 'Custom API',
+                            desc: 'REST, triggers e payloads livres',
+                            icon: `<svg style="width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24">
+                                <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                                <polyline points="2 17 12 22 22 17"/>
+                                <polyline points="2 12 12 17 22 12"/>
+                            </svg>`,
+                            bg: 'rgba(236, 72, 153, 0.1)',
+                            border: 'rgba(236, 72, 153, 0.2)',
+                            color: '#EC4899'
+                        }
+                    ];
+
+                    let activeIntegrationFilter = 'all';
+
+                    function getIntegrationStatus(id) {
+                        if (id === 'telegram') {
+                            const tgToken = document.getElementById('telegram-token')?.value || '';
+                            return tgToken.trim().length > 5 ? 'connected' : 'inactive';
+                        }
+                        if (id === 'webhooks') {
+                            const webhookToggle = document.getElementById('html-webhook-online-toggle');
+                            return (webhookToggle && webhookToggle.checked) ? 'connected' : 'inactive';
+                        }
+                        return 'development';
+                    }
+
+                    function setIntegrationFilter(filter) {
+                        triggerPulse();
+                        activeIntegrationFilter = filter;
+                        
+                        // Update active chip classes
+                        const chips = document.querySelectorAll('.filter-chip');
+                        chips.forEach(chip => {
+                            if (chip.getAttribute('data-filter') === filter) {
+                                chip.classList.add('active');
+                            } else {
+                                chip.classList.remove('active');
+                            }
+                        });
+                        
+                        renderIntegrationCards();
+                    }
+
+                    function clearIntegrationSearch(resetAll = false) {
+                        triggerPulse();
+                        const searchInput = document.getElementById('integration-search-input');
+                        if (searchInput) searchInput.value = '';
+                        
+                        if (resetAll) {
+                            activeIntegrationFilter = 'all';
+                            const chips = document.querySelectorAll('.filter-chip');
+                            chips.forEach(chip => {
+                                if (chip.getAttribute('data-filter') === 'all') {
+                                    chip.classList.add('active');
+                                } else {
+                                    chip.classList.remove('active');
+                                }
+                            });
+                        }
+                        
+                        renderIntegrationCards();
+                    }
+
+                    function handleIntegrationSearchAndFilter() {
+                        renderIntegrationCards();
+                    }
+
+                    function renderIntegrationCards() {
+                        const grid = document.querySelector('.integrations-grid');
+                        if (!grid) return;
+
+                        const searchInput = document.getElementById('integration-search-input');
+                        const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+                        const clearBtn = document.getElementById('search-clear-btn');
+                        if (clearBtn) {
+                            clearBtn.style.display = query.length > 0 ? 'block' : 'none';
+                        }
+
+                        grid.innerHTML = '';
+                        
+                        const filtered = INTEGRATIONS_LIST.filter(item => {
+                            // Search query filter
+                            const matchesQuery = item.title.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query);
+                            if (!matchesQuery) return false;
+
+                            // Status filter
+                            const status = getIntegrationStatus(item.id);
+                            if (activeIntegrationFilter === 'all') return true;
+                            return status === activeIntegrationFilter;
+                        });
+
+                        if (filtered.length === 0) {
+                            grid.innerHTML = `
+                                <div class="empty-search-state" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px dashed var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; width: 100%; box-sizing: border-box; animation: fadeIn 0.3s ease;">
+                                    <span style="font-size: 2.2rem;">🔍</span>
+                                    <h4 style="margin: 0; color: #fff; font-size: 1rem;">Nenhuma integração encontrada</h4>
+                                    <p style="margin: 0; color: var(--text-muted); font-size: 0.8rem; max-width: 250px; line-height: 1.4;">Tente alterar os termos de pesquisa ou o filtro selecionado.</p>
+                                    <button onclick="clearIntegrationSearch(true)" style="background: rgba(192, 132, 252, 0.1); border: 1px solid rgba(192, 132, 252, 0.2); color: #c084fc; padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; cursor: pointer; margin-top: 8px; transition: 0.2s;">Limpar Filtros</button>
+                                </div>
+                            `;
+                            return;
+                        }
+
+                        filtered.forEach(item => {
+                            const status = getIntegrationStatus(item.id);
+                            
+                            let statusText = "Em desenvolvimento";
+                            let statusClass = "integration-status-development";
+                            if (status === 'connected') {
+                                statusText = currentLanguage === 'en' ? '🟢 Connected' : currentLanguage === 'es' ? '🟢 Conectado' : '🟢 Conectado';
+                                statusClass = "integration-status-connected";
+                            } else if (status === 'inactive') {
+                                statusText = currentLanguage === 'en' ? '🔴 Inactive' : currentLanguage === 'es' ? '🔴 Inactivo' : '🔴 Inativo';
+                                statusClass = "integration-status-disconnected";
+                            } else {
+                                statusText = currentLanguage === 'en' ? '🟡 In dev' : currentLanguage === 'es' ? '🟡 En desarrollo' : '🟡 Em breve';
+                                statusClass = "integration-status-development";
+                            }
+
+                            const isSelected = activeIntegrationFilter !== 'all' && status === activeIntegrationFilter;
+
+                            const card = document.createElement('div');
+                            card.className = `integration-card${isSelected ? ' selected-pulse' : ''}`;
+                            card.setAttribute('onclick', `openIntegrationPage('${item.id}')`);
+                            card.innerHTML = `
+                                <div class="integration-icon-wrapper" style="background: ${item.bg}; border-color: ${item.border}; color: ${item.color};">
+                                    ${item.icon}
+                                </div>
+                                <span class="integration-card-title">${item.title}</span>
+                                <span class="integration-card-desc">${item.desc}</span>
+                                <div id="hub-badge-${item.id}">
+                                    <span class="integration-status-badge ${statusClass}">${statusText}</span>
+                                </div>
+                            `;
+                            grid.appendChild(card);
+                        });
+                    }
+
                     function updateIntegrationHubStatusBadges() {
                         const tgToken = document.getElementById('telegram-token')?.value || '';
                         const tgConnected = tgToken.trim().length > 5;
@@ -4849,15 +4977,10 @@ CREATE TRIGGER on_synapse_user_signed_up
                             tgText = currentLanguage === 'en' ? 'Disconnected' : currentLanguage === 'es' ? 'Desconectado' : 'Desconectado';
                         }
                         
-                        const tgBadges = [
-                            document.getElementById('hub-badge-telegram'),
-                            document.getElementById('detail-badge-telegram')
-                        ];
-                        tgBadges.forEach(badgeContainer => {
-                            if (badgeContainer) {
-                                badgeContainer.innerHTML = `<span class="integration-status-badge ${tgClass}">${tgText}</span>`;
-                            }
-                        });
+                        const tgDetailBadge = document.getElementById('detail-badge-telegram');
+                        if (tgDetailBadge) {
+                            tgDetailBadge.innerHTML = `<span class="integration-status-badge ${tgClass}">🟢 ${tgText}</span>`;
+                        }
 
                         const webhookToggle = document.getElementById('html-webhook-online-toggle');
                         const webhooksActive = webhookToggle ? webhookToggle.checked : false;
@@ -4871,40 +4994,76 @@ CREATE TRIGGER on_synapse_user_signed_up
                             whText = currentLanguage === 'en' ? 'Inactive' : currentLanguage === 'es' ? 'Inactivo' : 'Inativo';
                         }
                         
-                        const whBadges = [
-                            document.getElementById('hub-badge-webhooks'),
-                            document.getElementById('detail-badge-webhooks')
-                        ];
-                        whBadges.forEach(badgeContainer => {
-                            if (badgeContainer) {
-                                badgeContainer.innerHTML = `<span class="integration-status-badge ${whClass}">${whText}</span>`;
-                            }
-                        });
+                        const whDetailBadge = document.getElementById('detail-badge-webhooks');
+                        if (whDetailBadge) {
+                            whDetailBadge.innerHTML = `<span class="integration-status-badge ${whClass}">🟢 ${whText}</span>`;
+                        }
+
+                        // Sync dynamic hub view
+                        renderIntegrationCards();
                     }
 
                     function openIntegrationPage(id) {
                         triggerPulse();
-                        document.getElementById('integrations-hub-main').style.display = 'none';
-                        document.querySelectorAll('.integration-detail-page').forEach(page => {
-                            page.style.display = 'none';
-                        });
                         
-                        if (id === 'telegram' || id === 'webhooks') {
-                            const targetPage = document.getElementById('integration-page-' + id);
-                            if (targetPage) targetPage.style.display = 'block';
-                        } else {
-                            const data = integrationData[id];
-                            if (data) {
-                                document.getElementById('generic-title').innerText = data.title;
-                                document.getElementById('generic-subtitle').innerText = data.desc;
-                                document.getElementById('integration-page-generic').style.display = 'block';
+                        // Show smooth loading screen overlay
+                        const loadingScreen = document.getElementById('integration-loading-screen');
+                        const loadingText = document.getElementById('integration-loading-text');
+                        
+                        if (loadingScreen) {
+                            if (loadingText) {
+                                const msgs = {
+                                    pt: `Abrindo ${id.charAt(0).toUpperCase() + id.slice(1)}...`,
+                                    en: `Opening ${id.charAt(0).toUpperCase() + id.slice(1)}...`,
+                                    es: `Abriendo ${id.charAt(0).toUpperCase() + id.slice(1)}...`
+                                };
+                                const lang = currentLanguage || 'pt';
+                                loadingText.innerText = msgs[lang] || msgs['pt'];
                             }
+                            loadingScreen.style.display = 'flex';
+                            setTimeout(() => {
+                                loadingScreen.style.opacity = '1';
+                            }, 10);
                         }
-                        updateIntegrationHubStatusBadges();
+                        
+                        // Perform state transition after smooth delay
+                        setTimeout(() => {
+                            document.getElementById('integrations-hub-main').style.display = 'none';
+                            document.querySelectorAll('.integration-detail-page').forEach(page => {
+                                page.style.display = 'none';
+                            });
+                            
+                            if (id === 'telegram' || id === 'webhooks') {
+                                const targetPage = document.getElementById('integration-page-' + id);
+                                if (targetPage) targetPage.style.display = 'block';
+                            } else {
+                                const data = integrationData[id];
+                                if (data) {
+                                    const genericTitle = document.getElementById('generic-title');
+                                    const genericSubtitle = document.getElementById('generic-subtitle');
+                                    if (genericTitle) genericTitle.innerText = data.title;
+                                    if (genericSubtitle) genericSubtitle.innerText = data.desc;
+                                    const genPage = document.getElementById('integration-page-generic');
+                                    if (genPage) genPage.style.display = 'block';
+                                }
+                            }
+                            
+                            updateIntegrationHubStatusBadges();
+                            
+                            // Smoothly fade out the loader screen
+                            if (loadingScreen) {
+                                loadingScreen.style.opacity = '0';
+                                setTimeout(() => {
+                                    loadingScreen.style.display = 'none';
+                                }, 250);
+                            }
+                        }, 400);
                     }
 
                     function closeIntegrationPage() {
                         triggerPulse();
+                        
+                        // Smoothly return back to Hub Main
                         document.querySelectorAll('.integration-detail-page').forEach(page => {
                             page.style.display = 'none';
                         });
