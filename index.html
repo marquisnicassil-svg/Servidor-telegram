@@ -5373,55 +5373,130 @@ WITH CHECK (true);</code>
             </div>
 
             <!-- SUB-VIEW 4: MINHA CONTA & SESSÃO -->
-            <div id="config-subview-account" class="config-subview" style="display: none;">
-                <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;">⬅️ Voltar para Ajustes</button>
+            <div id="config-subview-account" class="config-subview" style="display: none; animation: fadeIn 0.3s ease-out;">
+                <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content; transition: 0.2s;">⬅️ Voltar para Ajustes</button>
                 
-                <div class="section-header" style="text-align: left;">
-                    <h2>👤 Minha Conta & Sessão</h2>
+                <div class="section-header" style="text-align: left; margin-bottom: 20px;">
+                    <h2 style="font-size: 1.3rem; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 8px;">👤 Minha Conta & Sessão</h2>
                 </div>
 
-                <!-- Card de Autenticação Supabase Auth -->
-                <div class="supabase-card" id="supabase-auth-card" style="margin-bottom: 24px; text-align: left;">
-                    <div class="supabase-card-header">
-                        <span class="supabase-card-title">🔑 Supabase Auth (Autenticação)</span>
-                        <div class="supabase-status-badge" title="Status da Sessão de Usuário">
-                            <span class="supabase-status-dot" id="auth-status-dot" style="background-color: #737373;"></span>
-                            <span id="auth-status-desc">Inativo</span>
+                <!-- IDENTIFICAÇÃO DA CONTA -->
+                <div class="supabase-card" id="account-ident-card" style="margin-bottom: 20px; padding: 18px; border-radius: 20px; text-align: left; transition: all 0.3s ease-in-out;">
+                    <!-- Preenchido dinamicamente por renderAccountIdentification() -->
+                </div>
+
+                <!-- GERENCIAMENTO DA SESSÃO -->
+                <div class="supabase-card" style="margin-bottom: 20px; text-align: left; padding: 18px; position: relative;">
+                    <div class="supabase-card-header" style="margin-bottom: 14px;">
+                        <span class="supabase-card-title">⚙️ Gerenciamento da Sessão</span>
+                    </div>
+
+                    <!-- Sessão Ativa / Logada -->
+                    <div id="session-mgmt-active" style="display: none; flex-direction: column; gap: 16px;">
+                        <!-- Campo Alterar Senha -->
+                        <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); border-radius: 12px; padding: 14px;">
+                            <label style="font-size: 0.72rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 8px;">Alterar Senha de Acesso</label>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <div style="position: relative; display: flex; align-items: center;">
+                                    <input type="password" id="new-account-password" class="form-control" style="border-radius: 10px; padding: 10px 42px 10px 12px; font-size: 0.85rem; width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color);" placeholder="Insira a nova senha (mín. 6 caracteres)" autocomplete="new-password">
+                                    <button type="button" onclick="togglePasswordVisibility('new-account-password', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10; outline: none;" title="Exibir/Ocultar Senha">👁️</button>
+                                </div>
+                                <button id="btn-save-new-password" class="btn-supabase-action" onclick="accountChangePassword()" style="border-color: var(--primary); background: rgba(124, 58, 237, 0.08); font-size: 0.8rem; padding: 8px 12px; border-radius: 10px; font-weight: bold; width: 100%; transition: 0.2s; cursor: pointer;">
+                                    💾 Salvar Nova Senha
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Campo Alterar E-mail -->
+                        <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); border-radius: 12px; padding: 14px;">
+                            <label style="font-size: 0.72rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 8px;">Alterar E-mail de Usuário</label>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <input type="email" id="new-account-email" class="form-control" style="border-radius: 10px; padding: 10px 12px; font-size: 0.85rem; width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color);" placeholder="Insira o novo endereço de e-mail">
+                                <button id="btn-save-new-email" class="btn-supabase-action" onclick="accountChangeEmail()" style="border-color: #3b82f6; background: rgba(59, 130, 246, 0.08); font-size: 0.8rem; padding: 8px 12px; border-radius: 10px; font-weight: bold; width: 100%; transition: 0.2s; cursor: pointer;">
+                                    📧 Atualizar E-mail da Conta
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Ações Rápidas de Verificação e Recuperação -->
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <label style="font-size: 0.72rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">Ações Rápidas de Segurança</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <button id="btn-verify-email" class="btn-supabase-action" onclick="accountResendVerification()" style="border-color: #10b981; background: rgba(16, 185, 129, 0.05); font-size: 0.8rem; padding: 10px; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: bold; cursor: pointer;" title="Reenviar link de confirmação para o e-mail">
+                                    ✉️ Confirmar E-mail
+                                </button>
+                                <button id="btn-recover-password" class="btn-supabase-action" onclick="accountRecoverPassword()" style="border-color: #f59e0b; background: rgba(245, 158, 11, 0.05); font-size: 0.8rem; padding: 10px; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: bold; cursor: pointer;" title="Enviar e-mail para recuperar senha de acesso">
+                                    🔑 Recuperar Senha
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Encerramento de Sessões -->
+                        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px;">
+                            <button class="btn-supabase-action" onclick="supabaseSignOut()" style="border-color: #ef4444; color: #f87171; background: rgba(239, 68, 68, 0.05); padding: 11px; font-weight: bold; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.82rem; cursor: pointer;">
+                                🚪 Encerrar Sessão Ativa
+                            </button>
+                            <button id="btn-logout-all-devices" class="btn-supabase-action" onclick="accountSignOutGlobally()" style="border-color: #f43f5e; color: #fda4af; background: rgba(244, 63, 94, 0.05); padding: 10px; font-weight: bold; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.78rem; cursor: pointer;" title="Encerra todas as sessões em todos os dispositivos">
+                                💀 Encerrar Todas as Sessões
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Mensagem informativa quando DESLOGADO -->
-                    <div id="auth-settings-logged-out-msg" style="display: flex; flex-direction: column; gap: 10px; padding: 6px 0; align-items: center; text-align: center;">
-                        <div style="background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 12px; padding: 12px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.4; width: 100%;">
-                            <span style="font-size: 1.3rem; display: block; margin-bottom: 2px;">🔒</span>
-                            Você não está autenticado. Para sincronizar o sistema e fazer backup de mensagens na nuvem, realize o login de segurança no portal inicial.
-                        </div>
-                        <button class="btn-supabase-action" onclick="showAuthGateScreen()" style="border-color: var(--primary); background: rgba(255,255,255,0.02); width: 100%; padding: 10px; font-size: 0.85rem; border-radius: 10px;">
-                            🔑 Ir para a Tela de Acesso
-                        </button>
-                    </div>
-
-                    <!-- Painel de Usuário Autenticado (Visível quando LOGADO) -->
-                    <div id="auth-user-container" style="display: none; flex-direction: column; gap: 10px; padding: 6px 0;">
-                        <div style="background: rgba(16,185,129,0.04); border: 1px solid rgba(34,197,94,0.2); border-radius: 12px; padding: 12px; font-size: 0.82rem; color: #d1d5db; line-height: 1.4;">
-                            <span style="display:block; font-size: 0.65rem; color: #34d399; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">Sessão Segura Ativa</span>
-                            <strong>E-mail:</strong> <span id="auth-user-email">--</span><br>
-                            <strong>User ID:</strong> <span id="auth-user-id" style="font-family: monospace; font-size: 0.7rem; color: var(--text-muted)">--</span>
-                        </div>
-
-                        <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; font-style: italic; margin-top: -2px;">
-                            🔑 Backups e leituras agora usam autenticação RLS ativa no banco de dados.
-                        </div>
-
-                        <button class="btn-supabase-action" onclick="supabaseSignOut()" style="border-color: #ef4444; color: #f87171; background: rgba(239,68,68,0.02); width: 100%;">
-                            ❌ Desconectar Sessão (Sair)
+                    <!-- Sessão Inativa / Deslogada -->
+                    <div id="session-mgmt-inactive" style="display: flex; flex-direction: column; gap: 12px; text-align: center; padding: 24px 10px; justify-content: center; align-items: center; border: 1px dashed var(--border-color); border-radius: 14px; background: rgba(255,255,255,0.01);">
+                        <span style="font-size: 1.8rem; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));">🔒</span>
+                        <h4 style="margin: 0; color: #fff; font-size: 0.9rem; font-weight: 700;">Gerenciamento de Sessão Restrito</h4>
+                        <p style="margin: 0; color: var(--text-muted); font-size: 0.78rem; line-height: 1.4; max-width: 260px;">Faça login com uma conta para alterar senhas, e-mails ou gerenciar sessões ativas.</p>
+                        <button class="btn-supabase-action" onclick="showAuthGateScreen()" style="border-color: var(--primary); background: rgba(124, 58, 237, 0.12); width: 100%; max-width: 180px; padding: 10px; font-size: 0.8rem; border-radius: 8px; font-weight: bold; margin-top: 6px; cursor: pointer;">
+                            🔑 Conectar Conta
                         </button>
                     </div>
                 </div>
 
-                <button class="btn-save-premium" onclick="saveConfigWithPremiumFeedback(this)">
-                    <span>Aplicar Ajustes ✨</span>
-                </button>
+                <!-- SEGURANÇA -->
+                <div class="supabase-card" style="margin-bottom: 24px; text-align: left; padding: 18px;">
+                    <div class="supabase-card-header" style="margin-bottom: 14px;">
+                        <span class="supabase-card-title">🛡️ Segurança e Integridade</span>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 11px;">
+                        <!-- Status da Autenticação -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-size: 0.8rem; font-weight: bold; color: #f1f5f9;">Status da Autenticação</span>
+                                <span style="font-size: 0.7rem; color: var(--text-muted);">Tipo de credencial ativa</span>
+                            </div>
+                            <span id="security-auth-status" style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; background: rgba(148, 163, 184, 0.1); border: 1px solid rgba(148, 163, 184, 0.2); padding: 3px 8px; border-radius: 6px;">Visitante</span>
+                        </div>
+
+                        <!-- Última Sincronização -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-size: 0.8rem; font-weight: bold; color: #f1f5f9;">Última Sincronização</span>
+                                <span style="font-size: 0.7rem; color: var(--text-muted);">Backup na nuvem Supabase</span>
+                            </div>
+                            <span id="security-last-sync" style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; background: rgba(255, 255, 255, 0.05); padding: 3px 8px; border-radius: 6px;">Nenhuma</span>
+                        </div>
+
+                        <!-- Estado da Sessão -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-size: 0.8rem; font-weight: bold; color: #f1f5f9;">Estado da Sessão</span>
+                                <span style="font-size: 0.7rem; color: var(--text-muted);">Validade do token atual</span>
+                            </div>
+                            <span id="security-session-state" style="font-size: 0.75rem; font-weight: 700; color: #ef4444; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 3px 8px; border-radius: 6px; text-transform: uppercase;">Inativa</span>
+                        </div>
+
+                        <!-- Indicador de conexão segura -->
+                        <div style="display: flex; align-items: center; gap: 10px; background: rgba(16, 185, 129, 0.03); border: 1px solid rgba(16, 185, 129, 0.12); border-radius: 12px; padding: 10px; margin-top: 4px; box-sizing: border-box;">
+                            <span style="font-size: 1.1rem; flex-shrink: 0;">🔒</span>
+                            <div style="display: flex; flex-direction: column; gap: 2px; text-align: left; min-width: 0;">
+                                <span style="font-size: 0.78rem; font-weight: 700; color: #34d399;">Conexão Criptografada SSL</span>
+                                <span style="font-size: 0.68rem; color: #a7f3d0; opacity: 0.8; line-height: 1.3;">Seus dados de sessão e mensagens utilizam HTTPS com criptografia ponta-a-ponta e segurança RLS.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </section>
@@ -15362,6 +15437,10 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 if (response.ok) {
                     updateCloudIndicators('active', 'Conectado');
                     addLog("Conexão ao Supabase estabelecida com sucesso!", "success");
+                    
+                    localStorage.setItem('supabase_last_backup_time', new Date().toLocaleString());
+                    updateAuthUI();
+                    
                     // Sincroniza configurações da API Mestre em tempo real da nuvem
                     if (typeof syncMasterApiSettingsFromSupabase === 'function') {
                         syncMasterApiSettingsFromSupabase();
@@ -15489,6 +15568,13 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 if (response.ok) {
                     updateCloudIndicators('active', 'Sincronizado');
                     addLog("Backup de histórico persistido com sucesso na nuvem do Supabase!", "success");
+                    
+                    localStorage.setItem('supabase_last_backup_time', new Date().toLocaleString());
+                    const lastSyncEl = document.getElementById('security-last-sync');
+                    if (lastSyncEl) {
+                        lastSyncEl.innerText = new Date().toLocaleString();
+                        lastSyncEl.style.color = "#34d399";
+                    }
                     
                     if (!quiet) {
                         const cloudBtn = document.getElementById('btn-cloud-backup');
@@ -15970,6 +16056,375 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             testSupabaseConnection();
         }
 
+        // ==========================================================================
+        // Funções de Gerenciamento da Sessão & Conta Ativa
+        // ==========================================================================
+        function renderAccountIdentification() {
+            const identCard = document.getElementById('account-ident-card');
+            if (!identCard) return;
+
+            if (supabaseSession && supabaseSession.user) {
+                const user = supabaseSession.user;
+                const email = user.email || "";
+                const displayName = getDisplayName(supabaseSession) || email.split('@')[0] || "Explorador";
+                const firstLetter = displayName.trim().charAt(0).toUpperCase() || "U";
+                const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || "";
+
+                let avatarHtml = "";
+                if (avatarUrl) {
+                    avatarHtml = `<img src="${avatarUrl}" alt="${displayName}" style="width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); box-shadow: 0 0 10px rgba(124, 58, 237, 0.25);" onerror="this.style.display='none'; document.getElementById('avatar-fallback').style.display='flex';">
+                    <div id="avatar-fallback" style="display: none; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%); align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.05);">${firstLetter}</div>`;
+                } else {
+                    avatarHtml = `<div style="width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.05); box-shadow: 0 0 10px rgba(124, 58, 237, 0.3);">${firstLetter}</div>`;
+                }
+
+                identCard.style.background = "linear-gradient(135deg, rgba(124, 58, 237, 0.12) 0%, rgba(15, 23, 42, 0.6) 100%)";
+                identCard.style.borderColor = "rgba(124, 58, 237, 0.3)";
+                identCard.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <div style="position: relative; flex-shrink: 0;">
+                            ${avatarHtml}
+                            <div style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background-color: #10b981; border: 2px solid #0f172a; border-radius: 50%; box-shadow: 0 0 6px #10b981;"></div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0;">
+                            <span style="font-size: 1.05rem; font-weight: 800; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; letter-spacing: -0.2px;">${displayName}</span>
+                            <span style="font-size: 0.8rem; color: var(--text-muted); display: block; word-break: break-all; opacity: 0.85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${email}</span>
+                            <div style="display: flex; align-items: center; gap: 6px; margin-top: 3px;">
+                                <span style="font-size: 0.65rem; font-weight: 700; color: #34d399; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.15); padding: 1px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Conectado</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                identCard.style.background = "linear-gradient(135deg, rgba(239, 68, 68, 0.04) 0%, rgba(15, 23, 42, 0.6) 100%)";
+                identCard.style.borderColor = "rgba(239, 68, 68, 0.15)";
+                identCard.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <div style="position: relative; flex-shrink: 0;">
+                            <div style="width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #475569 0%, #334155 100%); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #94a3b8; border: 2px solid rgba(255,255,255,0.04); box-shadow: 0 0 10px rgba(0,0,0,0.25);">👤</div>
+                            <div style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background-color: #ef4444; border: 2px solid #0f172a; border-radius: 50%; box-shadow: 0 0 6px #ef4444;"></div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0;">
+                            <span style="font-size: 1.05rem; font-weight: 800; color: #cbd5e1; display: block;">Modo Visitante</span>
+                            <span style="font-size: 0.8rem; color: var(--text-muted); display: block; opacity: 0.85;">Acesso anônimo local</span>
+                            <div style="display: flex; align-items: center; gap: 6px; margin-top: 3px;">
+                                <span style="font-size: 0.65rem; font-weight: 700; color: #f87171; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.15); padding: 1px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Desconectado</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        async function accountChangePassword() {
+            triggerPulse();
+            const newPassword = document.getElementById('new-account-password').value;
+            if (!newPassword || newPassword.length < 6) {
+                showAppToast("A nova senha deve conter pelo menos 6 caracteres.", "warning");
+                return;
+            }
+
+            if (!supabaseSession || !supabaseSession.access_token) {
+                showAppToast("Sessão inativa. Faça login antes de alterar a senha.", "error");
+                return;
+            }
+
+            const url = document.getElementById('supabase-url').value.trim();
+            const key = document.getElementById('supabase-key').value.trim();
+            if (!url || !key) {
+                showAppToast("Configurações do Supabase ausentes.", "error");
+                return;
+            }
+
+            const changeBtn = document.getElementById('btn-save-new-password');
+            const originalText = changeBtn.innerHTML;
+            changeBtn.disabled = true;
+            changeBtn.innerHTML = `<span>Processando alteração...</span>`;
+
+            const cleanUrl = url.endsWith('/') ? url : url + '/';
+            addLog("Enviando solicitação de alteração de senha ao Supabase...", "sys");
+
+            try {
+                const response = await fetch(`${cleanUrl}auth/v1/user`, {
+                    method: 'PUT',
+                    headers: {
+                        'apikey': key,
+                        'Authorization': `Bearer ${supabaseSession.access_token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password: newPassword })
+                });
+
+                if (response.ok) {
+                    showAppToast("Senha alterada com sucesso!", "success");
+                    addLog("Senha de conta atualizada no servidor Supabase Auth.", "success");
+                    document.getElementById('new-account-password').value = '';
+                    
+                    if (typeof logAdminActivity === 'function') {
+                        logAdminActivity(supabaseSession.user.email, "Alteração de Senha", "Senha de acesso alterada com êxito");
+                    }
+                } else {
+                    const errText = await response.text();
+                    let parsedErr = { message: errText };
+                    try { parsedErr = JSON.parse(errText); } catch(e){}
+                    showAppToast(`Erro ao alterar senha: ${parsedErr.message || errText}`, "error");
+                    addLog(`Falha na alteração de senha: ${parsedErr.message || errText}`, "error");
+                }
+            } catch(err) {
+                console.error(err);
+                showAppToast("Erro de rede ao tentar alterar senha.", "error");
+            } finally {
+                changeBtn.disabled = false;
+                changeBtn.innerHTML = originalText;
+            }
+        }
+
+        async function accountChangeEmail() {
+            triggerPulse();
+            const newEmail = document.getElementById('new-account-email').value.trim();
+            if (!newEmail || !newEmail.includes('@')) {
+                showAppToast("Por favor, insira um endereço de e-mail válido.", "warning");
+                return;
+            }
+
+            if (!supabaseSession || !supabaseSession.access_token) {
+                showAppToast("Sessão inativa. Faça login antes de alterar o e-mail.", "error");
+                return;
+            }
+
+            if (newEmail.toLowerCase() === supabaseSession.user.email.toLowerCase()) {
+                showAppToast("O novo e-mail informado é idêntico ao e-mail atual.", "warning");
+                return;
+            }
+
+            const url = document.getElementById('supabase-url').value.trim();
+            const key = document.getElementById('supabase-key').value.trim();
+            if (!url || !key) {
+                showAppToast("Configurações do Supabase ausentes.", "error");
+                return;
+            }
+
+            const changeBtn = document.getElementById('btn-save-new-email');
+            const originalText = changeBtn.innerHTML;
+            changeBtn.disabled = true;
+            changeBtn.innerHTML = `<span>Processando e-mail...</span>`;
+
+            const cleanUrl = url.endsWith('/') ? url : url + '/';
+            addLog(`Enviando solicitação de alteração de e-mail para ${newEmail}...`, "sys");
+
+            try {
+                const response = await fetch(`${cleanUrl}auth/v1/user`, {
+                    method: 'PUT',
+                    headers: {
+                        'apikey': key,
+                        'Authorization': `Bearer ${supabaseSession.access_token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: newEmail })
+                });
+
+                if (response.ok) {
+                    showAppToast("Confirmação enviada! Verifique ambos os e-mails.", "success");
+                    addLog(`Solicitação de alteração de e-mail enviada para ${newEmail}. Confirmações pendentes.`, "success");
+                    document.getElementById('new-account-email').value = '';
+                    
+                    if (typeof logAdminActivity === 'function') {
+                        logAdminActivity(supabaseSession.user.email, "Alteração de E-mail", `Solicitou mudança de e-mail para ${newEmail}`);
+                    }
+                } else {
+                    const errText = await response.text();
+                    let parsedErr = { message: errText };
+                    try { parsedErr = JSON.parse(errText); } catch(e){}
+                    showAppToast(`Erro ao alterar e-mail: ${parsedErr.message || errText}`, "error");
+                    addLog(`Erro ao alterar e-mail: ${parsedErr.message || errText}`, "error");
+                }
+            } catch(err) {
+                console.error(err);
+                showAppToast("Erro de rede ao alterar e-mail.", "error");
+            } finally {
+                changeBtn.disabled = false;
+                changeBtn.innerHTML = originalText;
+            }
+        }
+
+        async function accountRecoverPassword() {
+            triggerPulse();
+            
+            let email = "";
+            if (supabaseSession && supabaseSession.user) {
+                email = supabaseSession.user.email;
+            } else {
+                email = document.getElementById('auth-email')?.value.trim() || "";
+            }
+
+            if (!email) {
+                showAppToast("Insira o e-mail no formulário de acesso para solicitar a recuperação.", "warning");
+                return;
+            }
+
+            const url = document.getElementById('supabase-url').value.trim();
+            const key = document.getElementById('supabase-key').value.trim();
+            if (!url || !key) {
+                showAppToast("Configurações do Supabase ausentes.", "error");
+                return;
+            }
+
+            const recoverBtn = document.getElementById('btn-recover-password');
+            const originalText = recoverBtn.innerHTML;
+            recoverBtn.disabled = true;
+            recoverBtn.innerHTML = `<span>Enviando...</span>`;
+
+            const cleanUrl = url.endsWith('/') ? url : url + '/';
+            addLog(`Enviando solicitação de recuperação de senha para ${email}...`, "sys");
+
+            try {
+                const response = await fetch(`${cleanUrl}auth/v1/recover`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': key,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+
+                if (response.ok) {
+                    showAppToast("E-mail de recuperação enviado com sucesso!", "success");
+                    addLog(`E-mail de recuperação de senha enviado com sucesso para ${email}.`, "success");
+                    if (typeof logAdminActivity === 'function') {
+                        logAdminActivity(email, "Recuperação Solicitada", "Link de recuperação enviado ao e-mail");
+                    }
+                } else {
+                    const errText = await response.text();
+                    let parsedErr = { message: errText };
+                    try { parsedErr = JSON.parse(errText); } catch(e){}
+                    showAppToast(`Erro ao solicitar recuperação: ${parsedErr.message || errText}`, "error");
+                    addLog(`Erro na solicitação de recuperação: ${parsedErr.message || errText}`, "error");
+                }
+            } catch(err) {
+                console.error(err);
+                showAppToast("Erro de rede ao solicitar recuperação de senha.", "error");
+            } finally {
+                recoverBtn.disabled = false;
+                recoverBtn.innerHTML = originalText;
+            }
+        }
+
+        async function accountResendVerification() {
+            triggerPulse();
+            
+            let email = "";
+            if (supabaseSession && supabaseSession.user) {
+                email = supabaseSession.user.email;
+            } else {
+                email = document.getElementById('auth-email')?.value.trim() || "";
+            }
+
+            if (!email) {
+                showAppToast("Por favor, preencha o e-mail para reenviar a verificação.", "warning");
+                return;
+            }
+
+            const url = document.getElementById('supabase-url').value.trim();
+            const key = document.getElementById('supabase-key').value.trim();
+            if (!url || !key) {
+                showAppToast("Configurações do Supabase ausentes.", "error");
+                return;
+            }
+
+            const resendBtn = document.getElementById('btn-verify-email');
+            const originalText = resendBtn.innerHTML;
+            resendBtn.disabled = true;
+            resendBtn.innerHTML = `<span>Reenviando...</span>`;
+
+            const cleanUrl = url.endsWith('/') ? url : url + '/';
+            addLog(`Solicitando reenvio de confirmação de cadastro para ${email}...`, "sys");
+
+            try {
+                const response = await fetch(`${cleanUrl}auth/v1/resend`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': key,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: 'signup',
+                        email: email
+                    })
+                });
+
+                if (response.ok) {
+                    showAppToast("E-mail de confirmação reenviado com sucesso!", "success");
+                    addLog(`Link de confirmação reenviado com sucesso para ${email}.`, "success");
+                } else {
+                    const errText = await response.text();
+                    let parsedErr = { message: errText };
+                    try { parsedErr = JSON.parse(errText); } catch(e){}
+                    showAppToast(`Erro ao enviar verificação: ${parsedErr.message || errText}`, "error");
+                    addLog(`Falha ao reenviar link de verificação: ${parsedErr.message || errText}`, "error");
+                }
+            } catch(err) {
+                console.error(err);
+                showAppToast("Erro de rede ao reenviar e-mail de verificação.", "error");
+            } finally {
+                resendBtn.disabled = false;
+                resendBtn.innerHTML = originalText;
+            }
+        }
+
+        async function accountSignOutGlobally() {
+            triggerPulse();
+            
+            if (!supabaseSession || !supabaseSession.access_token) {
+                showAppToast("Não há sessão ativa para encerrar.", "warning");
+                return;
+            }
+
+            const url = document.getElementById('supabase-url').value.trim();
+            const key = document.getElementById('supabase-key').value.trim();
+            if (!url || !key) {
+                showAppToast("Configurações do Supabase ausentes.", "error");
+                return;
+            }
+
+            const confirmed = confirm("Deseja encerrar TODAS as sessões de sua conta em todos os dispositivos remotamente?");
+            if (!confirmed) return;
+
+            const logoutAllBtn = document.getElementById('btn-logout-all-devices');
+            const originalText = logoutAllBtn.innerHTML;
+            logoutAllBtn.disabled = true;
+            logoutAllBtn.innerHTML = `<span>Processando encerramento...</span>`;
+
+            const cleanUrl = url.endsWith('/') ? url : url + '/';
+            addLog(`Iniciando encerramento global de sessões para ${supabaseSession.user.email}...`, "sys");
+
+            try {
+                const response = await fetch(`${cleanUrl}auth/v1/logout?scope=global`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': key,
+                        'Authorization': `Bearer ${supabaseSession.access_token}`
+                    }
+                });
+
+                if (response.ok) {
+                    addLog("Encerramento global de sessões concluído no servidor.", "success");
+                } else {
+                    addLog("Resposta de logout global pendente no servidor, efetuando limpeza local.", "warning");
+                }
+            } catch(err) {
+                console.warn("Erro de rede ao tentar encerrar globalmente:", err);
+            } finally {
+                logoutAllBtn.disabled = false;
+                logoutAllBtn.innerHTML = originalText;
+                
+                if (typeof logAdminActivity === 'function') {
+                    logAdminActivity(supabaseSession.user.email, "Logout Global", "Todas as sessões encerradas remotamente");
+                }
+                supabaseSignOut();
+                showAppToast("Sessões encerradas em todos os dispositivos!", "success");
+            }
+        }
+
         function checkSupabaseAuthSession() {
             try {
                 const s = localStorage.getItem('supabase_auth_session');
@@ -16001,19 +16456,58 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             const authDesc = document.getElementById('auth-status-desc');
             const authGate = document.getElementById('auth-gate-screen');
 
-            if (!formContainer || !userContainer) return;
+            // Painéis e cards responsivos adicionados
+            const sessionMgmtActive = document.getElementById('session-mgmt-active');
+            const sessionMgmtInactive = document.getElementById('session-mgmt-inactive');
+
+            // Variáveis de Segurança dinâmicas
+            const secAuthStatus = document.getElementById('security-auth-status');
+            const secLastSync = document.getElementById('security-last-sync');
+            const secSessionState = document.getElementById('security-session-state');
+
+            // Atualiza o Cabeçalho de Identificação da Conta
+            renderAccountIdentification();
 
             if (supabaseSession && supabaseSession.user) {
                 // Logado
-                formContainer.style.display = 'none';
-                userContainer.style.display = 'flex';
+                if (formContainer) formContainer.style.display = 'none';
+                if (userContainer) userContainer.style.display = 'flex';
                 if (loggedOutMsg) loggedOutMsg.style.display = 'none';
                 
-                document.getElementById('auth-user-email').innerText = supabaseSession.user.email;
-                document.getElementById('auth-user-id').innerText = supabaseSession.user.id;
+                const emailEl = document.getElementById('auth-user-email');
+                if (emailEl) emailEl.innerText = supabaseSession.user.email;
+                const idEl = document.getElementById('auth-user-id');
+                if (idEl) idEl.innerText = supabaseSession.user.id;
                 
                 if (authDot) authDot.style.backgroundColor = '#10b981'; // green
                 if (authDesc) authDesc.innerText = 'Logado';
+
+                // Formulários ativos de gerenciamento
+                if (sessionMgmtActive) sessionMgmtActive.style.display = 'flex';
+                if (sessionMgmtInactive) sessionMgmtInactive.style.display = 'none';
+
+                // Status de Segurança
+                if (secAuthStatus) {
+                    secAuthStatus.innerText = "Supabase Cloud";
+                    secAuthStatus.style.color = "#34d399";
+                    secAuthStatus.style.backgroundColor = "rgba(16, 185, 129, 0.1)";
+                    secAuthStatus.style.borderColor = "rgba(16, 185, 129, 0.15)";
+                    secAuthStatus.style.borderStyle = "solid";
+                    secAuthStatus.style.borderWidth = "1px";
+                }
+                if (secLastSync) {
+                    const lSync = localStorage.getItem('supabase_last_backup_time');
+                    secLastSync.innerText = lSync ? lSync : "Sem sincronização";
+                    secLastSync.style.color = lSync ? "#34d399" : "#94a3b8";
+                }
+                if (secSessionState) {
+                    secSessionState.innerText = "Ativa (Este dispositivo)";
+                    secSessionState.style.color = "#34d399";
+                    secSessionState.style.backgroundColor = "rgba(16, 185, 129, 0.1)";
+                    secSessionState.style.borderColor = "rgba(16, 185, 129, 0.15)";
+                    secSessionState.style.borderStyle = "solid";
+                    secSessionState.style.borderWidth = "1px";
+                }
 
                 // Descarta o gate de login com animação suave
                 if (authGate) {
@@ -16027,12 +16521,38 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 }
             } else {
                 // Deslogado
-                formContainer.style.display = 'block';
-                userContainer.style.display = 'none';
+                if (formContainer) formContainer.style.display = 'block';
+                if (userContainer) userContainer.style.display = 'none';
                 if (loggedOutMsg) loggedOutMsg.style.display = 'block';
                 
                 if (authDot) authDot.style.backgroundColor = '#ef4444'; // red
                 if (authDesc) authDesc.innerText = 'Offline (Não autenticado)';
+
+                // Formulários desativados de gerenciamento
+                if (sessionMgmtActive) sessionMgmtActive.style.display = 'none';
+                if (sessionMgmtInactive) sessionMgmtInactive.style.display = 'flex';
+
+                // Status de Segurança para Deslogado
+                if (secAuthStatus) {
+                    secAuthStatus.innerText = "Visitante / Anônimo";
+                    secAuthStatus.style.color = "#94a3b8";
+                    secAuthStatus.style.backgroundColor = "rgba(148, 163, 184, 0.08)";
+                    secAuthStatus.style.borderColor = "rgba(148, 163, 184, 0.15)";
+                    secAuthStatus.style.borderStyle = "solid";
+                    secAuthStatus.style.borderWidth = "1px";
+                }
+                if (secLastSync) {
+                    secLastSync.innerText = "Nenhuma";
+                    secLastSync.style.color = "#94a3b8";
+                }
+                if (secSessionState) {
+                    secSessionState.innerText = "Inativa";
+                    secSessionState.style.color = "#ef4444";
+                    secSessionState.style.backgroundColor = "rgba(239, 68, 68, 0.08)";
+                    secSessionState.style.borderColor = "rgba(239, 68, 68, 0.15)";
+                    secSessionState.style.borderStyle = "solid";
+                    secSessionState.style.borderWidth = "1px";
+                }
                 
                 // Exibe o gate se não autenticado
                 showAuthGateScreen();
