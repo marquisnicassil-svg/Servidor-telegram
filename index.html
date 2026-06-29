@@ -4315,313 +4315,652 @@ CREATE TRIGGER on_synapse_user_signed_up
 
             <!-- SUB-VIEW TELEGRAM: INTEGRAÇÕES E AUTOMAÇÃO -->
             <div id="config-subview-telegram" class="config-subview" style="display: none;">
-                <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;">⬅️ Voltar para Ajustes</button>
                 
-                <div class="section-header" style="text-align: left;">
-                    <h2>🔗 Integrações e Automação</h2>
-                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">Gerencie conexões do bot, webhooks privados e fluxos externos</p>
-                </div>
-
-                <!-- SEÇÃO 1: TELEGRAM BOT -->
-                <h3 style="font-size: 1rem; color: #38bdf8; font-weight: bold; margin-top: 20px; margin-bottom: 10px; text-align: left;">🤖 Telegram Bot</h3>
-                <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: #0F172A; border: 1px solid var(--border-color); border-radius: 16px;">
-                    <div style="padding: 16px; display: flex; flex-direction: column; gap: 14px;">
-                        <div class="form-group">
-                            <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Token do Bot (Telegram)</label>
-                            <div style="position: relative; display: flex; align-items: center;">
-                                <input type="password" id="telegram-token" class="form-control" style="padding-right: 40px; border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" placeholder="Insira o token gerado pelo @BotFather..." autocomplete="new-password" oninput="saveConfiguration()">
-                                <button type="button" onclick="togglePasswordVisibility('telegram-token', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Token">👁️</button>
-                            </div>
-                        </div>
-
-                        <span style="color: #94a3b8; font-size: 0.75rem; text-align: left; line-height: 1.4; display: block; margin-top: -4px;">
-                            Token de autorização do robô.
-                        </span>
-
-                        <div class="form-group" style="margin-top: 6px;">
-                            <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">🔗 URL de End-Point de webhook</label>
-                            <div style="display: flex; gap: 8px; align-items: center;">
-                                <input type="text" id="telegram-webhook" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); flex: 1;" placeholder="Nenhum webhook ativo (Recomendado para Polling)">
-                                <button type="button" onclick="deleteTelegramWebhook()" class="btn-universal" style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #f87171; height: 38px; padding: 0 16px; font-size: 0.75rem; font-weight: bold; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; border: 1px solid #ef4444; width: auto; margin-top: 0; white-space: nowrap;">
-                                    🗑️ Limpar Webhook
-                                </button>
-                             </div>
-                        </div>
-
-                        <span style="color: #94a3b8; font-size: 0.75rem; text-align: left; line-height: 1.4; display: block; margin-top: -4px;">
-                            Endereço HTTP do gateway de callback do Telegram.
-                        </span>
-
-                        <button class="btn-universal" id="btn-test-telegram" onclick="testTelegramConnection()" style="background: rgba(30, 41, 59, 0.5); border: 1px solid var(--border-color); color: #38bdf8; font-weight: bold; font-size: 0.85rem; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; cursor: pointer; width: 100%;">
-                            🔄 Testar Conexão do Bot
-                        </button>
+                <!-- MAIN INTEGRATIONS HUB -->
+                <div id="integrations-hub-main">
+                    <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;">⬅️ Voltar para Ajustes</button>
+                    
+                    <div class="section-header" style="text-align: left; margin-bottom: 24px;">
+                        <h2>🔗 Hub de Integrações</h2>
+                        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">Gerencie e conecte suas ferramentas de forma independente e isolada</p>
                     </div>
-                </div>
 
-                <!-- CÉREBRO DO BOT (PROVEDOR DE IA) -->
-                <h3 style="font-size: 1rem; color: #a855f7; font-weight: bold; margin-top: 20px; margin-bottom: 10px; text-align: left;">🧠 Cérebro do Bot (Inteligência Artificial)</h3>
-                <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: #0F172A; border: 1px solid var(--border-color); border-radius: 16px;">
-                    <div style="padding: 16px; display: flex; flex-direction: column; gap: 14px;">
-                        <span style="color: #94a3b8; font-size: 0.75rem; text-align: left; line-height: 1.4; display: block; margin-top: -4px;">
-                            Defina qual cérebro de Inteligência Artificial o seu bot utilizará para responder às mensagens no Telegram.
-                        </span>
+                    <div class="integrations-grid">
                         
-                        <div class="form-group">
-                            <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Tipo de Provedor / API</label>
-                            <div class="api-selector-grid" style="grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px;">
-                                <div class="selector-btn active" id="tg-btn-gemini" onclick="setTelegramApiType('GEMINI')" style="border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s;">
-                                    <span>♊</span>
-                                    <span style="font-size: 0.75rem;">Gemini</span>
-                                </div>
-                                <div class="selector-btn" id="tg-btn-openai" onclick="setTelegramApiType('OPENAI')" style="border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s;">
-                                    <span>🌐</span>
-                                    <span style="font-size: 0.75rem;">ChatGPT</span>
-                                </div>
-                                <div class="selector-btn" id="tg-btn-custom" onclick="setTelegramApiType('CUSTOM')" style="border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s;">
-                                    <span>🧠</span>
-                                    <span style="font-size: 0.75rem;">Universal</span>
-                                </div>
+                        <!-- CARD: TELEGRAM -->
+                        <div class="integration-card" onclick="openIntegrationPage('telegram')">
+                            <div class="integration-icon-wrapper" style="background: rgba(34, 158, 217, 0.1); border-color: rgba(34, 158, 217, 0.2); color: #229ED9;">
+                                <svg style="width: 28px; height: 28px; fill: currentColor;" viewBox="0 0 24 24">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.94-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                                </svg>
+                            </div>
+                            <span class="integration-card-title">Telegram Bot</span>
+                            <span class="integration-card-desc">Notificações e comandos remotos</span>
+                            <div id="hub-badge-telegram">
+                                <span class="integration-status-badge integration-status-disconnected">Desconectado</span>
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label id="tg-api-key-label" style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Chave de API / Token do Provedor</label>
-                            <div style="position: relative; display: flex; align-items: center;">
-                                <input type="password" id="tg-api-key" class="form-control" style="padding-right: 40px; border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff;" placeholder="Cole sua API Key aqui..." oninput="syncTelegramApiKeysFromInput(this.value)" autocomplete="new-password">
-                                <button type="button" onclick="togglePasswordVisibility('tg-api-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
+                        <!-- CARD: WEBHOOKS -->
+                        <div class="integration-card" onclick="openIntegrationPage('webhooks')">
+                            <div class="integration-icon-wrapper" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: #10B981;">
+                                <svg style="width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                                </svg>
+                            </div>
+                            <span class="integration-card-title">Webhooks Gateway</span>
+                            <span class="integration-card-desc">HTTP pública para sincronizar dados</span>
+                            <div id="hub-badge-webhooks">
+                                <span class="integration-status-badge integration-status-disconnected">Desativado</span>
                             </div>
                         </div>
 
-                        <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 4px;">
-                            <div style="flex: 1;">
-                                <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Endpoint URL</label>
-                                <input type="text" id="tg-base-url" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff;" value="https://generativelanguage.googleapis.com/" oninput="syncTelegramBaseUrlFromInput(this.value)">
+                        <!-- CARD: DISCORD -->
+                        <div class="integration-card" onclick="openIntegrationPage('discord')">
+                            <div class="integration-icon-wrapper" style="background: rgba(88, 101, 242, 0.1); border-color: rgba(88, 101, 242, 0.2); color: #5865F2;">
+                                <svg style="width: 24px; height: 24px; fill: currentColor;" viewBox="0 0 127.14 96.36">
+                                    <path d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,52.88,6.83,77.19,77.19,0,0,0,49.58,0,105.15,105.15,0,0,0,19.14,8.07C3,32.22-1.45,55.8,1,79a105.73,105.73,0,0,0,32,16.29,79,79,0,0,0,6.73-11,68.52,68.52,0,0,1-10.64-5.12c.91-.67,1.81-1.37,2.67-2.1a75.56,75.56,0,0,0,71.24,0c.86.73,1.76,1.43,2.67,2.1a68.86,68.86,0,0,1-10.64,5.12,79.05,79.05,0,0,0,6.73,11,105.73,105.73,0,0,0,32-16.29C129.35,55.8,124.62,32.22,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53S36.18,40.36,42.45,40.36,53.83,46,53.83,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.07,46,96.07,53,91,65.69,84.69,65.69Z"/>
+                                </svg>
                             </div>
-                            <div style="width: 35%;">
-                                <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Modelo</label>
-                                <select id="tg-model-name" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff; height: 38px;" onchange="syncTelegramModelFromInput(this.value)">
-                                    <option value="gemini-1.5-flash">gemini-1.5-flash</option>
-                                    <option value="gemini-2.5-flash">gemini-2.5-flash</option>
-                                    <option value="gemini-1.5-pro">gemini-1.5-pro</option>
-                                    <option value="gemini-1.0-pro">gemini-1.0-pro</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- QUICK SELECT CHIPS -->
-                        <div style="margin-top: 6px; margin-bottom: 12px; text-align: left;">
-                            <span style="font-size: 0.72rem; color: #94a3b8; font-weight: bold; display: block; margin-bottom: 6px;">⚡ Seleção de IA em 1-Clique (Configuração Automática):</span>
-                            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-                                <button type="button" class="btn-universal" onclick="quickSelectModel('GEMINI', 'https://generativelanguage.googleapis.com/', 'gemini-1.5-flash')" style="width: auto; height: 28px; padding: 0 10px; font-size: 0.68rem; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; border-radius: 6px; cursor: pointer; margin-top:0; font-weight: 500;">
-                                    ♊ Gemini 1.5 Flash (100% Grátis)
-                                </button>
-                                <button type="button" class="btn-universal" onclick="quickSelectModel('GEMINI', 'https://generativelanguage.googleapis.com/', 'gemini-2.5-flash')" style="width: auto; height: 28px; padding: 0 10px; font-size: 0.68rem; background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.35); color: #c084fc; border-radius: 6px; cursor: pointer; margin-top:0; font-weight: 500;">
-                                    ♊ Gemini 2.5 Flash
-                                </button>
-                                <button type="button" class="btn-universal" onclick="quickSelectModel('OPENAI', 'https://api.openai.com/v1/', 'gpt-4o-mini')" style="width: auto; height: 28px; padding: 0 10px; font-size: 0.68rem; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; border-radius: 6px; cursor: pointer; margin-top:0; font-weight: 500;">
-                                    🌐 ChatGPT 4o Mini
-                                </button>
-                                <button type="button" class="btn-universal" onclick="quickSelectModel('CUSTOM', 'https://api.deepseek.com/v1/', 'deepseek-chat')" style="width: auto; height: 28px; padding: 0 10px; font-size: 0.68rem; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; border-radius: 6px; cursor: pointer; margin-top:0; font-weight: 500;">
-                                    🧠 DeepSeek Chat
-                                </button>
-                                <button type="button" class="btn-universal" onclick="quickSelectModel('CUSTOM', 'https://openrouter.ai/api/v1/', 'google/gemini-2.5-flash')" style="width: auto; height: 28px; padding: 0 10px; font-size: 0.68rem; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.35); color: #f87171; border-radius: 6px; cursor: pointer; margin-top:0; font-weight: 500;">
-                                    🚀 Gemini 2.5 (OpenRouter)
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- BOT LISTENER ON/OFF INTERATIVE STATUS -->
-                        <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; margin-top: 8px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <span style="font-weight: bold; font-size: 0.85rem; color: #fff; display: block;">Escuta Ativa do Bot (Browser — Sandbox)</span>
-                                    <span id="tg-polling-status-desc" style="font-size: 0.75rem; color: var(--text-muted);">Desativado. Ative apenas para testes simples.</span>
-                                </div>
-                                <button id="btn-tg-polling-toggle" class="btn-universal" onclick="toggleTelegramBrowserPolling()" style="width: auto; height: 38px; padding: 0 16px; margin-top: 0; background: rgba(168, 85, 247, 0.15); border: 1px solid #a855f7; color: #c084fc; border-radius: 10px; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                                    📡 Iniciar Escuta
-                                </button>
-                            </div>
-                            <p style="font-size: 0.72rem; color: #94a3b8; margin-top: 8px; line-height: 1.35; padding: 10px; background: rgba(30, 41, 59, 0.4); border-radius: 8px; border: 1px dashed rgba(255,255,255,0.08);">
-                                ⚠️ <b>Nota de Segurança do Browser:</b> Chamadas diretas para APIs de IA (como OpenAI/Groq/OpenRouter) no navegador sofrem de <b>bloqueios CORS</b>. Recomenda-se fortemente <u>não usar</u> a Escuta do Navegador se pretender usar esses modelos. Em vez disso, ative o botão <b>Ligar Servidor</b> no <b>Aplicativo Android nativo (Kotlin)</b>, que executa fora do navegador e é 100% imune a erros de CORS.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SEÇÃO 2: WEBHOOK MANAGER -->
-                <h3 style="font-size: 1rem; color: #10b981; font-weight: bold; margin-top: 20px; margin-bottom: 10px; text-align: left;">🔗 Webhook Manager</h3>
-                <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: #0F172A; border: 1px solid var(--border-color); border-radius: 16px;">
-                    <div style="padding: 16px; display: flex; flex-direction: column; gap: 14px;">
-                        
-                        <!-- Header Status Toggle -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; margin-bottom: 4px;">
+                            <span class="integration-card-title">Discord API</span>
+                            <span class="integration-card-desc">Alertas e logs em canais</span>
                             <div>
-                                <span style="font-size: 0.85rem; font-weight: bold; color: #fff; display: block;">Status do Gateway Webhook</span>
-                                <span id="webhook-gateway-status-text" style="font-size: 0.75rem; color: #ef4444;">🔴 Desativado</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <span id="webhook-badge-status" style="font-size: 0.75rem; font-weight: bold; color: #ef4444;">OFFLINE</span>
-                                <!-- Simple toggle switch -->
-                                <label class="switch-premium" style="position: relative; display: inline-block; width: 44px; height: 24px;">
-                                    <input type="checkbox" id="html-webhook-online-toggle" onchange="toggleHtmlWebhookStatus(this)" style="opacity: 0; width: 0; height: 0;">
-                                    <span class="slider-premium" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); border: 1px solid var(--border-color); transition: .3s; border-radius: 20px;"></span>
-                                </label>
-                                <style>
-                                    #html-webhook-online-toggle:checked + .slider-premium {
-                                        background-color: #10b981;
-                                    }
-                                    .slider-premium::before {
-                                        position: absolute;
-                                        content: "";
-                                        height: 16px;
-                                        width: 16px;
-                                        left: 3px;
-                                        bottom: 3px;
-                                        background-color: white;
-                                        transition: .3s;
-                                        border-radius: 50%;
-                                    }
-                                    #html-webhook-online-toggle:checked + .slider-premium::before {
-                                        transform: translateX(20px);
-                                    }
-                                </style>
+                                <span class="integration-status-badge integration-status-development">Em breve</span>
                             </div>
                         </div>
 
-                        <!-- Nome do Webhook -->
-                        <div class="form-group">
-                            <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #94a3b8;">Nome do Webhook</label>
-                            <input type="text" id="html-webhook-name" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" value="Synapse Production Webhook">
+                        <!-- CARD: WHATSAPP -->
+                        <div class="integration-card" onclick="openIntegrationPage('whatsapp')">
+                            <div class="integration-icon-wrapper" style="background: rgba(37, 211, 102, 0.1); border-color: rgba(37, 211, 102, 0.2); color: #25D366;">
+                                <svg style="width: 24px; height: 24px; fill: currentColor;" viewBox="0 0 24 24">
+                                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.42 9.864-9.864.002-2.637-1.023-5.11-2.884-6.973C16.591 1.888 14.113.86 11.48.858c-5.441 0-9.864 4.42-9.868 9.863-.001 1.765.467 3.491 1.358 5.021l-.993 3.626 3.71-.973zm11.205-7.39c-.276-.139-1.636-.807-1.889-.899-.254-.092-.439-.139-.624.139-.185.276-.716.899-.877 1.083-.162.185-.323.208-.599.069-.276-.139-1.168-.43-2.223-1.372-.82-.732-1.374-1.636-1.535-1.912-.162-.276-.017-.425.121-.563.125-.124.276-.323.415-.484.138-.162.184-.276.276-.462.093-.185.046-.347-.023-.485-.069-.139-.624-1.503-.855-2.057-.225-.54-.473-.466-.649-.475-.167-.008-.36-.01-.553-.01s-.507.072-.773.36c-.266.287-1.016.993-1.016 2.421 0 1.427 1.039 2.805 1.183 2.99.145.185 2.043 3.12 4.949 4.373.691.298 1.231.477 1.652.61.696.22 1.329.19 1.83.115.558-.084 1.636-.669 1.867-1.317.23-.647.23-1.202.162-1.317-.069-.115-.254-.185-.53-.324z"/>
+                                </svg>
+                            </div>
+                            <span class="integration-card-title">WhatsApp API</span>
+                            <span class="integration-card-desc">Notificações instantâneas</span>
+                            <div>
+                                <span class="integration-status-badge integration-status-development">Em breve</span>
+                            </div>
                         </div>
 
-                        <!-- Descrição do Webhook -->
-                        <div class="form-group">
-                            <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #94a3b8;">Descrição (Opcional)</label>
-                            <input type="text" id="html-webhook-description" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" value="Canal integrado para recepção de logs e eventos automotores">
+                        <!-- CARD: GITHUB -->
+                        <div class="integration-card" onclick="openIntegrationPage('github')">
+                            <div class="integration-icon-wrapper" style="background: rgba(240, 246, 252, 0.08); border-color: rgba(240, 246, 252, 0.15); color: #F0F6FC;">
+                                <svg style="width: 24px; height: 24px; fill: currentColor;" viewBox="0 0 24 24">
+                                    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                                </svg>
+                            </div>
+                            <span class="integration-card-title">GitHub Actions</span>
+                            <span class="integration-card-desc">Sincronização de deploys</span>
+                            <div>
+                                <span class="integration-status-badge integration-status-development">Em breve</span>
+                            </div>
                         </div>
 
-                        <!-- URL do Webhook -->
-                        <div class="form-group">
-                            <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #94a3b8;">URL do Webhook Gerada</label>
-                            <input type="text" id="html-webhook-url" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); font-family: monospace; font-size: 0.75rem; color: #10b981;" readonly value="https://ais-pre-czylyfbapj56qz6hoxll75-727445671983.us-east1.run.app/api/v1/webhooks/synapse-8c9df1">
+                        <!-- CARD: GOOGLE DRIVE -->
+                        <div class="integration-card" onclick="openIntegrationPage('googledrive')">
+                            <div class="integration-icon-wrapper" style="background: rgba(52, 168, 83, 0.1); border-color: rgba(52, 168, 83, 0.2); color: #FBBC05;">
+                                <svg style="width: 24px; height: 24px; fill: currentColor;" viewBox="0 0 24 24">
+                                    <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46.18 14.25 0 14 0h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
+                                </svg>
+                            </div>
+                            <span class="integration-card-title">Google Drive</span>
+                            <span class="integration-card-desc">Backups de logs e históricos</span>
+                            <div>
+                                <span class="integration-status-badge integration-status-development">Em breve</span>
+                            </div>
                         </div>
 
-                        <!-- Buttons Row -->
-                        <div style="display: flex; gap: 8px; margin-top: 4px;">
-                            <button class="btn-universal" id="btn-copy-html-webhook" onclick="copyHtmlWebhookUrl()" style="flex: 1; background: #1e293b; border: 1px solid var(--border-color); color: #fff; font-size: 0.8rem; height: 38px; border-radius: 10px; cursor: pointer; font-weight: bold;">
-                                📋 Copiar URL
-                            </button>
-                            <button class="btn-universal" onclick="regenerateHtmlWebhookUrl()" style="flex: 1; background: #1e293b; border: 1px solid var(--border-color); color: #fff; font-size: 0.8rem; height: 38px; border-radius: 10px; cursor: pointer; font-weight: bold;">
-                                🔄 Regenerar
-                            </button>
+                        <!-- CARD: OPENAI -->
+                        <div class="integration-card" onclick="openIntegrationPage('openai')">
+                            <div class="integration-icon-wrapper" style="background: rgba(116, 170, 156, 0.1); border-color: rgba(116, 170, 156, 0.2); color: #74AA9C;">
+                                <svg style="width: 24px; height: 24px; fill: currentColor;" viewBox="0 0 24 24">
+                                    <path d="M22.508 10.42a5.414 5.414 0 0 0-.115-1.94 5.467 5.467 0 0 0-1.468-2.585 5.417 5.417 0 0 0-2.585-1.468 5.385 5.385 0 0 0-3.473.167 5.414 5.414 0 0 0-2.867-2.867 5.441 5.441 0 0 0-3.94 0 5.414 5.414 0 0 0-2.867 2.867 5.4 5.4 0 0 0-.167 3.473 5.45 5.45 0 0 0-1.468 2.585 5.417 5.417 0 0 0-.115 1.94 5.414 5.414 0 0 0 .115 1.94 5.467 5.467 0 0 0 1.468 2.585 5.417 5.417 0 0 0 2.585 1.468 5.385 5.385 0 0 0 3.473-.167 5.414 5.414 0 0 0 2.867 2.867 5.4 5.4 0 0 0 3.94 0 5.414 5.414 0 0 0 2.867-2.867 5.4 5.4 0 0 0 .167-3.473 5.45 5.45 0 0 0 1.468-2.585 5.417 5.417 0 0 0 .115-1.94zm-1.874-.356a3.522 3.522 0 0 1-.365.132l-.01.003-3.003 1.733a.625.625 0 0 1-.624.004l-2.573-1.485v2.969a.625.625 0 0 1-.312.541l-2.573 1.485a3.568 3.568 0 0 1-1.785.478 3.535 3.535 0 0 1-1.787-.478l.006-.003 2.574-1.486a.625.625 0 0 1 .624-.004l2.573 1.485V12.44a.625.625 0 0 1 .312-.541l2.573-1.485a3.568 3.568 0 0 1 1.785-.478c.638 0 1.263.17 1.815.494zm-8.634 8.243v-2.97a.625.625 0 0 1 .312-.541l2.573-1.485a3.568 3.568 0 0 1 1.785-.478c.642 0 1.267.172 1.819.497l-.004-.007a3.522 3.522 0 0 1-.132.365l-.003.01-1.733 3.003a.625.625 0 0 1-.624.312l-2.573-1.485v-2.969a.625.625 0 0 1-.312-.541L12 18.307z"/>
+                                </svg>
+                            </div>
+                            <span class="integration-card-title">OpenAI Client</span>
+                            <span class="integration-card-desc">Chaves e modelos GPT próprios</span>
+                            <div>
+                                <span class="integration-status-badge integration-status-development">Em breve</span>
+                            </div>
                         </div>
 
-                        <!-- Test Webhook trigger button -->
-                        <button class="btn-universal" id="btn-test-html-webhook" onclick="testHtmlWebhook()" disabled style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; font-weight: bold; font-size: 0.85rem; height: 42px; border-radius: 10px; cursor: pointer; margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 8px; opacity: 0.5;">
-                            Ative o Gateway para Testar
-                        </button>
+                        <!-- CARD: GEMINI -->
+                        <div class="integration-card" onclick="openIntegrationPage('gemini')">
+                            <div class="integration-icon-wrapper" style="background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.2); color: #8B5CF6;">
+                                <svg style="width: 24px; height: 24px; fill: currentColor;" viewBox="0 0 24 24">
+                                    <path d="M12 2a10 10 0 0 1 7.54 16.54c-.11.13-.25.26-.4.38a1.2 1.2 0 0 1-1.64-.15c-.44-.45-.44-1.18.02-1.63A6 6 0 1 0 8.87 6.44l1.41 1.41a1 1 0 0 1-.7 1.71h-5a1 1 0 0 1-1-1v-5a1 1 0 0 1 1.71-.7l1.53 1.54A9.94 9.94 0 0 1 12 2zm3.3 6.3a1 1 0 0 1 .7.3l5 5a1 1 0 0 1-1.42 1.4l-4.29-4.29-4.29 4.29a1 1 0 0 1-1.42-1.4l5-5a1 1 0 0 1 .7-.3z"/>
+                                </svg>
+                            </div>
+                            <span class="integration-card-title">Gemini Portal</span>
+                            <span class="integration-card-desc">Modelos Gemini isolados</span>
+                            <div>
+                                <span class="integration-status-badge integration-status-development">Em breve</span>
+                            </div>
+                        </div>
 
-                        <!-- Last trigger monitoring container -->
-                        <div style="margin-top: 10px;">
-                            <span style="font-size: 0.8rem; font-weight: bold; color: #94a3b8; display: block; margin-bottom: 6px;">Monitoramento - Última Requisição Recebida</span>
-                            <div id="html-webhook-last-request-box" style="background: #020617; border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; font-family: monospace; font-size: 0.75rem;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                    <div style="display: flex; gap: 6px;">
-                                        <span style="background: rgba(16,185,129,0.2); border: 1px solid #10b981; color: #10b981; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">POST</span>
-                                        <span style="background: rgba(74,222,128,0.2); border: 1px solid #4ade80; color: #4ade80; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">200 OK</span>
-                                    </div>
-                                    <span style="color: #475569;" id="html-webhook-last-time">11:38:12</span>
+                        <!-- CARD: CUSTOM API -->
+                        <div class="integration-card" onclick="openIntegrationPage('customapi')">
+                            <div class="integration-icon-wrapper" style="background: rgba(236, 72, 153, 0.1); border-color: rgba(236, 72, 153, 0.2); color: #EC4899;">
+                                <svg style="width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24">
+                                    <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                                    <polyline points="2 17 12 22 22 17"/>
+                                    <polyline points="2 12 12 17 22 12"/>
+                                </svg>
+                            </div>
+                            <span class="integration-card-title">Custom API</span>
+                            <span class="integration-card-desc">REST, triggers e payloads livres</span>
+                            <div>
+                                <span class="integration-status-badge integration-status-development">Em breve</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- SUB-PAGES FOR EACH INTEGRATION -->
+
+                <!-- PAGE: TELEGRAM -->
+                <div id="integration-page-telegram" class="integration-detail-page" style="display: none;">
+                    <button class="btn-back" onclick="closeIntegrationPage()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;">⬅️ Voltar ao Hub</button>
+                    
+                    <div class="section-header" style="text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px;">
+                        <div>
+                            <h2>🤖 Telegram Bot Setup</h2>
+                            <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">Gerencie o token e cérebro de IA do seu robô remoto</p>
+                        </div>
+                        <div id="detail-badge-telegram">
+                            <span class="integration-status-badge integration-status-disconnected">Desconectado</span>
+                        </div>
+                    </div>
+
+                    <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: #0F172A; border: 1px solid var(--border-color); border-radius: 16px;">
+                        <div style="padding: 16px; display: flex; flex-direction: column; gap: 14px;">
+                            <div class="form-group">
+                                <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Token do Bot (Telegram)</label>
+                                <div style="position: relative; display: flex; align-items: center;">
+                                    <input type="password" id="telegram-token" class="form-control" style="padding-right: 40px; border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" placeholder="Insira o token gerado pelo @BotFather..." autocomplete="new-password" oninput="saveConfiguration(); updateIntegrationHubStatusBadges();">
+                                    <button type="button" onclick="togglePasswordVisibility('telegram-token', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Token">👁️</button>
                                 </div>
-                                <pre id="html-webhook-last-body" style="margin: 0; color: #94a3b8; white-space: pre-wrap; word-break: break-all; text-align: left; font-size: 0.7rem; line-height: 1.3;">{
+                            </div>
+
+                            <span style="color: #94a3b8; font-size: 0.75rem; text-align: left; line-height: 1.4; display: block; margin-top: -4px;">
+                                Token de autorização do robô.
+                            </span>
+
+                            <div class="form-group" style="margin-top: 6px;">
+                                <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">🔗 URL de End-Point de webhook</label>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <input type="text" id="telegram-webhook" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); flex: 1;" placeholder="Nenhum webhook ativo (Recomendado para Polling)">
+                                    <button type="button" onclick="deleteTelegramWebhook()" class="btn-universal" style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #f87171; height: 38px; padding: 0 16px; font-size: 0.75rem; font-weight: bold; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; border: 1px solid #ef4444; width: auto; margin-top: 0; white-space: nowrap;">
+                                        🗑️ Limpar Webhook
+                                    </button>
+                                 </div>
+                            </div>
+
+                            <span style="color: #94a3b8; font-size: 0.75rem; text-align: left; line-height: 1.4; display: block; margin-top: -4px;">
+                                Endereço HTTP do gateway de callback do Telegram.
+                            </span>
+
+                            <div style="display: flex; gap: 8px; width: 100%; margin-top: 8px;">
+                                <button class="btn-universal" id="btn-test-telegram" onclick="testTelegramConnection()" style="background: rgba(30, 41, 59, 0.5); border: 1px solid var(--border-color); color: #38bdf8; font-weight: bold; font-size: 0.85rem; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; flex: 1; margin-top: 0;">
+                                    🔄 Testar Conexão
+                                </button>
+                                <button class="btn-universal" onclick="disconnectTelegram()" style="background: rgba(239, 68, 68, 0.12); border: 1px solid #ef4444; color: #f87171; font-weight: bold; font-size: 0.85rem; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; flex: 1; margin-top: 0;">
+                                    🚫 Desconectar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CÉREBRO DO BOT (PROVEDOR DE IA) -->
+                    <h3 style="font-size: 1rem; color: #a855f7; font-weight: bold; margin-top: 20px; margin-bottom: 10px; text-align: left;">🧠 Cérebro do Bot (Inteligência Artificial)</h3>
+                    <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: #0F172A; border: 1px solid var(--border-color); border-radius: 16px;">
+                        <div style="padding: 16px; display: flex; flex-direction: column; gap: 14px;">
+                            <span style="color: #94a3b8; font-size: 0.75rem; text-align: left; line-height: 1.4; display: block; margin-top: -4px;">
+                                Defina qual cérebro de Inteligência Artificial o seu bot utilizará para responder às mensagens no Telegram.
+                            </span>
+                            
+                            <div class="form-group">
+                                <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Tipo de Provedor / API</label>
+                                <div class="api-selector-grid" style="grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px;">
+                                    <div class="selector-btn active" id="tg-btn-gemini" onclick="setTelegramApiType('GEMINI')" style="border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s;">
+                                        <span>♊</span>
+                                        <span style="font-size: 0.75rem;">Gemini</span>
+                                    </div>
+                                    <div class="selector-btn" id="tg-btn-openai" onclick="setTelegramApiType('OPENAI')" style="border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s;">
+                                        <span>🌐</span>
+                                        <span style="font-size: 0.75rem;">ChatGPT</span>
+                                    </div>
+                                    <div class="selector-btn" id="tg-btn-custom" onclick="setTelegramApiType('CUSTOM')" style="border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s;">
+                                        <span>🧠</span>
+                                        <span style="font-size: 0.75rem;">Universal</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label id="tg-api-key-label" style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Chave de API / Token do Provedor</label>
+                                <div style="position: relative; display: flex; align-items: center;">
+                                    <input type="password" id="tg-api-key" class="form-control" style="padding-right: 40px; border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff;" placeholder="Cole sua API Key aqui..." oninput="syncTelegramApiKeysFromInput(this.value)" autocomplete="new-password">
+                                    <button type="button" onclick="togglePasswordVisibility('tg-api-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 4px;">
+                                <div style="flex: 1;">
+                                    <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Endpoint URL</label>
+                                    <input type="text" id="tg-base-url" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff;" value="https://generativelanguage.googleapis.com/" oninput="syncTelegramBaseUrlFromInput(this.value)">
+                                </div>
+                                <div style="width: 35%;">
+                                    <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Modelo</label>
+                                    <select id="tg-model-name" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff; height: 38px;" onchange="syncTelegramModelFromInput(this.value)">
+                                        <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+                                        <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+                                        <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+                                        <option value="gemini-1.0-pro">gemini-1.0-pro</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- QUICK SELECT CHIPS -->
+                            <div style="margin-top: 6px; margin-bottom: 12px; text-align: left;">
+                                <span style="font-size: 0.72rem; color: #94a3b8; font-weight: bold; display: block; margin-bottom: 6px;">⚡ Seleção de IA em 1-Clique:</span>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <button type="button" class="btn-universal" onclick="quickSelectModel('GEMINI', 'https://generativelanguage.googleapis.com/', 'gemini-1.5-flash')" style="width: auto; height: 28px; padding: 0 10px; font-size: 0.68rem; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; border-radius: 6px; cursor: pointer; margin-top:0; font-weight: 500;">
+                                        ♊ Gemini 1.5 Flash (Grátis)
+                                    </button>
+                                    <button type="button" class="btn-universal" onclick="quickSelectModel('GEMINI', 'https://generativelanguage.googleapis.com/', 'gemini-2.5-flash')" style="width: auto; height: 28px; padding: 0 10px; font-size: 0.68rem; background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.35); color: #c084fc; border-radius: 6px; cursor: pointer; margin-top:0; font-weight: 500;">
+                                        ♊ Gemini 2.5 Flash
+                                    </button>
+                                    <button type="button" class="btn-universal" onclick="quickSelectModel('OPENAI', 'https://api.openai.com/v1/', 'gpt-4o-mini')" style="width: auto; height: 28px; padding: 0 10px; font-size: 0.68rem; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; border-radius: 6px; cursor: pointer; margin-top:0; font-weight: 500;">
+                                        🌐 ChatGPT 4o Mini
+                                    </button>
+                                    <button type="button" class="btn-universal" onclick="quickSelectModel('CUSTOM', 'https://api.deepseek.com/v1/', 'deepseek-chat')" style="width: auto; height: 28px; padding: 0 10px; font-size: 0.68rem; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; border-radius: 6px; cursor: pointer; margin-top:0; font-weight: 500;">
+                                        🧠 DeepSeek Chat
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- BOT LISTENER -->
+                            <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; margin-top: 8px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <span style="font-weight: bold; font-size: 0.85rem; color: #fff; display: block;">Escuta Ativa do Bot (Browser — Sandbox)</span>
+                                        <span id="tg-polling-status-desc" style="font-size: 0.75rem; color: var(--text-muted);">Desativado. Ative apenas para testes simples.</span>
+                                    </div>
+                                    <button id="btn-tg-polling-toggle" class="btn-universal" onclick="toggleTelegramBrowserPolling()" style="width: auto; height: 38px; padding: 0 16px; margin-top: 0; background: rgba(168, 85, 247, 0.15); border: 1px solid #a855f7; color: #c084fc; border-radius: 10px; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                        📡 Iniciar Escuta
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-save-premium" onclick="saveConfigWithPremiumFeedback(this)">
+                        <span>Salvar Configurações ✨</span>
+                    </button>
+                </div>
+
+                <!-- PAGE: WEBHOOKS -->
+                <div id="integration-page-webhooks" class="integration-detail-page" style="display: none;">
+                    <button class="btn-back" onclick="closeIntegrationPage()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;">⬅️ Voltar ao Hub</button>
+                    
+                    <div class="section-header" style="text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px;">
+                        <div>
+                            <h2>🔗 Webhook Manager Gateway</h2>
+                            <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">Monitore e receba dados externos via requisições HTTP</p>
+                        </div>
+                        <div id="detail-badge-webhooks">
+                            <span class="integration-status-badge integration-status-disconnected">Inativo</span>
+                        </div>
+                    </div>
+
+                    <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: #0F172A; border: 1px solid var(--border-color); border-radius: 16px;">
+                        <div style="padding: 16px; display: flex; flex-direction: column; gap: 14px;">
+                            
+                            <!-- Header Status Toggle -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; margin-bottom: 4px;">
+                                <div>
+                                    <span style="font-size: 0.85rem; font-weight: bold; color: #fff; display: block;">Status do Gateway Webhook</span>
+                                    <span id="webhook-gateway-status-text" style="font-size: 0.75rem; color: #ef4444;">🔴 Desativado</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span id="webhook-badge-status" style="font-size: 0.75rem; font-weight: bold; color: #ef4444;">OFFLINE</span>
+                                    <label class="switch-premium" style="position: relative; display: inline-block; width: 44px; height: 24px;">
+                                        <input type="checkbox" id="html-webhook-online-toggle" onchange="toggleHtmlWebhookStatus(this); updateIntegrationHubStatusBadges();" style="opacity: 0; width: 0; height: 0;">
+                                        <span class="slider-premium" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); border: 1px solid var(--border-color); transition: .3s; border-radius: 20px;"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Nome do Webhook -->
+                            <div class="form-group">
+                                <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #94a3b8;">Nome do Webhook</label>
+                                <input type="text" id="html-webhook-name" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" value="Synapse Production Webhook">
+                            </div>
+
+                            <!-- Descrição do Webhook -->
+                            <div class="form-group">
+                                <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #94a3b8;">Descrição (Opcional)</label>
+                                <input type="text" id="html-webhook-description" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" value="Canal integrado para recepção de logs e eventos">
+                            </div>
+
+                            <!-- URL do Webhook -->
+                            <div class="form-group">
+                                <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #94a3b8;">URL do Webhook Gerada</label>
+                                <input type="text" id="html-webhook-url" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); font-family: monospace; font-size: 0.75rem; color: #10b981;" readonly value="https://ais-pre-czylyfbapj56qz6hoxll75-727445671983.us-east1.run.app/api/v1/webhooks/synapse-8c9df1">
+                            </div>
+
+                            <!-- Buttons Row -->
+                            <div style="display: flex; gap: 8px; margin-top: 4px;">
+                                <button class="btn-universal" id="btn-copy-html-webhook" onclick="copyHtmlWebhookUrl()" style="flex: 1; background: #1e293b; border: 1px solid var(--border-color); color: #fff; font-size: 0.8rem; height: 38px; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 0;">
+                                    📋 Copiar URL
+                                </button>
+                                <button class="btn-universal" onclick="regenerateHtmlWebhookUrl()" style="flex: 1; background: #1e293b; border: 1px solid var(--border-color); color: #fff; font-size: 0.8rem; height: 38px; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 0;">
+                                    🔄 Regenerar
+                                </button>
+                            </div>
+
+                            <!-- Test Webhook trigger button -->
+                            <div style="display: flex; gap: 8px; width: 100%; margin-top: 4px;">
+                                <button class="btn-universal" id="btn-test-html-webhook" onclick="testHtmlWebhook()" disabled style="flex: 1; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; font-weight: bold; font-size: 0.85rem; height: 42px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; opacity: 0.5; margin-top: 0;">
+                                    Ative o Gateway para Testar
+                                </button>
+                                <button class="btn-universal" onclick="disconnectWebhooks()" style="flex: 1; background: rgba(239, 68, 68, 0.12); border: 1px solid #ef4444; color: #f87171; font-weight: bold; font-size: 0.85rem; height: 42px; border-radius: 10px; cursor: pointer; margin-top: 0;">
+                                    🚫 Desativar
+                                </button>
+                            </div>
+
+                            <!-- Last trigger monitoring container -->
+                            <div style="margin-top: 10px;">
+                                <span style="font-size: 0.8rem; font-weight: bold; color: #94a3b8; display: block; margin-bottom: 6px;">Monitoramento - Última Requisição Recebida</span>
+                                <div id="html-webhook-last-request-box" style="background: #020617; border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; font-family: monospace; font-size: 0.75rem;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                        <div style="display: flex; gap: 6px;">
+                                            <span style="background: rgba(16,185,129,0.2); border: 1px solid #10b981; color: #10b981; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">POST</span>
+                                            <span style="background: rgba(74,222,128,0.2); border: 1px solid #4ade80; color: #4ade80; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">200 OK</span>
+                                        </div>
+                                        <span style="color: #475569;" id="html-webhook-last-time">11:38:12</span>
+                                    </div>
+                                    <pre id="html-webhook-last-body" style="margin: 0; color: #94a3b8; white-space: pre-wrap; word-break: break-all; text-align: left; font-size: 0.7rem; line-height: 1.3;">{
   "status": "active",
   "event_source": "reception_bot",
-  "user": "nicassil2017@gmail.com",
-  "meta": {
-    "device_ping": "21ms",
-    "integration_version": "v2.1"
-  }
+  "user": "nicassil2017@gmail.com"
 }</pre>
-                            </div>
-                        </div>
-
-                        <!-- Simple log history list -->
-                        <div style="margin-top: 10px;">
-                            <span style="font-size: 0.8rem; font-weight: bold; color: #94a3b8; display: block; margin-bottom: 6px;">Histórico Recente de Disparos</span>
-                            <div id="html-webhook-history-container" style="display: flex; flex-direction: column; gap: 6px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; background: #090f1e; border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 8px; font-size: 0.7rem;">
-                                    <div style="display: flex; align-items: center; gap: 6px;">
-                                        <span style="color: #10b981; font-weight: bold;">POST</span>
-                                        <span style="color: #475569; font-family: monospace;">/synapse-8c9df1</span>
-                                    </div>
-                                    <div style="display: flex; align-items: center; gap: 8px;">
-                                        <span style="color: #4ade80; font-weight: bold;">200 OK</span>
-                                        <span style="color: #475569;">11:38:12</span>
-                                    </div>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; align-items: center; background: #090f1e; border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 8px; font-size: 0.7rem;">
-                                    <div style="display: flex; align-items: center; gap: 6px;">
-                                        <span style="color: #10b981; font-weight: bold;">POST</span>
-                                        <span style="color: #475569; font-family: monospace;">/synapse-8c9df1</span>
-                                    </div>
-                                    <div style="display: flex; align-items: center; gap: 8px;">
-                                        <span style="color: #4ade80; font-weight: bold;">200 OK</span>
-                                        <span style="color: #475569;">11:30:05</span>
-                                    </div>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; align-items: center; background: #090f1e; border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 8px; font-size: 0.7rem;">
-                                    <div style="display: flex; align-items: center; gap: 6px;">
-                                        <span style="color: #38bdf8; font-weight: bold;">GET</span>
-                                        <span style="color: #475569; font-family: monospace;">/synapse-8c9df1</span>
-                                    </div>
-                                    <div style="display: flex; align-items: center; gap: 8px;">
-                                        <span style="color: #4ade80; font-weight: bold;">200 OK</span>
-                                        <span style="color: #475569;">11:15:00</span>
-                                    </div>
                                 </div>
                             </div>
-                        </div>
 
+                        </div>
+                    </div>
+
+                    <button class="btn-save-premium" onclick="saveConfigWithPremiumFeedback(this)">
+                        <span>Salvar Configurações ✨</span>
+                    </button>
+                </div>
+
+                <!-- GENERIC IN-DEVELOPMENT PAGE -->
+                <div id="integration-page-generic" class="integration-detail-page" style="display: none;">
+                    <button class="btn-back" onclick="closeIntegrationPage()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;">⬅️ Voltar ao Hub</button>
+                    
+                    <div class="section-header" style="text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px;">
+                        <div>
+                            <h2 id="generic-title">Nome da Integração</h2>
+                            <p id="generic-subtitle" style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">Gerencie conexões do bot e webhooks</p>
+                        </div>
+                        <span class="integration-status-badge integration-status-development">Em desenvolvimento</span>
+                    </div>
+
+                    <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: #0F172A; border: 1px solid var(--border-color); border-radius: 16px; padding: 20px;">
+                        <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 16px;">
+                            ⚙️ Esta integração está sendo preparada para as próximas versões. A estrutura de configuração abaixo está pronta para implementação futura.
+                        </p>
+                        <div style="display: flex; flex-direction: column; gap: 14px; opacity: 0.5; pointer-events: none;">
+                            <div class="form-group">
+                                <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">Token / API Key</label>
+                                <input type="password" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" placeholder="Ex: sk-proj-..." disabled>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">Endpoint URL</label>
+                                <input type="text" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" placeholder="Ex: https://api.exemplo.com/v1" disabled>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px; margin-top: 20px;">
+                            <button class="btn-universal" style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-muted); font-weight: bold; border-radius: 10px; height: 40px; cursor: not-allowed; margin-top: 0;" disabled>🔄 Testar Conexão</button>
+                            <button class="btn-universal" style="flex: 1; background: #1e293b; border: 1px solid var(--border-color); color: #94a3b8; font-weight: bold; border-radius: 10px; height: 40px; cursor: not-allowed; margin-top: 0;" disabled>✨ Salvar</button>
+                            <button class="btn-universal" style="flex: 1; background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); color: #f87171; font-weight: bold; border-radius: 10px; height: 40px; cursor: not-allowed; margin-top: 0;" disabled>🚫 Desconectar</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- SEÇÃO 3: INTEGRAÇÕES FUTURAS -->
-                <h3 style="font-size: 1rem; color: #f59e0b; font-weight: bold; margin-top: 20px; margin-bottom: 10px; text-align: left;">☁️ Integrações Futuras (Smart Hooks)</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 24px;">
-                    <div style="background: #0f172a; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; text-align: left;">
-                        <span style="font-size: 0.75rem; font-weight: bold; color: #fff; display: block; margin-bottom: 2px;">👾 Discord Webhook</span>
-                        <span style="font-size: 0.65rem; color: #64748b; display: block; margin-bottom: 6px;">Alertas em canais</span>
-                        <span style="background: rgba(139,92,246,0.15); color: #8b5cf6; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; display: inline-block;">EM BREVE</span>
-                    </div>
-                    <div style="background: #0f172a; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; text-align: left;">
-                        <span style="font-size: 0.75rem; font-weight: bold; color: #fff; display: block; margin-bottom: 2px;">💬 WhatsApp API</span>
-                        <span style="font-size: 0.65rem; color: #64748b; display: block; margin-bottom: 6px;">Notificações diretas</span>
-                        <span style="background: rgba(16,185,129,0.15); color: #10b981; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; display: inline-block;">EM BREVE</span>
-                    </div>
-                    <div style="background: #0f172a; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; text-align: left;">
-                        <span style="font-size: 0.75rem; font-weight: bold; color: #fff; display: block; margin-bottom: 2px;">⚡ n8n Workflow</span>
-                        <span style="font-size: 0.65rem; color: #64748b; display: block; margin-bottom: 6px;">Nativa zero-code</span>
-                        <span style="background: rgba(239,68,68,0.15); color: #ef4444; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; display: inline-block;">EM BREVE</span>
-                    </div>
-                    <div style="background: #0f172a; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; text-align: left;">
-                        <span style="font-size: 0.75rem; font-weight: bold; color: #fff; display: block; margin-bottom: 2px;">🌀 Make (Integromat)</span>
-                        <span style="font-size: 0.65rem; color: #64748b; display: block; margin-bottom: 6px;">Cenários automatizados</span>
-                        <span style="background: rgba(239,68,68,0.15); color: #ef4444; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; display: inline-block;">EM BREVE</span>
-                    </div>
-                    <div style="background: #0f172a; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; text-align: left;">
-                        <span style="font-size: 0.75rem; font-weight: bold; color: #fff; display: block; margin-bottom: 2px;">🧡 Zapier Webhooks</span>
-                        <span style="font-size: 0.65rem; color: #64748b; display: block; margin-bottom: 6px;">Conectores em nuvem</span>
-                        <span style="background: rgba(245,158,11,0.15); color: #f59e0b; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; display: inline-block;">EM BREVE</span>
-                    </div>
-                    <div style="background: #0f172a; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; text-align: left;">
-                        <span style="font-size: 0.75rem; font-weight: bold; color: #fff; display: block; margin-bottom: 2px;">💻 APIs Customizadas</span>
-                        <span style="font-size: 0.65rem; color: #64748b; display: block; margin-bottom: 6px;">Triggers REST custom</span>
-                        <span style="background: rgba(56,189,248,0.15); color: #38bdf8; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; display: inline-block;">EM BREVE</span>
-                    </div>
-                </div>
+                <!-- STYLES -->
+                <style>
+                    .integrations-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                        gap: 16px;
+                        margin-top: 20px;
+                        margin-bottom: 24px;
+                    }
+                    .integration-card {
+                        background: rgba(15, 23, 42, 0.45);
+                        border: 1px solid var(--border-color);
+                        border-radius: 18px;
+                        padding: 16px;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        text-align: center;
+                        cursor: pointer;
+                        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    .integration-card:hover {
+                        transform: translateY(-4px) scale(1.02);
+                        background: rgba(15, 23, 42, 0.75);
+                        border-color: var(--primary) !important;
+                        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.2), 0 0 12px rgba(139, 92, 246, 0.15) !important;
+                    }
+                    .integration-card:active {
+                        transform: translateY(-2px) scale(0.98);
+                    }
+                    .integration-icon-wrapper {
+                        width: 54px;
+                        height: 54px;
+                        border-radius: 14px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin-bottom: 12px;
+                        transition: transform 0.3s ease;
+                        background: rgba(255, 255, 255, 0.04);
+                        border: 1px solid rgba(255, 255, 255, 0.05);
+                    }
+                    .integration-card:hover .integration-icon-wrapper {
+                        transform: rotate(6deg) scale(1.1);
+                    }
+                    .integration-card-title {
+                        font-size: 0.85rem;
+                        font-weight: 700;
+                        color: #fff;
+                        margin-bottom: 4px;
+                    }
+                    .integration-card-desc {
+                        font-size: 0.7rem;
+                        color: var(--text-muted);
+                        line-height: 1.25;
+                        margin-bottom: 8px;
+                        height: 30px;
+                        overflow: hidden;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 2;
+                        -webkit-box-orient: vertical;
+                    }
+                    .integration-status-badge {
+                        font-size: 0.6rem;
+                        font-weight: 800;
+                        padding: 3px 8px;
+                        border-radius: 20px;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        display: inline-block;
+                    }
+                    .integration-status-connected {
+                        background: rgba(16, 185, 129, 0.12);
+                        color: #10b981;
+                        border: 1px solid rgba(16, 185, 129, 0.25);
+                    }
+                    .integration-status-disconnected {
+                        background: rgba(239, 68, 68, 0.12);
+                        color: #f87171;
+                        border: 1px solid rgba(239, 68, 68, 0.25);
+                    }
+                    .integration-status-development {
+                        background: rgba(245, 158, 11, 0.12);
+                        color: #fbbf24;
+                        border: 1px solid rgba(245, 158, 11, 0.25);
+                    }
+                </style>
 
-                <button class="btn-save-premium" onclick="saveConfigWithPremiumFeedback(this)">
-                    <span>Salvar Configurações ✨</span>
-                </button>
+                <!-- JAVASCRIPT -->
+                <script>
+                    const integrationData = {
+                        discord: { title: "👾 Discord Integration", desc: "Sincronize mensagens e alertas diretamente com canais do Discord" },
+                        whatsapp: { title: "💬 WhatsApp API", desc: "Envie notificações e alertas ativos via número do WhatsApp" },
+                        github: { title: "💻 GitHub Actions", desc: "Monitore deploys, builds e sincronize seus commits de forma ativa" },
+                        googledrive: { title: "📁 Google Drive", desc: "Sincronize arquivos, backups e históricos diretamente no seu Drive" },
+                        openai: { title: "🌐 OpenAI Portal", desc: "Gerencie chaves, quotas e chamadas de modelos GPT isoladamente" },
+                        gemini: { title: "♊ Gemini Portal", desc: "Gerencie chaves, quotas e chamadas de modelos Gemini isoladamente" },
+                        customapi: { title: "💻 Custom API REST Client", desc: "Sincronize eventos de dados enviando payloads para qualquer endpoint REST" }
+                    };
+
+                    function updateIntegrationHubStatusBadges() {
+                        const tgToken = document.getElementById('telegram-token')?.value || '';
+                        const tgConnected = tgToken.trim().length > 5;
+                        
+                        let tgText = "Desconectado";
+                        let tgClass = "integration-status-disconnected";
+                        if (tgConnected) {
+                            tgText = currentLanguage === 'en' ? 'Connected' : currentLanguage === 'es' ? 'Conectado' : 'Conectado';
+                            tgClass = "integration-status-connected";
+                        } else {
+                            tgText = currentLanguage === 'en' ? 'Disconnected' : currentLanguage === 'es' ? 'Desconectado' : 'Desconectado';
+                        }
+                        
+                        const tgBadges = [
+                            document.getElementById('hub-badge-telegram'),
+                            document.getElementById('detail-badge-telegram')
+                        ];
+                        tgBadges.forEach(badgeContainer => {
+                            if (badgeContainer) {
+                                badgeContainer.innerHTML = `<span class="integration-status-badge ${tgClass}">${tgText}</span>`;
+                            }
+                        });
+
+                        const webhookToggle = document.getElementById('html-webhook-online-toggle');
+                        const webhooksActive = webhookToggle ? webhookToggle.checked : false;
+                        
+                        let whText = "Inativo";
+                        let whClass = "integration-status-disconnected";
+                        if (webhooksActive) {
+                            whText = currentLanguage === 'en' ? 'Active' : currentLanguage === 'es' ? 'Activo' : 'Ativo';
+                            whClass = "integration-status-connected";
+                        } else {
+                            whText = currentLanguage === 'en' ? 'Inactive' : currentLanguage === 'es' ? 'Inactivo' : 'Inativo';
+                        }
+                        
+                        const whBadges = [
+                            document.getElementById('hub-badge-webhooks'),
+                            document.getElementById('detail-badge-webhooks')
+                        ];
+                        whBadges.forEach(badgeContainer => {
+                            if (badgeContainer) {
+                                badgeContainer.innerHTML = `<span class="integration-status-badge ${whClass}">${whText}</span>`;
+                            }
+                        });
+                    }
+
+                    function openIntegrationPage(id) {
+                        triggerPulse();
+                        document.getElementById('integrations-hub-main').style.display = 'none';
+                        document.querySelectorAll('.integration-detail-page').forEach(page => {
+                            page.style.display = 'none';
+                        });
+                        
+                        if (id === 'telegram' || id === 'webhooks') {
+                            const targetPage = document.getElementById('integration-page-' + id);
+                            if (targetPage) targetPage.style.display = 'block';
+                        } else {
+                            const data = integrationData[id];
+                            if (data) {
+                                document.getElementById('generic-title').innerText = data.title;
+                                document.getElementById('generic-subtitle').innerText = data.desc;
+                                document.getElementById('integration-page-generic').style.display = 'block';
+                            }
+                        }
+                        updateIntegrationHubStatusBadges();
+                    }
+
+                    function closeIntegrationPage() {
+                        triggerPulse();
+                        document.querySelectorAll('.integration-detail-page').forEach(page => {
+                            page.style.display = 'none';
+                        });
+                        document.getElementById('integrations-hub-main').style.display = 'block';
+                        updateIntegrationHubStatusBadges();
+                    }
+
+                    function disconnectTelegram() {
+                        triggerPulse();
+                        const confirmMsg = currentLanguage === 'en' 
+                            ? "Are you sure you want to disconnect Telegram Bot?" 
+                            : currentLanguage === 'es' 
+                            ? "¿Estás seguro de que quieres desconectar el bot de Telegram?" 
+                            : "Deseja realmente desconectar o bot do Telegram?";
+                        
+                        if (confirm(confirmMsg)) {
+                            const inputToken = document.getElementById('telegram-token');
+                            const inputWebhook = document.getElementById('telegram-webhook');
+                            if(inputToken) inputToken.value = '';
+                            if(inputWebhook) inputWebhook.value = '';
+                            
+                            saveConfiguration();
+                            updateIntegrationHubStatusBadges();
+                            
+                            const successMsg = currentLanguage === 'en' ? "Telegram disconnected!" : currentLanguage === 'es' ? "¡Telegram desconectado!" : "Telegram desconectado com sucesso!";
+                            showAppToast(successMsg, 'success');
+                            addLog("Telegram Bot desconectado e limpo.", "info");
+                        }
+                    }
+
+                    function disconnectWebhooks() {
+                        triggerPulse();
+                        const confirmMsg = currentLanguage === 'en' 
+                            ? "Are you sure you want to disable the Webhook?" 
+                            : currentLanguage === 'es' 
+                            ? "¿Estás seguro de que quieres desactivar el Webhook?" 
+                            : "Deseja realmente desativar o Webhook?";
+                        
+                        if (confirm(confirmMsg)) {
+                            const toggle = document.getElementById('html-webhook-online-toggle');
+                            if (toggle && toggle.checked) {
+                                toggle.checked = false;
+                                toggleHtmlWebhookStatus(toggle);
+                            }
+                            updateIntegrationHubStatusBadges();
+                            
+                            const successMsg = currentLanguage === 'en' ? "Webhook deactivated!" : currentLanguage === 'es' ? "¡Webhook desactivado!" : "Webhook desativado com sucesso!";
+                            showAppToast(successMsg, 'success');
+                            addLog("Gateway de Webhook desativado.", "info");
+                        }
+                    }
+
+                    setTimeout(() => {
+                        updateIntegrationHubStatusBadges();
+                    }, 600);
+                </script>
             </div>
 
             <!-- SUB-VIEW 2: MOTOR DE INTELIGÊNCIA ARTIFICIAL -->
@@ -5194,6 +5533,16 @@ WITH CHECK (true);</code>
             document.getElementById('config-index-view').style.display = 'none';
             document.querySelectorAll('.config-subview').forEach(el => el.style.display = 'none');
             document.getElementById('config-subview-' + viewId).style.display = 'block';
+            if (viewId === 'telegram') {
+                const hub = document.getElementById('integrations-hub-main');
+                if (hub) hub.style.display = 'block';
+                document.querySelectorAll('.integration-detail-page').forEach(page => {
+                    page.style.display = 'none';
+                });
+                if (typeof updateIntegrationHubStatusBadges === 'function') {
+                    updateIntegrationHubStatusBadges();
+                }
+            }
             if (typeof syncDrawerActiveStates === 'function') syncDrawerActiveStates();
         }
 
