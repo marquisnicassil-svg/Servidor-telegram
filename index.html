@@ -8063,7 +8063,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=7')
+                navigator.serviceWorker.register('./sw.js?v=8')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -12729,6 +12729,24 @@ WITH CHECK (true);</code>
             const inputForm = document.getElementById('chat-input');
             const preRecordingText = inputForm ? inputForm.value : '';
 
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                addLog("Solicitando permissão de microfone...", "info");
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    // Close stream tracks immediately to release the hardware device
+                    stream.getTracks().forEach(track => track.stop());
+                    runActualSpeechRecognition(preRecordingText);
+                })
+                .catch(err => {
+                    addLog("Acesso ao microfone rejeitado ou indisponível: " + err.message, "error");
+                    showAppToast("Por favor, permita o acesso ao microfone nas configurações.", "error");
+                });
+            } else {
+                runActualSpeechRecognition(preRecordingText);
+            }
+        }
+
+        function runActualSpeechRecognition(preRecordingText) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
             recognition.lang = 'pt-BR';
