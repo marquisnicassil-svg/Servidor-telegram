@@ -1454,7 +1454,7 @@
             width: 0%;
             background: linear-gradient(90deg, #8b5cf6 0%, #a78bfa 50%, #ec4899 100%);
             border-radius: 10px;
-            transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: width 0.9s cubic-bezier(0.1, 0.8, 0.2, 1);
             position: relative;
             box-shadow: 0 0 12px rgba(139, 92, 246, 0.8), 0 0 4px rgba(236, 72, 153, 0.6);
         }
@@ -8682,7 +8682,7 @@ WITH CHECK (true);</code>
 
         async function initializeSessionAndApp() {
             updateSplashStatus(10, "Inicializando IA...");
-            await new Promise(resolve => setTimeout(resolve, 600));
+            await new Promise(resolve => setTimeout(resolve, 1000));
 
             try {
                 // Carrega parâmetros de URL se existirem nocache ativo
@@ -8695,7 +8695,7 @@ WITH CHECK (true);</code>
                 // 1. Carrega configurações do LocalStorage (necessário para pegar as chaves do Supabase)
                 updateSplashStatus(25, "Sincronizando configurações...");
                 loadConfiguration();
-                await new Promise(resolve => setTimeout(resolve, 550));
+                await new Promise(resolve => setTimeout(resolve, 900));
                 
                 // Inicialização robusta do Analisador de Contexto (Substituto do módulo Gmail anterior no menu lateral)
                 updateSplashStatus(40, "Carregando módulos...");
@@ -8705,12 +8705,12 @@ WITH CHECK (true);</code>
                     console.error("Falha ao inicializar AnalisadorDeContexto:", navError);
                     addLog("Falha no Analisador de Contexto. Ignorando e continuando inicialização...", "warning");
                 }
-                await new Promise(resolve => setTimeout(resolve, 550));
+                await new Promise(resolve => setTimeout(resolve, 950));
 
                 // 2. Tenta recuperar sessão do Supabase Auth
                 updateSplashStatus(60, "Validando credenciais...");
                 checkSupabaseAuthSession();
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 900));
 
                 const supabaseUrlEl = document.getElementById('supabase-url');
                 const supabaseKeyEl = document.getElementById('supabase-key');
@@ -8728,7 +8728,7 @@ WITH CHECK (true);</code>
 
                     const result = await Promise.race([connectionPromise, timeoutPromise]);
                     updateSplashStatus(90, "Sincronizando dados...");
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    await new Promise(resolve => setTimeout(resolve, 900));
                     
                     if (result === 'timeout') {
                         addLog("Atenção: A verificação de conexão com o Supabase excedeu o limite de tempo (timeout). Prosseguindo em paralelo.", "info");
@@ -8746,7 +8746,7 @@ WITH CHECK (true);</code>
                     updateSplashStatus(85, "Carregando ambiente local...");
                     addLog("Nenhuma conexão Supabase configurada até o momento.", "info");
                     triggerAuthOrFirstGreeting();
-                    await new Promise(resolve => setTimeout(resolve, 550));
+                    await new Promise(resolve => setTimeout(resolve, 950));
                 }
             } catch (err) {
                 console.error("Erro durante a inicialização segura de sessão:", err);
@@ -8754,7 +8754,7 @@ WITH CHECK (true);</code>
             }
 
             updateSplashStatus(100, "Sistema pronto...");
-            await new Promise(resolve => setTimeout(resolve, 700));
+            await new Promise(resolve => setTimeout(resolve, 1200));
             
             // Dismiss loader/splash screen smoothly under any circumstance (Sempre executado devido à garantia fora do try-catch do ping)
             try {
@@ -12122,43 +12122,25 @@ WITH CHECK (true);</code>
                     });
                 }
 
-                // Exibir skeleton por um tempo curtíssimo (450ms) para simular o carregamento SaaS premium e suave
+                // Exibir o conteúdo do dashboard imediatamente sem atraso artificial para prevenir carregamento infinito e condições de corrida
                 const skeleton = document.getElementById('dashboard-skeleton');
                 const content = document.getElementById('dashboard-actual-content');
                 const errorContainer = document.getElementById('dashboard-error-container');
                 
                 if (errorContainer) errorContainer.style.display = 'none';
 
-                if (skeleton && content) {
-                    if (skeleton.style.display !== 'none' && content.style.display === 'none') {
-                        // Primeiro carregamento
-                        setTimeout(() => {
-                            skeleton.style.display = 'none';
-                            content.style.display = 'flex';
-                            setTimeout(() => {
-                                content.style.opacity = '1';
-                            }, 50);
-                            
-                            clearDashboardSafetyTimeout();
-                            isRenderingWorkspace = false;
-                            const duration = performance.now() - startTime;
-                            console.log(`[DIAG] Sucesso (Primeiro Carregamento). Tempo de resposta: ${duration.toFixed(2)}ms.`);
-                        }, 450);
-                    } else {
-                        // Atualização instantânea sem flickers
-                        skeleton.style.display = 'none';
-                        content.style.display = 'flex';
-                        content.style.opacity = '1';
-                        
-                        clearDashboardSafetyTimeout();
-                        isRenderingWorkspace = false;
-                        const duration = performance.now() - startTime;
-                        console.log(`[DIAG] Sucesso (Atualização Instantânea). Tempo de resposta: ${duration.toFixed(2)}ms.`);
-                    }
-                } else {
-                    clearDashboardSafetyTimeout();
-                    isRenderingWorkspace = false;
+                if (skeleton) {
+                    skeleton.style.display = 'none';
                 }
+                if (content) {
+                    content.style.display = 'flex';
+                    content.style.opacity = '1';
+                }
+                
+                clearDashboardSafetyTimeout();
+                isRenderingWorkspace = false;
+                const duration = performance.now() - startTime;
+                console.log(`[DIAG] Sucesso. Tempo de resposta: ${duration.toFixed(2)}ms.`);
             } catch (err) {
                 clearDashboardSafetyTimeout();
                 isRenderingWorkspace = false;
