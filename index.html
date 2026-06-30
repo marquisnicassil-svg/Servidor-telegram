@@ -2090,6 +2090,26 @@
             transform: scale(0.95);
         }
         
+        /* Mic ativo como o Orbe IA (mesmo estilo e animação do carregamento de mensagens, porém mais compacto/pequeno) */
+        .chat-input-action-btn.mic-active-orbe {
+            background: radial-gradient(circle at 30% 30%, #38bdf8, #8b5cf6, #06b6d4) !important;
+            box-shadow: 0 0 14px rgba(139, 92, 246, 0.7), inset -2px -2px 5px rgba(0,0,0,0.4), inset 2px 2px 5px rgba(255,255,255,0.4) !important;
+            border-color: transparent !important;
+            color: #ffffff !important;
+            animation: micOrbePulse 1.4s ease-in-out infinite, orbeRotate 5s linear infinite !important;
+            z-index: 10 !important;
+        }
+        @keyframes micOrbePulse {
+            0%, 100% {
+                transform: scale(0.85) !important;
+                box-shadow: 0 0 8px rgba(139, 92, 246, 0.5), inset -1px -1px 3px rgba(0,0,0,0.4);
+            }
+            50% {
+                transform: scale(0.92) !important;
+                box-shadow: 0 0 18px rgba(56, 189, 248, 0.8), inset -1px -1px 3px rgba(0,0,0,0.4);
+            }
+        }
+        
         /* Menu de Anexos Moderno */
         .attachment-menu-popup {
             display: none;
@@ -2205,9 +2225,9 @@
         }
         /* Fallback de animação se não houver stream de áudio ou se o navegador bloquear */
         @keyframes fakeWave {
-            0% { height: 4px; }
-            50% { height: 22px; }
-            100% { height: 4px; }
+            0% { height: 4px !important; }
+            50% { height: 22px !important; }
+            100% { height: 4px !important; }
         }
         .voice-bar.animating-fallback {
             animation: fakeWave 0.6s ease infinite alternate;
@@ -8063,7 +8083,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=9')
+                navigator.serviceWorker.register('./sw.js?v=11')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -12643,6 +12663,7 @@ WITH CHECK (true);</code>
             // so we don't request a duplicate audioStream, which prevents microphone contention
             // and allows SpeechRecognition to run 100% perfectly on mobile devices.
             voiceBars.forEach(bar => {
+                bar.style.height = ''; // Clear inline heights so CSS keyframes can take full control!
                 bar.classList.add('animating-fallback');
             });
         }
@@ -12653,6 +12674,32 @@ WITH CHECK (true);</code>
                 bar.classList.remove('animating-fallback');
                 bar.style.height = '4px';
             });
+        }
+
+        // Helper to remove any adjacent duplicated phrases/words that sometimes occur
+        // on buggy Android Speech API returns
+        function deduplicateAdjacentPhrases(str) {
+            let cleanStr = str.replace(/\s+/g, ' ').trim();
+            let words = cleanStr.split(' ');
+            if (words.length < 2) return cleanStr;
+            
+            let n = words.length;
+            for (let patternLen = Math.floor(n / 2); patternLen >= 1; patternLen--) {
+                for (let i = 0; i <= n - 2 * patternLen; i++) {
+                    let firstPart = words.slice(i, i + patternLen).join(' ').toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+                    let secondPart = words.slice(i + patternLen, i + 2 * patternLen).join(' ').toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+                    
+                    if (firstPart === secondPart && firstPart.length > 0) {
+                        // Only deduplicate if phrase is 2+ words, or if it is a single word and longer than 3 chars
+                        if (patternLen >= 2 || (patternLen === 1 && firstPart.length > 3)) {
+                            words.splice(i + patternLen, patternLen);
+                            n = words.length;
+                            i--; // recheck this position
+                        }
+                    }
+                }
+            }
+            return words.join(' ');
         }
 
         // Microphone Speech-to-text toggle
@@ -12670,7 +12717,10 @@ WITH CHECK (true);</code>
                 return;
             }
 
+            // Lock immediately to prevent overlapping instances if clicked multiple times during start delay
+            isListening = true;
             recordingCancelled = false;
+            
             const inputForm = document.getElementById('chat-input');
             const preRecordingText = inputForm ? inputForm.value : '';
 
@@ -12713,9 +12763,7 @@ WITH CHECK (true);</code>
                 if (micOverlay) micOverlay.style.display = 'block';
                 if (recordingBar) recordingBar.style.display = 'flex';
                 if (micBtn) {
-                    micBtn.style.transform = 'scale(1.18)';
-                    micBtn.style.borderColor = '#ef4444';
-                    micBtn.style.color = '#ef4444';
+                    micBtn.classList.add('mic-active-orbe');
                 }
                 
                 recordingSeconds = 0;
@@ -12739,16 +12787,28 @@ WITH CHECK (true);</code>
             recognition.onresult = function(event) {
                 if (recordingCancelled) return;
                 
-                let sessionTranscript = '';
+                let tempFinal = '';
+                let interimTranscript = '';
+                
                 for (let i = 0; i < event.results.length; ++i) {
-                    sessionTranscript += event.results[i][0].transcript;
+                    const result = event.results[i];
+                    if (result.isFinal) {
+                        tempFinal += result[0].transcript + ' ';
+                    } else {
+                        interimTranscript += result[0].transcript;
+                    }
                 }
                 
-                if (sessionTranscript.trim()) {
+                let sessionTranscript = (tempFinal + interimTranscript).trim();
+                
+                // Deduplicate any consecutive repeated words or phrases from buggy WebView/Speech API returns
+                sessionTranscript = deduplicateAdjacentPhrases(sessionTranscript);
+                
+                if (sessionTranscript) {
                     const inputForm = document.getElementById('chat-input');
                     if (inputForm) {
                         const separator = preRecordingText.trim() ? ' ' : '';
-                        inputForm.value = preRecordingText + separator + sessionTranscript.trim();
+                        inputForm.value = preRecordingText + separator + sessionTranscript;
                         inputForm.focus();
                     }
                 }
@@ -12817,6 +12877,7 @@ WITH CHECK (true);</code>
                 }, 200);
             }
             if (micBtn) {
+                micBtn.classList.remove('mic-active-orbe');
                 micBtn.style.transform = '';
                 micBtn.style.borderColor = '';
                 micBtn.style.color = '';
