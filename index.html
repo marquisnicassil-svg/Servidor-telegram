@@ -1750,13 +1750,13 @@
         .tab-section.active {
             display: flex;
             flex-direction: column;
-            animation: tabEnter 0.28s cubic-bezier(0.25, 1, 0.5, 1) !important;
+            animation: tabEnter 0.38s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
 
         @keyframes tabEnter {
             from {
                 opacity: 0;
-                transform: scale(0.982) translateY(12px);
+                transform: scale(0.975) translateY(16px);
             }
             to {
                 opacity: 1;
@@ -1766,37 +1766,77 @@
 
         /* 2. Animações e Microinterações de Cartões e Botões */
         .supabase-card, .stat-card, .rb-mode-card, .card, .agent-card, .dashboard-action-card, .activity-row, .config-index-item, .chat-message.bot, .chat-message.user {
-            transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1), 
-                        box-shadow 0.22s cubic-bezier(0.25, 1, 0.5, 1), 
-                        background-color 0.2s ease, 
-                        border-color 0.2s ease !important;
+            transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), 
+                        box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), 
+                        background-color 0.25s ease, 
+                        border-color 0.25s ease !important;
+            will-change: transform, box-shadow;
         }
 
-        /* Touch animation ao tocar nos cartões e botões */
-        .supabase-card:active, .stat-card:active, .rb-mode-card:active, .card:active, .agent-card:active, .dashboard-action-card:active, .activity-row:active, .config-index-item:active {
-            transform: scale(0.985) translateY(0) !important;
+        /* Touch & Hover animation ao interagir com os cartões */
+        .supabase-card:active, .stat-card:active, .rb-mode-card:active, .card:active, .agent-card:active, .dashboard-action-card:active, .config-index-item:active {
+            transform: scale(0.975) translateY(1px) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        @media (hover: hover) {
+            .supabase-card:hover, .stat-card:hover, .rb-mode-card:hover, .card:hover, .agent-card:hover, .dashboard-action-card:hover, .config-index-item:hover {
+                transform: scale(1.025) translateY(-4px) !important;
+                box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45), 0 0 15px rgba(138, 92, 246, 0.15) !important;
+                border-color: rgba(138, 92, 246, 0.35) !important;
+            }
+            .activity-row:hover {
+                transform: scale(1.015) translateY(-1px) !important;
+                background-color: rgba(255, 255, 255, 0.04) !important;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+            }
         }
 
         /* Animação suave e scale ao clicar em botões */
         button, .btn, .btn-universal, .tab-btn, .drawer-item, .reader-btn, .chat-btn-send {
-            transition: transform 0.15s cubic-bezier(0.25, 0.8, 0.25, 1), 
-                        background-color 0.15s ease, 
-                        border-color 0.15s ease, 
-                        box-shadow 0.15s ease !important;
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
+                        background-color 0.2s ease, 
+                        border-color 0.2s ease, 
+                        box-shadow 0.2s ease !important;
         }
         button:active, .btn:active, .btn-universal:active, .tab-btn:active, .drawer-item:active, .reader-btn:active, .chat-btn-send:active {
-            transform: scale(0.95) !important;
+            transform: scale(0.94) translateY(0) !important;
+        }
+
+        @media (hover: hover) {
+            button:hover, .btn:hover, .btn-universal:hover, .reader-btn:hover, .chat-btn-send:hover {
+                transform: scale(1.04) translateY(-1px) !important;
+                box-shadow: 0 4px 12px rgba(138, 92, 246, 0.28) !important;
+            }
+            .tab-btn:hover:not(.active) {
+                transform: scale(1.04) translateY(-1px) !important;
+                background-color: rgba(255, 255, 255, 0.05) !important;
+            }
+            .drawer-item:hover {
+                transform: scale(1.02) translateX(4px) !important;
+                background-color: rgba(255, 255, 255, 0.04) !important;
+            }
+        }
+
+        /* Estado desabilitado refinado */
+        button:disabled, .btn:disabled, .btn-universal:disabled, .tab-btn:disabled, .chat-btn-send:disabled {
+            opacity: 0.5 !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+            transform: none !important;
+            box-shadow: none !important;
         }
 
         /* Focus states refinados para formulários */
         .form-control, input, textarea, select {
-            transition: border-color 0.22s cubic-bezier(0.25, 1, 0.5, 1), 
-                        box-shadow 0.22s cubic-bezier(0.25, 1, 0.5, 1), 
+            transition: border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                        box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
                         background-color 0.2s ease !important;
         }
         .form-control:focus, input:focus, textarea:focus, select:focus {
             border-color: var(--primary) !important;
-            box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.15) !important;
+            box-shadow: 0 0 14px rgba(139, 92, 246, 0.22), 0 0 0 3px rgba(138, 92, 246, 0.18) !important;
+            background-color: rgba(255, 255, 255, 0.01) !important;
         }
 
         /* 3. Ripple Effect interativo para todos os elementos clicáveis */
@@ -1814,6 +1854,26 @@
                 transform: scale(3.5);
                 opacity: 0;
             }
+        }
+
+        /* Animação de Entrada de Itens em Listas */
+        .chat-message, .activity-row, .log-line, .agent-card, .dashboard-action-card, .config-index-item, .workspace-item, .resume-card {
+            animation: listItemReveal 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes listItemReveal {
+            from {
+                opacity: 0;
+                transform: translateY(14px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Rolagem fluida para contêineres roláveis */
+        .chat-messages, .tab-section, .sidebar, .drawer-content {
+            scroll-behavior: smooth !important;
         }
 
         /* 4. Processamento da IA e Carregamento (Skeleton Wave + AI Pulse Loader) */
@@ -8080,7 +8140,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=13')
+                navigator.serviceWorker.register('./sw.js?v=14')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
