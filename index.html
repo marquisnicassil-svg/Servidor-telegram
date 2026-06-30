@@ -306,30 +306,33 @@
             display: flex;
             flex-direction: column;
             overflow: hidden; /* App travado, barras de rolagem internas */
-            user-select: auto !important;
-            -webkit-user-select: auto !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -webkit-touch-callout: none !important;
             pointer-events: auto !important;
             transition: background-color 0.3s;
         }
 
-        /* Permite copiar e interagir com texto de partes essenciais de forma garantida e definitiva */
-        input, textarea, select, [contenteditable="true"], .log-line, .form-control {
-            user-select: text !important;
-            -webkit-user-select: text !important;
-            -moz-user-select: text !important;
-            -ms-user-select: text !important;
-            pointer-events: auto !important;
-            cursor: text !important;
-        }
-
-        /* Desabilita seleção de texto nativa do navegador/WebView nas mensagens de chat e adiciona feedback visual para toque longo */
-        .chat-message, .chat-message * {
+        /* Desabilita seleção e toque longo nativo em todo o app por padrão */
+        html, body, *, *::before, *::after {
             -webkit-touch-callout: none !important;
             -webkit-user-select: none !important;
             -khtml-user-select: none !important;
             -moz-user-select: none !important;
             -ms-user-select: none !important;
             user-select: none !important;
+        }
+
+        /* Permite interagir, selecionar e digitar em inputs, textareas e elementos de formulário de forma garantida */
+        input, textarea, select, [contenteditable="true"], .form-control {
+            -webkit-touch-callout: default !important;
+            -webkit-user-select: text !important;
+            -khtml-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
+            user-select: text !important;
+            pointer-events: auto !important;
+            cursor: text !important;
         }
 
         button, a, .tab-btn, .color-circle, .drawer-item, .btn-universal, .chat-btn-send {
@@ -8150,7 +8153,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=15')
+                navigator.serviceWorker.register('./sw.js?v=16')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -20664,9 +20667,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
         }, { passive: true });
 
         document.addEventListener('contextmenu', function(e) {
+            e.preventDefault(); // Impede o menu de contexto nativo do navegador/WebView em todo o app
             const msg = e.target.closest('.chat-message');
             if (msg) {
-                e.preventDefault();
                 showPremiumMessageMenu(msg);
             }
         });
