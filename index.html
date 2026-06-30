@@ -313,13 +313,23 @@
         }
 
         /* Permite copiar e interagir com texto de partes essenciais de forma garantida e definitiva */
-        input, textarea, select, [contenteditable="true"], .chat-message, .log-line, .form-control {
+        input, textarea, select, [contenteditable="true"], .log-line, .form-control {
             user-select: text !important;
             -webkit-user-select: text !important;
             -moz-user-select: text !important;
             -ms-user-select: text !important;
             pointer-events: auto !important;
             cursor: text !important;
+        }
+
+        /* Desabilita seleção de texto nativa do navegador/WebView nas mensagens de chat e adiciona feedback visual para toque longo */
+        .chat-message, .chat-message * {
+            -webkit-touch-callout: none !important;
+            -webkit-user-select: none !important;
+            -khtml-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
         }
 
         button, a, .tab-btn, .color-circle, .drawer-item, .btn-universal, .chat-btn-send {
@@ -2507,7 +2517,7 @@
                         <span class="drawer-icon">
                             <svg class="drawer-icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                         </span>
-                        <span class="drawer-label" data-i18n="navegador_contexto">Navegador de Contexto</span>
+                        <span class="drawer-label" data-i18n="navegador_contexto">Analisador de Contexto</span>
                     </li>
                 </ul>
             </div>
@@ -2549,7 +2559,7 @@
             <span>💼</span><span>Workspace</span>
         </button>
         <button class="tab-btn" id="btn-tab-context-browser" onclick="switchTab('tab-context-browser')">
-            <span>🌐</span><span>Navegador</span>
+            <span>🌐</span><span>Analisador</span>
         </button>
         <button class="tab-btn" id="btn-tab-config" onclick="switchTab('tab-config')">
             <span>⚙️</span><span>Ajustes</span>
@@ -3625,7 +3635,7 @@
         <!-- ABA NAVEGADOR DE CONTEXTO -->
         <section id="tab-context-browser" class="tab-section">
             <div class="section-header">
-                <h2>🌐 Navegador de Contexto</h2>
+                <h2>🌐 Analisador de Contexto</h2>
                 <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">Análise inteligente de links e extração de conteúdo limpo sem anúncios ou menus.</p>
             </div>
 
@@ -6086,7 +6096,7 @@ WITH CHECK (true);</code>
             'tab-config': 'Configurações',
             'tab-logs': 'Terminal',
             'tab-translator': 'Tradutor de Textos',
-            'tab-context-browser': 'Navegador de Contexto',
+            'tab-context-browser': 'Analisador de Contexto',
             'tab-admin': 'Painel Administrativo'
         };
 
@@ -6201,7 +6211,7 @@ WITH CHECK (true);</code>
                 "configuracoes_ajustes": "Configurações",
                 "terminal_comandos": "Terminal",
                 "tradutor_textos": "Tradutor de Textos",
-                "navegador_contexto": "Navegador de Contexto",
+                "navegador_contexto": "Analisador de Contexto",
                 "online": "Online",
                 "ajustes_sistema_titulo": "⚙️ Ajustes do Sistema",
                 "ajustes_sistema_subtitle": "Gerencie recursos visuais, inteligência e dados de nuvem",
@@ -6292,7 +6302,7 @@ WITH CHECK (true);</code>
                 "configuracoes_ajustes": "Settings",
                 "terminal_comandos": "Terminal",
                 "tradutor_textos": "Text Translator",
-                "navegador_contexto": "Context Browser",
+                "navegador_contexto": "Context Analyzer",
                 "online": "Online",
                 "ajustes_sistema_titulo": "⚙️ System Configuration",
                 "ajustes_sistema_subtitle": "Manage visual themes, artificial logic, and databases",
@@ -6383,7 +6393,7 @@ WITH CHECK (true);</code>
                 "configuracoes_ajustes": "Configuraciones",
                 "terminal_comandos": "Terminal",
                 "tradutor_textos": "Traductor de Textos",
-                "navegador_contexto": "Navegador de Contexto",
+                "navegador_contexto": "Analizador de Contexto",
                 "online": "En Línea",
                 "ajustes_sistema_titulo": "⚙️ Ajustes Generales",
                 "ajustes_sistema_subtitle": "Gestione características visuales, motores de IA y nube",
@@ -6469,7 +6479,7 @@ WITH CHECK (true);</code>
                 "configuracoes_ajustes": "⚙️ Paramètres",
                 "terminal_comandos": "🖥️ Terminal de Commandes",
                 "tradutor_textos": "🌐 Traducteur",
-                "navegador_contexto": "🌐 Navigateur de Contexte",
+                "navegador_contexto": "🌐 Analyseur de Contexte",
                 "online": "En ligne",
                 "ajustes_sistema_titulo": "⚙️ Configuration Système",
                 "ajustes_sistema_subtitle": "Gérer les thèmes visuels, la logique et les bases de données",
@@ -6499,7 +6509,7 @@ WITH CHECK (true);</code>
                 "configuracoes_ajustes": "⚙️ Einstellungen",
                 "terminal_comandos": "🖥️ Befehlshauptterminal",
                 "tradutor_textos": "🌐 Übersetzer",
-                "navegador_contexto": "🌐 Kontext-Browser",
+                "navegador_contexto": "🌐 Kontext-Analysator",
                 "online": "Online",
                 "ajustes_sistema_titulo": "⚙️ Systemkonfiguration",
                 "ajustes_sistema_subtitle": "Visuelle Designs, Logs und Datenbanken verwalten",
@@ -6529,7 +6539,7 @@ WITH CHECK (true);</code>
                 "configuracoes_ajustes": "⚙️ Impostazioni",
                 "terminal_comandos": "🖥️ Terminale dei Comandi",
                 "tradutor_textos": "🌐 Traduttore",
-                "navegador_contexto": "🌐 Navigatore di Contesto",
+                "navegador_contexto": "🌐 Analizzatore di Contesto",
                 "online": "Online",
                 "ajustes_sistema_titulo": "⚙️ Configurazione di Sistema",
                 "ajustes_sistema_subtitle": "Gestisci i temi visivi, l'intelligenza e i database",
@@ -6561,7 +6571,7 @@ WITH CHECK (true);</code>
                 "configuracoes_ajustes": "⚙️ 시스템 설정",
                 "terminal_comandos": "🖥️ 터미널 및 명령",
                 "tradutor_textos": "🌐 AI 번역기",
-                "navegador_contexto": "🌐 컨텍스트 검색",
+                "navegador_contexto": "🌐 컨텍스트 분석기",
                 "online": "온라인",
                 "ajustes_sistema_titulo": "⚙️ 글로벌 설정",
                 "ajustes_sistema_subtitle": "외관, 인공지능 논리 및 클라우드 데이터 관리",
@@ -6591,7 +6601,7 @@ WITH CHECK (true);</code>
                 "configuracoes_ajustes": "⚙️ Systeminställningar",
                 "terminal_comandos": "🖥️ Terminal & Kommandon",
                 "tradutor_textos": "🌐 AI-Översättare",
-                "navegador_contexto": "🌐 Kontextläsare",
+                "navegador_contexto": "🌐 Kontextanalysator",
                 "online": "Aktiv",
                 "ajustes_sistema_titulo": "⚙️ Systeminställningar",
                 "ajustes_subtitle": "Hantera visuella resurser, intelligens och molndata",
@@ -6621,7 +6631,7 @@ WITH CHECK (true);</code>
                 "configuracoes_ajustes": "⚙️ Thiết lập Hệ thống",
                 "terminal_comandos": "🖥️ Cửa sổ Lệnh Terminal",
                 "tradutor_textos": "🌐 Dịch thuật AI",
-                "navegador_contexto": "🌐 Tìm kiếm Ngữ cảnh",
+                "navegador_contexto": "🌐 Phân tích Ngữ cảnh",
                 "online": "Đang hoạt động",
                 "ajustes_sistema_titulo": "⚙️ Cài đặt Toàn cục",
                 "ajustes_sistema_subtitle": "Cài đặt phong cách thiết kế, cơ sở dữ liệu khóa cloud",
@@ -8140,7 +8150,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=14')
+                navigator.serviceWorker.register('./sw.js?v=15')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -8182,12 +8192,12 @@ WITH CHECK (true);</code>
                 // 1. Carrega configurações do LocalStorage (necessário para pegar as chaves do Supabase)
                 loadConfiguration();
                 
-                // Inicialização robusta do Navegador de Contexto (Substituto do módulo Gmail anterior no menu lateral)
+                // Inicialização robusta do Analisador de Contexto (Substituto do módulo Gmail anterior no menu lateral)
                 try {
                     NavegadorDeContexto();
                 } catch (navError) {
-                    console.error("Falha ao inicializar NavegadorDeContexto:", navError);
-                    addLog("Falha no Navegador de Contexto. Ignorando e continuando inicialização...", "warning");
+                    console.error("Falha ao inicializar AnalisadorDeContexto:", navError);
+                    addLog("Falha no Analisador de Contexto. Ignorando e continuando inicialização...", "warning");
                 }
 
                 // 2. Tenta recuperar sessão do Supabase Auth
@@ -11242,7 +11252,7 @@ WITH CHECK (true);</code>
             }
         }
 
-        // Adiciona um link analisado pelo Navegador de Contexto automaticamente ao Workspace
+        // Adiciona um link analisado pelo Analisador de Contexto automaticamente ao Workspace
         function registerAnalyzedLinkInWorkspace(title, url, desc) {
             if (!url) return;
             // Evita duplicatas de URL no banco de links
@@ -11253,7 +11263,7 @@ WITH CHECK (true);</code>
                 id: 'l-' + Date.now(),
                 title: title || "Link Analisado",
                 url: url,
-                desc: desc || "Link extraído e analisado usando o decodificador inteligente do Navegador de Contexto.",
+                desc: desc || "Link extraído e analisado usando o decodificador inteligente do Analisador de Contexto.",
                 date: new Date().toLocaleDateString('pt-BR'),
                 favorite: false
             };
@@ -12360,7 +12370,7 @@ WITH CHECK (true);</code>
                     contextInputEl.value = extractedUrl;
                 }
                 loader.remove();
-                addLog(`URL detectada no chat: ${extractedUrl}. Desviando para o Navegador de Contexto.`, "info");
+                addLog(`URL detectada no chat: ${extractedUrl}. Desviando para o Analisador de Contexto.`, "info");
                 processContextUrlWeb();
                 return;
             }
@@ -18251,7 +18261,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     }
                 }
             } catch (e) {
-                console.error("Erro ao inicializar Navegador de Contexto:", e);
+                console.error("Erro ao inicializar Analisador de Contexto:", e);
             }
         }
 
@@ -18259,7 +18269,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             try {
                 initContextBrowser();
             } catch (err) {
-                console.error("Erro interno no NavegadorDeContexto:", err);
+                console.error("Erro interno no AnalisadorDeContexto:", err);
             }
         }
 
@@ -18374,7 +18384,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             if (!userQuery) {
                 for (let i = chatHistoryObjects.length - 1; i >= 0; i--) {
                     const msg = chatHistoryObjects[i];
-                    if (msg.role === 'user' && !msg.content.includes('http://') && !msg.content.includes('https://') && !msg.content.includes('[Navegador de Contexto]')) {
+                    if (msg.role === 'user' && !msg.content.includes('http://') && !msg.content.includes('https://') && !msg.content.includes('[Analisador de Contexto]')) {
                         userQuery = msg.content;
                         break;
                     }
@@ -18595,7 +18605,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             
             const usrMsg = document.createElement('div');
             usrMsg.className = 'chat-message user';
-            usrMsg.innerHTML = `🌐 <strong>[Navegador de Contexto]</strong> Analisando link:<br><a href="${urlVal}" target="_blank" style="color: #ffffff; word-break: break-all; text-decoration: underline; font-weight: bold; background-color: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px;">${urlVal}</a>`;
+            usrMsg.innerHTML = `🌐 <strong>[Analisador de Contexto]</strong> Analisando link:<br><a href="${urlVal}" target="_blank" style="color: #ffffff; word-break: break-all; text-decoration: underline; font-weight: bold; background-color: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px;">${urlVal}</a>`;
             chatContainer.appendChild(usrMsg);
             scrollToBottom();
             saveChatSession();
@@ -20392,6 +20402,275 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             switchTab('tab-config');
             openConfigSubView('subscription');
         }
+
+        // --- SISTEMA PREMIUM DE MENU DE CONTEXTO EM MENSAGENS (LONG PRESS / DIREITO) ---
+        function getCleanMessageText(messageEl) {
+            const clone = messageEl.cloneNode(true);
+            const readerBtn = clone.querySelector('.reader-btn');
+            if (readerBtn) readerBtn.remove();
+            const avatar = clone.querySelector('.chat-msg-avatar');
+            if (avatar) avatar.remove();
+            const synapseOrbe = clone.querySelector('.synapse-orbe-inline, .synapse-orbe');
+            if (synapseOrbe) synapseOrbe.remove();
+            return clone.innerText.trim();
+        }
+
+        function showPremiumMessageMenu(msgEl) {
+            // Fecha qualquer menu existente
+            const existing = document.getElementById('premium-msg-menu');
+            if (existing) existing.remove();
+
+            const textToCopy = getCleanMessageText(msgEl);
+            if (!textToCopy) return;
+
+            const menu = document.createElement('div');
+            menu.id = 'premium-msg-menu';
+            menu.style.position = 'fixed';
+            menu.style.top = '0';
+            menu.style.left = '0';
+            menu.style.width = '100vw';
+            menu.style.height = '100vh';
+            menu.style.backgroundColor = 'rgba(3, 4, 6, 0.6)';
+            menu.style.backdropFilter = 'blur(10px)';
+            menu.style.display = 'flex';
+            menu.style.alignItems = 'flex-end'; // Bottom sheet visual
+            menu.style.justifyContent = 'center';
+            menu.style.zIndex = '200000';
+            menu.style.opacity = '0';
+            menu.style.transition = 'opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)';
+            menu.style.pointerEvents = 'auto';
+
+            const container = document.createElement('div');
+            container.style.background = 'linear-gradient(135deg, rgba(21, 23, 30, 0.98) 0%, rgba(13, 14, 20, 0.99) 100%)';
+            container.style.border = '1px solid rgba(139, 92, 246, 0.2)';
+            container.style.borderTopLeftRadius = '24px';
+            container.style.borderTopRightRadius = '24px';
+            container.style.padding = '20px 24px 34px 24px';
+            container.style.maxWidth = '460px';
+            container.style.width = '100%';
+            container.style.boxShadow = '0 -15px 40px rgba(0,0,0,0.7), 0 0 30px rgba(139, 92, 246, 0.1)';
+            container.style.transform = 'translateY(100%)';
+            container.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+            container.style.fontFamily = 'system-ui, -apple-system, sans-serif';
+            container.style.color = '#ffffff';
+
+            const dragHandle = document.createElement('div');
+            dragHandle.style.width = '40px';
+            dragHandle.style.height = '4px';
+            dragHandle.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+            dragHandle.style.borderRadius = '2px';
+            dragHandle.style.margin = '0 auto 18px auto';
+
+            const titleBlock = document.createElement('div');
+            titleBlock.style.display = 'flex';
+            titleBlock.style.alignItems = 'center';
+            titleBlock.style.gap = '8px';
+            titleBlock.style.marginBottom = '16px';
+            titleBlock.innerHTML = `
+                <span style="font-size: 1.25rem;">✨</span>
+                <span style="font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; color: #a78bfa;">Opções de Mensagem</span>
+            `;
+
+            const previewText = textToCopy.length > 80 ? textToCopy.substring(0, 80) + '...' : textToCopy;
+            const previewBlock = document.createElement('div');
+            previewBlock.style.backgroundColor = 'rgba(255, 255, 255, 0.03)';
+            previewBlock.style.border = '1px solid rgba(255, 255, 255, 0.04)';
+            previewBlock.style.borderRadius = '12px';
+            previewBlock.style.padding = '12px 14px';
+            previewBlock.style.fontSize = '0.8rem';
+            previewBlock.style.color = 'rgba(255, 255, 255, 0.7)';
+            previewBlock.style.marginBottom = '22px';
+            previewBlock.style.lineHeight = '1.4';
+            previewBlock.style.maxHeight = '80px';
+            previewBlock.style.overflow = 'hidden';
+            previewBlock.style.textOverflow = 'ellipsis';
+            previewBlock.style.whiteSpace = 'normal';
+            previewBlock.innerText = `"${previewText}"`;
+
+            const actionsList = document.createElement('div');
+            actionsList.style.display = 'flex';
+            actionsList.style.flexDirection = 'column';
+            actionsList.style.gap = '8px';
+
+            const buttonStyle = `
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                width: 100%;
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid rgba(255, 255, 255, 0.06);
+                padding: 14px 16px;
+                border-radius: 12px;
+                color: #ffffff;
+                font-weight: 600;
+                font-size: 0.9rem;
+                cursor: pointer;
+                transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+                text-align: left;
+                touch-action: manipulation;
+            `;
+
+            // Botão 1: Copiar
+            const copyBtn = document.createElement('button');
+            copyBtn.style.cssText = buttonStyle;
+            copyBtn.innerHTML = `
+                <span style="font-size: 1.2rem;">📋</span>
+                <span>Copiar Mensagem</span>
+            `;
+            copyBtn.onclick = function() {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    showAppToast("Texto copiado para a área de transferência!", "success");
+                }).catch(() => {
+                    showAppToast("Falha ao copiar texto.", "error");
+                });
+                closeMenu();
+            };
+
+            // Botão 2: Ouvir (TTS)
+            const speakBtn = document.createElement('button');
+            speakBtn.style.cssText = buttonStyle;
+            speakBtn.innerHTML = `
+                <span style="font-size: 1.2rem;">🔊</span>
+                <span>Ouvir Mensagem</span>
+            `;
+            speakBtn.onclick = function() {
+                if (typeof speakText === 'function') {
+                    speakText(textToCopy);
+                } else {
+                    showAppToast("Função de voz indisponível.", "error");
+                }
+                closeMenu();
+            };
+
+            // Botão 3: Compartilhar
+            const shareBtn = document.createElement('button');
+            shareBtn.style.cssText = buttonStyle;
+            shareBtn.innerHTML = `
+                <span style="font-size: 1.2rem;">📤</span>
+                <span>Compartilhar</span>
+            `;
+            shareBtn.onclick = function() {
+                if (navigator.share) {
+                    navigator.share({
+                        text: textToCopy
+                    }).catch(() => {});
+                } else {
+                    navigator.clipboard.writeText(textToCopy);
+                    showAppToast("Link de compartilhamento copiado!", "success");
+                }
+                closeMenu();
+            };
+
+            // Botão 4: Cancelar
+            const cancelBtn = document.createElement('button');
+            cancelBtn.style.cssText = buttonStyle;
+            cancelBtn.style.background = 'rgba(239, 68, 68, 0.08)';
+            cancelBtn.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+            cancelBtn.style.color = '#ef4444';
+            cancelBtn.innerHTML = `
+                <span style="font-size: 1.2rem;">❌</span>
+                <span>Fechar</span>
+            `;
+            cancelBtn.onclick = closeMenu;
+
+            [copyBtn, speakBtn, shareBtn, cancelBtn].forEach(btn => {
+                btn.onmouseover = function() {
+                    btn.style.transform = 'scale(1.015)';
+                    if (btn === cancelBtn) {
+                        btn.style.background = 'rgba(239, 68, 68, 0.15)';
+                    } else {
+                        btn.style.background = 'rgba(255, 255, 255, 0.08)';
+                        btn.style.borderColor = 'rgba(139, 92, 246, 0.4)';
+                    }
+                };
+                btn.onmouseout = function() {
+                    btn.style.transform = 'scale(1)';
+                    if (btn === cancelBtn) {
+                        btn.style.background = 'rgba(239, 68, 68, 0.08)';
+                    } else {
+                        btn.style.background = 'rgba(255, 255, 255, 0.03)';
+                        btn.style.borderColor = 'rgba(255, 255, 255, 0.06)';
+                    }
+                };
+            });
+
+            actionsList.appendChild(copyBtn);
+            actionsList.appendChild(speakBtn);
+            actionsList.appendChild(shareBtn);
+            actionsList.appendChild(cancelBtn);
+
+            container.appendChild(dragHandle);
+            container.appendChild(titleBlock);
+            container.appendChild(previewBlock);
+            container.appendChild(actionsList);
+            menu.appendChild(container);
+            document.body.appendChild(menu);
+
+            requestAnimationFrame(() => {
+                menu.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            });
+
+            function closeMenu() {
+                menu.style.opacity = '0';
+                container.style.transform = 'translateY(100%)';
+                setTimeout(() => {
+                    menu.remove();
+                }, 300);
+            }
+
+            menu.onclick = function(e) {
+                if (e.target === menu) {
+                    closeMenu();
+                }
+            };
+        }
+
+        // Registrar manipuladores de toque e clique de mensagens
+        let touchTimer;
+        let lastTouchX = 0;
+        let lastTouchY = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            const msg = e.target.closest('.chat-message');
+            if (!msg) return;
+
+            const touch = e.touches[0];
+            lastTouchX = touch.clientX;
+            lastTouchY = touch.clientY;
+
+            if (touchTimer) clearTimeout(touchTimer);
+            touchTimer = setTimeout(function() {
+                showPremiumMessageMenu(msg);
+                if (navigator.vibrate) {
+                    try {
+                        navigator.vibrate(25);
+                    } catch (err) {}
+                }
+            }, 600); // 600ms hold
+        }, { passive: true });
+
+        document.addEventListener('touchend', function(e) {
+            if (touchTimer) clearTimeout(touchTimer);
+        });
+
+        document.addEventListener('touchmove', function(e) {
+            if (touchTimer) {
+                const touch = e.touches[0];
+                if (Math.abs(touch.clientX - lastTouchX) > 12 || Math.abs(touch.clientY - lastTouchY) > 12) {
+                    clearTimeout(touchTimer);
+                }
+            }
+        }, { passive: true });
+
+        document.addEventListener('contextmenu', function(e) {
+            const msg = e.target.closest('.chat-message');
+            if (msg) {
+                e.preventDefault();
+                showPremiumMessageMenu(msg);
+            }
+        });
+        // -------------------------------------------------------------------------------
 
         // Registrar inicialização da carteira
         document.addEventListener('DOMContentLoaded', () => {
