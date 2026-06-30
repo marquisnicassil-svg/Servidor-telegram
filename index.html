@@ -1304,54 +1304,216 @@
         #splash-screen {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-color: var(--card-bg-primary);
-            z-index: 9999;
+            background: linear-gradient(135deg, #030406 0%, #080a10 50%, #030406 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            z-index: 99999;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            overflow: hidden;
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .splash-grid-lines {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-position: center;
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .splash-scanner {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.4), transparent);
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.6);
+            animation: scanMove 4s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 2;
+        }
+        @keyframes scanMove {
+            0% { top: -5%; }
+            100% { top: 105%; }
+        }
+        .splash-particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            will-change: transform, opacity;
+            z-index: 2;
         }
         .splash-content {
+            position: relative;
+            z-index: 10;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
-            animation: splash-intro 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            gap: 24px;
+            animation: splash-intro 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         .splash-icon {
-            width: 100px;
-            height: 100px;
-            animation: pulse-logo 2s infinite ease-in-out;
-            box-shadow: 0 0 25px rgba(138, 92, 246, 0.5);
-            border-radius: 20px;
-            will-change: transform;
-            transform: translate3d(0, 0, 0);
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
+            position: relative;
+            width: 110px;
+            height: 110px;
+            background: rgba(3, 4, 6, 0.6);
+            box-shadow: 0 0 35px rgba(139, 92, 246, 0.35), inset 0 0 15px rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 26px;
+            padding: 4px;
+            animation: logoBreath 3.5s infinite ease-in-out;
+            will-change: transform, box-shadow;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
         }
         .splash-icon img {
             width: 100px;
             height: 100px;
             object-fit: contain;
-            border-radius: 20px;
+            border-radius: 22px;
+            z-index: 2;
+        }
+        .splash-logo-shimmer {
+            position: absolute;
+            top: 0; left: -150%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transform: skewX(-25deg);
+            animation: logoShimmerSweep 4s infinite ease-in-out;
+            pointer-events: none;
+            z-index: 3;
+        }
+        @keyframes logoShimmerSweep {
+            0% { left: -150%; }
+            30% { left: 150%; }
+            100% { left: 150%; }
+        }
+        @keyframes logoBreath {
+            0% { transform: scale(1); box-shadow: 0 0 35px rgba(139, 92, 246, 0.35), inset 0 0 15px rgba(139, 92, 246, 0.2); }
+            50% { transform: scale(1.04); box-shadow: 0 0 50px rgba(139, 92, 246, 0.55), inset 0 0 25px rgba(139, 92, 246, 0.3); }
+            100% { transform: scale(1); box-shadow: 0 0 35px rgba(139, 92, 246, 0.35), inset 0 0 15px rgba(139, 92, 246, 0.2); }
+        }
+        .splash-title-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .splash-title {
-            font-size: 1.8rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            color: var(--text-main);
-            margin-top: 10px;
+            font-size: 2.1rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #ffffff 0%, #d8b4fe 50%, #ffffff 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            animation: textShine 3.5s infinite linear, splash-text-slide 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            font-family: system-ui, -apple-system, sans-serif;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+        }
+        @keyframes textShine {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+        @keyframes splash-text-slide {
+            0% { transform: translateY(12px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
         }
         @keyframes splash-intro {
-            0% { transform: scale(0.9) translate3d(0, 0, 0); opacity: 0; }
-            50% { transform: scale(1.02) translate3d(0, 0, 0); opacity: 1; }
-            100% { transform: scale(1) translate3d(0, 0, 0); opacity: 1; }
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
-        @keyframes pulse-logo {
-            0% { transform: scale(1) translate3d(0, 0, 0); }
-            50% { transform: scale(1.05) translate3d(0, 0, 0); }
-            100% { transform: scale(1) translate3d(0, 0, 0); }
+        .splash-progress-container {
+            width: 220px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            margin-top: 12px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
+        }
+        .splash-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #8b5cf6 0%, #a78bfa 50%, #ec4899 100%);
+            border-radius: 10px;
+            transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.8), 0 0 4px rgba(236, 72, 153, 0.6);
+        }
+        .splash-progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: linear-gradient(90deg, 
+                rgba(255, 255, 255, 0) 0%, 
+                rgba(255, 255, 255, 0.4) 50%, 
+                rgba(255, 255, 255, 0) 100%
+            );
+            background-size: 200% 100%;
+            animation: barPulse 1.8s infinite linear;
+        }
+        @keyframes barPulse {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .splash-status-wrapper {
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 8px;
+        }
+        .splash-status-text-anim {
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 0.82rem;
+            font-family: 'JetBrains Mono', monospace, system-ui, sans-serif;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            text-shadow: 0 0 8px rgba(139, 92, 246, 0.3);
+            opacity: 1;
+            transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .splash-status-fadeout {
+            opacity: 0 !important;
+            transform: translateY(-6px);
+        }
+        .splash-status-fadein {
+            opacity: 1 !important;
+            transform: translateY(0);
+        }
+        @keyframes splashParticleFloat {
+            0% {
+                transform: translateY(0) translateX(0) scale(0.6);
+                opacity: 0;
+            }
+            15% {
+                opacity: 1;
+            }
+            85% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-110vh) translateX(30px) scale(1.1);
+                opacity: 0;
+            }
         }
 
         /* ==========================================================================
@@ -2338,15 +2500,32 @@
 <body>
 
     <!-- Splash Screen Dinâmica -->
-    <div id="splash-screen" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: #000000; z-index: 99999; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);">
-        <div class="splash-content" style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
-            <div class="splash-icon" style="width: 100px; height: 100px; box-shadow: 0 0 25px rgba(138, 92, 246, 0.5); border-radius: 20px; animation: pulse-logo 2s infinite ease-in-out; will-change: transform; transform: translate3d(0, 0, 0); backface-visibility: hidden; -webkit-backface-visibility: hidden;">
-                <img src="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg" alt="Synapse Console Icon" style="width: 100px; height: 100px; object-fit: contain; border-radius: 20px;">
+    <div id="splash-screen">
+        <!-- Digital elements overlays -->
+        <div class="splash-grid-lines"></div>
+        <div class="splash-scanner"></div>
+        
+        <!-- Floating particles container -->
+        <div id="splash-particles-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 1;"></div>
+        
+        <div class="splash-content">
+            <div class="splash-icon">
+                <img src="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg" alt="Synapse Console Icon">
+                <div class="splash-logo-shimmer"></div>
             </div>
-            <div class="splash-title" style="font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; color: #ffffff; margin-top: 10px; font-family: system-ui, -apple-system, sans-serif;">Synapse Console</div>
-            <div class="splash-status" style="color: #a3a3a3; font-size: 0.95rem; margin-top: 12px; font-family: system-ui, -apple-system, sans-serif; text-align: center; line-height: 1.6;">
-                ⚡ Carregando...<br>
-                <span id="splash-status-text" style="color: #737373; font-size: 0.82rem;">Sincronizando configurações...</span>
+            
+            <div class="splash-title-wrapper">
+                <div class="splash-title">Synapse Console</div>
+            </div>
+            
+            <!-- Premium progress bar -->
+            <div class="splash-progress-container">
+                <div id="splash-progress-bar" class="splash-progress-bar"></div>
+            </div>
+            
+            <!-- Dynamic Status do Sistema -->
+            <div class="splash-status-wrapper">
+                <span id="splash-status-text" class="splash-status-text-anim">Inicializando IA...</span>
             </div>
         </div>
     </div>
@@ -8139,8 +8318,52 @@ WITH CHECK (true);</code>
         // Variáveis do PWA
         let deferredPrompt;
 
+        function createSplashParticles() {
+            const container = document.getElementById('splash-particles-container');
+            if (!container) return;
+            container.innerHTML = '';
+            const count = 18;
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'splash-particle';
+                const size = Math.random() * 8 + 4;
+                const left = Math.random() * 100;
+                const duration = Math.random() * 6 + 4;
+                const delay = Math.random() * 5;
+                const opacity = Math.random() * 0.25 + 0.1;
+                
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = left + '%';
+                particle.style.bottom = '-20px';
+                particle.style.opacity = opacity;
+                particle.style.animation = `splashParticleFloat ${duration}s ${delay}s infinite linear`;
+                container.appendChild(particle);
+            }
+        }
+
+        function updateSplashStatus(percent, text) {
+            const bar = document.getElementById('splash-progress-bar');
+            const statusEl = document.getElementById('splash-status-text');
+            if (bar) {
+                bar.style.width = percent + '%';
+            }
+            if (statusEl && statusEl.innerText !== text) {
+                statusEl.classList.add('splash-status-fadeout');
+                setTimeout(() => {
+                    statusEl.innerText = text;
+                    statusEl.classList.remove('splash-status-fadeout');
+                    statusEl.classList.add('splash-status-fadein');
+                    setTimeout(() => {
+                        statusEl.classList.remove('splash-status-fadein');
+                    }, 250);
+                }, 250);
+            }
+        }
+
         // Init Flow
         window.onload = async () => {
+            createSplashParticles();
             if (typeof addLog === 'function') {
                 addLog("[STEP 1] Tela carregada - Janela e recursos do navegador totalmente carregados.", "info");
             }
@@ -8158,7 +8381,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=19')
+                navigator.serviceWorker.register('./sw.js?v=20')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -8186,8 +8409,8 @@ WITH CHECK (true);</code>
         };
 
         async function initializeSessionAndApp() {
-            const statusText = document.getElementById('splash-status-text');
-            if (statusText) statusText.innerText = "Sincronizando configurações locais...";
+            updateSplashStatus(10, "Inicializando IA...");
+            await new Promise(resolve => setTimeout(resolve, 250));
 
             try {
                 // Carrega parâmetros de URL se existirem nocache ativo
@@ -8198,19 +8421,24 @@ WITH CHECK (true);</code>
                 }
 
                 // 1. Carrega configurações do LocalStorage (necessário para pegar as chaves do Supabase)
+                updateSplashStatus(25, "Sincronizando configurações...");
                 loadConfiguration();
+                await new Promise(resolve => setTimeout(resolve, 200));
                 
                 // Inicialização robusta do Analisador de Contexto (Substituto do módulo Gmail anterior no menu lateral)
+                updateSplashStatus(40, "Carregando módulos...");
                 try {
                     NavegadorDeContexto();
                 } catch (navError) {
                     console.error("Falha ao inicializar AnalisadorDeContexto:", navError);
                     addLog("Falha no Analisador de Contexto. Ignorando e continuando inicialização...", "warning");
                 }
+                await new Promise(resolve => setTimeout(resolve, 200));
 
                 // 2. Tenta recuperar sessão do Supabase Auth
-                if (statusText) statusText.innerText = "Verificando sessão segura na nuvem...";
+                updateSplashStatus(60, "Validando credenciais...");
                 checkSupabaseAuthSession();
+                await new Promise(resolve => setTimeout(resolve, 150));
 
                 const supabaseUrlEl = document.getElementById('supabase-url');
                 const supabaseKeyEl = document.getElementById('supabase-key');
@@ -8218,18 +8446,16 @@ WITH CHECK (true);</code>
                 const key = supabaseKeyEl ? supabaseKeyEl.value.trim() : '';
 
                 if (url && key) {
-                    // Nós envolvemos o ping/teste de conexão em um limite de tempo (timeout de 1.8 segundos)
-                    // com garantia de retorno rápido para evitar que o splash screen trave o app em rede instável.
                     const connectionPromise = testSupabaseConnection();
                     const timeoutPromise = new Promise(resolve => setTimeout(() => resolve('timeout'), 1800));
 
-                    if (statusText) {
-                        statusText.innerText = supabaseSession && supabaseSession.user 
-                            ? `Validando credenciais de ${supabaseSession.user.email}...` 
-                            : "Verificando ping do banco de dados...";
-                    }
+                    const statusMsg = supabaseSession && supabaseSession.user 
+                        ? `Acessando conta de ${supabaseSession.user.email}...` 
+                        : "Conectando aos serviços...";
+                    updateSplashStatus(75, statusMsg);
 
                     const result = await Promise.race([connectionPromise, timeoutPromise]);
+                    updateSplashStatus(90, "Sincronizando dados...");
                     
                     if (result === 'timeout') {
                         addLog("Atenção: A verificação de conexão com o Supabase excedeu o limite de tempo (timeout). Prosseguindo em paralelo.", "info");
@@ -8244,30 +8470,44 @@ WITH CHECK (true);</code>
                         triggerAuthOrFirstGreeting();
                     }
                 } else {
+                    updateSplashStatus(85, "Carregando ambiente local...");
                     addLog("Nenhuma conexão Supabase configurada até o momento.", "info");
                     triggerAuthOrFirstGreeting();
+                    await new Promise(resolve => setTimeout(resolve, 200));
                 }
             } catch (err) {
                 console.error("Erro durante a inicialização segura de sessão:", err);
                 addLog("Tratador Geral: Houve uma exceção durante o boot de sessão. Forçando carregamento da interface.", "error");
             }
 
-            if (statusText) statusText.innerText = "Inicialização de segurança concluída!";
+            updateSplashStatus(100, "Sistema pronto...");
+            await new Promise(resolve => setTimeout(resolve, 400));
             
             // Dismiss loader/splash screen smoothly under any circumstance (Sempre executado devido à garantia fora do try-catch do ping)
             try {
-                await new Promise(resolve => setTimeout(resolve, 300));
                 const splash = document.getElementById('splash-screen');
                 if (splash) {
-                    splash.classList.add('fade-out');
+                    const icon = splash.querySelector('.splash-icon');
+                    if (icon) {
+                        // Brilho final espetacular no logo antes de sumir
+                        icon.style.transition = 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
+                        icon.style.boxShadow = '0 0 70px rgba(139, 92, 246, 0.9), inset 0 0 35px rgba(139, 92, 246, 0.6)';
+                        icon.style.transform = 'scale(1.12)';
+                    }
+                    
+                    await new Promise(resolve => setTimeout(resolve, 150));
+                    
+                    splash.style.transition = 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
                     splash.style.opacity = '0';
                     splash.style.pointerEvents = 'none';
-                    splash.style.display = 'none';
-                    splash.style.transform = 'scale(1.05)'; // Suave efeito de recuo
+                    splash.style.transform = 'scale(1.05)'; // Suave recuo de câmera
+                    
                     if (typeof addLog === 'function') {
                         addLog("[STEP 2] Widgets renderizados - Splash screen removido, elementos visuais renderizados na viewport.", "info");
                     }
-                    await new Promise(resolve => setTimeout(resolve, 400));
+                    
+                    // Espera a animação de fade-out concluir e remove o elemento do DOM
+                    await new Promise(resolve => setTimeout(resolve, 650));
                     try { splash.remove(); } catch(err){}
                 }
             } catch (splashErr) {
