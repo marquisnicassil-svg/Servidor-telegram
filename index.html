@@ -2983,76 +2983,348 @@
             </div>
 
             <!-- ACTUAL PREMIUM DASHBOARD CONTENT -->
-            <div id="dashboard-actual-content" style="display: none; opacity: 0; transition: opacity 0.4s ease; flex-direction: column; gap: 20px;">
-                <!-- 👋 CABEÇALHO LIMPO -->
-                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 14px; flex-wrap: wrap; gap: 12px;">
+            <style>
+                /* Dashboard V2 Premium Styles */
+                .dashboard-v2-container {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 24px;
+                    animation: dashboardFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+                }
+                
+                @keyframes dashboardFadeIn {
+                    from { opacity: 0; transform: translateY(8px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+
+                .dashboard-v2-header {
+                    background: rgba(15, 23, 42, 0.45);
+                    border: 1px solid var(--border-color);
+                    border-radius: 20px;
+                    padding: 24px;
+                    position: relative;
+                    overflow: hidden;
+                    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+                    backdrop-filter: blur(12px);
+                    -webkit-backdrop-filter: blur(12px);
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    flex-wrap: wrap;
+                    gap: 16px;
+                }
+
+                .dashboard-v2-header::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: radial-gradient(circle at 12% 12%, rgba(139, 92, 246, 0.08), transparent 60%);
+                    pointer-events: none;
+                }
+
+                /* Waving hand animation */
+                .wave-hand {
+                    display: inline-block;
+                    animation: wave-animation 2.5s infinite;
+                    transform-origin: 70% 70%;
+                }
+
+                @keyframes wave-animation {
+                    0% { transform: rotate( 0.0deg) }
+                    10% { transform: rotate(14.0deg) }
+                    20% { transform: rotate(-8.0deg) }
+                    30% { transform: rotate(14.0deg) }
+                    40% { transform: rotate(-4.0deg) }
+                    50% { transform: rotate(10.0deg) }
+                    60% { transform: rotate( 0.0deg) }
+                    100% { transform: rotate( 0.0deg) }
+                }
+
+                .dashboard-subtitle {
+                    color: var(--text-muted);
+                    font-size: 0.8rem;
+                    margin: 6px 0 0 0;
+                    line-height: 1.5;
+                }
+
+                .dashboard-v2-section-title {
+                    font-size: 0.75rem;
+                    color: var(--text-muted);
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 1.5px;
+                    margin: 0 0 14px 4px;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
+                .dashboard-v2-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 16px;
+                }
+
+                /* Premium action card */
+                .dashboard-v2-card {
+                    background: rgba(15, 23, 42, 0.45) !important;
+                    border: 1px solid var(--border-color) !important;
+                    border-radius: 18px !important;
+                    padding: 20px !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    align-items: center !important;
+                    text-align: center !important;
+                    cursor: pointer !important;
+                    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+                    position: relative !important;
+                    overflow: hidden !important;
+                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+                }
+
+                .dashboard-v2-card::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.06), transparent 70%);
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                    pointer-events: none;
+                }
+
+                .dashboard-v2-card:hover {
+                    transform: translateY(-5px) scale(1.02) !important;
+                    background: rgba(15, 23, 42, 0.75) !important;
+                    border-color: var(--primary) !important;
+                    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.2), 0 0 12px rgba(139, 92, 246, 0.15) !important;
+                }
+
+                .dashboard-v2-card:hover::before {
+                    opacity: 1;
+                }
+
+                .dashboard-v2-card:active {
+                    transform: translateY(-2px) scale(0.98) !important;
+                }
+
+                .dashboard-v2-card-icon-wrapper {
+                    width: 54px;
+                    height: 54px;
+                    border-radius: 14px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-bottom: 12px;
+                    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                    background: rgba(255, 255, 255, 0.04);
+                    border: 1px solid rgba(255, 255, 255, 0.05);
+                    font-size: 1.5rem;
+                }
+
+                .dashboard-v2-card:hover .dashboard-v2-card-icon-wrapper {
+                    transform: rotate(6deg) scale(1.1);
+                }
+
+                .dashboard-v2-card-title {
+                    font-size: 0.9rem;
+                    font-weight: 700;
+                    color: #fff;
+                    margin: 0 0 6px 0;
+                }
+
+                .dashboard-v2-card-desc {
+                    font-size: 0.72rem;
+                    color: var(--text-muted);
+                    line-height: 1.35;
+                    margin: 0;
+                    height: 32px;
+                    overflow: hidden;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                }
+
+                /* Row-style activity card */
+                .activity-card-v2 {
+                    background: rgba(15, 23, 42, 0.45) !important;
+                    border: 1px solid var(--border-color) !important;
+                    border-radius: 16px !important;
+                    padding: 14px 16px !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: space-between !important;
+                    gap: 16px !important;
+                    cursor: pointer !important;
+                    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+                }
+
+                .activity-card-v2:hover {
+                    background: rgba(15, 23, 42, 0.75) !important;
+                    border-color: var(--primary) !important;
+                    transform: translateX(4px) scale(1.005) !important;
+                    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.15) !important;
+                }
+
+                .activity-card-v2:active {
+                    transform: translateX(2px) scale(0.99) !important;
+                }
+
+                /* Activity grid for beautiful structured view */
+                .activity-v2-grid {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                }
+
+                /* Future feature placeholders styling */
+                .coming-soon-badge {
+                    background: rgba(139, 92, 246, 0.12);
+                    color: #c084fc;
+                    border: 1px solid rgba(139, 92, 246, 0.2);
+                    font-size: 0.6rem;
+                    font-weight: 800;
+                    padding: 2px 8px;
+                    border-radius: 10px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    display: inline-block;
+                }
+            </style>
+
+            <div id="dashboard-actual-content" style="display: none; opacity: 0; transition: opacity 0.4s ease; flex-direction: column; gap: 24px;">
+                <!-- 👋 SEÇÃO: BOAS-VINDAS -->
+                <div class="dashboard-v2-header">
                     <div>
                         <h2 style="font-size: 1.6rem; font-weight: 800; color: #fff; margin: 0; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px;">
-                            <span id="dashboard-greeting-text">Olá</span>, <span id="dashboard-user-name" style="color: var(--primary);">Explorador</span> 👋
+                            <span id="dashboard-greeting-text">Olá</span>, <span id="dashboard-user-name" style="color: var(--primary);">Explorador</span> <span class="wave-hand">👋</span>
                         </h2>
-                        <p style="color: var(--text-muted); font-size: 0.8rem; margin: 4px 0 0 0; line-height: 1.4;">
+                        <p class="dashboard-subtitle" id="dashboard-dynamic-welcome-subtitle">
                             Sua central de operações e inteligência no Synapse Console.
                         </p>
                     </div>
                     <!-- Indicator Discreto de Status -->
-                    <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
+                    <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 8px; z-index: 2;">
                         <span id="dashboard-status-dot" class="pulse-indicator" style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); display: inline-block;"></span>
                         <span id="dashboard-status-text" style="font-size: 0.65rem; font-weight: 700; color: var(--text-main); letter-spacing: 0.5px; text-transform: uppercase;">Sistema Online</span>
                     </div>
                 </div>
 
-                <!-- ⚡ AÇÕES RÁPIDAS (FOCO PRINCIPAL) -->
+                <!-- ⚡ SEÇÃO: AÇÕES RÁPIDAS -->
                 <div>
-                    <h3 style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; margin: 0 0 12px 4px;">⚡ Ações Rápidas</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+                    <h3 class="dashboard-v2-section-title">⚡ Ações Rápidas</h3>
+                    <div class="dashboard-v2-grid">
                         <!-- Card 1: Nova Conversa -->
-                        <div class="dashboard-action-card staggered-item staggered-delay-1" onclick="triggerQuickAction('chat')" style="padding: 12px; display: flex; align-items: center; gap: 12px;">
-                            <div class="dashboard-card-glow" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.06), transparent 60%); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;"></div>
-                            <div style="font-size: 1.4rem; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(56, 189, 248, 0.1); border-radius: 10px; color: #38bdf8; z-index: 2; flex-shrink: 0;">💬</div>
-                            <div style="z-index: 2; min-width: 0; flex: 1;">
-                                <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0 0 2px 0;">Nova Conversa</h4>
-                                <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Diálogo neural com a IA geral do console.</p>
+                        <div class="dashboard-v2-card dashboard-action-card staggered-item staggered-delay-1" onclick="triggerQuickAction('chat')">
+                            <div class="dashboard-v2-card-icon-wrapper" style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.15); color: #38bdf8;">
+                                💬
                             </div>
+                            <h4 class="dashboard-v2-card-title">Nova Conversa</h4>
+                            <p class="dashboard-v2-card-desc">Inicie um diálogo neural com a IA geral do console.</p>
                         </div>
 
                         <!-- Card 2: Criar Agente -->
-                        <div class="dashboard-action-card staggered-item staggered-delay-2" onclick="triggerQuickAction('agent')" style="padding: 12px; display: flex; align-items: center; gap: 12px;">
-                            <div class="dashboard-card-glow" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 10% 10%, rgba(139, 92, 246, 0.06), transparent 60%); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;"></div>
-                            <div style="font-size: 1.4rem; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(139, 92, 246, 0.1); border-radius: 10px; color: #8b5cf6; z-index: 2; flex-shrink: 0;">🤖</div>
-                            <div style="z-index: 2; min-width: 0; flex: 1;">
-                                <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0 0 2px 0;">Criar Agente</h4>
-                                <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Customize novos especialistas neurais.</p>
+                        <div class="dashboard-v2-card dashboard-action-card staggered-item staggered-delay-2" onclick="triggerQuickAction('agent')">
+                            <div class="dashboard-v2-card-icon-wrapper" style="background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.15); color: #8b5cf6;">
+                                🤖
                             </div>
+                            <h4 class="dashboard-v2-card-title">Criar Agente</h4>
+                            <p class="dashboard-v2-card-desc">Customize novos especialistas neurais dedicados.</p>
                         </div>
 
                         <!-- Card 3: Criar Currículo -->
-                        <div class="dashboard-action-card staggered-item staggered-delay-3" onclick="triggerQuickAction('resume')" style="padding: 12px; display: flex; align-items: center; gap: 12px;">
-                            <div class="dashboard-card-glow" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.06), transparent 60%); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;"></div>
-                            <div style="font-size: 1.4rem; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(16, 185, 129, 0.1); border-radius: 10px; color: #10b981; z-index: 2; flex-shrink: 0;">📄</div>
-                            <div style="z-index: 2; min-width: 0; flex: 1;">
-                                <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0 0 2px 0;">Criar Currículo</h4>
-                                <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Monte seu currículo otimizado com IA.</p>
+                        <div class="dashboard-v2-card dashboard-action-card staggered-item staggered-delay-3" onclick="triggerQuickAction('resume')">
+                            <div class="dashboard-v2-card-icon-wrapper" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.15); color: #10b981;">
+                                📄
                             </div>
+                            <h4 class="dashboard-v2-card-title">Criar Currículo</h4>
+                            <p class="dashboard-v2-card-desc">Monte seu currículo otimizado com inteligência artificial.</p>
                         </div>
 
                         <!-- Card 4: Simular Entrevista -->
-                        <div class="dashboard-action-card staggered-item staggered-delay-4" onclick="triggerQuickAction('interview')" style="padding: 12px; display: flex; align-items: center; gap: 12px;">
-                            <div class="dashboard-card-glow" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 10% 10%, rgba(245, 158, 11, 0.06), transparent 60%); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;"></div>
-                            <div style="font-size: 1.4rem; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(245, 158, 11, 0.1); border-radius: 10px; color: #f59e0b; z-index: 2; flex-shrink: 0;">💼</div>
-                            <div style="z-index: 2; min-width: 0; flex: 1;">
-                                <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0 0 2px 0;">Simular Entrevista</h4>
-                                <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Treine com simulações e feedbacks.</p>
+                        <div class="dashboard-v2-card dashboard-action-card staggered-item staggered-delay-4" onclick="triggerQuickAction('interview')">
+                            <div class="dashboard-v2-card-icon-wrapper" style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.15); color: #f59e0b;">
+                                💼
                             </div>
+                            <h4 class="dashboard-v2-card-title">Simular Entrevista</h4>
+                            <p class="dashboard-v2-card-desc">Treine para entrevistas com RH e testes virtuais.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- 🕒 ATIVIDADE RECENTE (SIMPLIFICADA) -->
-                <div>
-                    <h3 style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; margin: 0 0 16px 4px;">🕒 Atividade Recente</h3>
-                    <div id="dashboard-recent-activity-container" style="display: flex; flex-direction: column; gap: 12px;">
-                        <!-- Dynamic Content Rendered with JavaScript -->
+                <!-- OUTROS BLOCOS EM GRID RESPONSIVO (Atividade Recente, Favoritos, Continuar de Onde Parou) -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 24px;">
+                    
+                    <!-- COLUNA DA ESQUERDA: Atividade Recente & Continuar de Onde Parou -->
+                    <div style="display: flex; flex-direction: column; gap: 24px;">
+                        <!-- 🕒 SEÇÃO: ATIVIDADE RECENTE -->
+                        <div>
+                            <h3 class="dashboard-v2-section-title">🕒 Atividade Recente</h3>
+                            <div id="dashboard-recent-activity-container" class="activity-v2-grid">
+                                <!-- Dynamic Content Rendered with JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- 📌 SEÇÃO: CONTINUAR DE ONDE PAROU -->
+                        <div>
+                            <h3 class="dashboard-v2-section-title">📌 Continuar de onde parou</h3>
+                            <div class="activity-card-v2 activity-row" style="cursor: default; background: rgba(15, 23, 42, 0.25) !important; border-style: dashed !important;">
+                                <div style="display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0;">
+                                    <div class="dashboard-v2-card-icon-wrapper" style="width: 42px; height: 42px; font-size: 1.2rem; margin-bottom: 0; flex-shrink: 0; background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.15); color: #a855f7; border-radius: 12px;">
+                                        📌
+                                    </div>
+                                    <div style="flex: 1; min-width: 0;">
+                                        <h4 style="font-size: 0.88rem; font-weight: 700; color: #fff; margin: 0 0 3px 0; display: flex; align-items: center; gap: 8px;">
+                                            Estado de Sessão
+                                            <span class="coming-soon-badge" style="font-size: 0.55rem; padding: 1px 6px;">Ativo</span>
+                                        </h4>
+                                        <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Pronto para restabelecer a última rotina do console.</p>
+                                    </div>
+                                </div>
+                                <div style="flex-shrink: 0;">
+                                    <span style="font-size: 0.65rem; color: #a855f7; font-weight: 700; text-transform: uppercase; background: rgba(168, 85, 247, 0.1); padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(168, 85, 247, 0.2); white-space: nowrap;">
+                                        Local
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- COLUNA DA DIREITA: Favoritos -->
+                    <div style="display: flex; flex-direction: column; gap: 24px;">
+                        <!-- ⭐ SEÇÃO: FAVORITOS -->
+                        <div>
+                            <h3 class="dashboard-v2-section-title">⭐ Favoritos</h3>
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                                <!-- Bloco de Favoritos com visual moderno e sincronização futura preparada -->
+                                <div class="activity-card-v2 activity-row" style="cursor: default; position: relative;">
+                                    <div style="display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0;">
+                                        <div class="dashboard-v2-card-icon-wrapper" style="width: 42px; height: 42px; font-size: 1.2rem; margin-bottom: 0; flex-shrink: 0; background: rgba(234, 179, 8, 0.08); border: 1px solid rgba(234, 179, 8, 0.15); color: #eab308; border-radius: 12px;">
+                                            ⭐
+                                        </div>
+                                        <div style="flex: 1; min-width: 0;">
+                                            <h4 style="font-size: 0.88rem; font-weight: 700; color: #fff; margin: 0 0 3px 0; display: flex; align-items: center; gap: 8px;">
+                                                Seus Favoritos
+                                                <span class="coming-soon-badge" style="font-size: 0.55rem; padding: 1px 6px;">Sinc</span>
+                                            </h4>
+                                            <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Itens estrela do console e links rápidos.</p>
+                                        </div>
+                                    </div>
+                                    <div style="flex-shrink: 0;">
+                                        <span style="font-size: 0.65rem; color: #eab308; font-weight: 700; text-transform: uppercase; background: rgba(234, 179, 8, 0.1); padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(234, 179, 8, 0.2); white-space: nowrap;">
+                                            0 Sinc
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </section>
@@ -11660,54 +11932,26 @@ WITH CHECK (true);</code>
                 if (!Array.isArray(workspaceData.links)) workspaceData.links = [];
                 if (!Array.isArray(workspaceData.memorias)) workspaceData.memorias = [];
 
-                // Validar estado vazio / sem dados reais
-                const hasRealData = 
-                    workspaceData.conversas.length > 0 ||
-                    workspaceData.arquivos.length > 0 ||
-                    workspaceData.links.length > 0 ||
-                    workspaceData.memorias.length > 0;
-
-                if (!hasRealData) {
-                    const duration = performance.now() - startTime;
-                    console.log(`[DIAG] Sucesso (Estado Vazio). Tempo de resposta: ${duration.toFixed(2)}ms. Sem dados reais no workspace.`);
-                    
-                    const skeleton = document.getElementById('dashboard-skeleton');
-                    const content = document.getElementById('dashboard-actual-content');
-                    const errorContainer = document.getElementById('dashboard-error-container');
-                    
-                    if (errorContainer) errorContainer.style.display = 'none';
-                    if (skeleton) skeleton.style.display = 'none';
-                    if (content) {
-                        content.style.display = 'flex';
-                        content.style.opacity = '1';
-                    }
-                    
-                    const container = document.getElementById('dashboard-recent-activity-container');
-                    if (container) {
-                        container.innerHTML = `
-                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 16px; border: 1px dashed var(--border-color); border-radius: 16px; background: rgba(255, 255, 255, 0.01); text-align: center; gap: 12px; margin-top: 10px; width: 100%;">
-                                <span style="font-size: 2.5rem; line-height: 1;">📭</span>
-                                <h4 style="margin: 0; font-size: 1rem; color: #fff; font-weight: 700;">Nenhuma atividade recente</h4>
-                                <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted); max-width: 320px; line-height: 1.4;">Nenhum dado disponível no momento. Suas interações com as IAs e simulações aparecerão aqui.</p>
-                            </div>
-                        `;
-                    }
-                    
-                    clearDashboardSafetyTimeout();
-                    isRenderingWorkspace = false;
-                    return;
-                }
-
-                // Atualiza cabeçalho limpo do dashboard
+                // Atualiza cabeçalho limpo do dashboard com saudação e frase dinâmica
                 const greetingEl = document.getElementById('dashboard-greeting-text');
                 const userNameEl = document.getElementById('dashboard-user-name');
+                const subtitleEl = document.getElementById('dashboard-dynamic-welcome-subtitle');
                 if (greetingEl) {
                     const hour = new Date().getHours();
                     let greeting = "Bem-vindo";
-                    if (hour >= 5 && hour < 12) greeting = "Bom dia";
-                    else if (hour >= 12 && hour < 18) greeting = "Boa tarde";
-                    else if (hour >= 18 || hour < 5) greeting = "Boa noite";
+                    let subtitle = "Sua central de operações e inteligência no Synapse Console.";
+                    if (hour >= 5 && hour < 12) {
+                        greeting = "Bom dia";
+                        subtitle = "Todos os sistemas operando dentro dos parâmetros ideais. Pronto para criar?";
+                    } else if (hour >= 12 && hour < 18) {
+                        greeting = "Boa tarde";
+                        subtitle = "O que vamos construir hoje? Selecione um módulo rápido abaixo para iniciar.";
+                    } else if (hour >= 18 || hour < 5) {
+                        greeting = "Boa noite";
+                        subtitle = "Ambiente neural seguro e sincronizado com criptografia de ponta a ponta.";
+                    }
                     greetingEl.textContent = greeting;
+                    if (subtitleEl) subtitleEl.textContent = subtitle;
                 }
                 if (userNameEl) {
                     let userName = "Explorador";
@@ -11828,10 +12072,14 @@ WITH CHECK (true);</code>
                         });
                     }
 
-                    // Renderiza itens na tela
-                    activityItems.forEach(item => {
+                    // Renderiza itens na tela como cards modernos
+                    activityItems.forEach((item, idx) => {
                         const row = document.createElement('div');
-                        row.className = 'activity-row';
+                        row.className = 'activity-card-v2 activity-row';
+                        
+                        // Determina se há uma conversa ativa ou se é o primeiro item ativo/recente
+                        const isActive = item.date === "Ativo" || item.date === "Recente" || idx === 0;
+
                         row.onclick = () => {
                             triggerPulse();
                             // Executa ação de navegação
@@ -11852,17 +12100,20 @@ WITH CHECK (true);</code>
                         };
 
                         row.innerHTML = `
-                            <div style="display: flex; align-items: center; gap: 12px; overflow: hidden; flex: 1; min-width: 0; margin-right: 12px;">
-                                <div style="font-size: 1.25rem; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.02); border-radius: 10px; border: 1px solid var(--border-color); flex-shrink: 0;">
+                            <div style="display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0;">
+                                <div class="dashboard-v2-card-icon-wrapper" style="width: 42px; height: 42px; font-size: 1.25rem; margin-bottom: 0; flex-shrink: 0; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; transition: all 0.2s;">
                                     ${item.icon}
                                 </div>
-                                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0;">
-                                    <h4 style="font-size: 0.9rem; font-weight: 700; color: #fff; margin: 0 0 2px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.title}</h4>
-                                    <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.desc}</p>
+                                <div style="flex: 1; min-width: 0;">
+                                    <h4 style="font-size: 0.88rem; font-weight: 700; color: #fff; margin: 0 0 3px 0; display: flex; align-items: center; gap: 8px;">
+                                        ${item.title}
+                                        ${isActive ? '<span class="pulse-indicator" style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.8); display: inline-block;"></span>' : ''}
+                                    </h4>
+                                    <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.desc}</p>
                                 </div>
                             </div>
                             <div style="flex-shrink: 0; display: flex; align-items: center;">
-                                <span style="font-size: 0.68rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; background: rgba(255,255,255,0.02); padding: 3px 8px; border-radius: 10px; border: 1px solid var(--border-color); white-space: nowrap;">
+                                <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; background: rgba(255,255,255,0.02); padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border-color); white-space: nowrap;">
                                     ${item.date}
                                 </span>
                             </div>
