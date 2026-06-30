@@ -335,6 +335,11 @@
             cursor: text !important;
         }
 
+        /* Mascaramento de senha premium via CSS para impedir o gerenciador de senhas do navegador de aparecer */
+        .password-masked {
+            -webkit-text-security: disc !important;
+        }
+
         button, a, .tab-btn, .color-circle, .drawer-item, .btn-universal, .chat-btn-send {
             pointer-events: auto !important;
             cursor: pointer !important;
@@ -2378,7 +2383,7 @@
                 <div id="auth-password-container">
                     <label id="auth-password-label" style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Senha de Acesso</label>
                     <div style="position: relative; display: flex; align-items: center;">
-                        <input type="password" id="auth-password" class="form-control" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" style="border-radius: 10px; padding: 10px 42px 10px 12px; font-size: 0.85rem;" placeholder="Mínimo 6 caracteres" value="" autocomplete="current-password">
+                        <input type="text" id="auth-password" class="form-control password-masked" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" style="border-radius: 10px; padding: 10px 42px 10px 12px; font-size: 0.85rem;" placeholder="Mínimo 6 caracteres" value="" autocomplete="off">
                         <button type="button" onclick="togglePasswordVisibility('auth-password', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10; outline: none;" title="Exibir/Ocultar Senha">👁️</button>
                     </div>
                     <div id="auth-password-error" style="color: #ef4444; font-size: 0.72rem; margin-top: 4px; display: none; padding-left: 4px;"></div>
@@ -2387,7 +2392,7 @@
                 <div id="auth-confirm-password-container" style="display: none;">
                     <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Confirmar Nova Senha</label>
                     <div style="position: relative; display: flex; align-items: center;">
-                        <input type="password" id="auth-confirm-password" class="form-control" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" style="border-radius: 10px; padding: 10px 42px 10px 12px; font-size: 0.85rem;" placeholder="Confirme sua nova senha" value="" autocomplete="new-password">
+                        <input type="text" id="auth-confirm-password" class="form-control password-masked" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" style="border-radius: 10px; padding: 10px 42px 10px 12px; font-size: 0.85rem;" placeholder="Confirme sua nova senha" value="" autocomplete="off">
                         <button type="button" onclick="togglePasswordVisibility('auth-confirm-password', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10; outline: none;" title="Exibir/Ocultar Senha">👁️</button>
                     </div>
                     <div id="auth-confirm-password-error" style="color: #ef4444; font-size: 0.72rem; margin-top: 4px; display: none; padding-left: 4px;"></div>
@@ -3762,7 +3767,7 @@
                 </p>
                 <div style="text-align: left; margin-bottom: 15px;">
                     <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 6px;">Senha / PIN de Administrador</label>
-                    <input type="password" id="admin-pin-input" class="form-control" style="border-radius: 10px; padding: 12px; font-size: 0.95rem; text-align: center; letter-spacing: 4px;" placeholder="••••••" onkeydown="if(event.key === 'Enter') tryUnlockAdminPanel()">
+                    <input type="text" id="admin-pin-input" class="form-control password-masked" style="border-radius: 10px; padding: 12px; font-size: 0.95rem; text-align: center; letter-spacing: 4px;" placeholder="••••••" onkeydown="if(event.key === 'Enter') tryUnlockAdminPanel()" autocomplete="off">
                 </div>
                 <button class="btn-universal" onclick="tryUnlockAdminPanel()" style="background-color: var(--primary); color: var(--bg-color); border: none; font-weight: bold; border-radius: 12px; height: 48px; width: 100%; cursor: pointer;">
                     🔓 Desbloquear Painel
@@ -3850,7 +3855,7 @@
                             </div>
                             <div>
                                 <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">Nova Senha do Painel</label>
-                                <input type="password" id="admin-settings-pass" class="form-control" placeholder="Senha do painel" onchange="saveAdminConfigSettings()">
+                                <input type="text" id="admin-settings-pass" class="form-control password-masked" placeholder="Senha do painel" onchange="saveAdminConfigSettings()" autocomplete="off">
                             </div>
                             <div style="display: flex; gap: 10px; margin-top: 5px;">
                                 <button class="btn-universal" onclick="saveAdminConfigSettings(true)" style="background-color: var(--primary); color: var(--bg-color); height: 38px; font-size: 0.8rem; border-radius: 8px;">Salvar Ajustes</button>
@@ -3875,7 +3880,7 @@
                             </div>
                             <div>
                                 <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">Chave de API Mestre (API Key)</label>
-                                <input type="password" id="admin-master-key" class="form-control" placeholder="Insira a chave mestre para teste" onchange="saveAdminMasterApiSettings()" style="border-radius: 8px;">
+                                <input type="text" id="admin-master-key" class="form-control password-masked" placeholder="Insira a chave mestre para teste" onchange="saveAdminMasterApiSettings()" style="border-radius: 8px;" autocomplete="off">
                             </div>
                             <div>
                                 <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">Tipo da API</label>
@@ -4794,7 +4799,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                             <div class="form-group">
                                 <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Token do Bot (Telegram)</label>
                                 <div style="position: relative; display: flex; align-items: center;">
-                                    <input type="password" id="telegram-token" class="form-control" style="padding-right: 40px; border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" placeholder="Insira o token gerado pelo @BotFather..." autocomplete="new-password" oninput="saveConfiguration(); updateIntegrationHubStatusBadges();">
+                                    <input type="text" id="telegram-token" class="form-control password-masked" style="padding-right: 40px; border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" placeholder="Insira o token gerado pelo @BotFather..." autocomplete="off" oninput="saveConfiguration(); updateIntegrationHubStatusBadges();">
                                     <button type="button" onclick="togglePasswordVisibility('telegram-token', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Token">👁️</button>
                                 </div>
                             </div>
@@ -4857,7 +4862,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                             <div class="form-group">
                                 <label id="tg-api-key-label" style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Chave de API / Token do Provedor</label>
                                 <div style="position: relative; display: flex; align-items: center;">
-                                    <input type="password" id="tg-api-key" class="form-control" style="padding-right: 40px; border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff;" placeholder="Cole sua API Key aqui..." oninput="syncTelegramApiKeysFromInput(this.value)" autocomplete="new-password">
+                                    <input type="text" id="tg-api-key" class="form-control password-masked" style="padding-right: 40px; border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff;" placeholder="Cole sua API Key aqui..." oninput="syncTelegramApiKeysFromInput(this.value)" autocomplete="off">
                                     <button type="button" onclick="togglePasswordVisibility('tg-api-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
                                 </div>
                             </div>
@@ -5033,7 +5038,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         <div style="display: flex; flex-direction: column; gap: 14px; opacity: 0.5; pointer-events: none;">
                             <div class="form-group">
                                 <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">Token / API Key</label>
-                                <input type="password" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" placeholder="Ex: sk-proj-..." disabled>
+                                <input type="text" class="form-control password-masked" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" placeholder="Ex: sk-proj-..." disabled autocomplete="off">
                             </div>
                             <div class="form-group">
                                 <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">Endpoint URL</label>
@@ -5574,7 +5579,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                 <div class="form-group">
                     <label id="api-key-label">Chave de API da IA Selecionada</label>
                     <div style="position: relative; display: flex; align-items: center;">
-                        <input type="password" id="api-key" class="form-control" style="padding-right: 40px;" placeholder="Cole sua API Key para a IA selecionada..." autocomplete="new-password" oninput="if(typeof apiType !== 'undefined' && apiType) { localStorage.setItem('apiKey_' + apiType, this.value.trim()); }">
+                        <input type="text" id="api-key" class="form-control password-masked" style="padding-right: 40px;" placeholder="Cole sua API Key para a IA selecionada..." autocomplete="off" oninput="if(typeof apiType !== 'undefined' && apiType) { localStorage.setItem('apiKey_' + apiType, this.value.trim()); }">
                         <button type="button" onclick="togglePasswordVisibility('api-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
                     </div>
                 </div>
@@ -5637,7 +5642,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         <div>
                             <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Chave Pública (Anon Key)</label>
                             <div style="position: relative; display: flex; align-items: center;">
-                                <input type="password" id="supabase-key" class="form-control" style="border-radius: 10px; padding: 8px 40px 8px 12px; font-size: 0.85rem;" placeholder="Chave anônima" value="sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa" autocomplete="new-password">
+                                <input type="text" id="supabase-key" class="form-control password-masked" style="border-radius: 10px; padding: 8px 40px 8px 12px; font-size: 0.85rem;" placeholder="Chave anônima" value="sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa" autocomplete="off">
                                 <button type="button" onclick="togglePasswordVisibility('supabase-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
                             </div>
                         </div>
@@ -5816,7 +5821,7 @@ WITH CHECK (true);</code>
                             <label style="font-size: 0.72rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 8px;">Alterar Senha de Acesso</label>
                             <div style="display: flex; flex-direction: column; gap: 8px;">
                                 <div style="position: relative; display: flex; align-items: center;">
-                                    <input type="password" id="new-account-password" class="form-control" style="border-radius: 10px; padding: 10px 42px 10px 12px; font-size: 0.85rem; width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color);" placeholder="Insira a nova senha (mín. 6 caracteres)" autocomplete="new-password">
+                                    <input type="text" id="new-account-password" class="form-control password-masked" style="border-radius: 10px; padding: 10px 42px 10px 12px; font-size: 0.85rem; width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color);" placeholder="Insira a nova senha (mín. 6 caracteres)" autocomplete="off">
                                     <button type="button" onclick="togglePasswordVisibility('new-account-password', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10; outline: none;" title="Exibir/Ocultar Senha">👁️</button>
                                 </div>
                                 <button id="btn-save-new-password" class="btn-supabase-action" onclick="accountChangePassword()" style="border-color: var(--primary); background: rgba(124, 58, 237, 0.08); font-size: 0.8rem; padding: 8px 12px; border-radius: 10px; font-weight: bold; width: 100%; transition: 0.2s; cursor: pointer;">
@@ -8153,7 +8158,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=16')
+                navigator.serviceWorker.register('./sw.js?v=17')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -16500,10 +16505,20 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             triggerPulse();
             const input = document.getElementById(id);
             if (!input) return;
-            if (input.type === 'password') {
+            
+            // Suporte para mascaramento moderno por CSS
+            if (input.classList.contains('password-masked')) {
+                input.classList.remove('password-masked');
+                btn.innerText = '🙈';
+                addLog(`Exibindo caracteres do campo invisível.`, "info");
+            } else if (input.type === 'password') {
                 input.type = 'text';
                 btn.innerText = '🙈';
                 addLog(`Exibindo caracteres do campo invisível.`, "info");
+            } else if (input.type === 'text' && !input.classList.contains('password-masked') && (id === 'auth-password' || id === 'auth-confirm-password' || id === 'telegram-token' || id === 'tg-api-key' || id === 'api-key' || id === 'supabase-key' || id === 'new-account-password')) {
+                input.classList.add('password-masked');
+                btn.innerText = '👁️';
+                addLog(`Ocultando caracteres do campo.`, "info");
             } else {
                 input.type = 'password';
                 btn.innerText = '👁️';
