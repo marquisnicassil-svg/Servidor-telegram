@@ -8158,7 +8158,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=18')
+                navigator.serviceWorker.register('./sw.js?v=19')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -15475,28 +15475,28 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             modal.style.padding = '24px';
 
             const card = document.createElement('div');
-            card.style.background = 'linear-gradient(135deg, rgba(21, 23, 30, 0.98) 0%, rgba(13, 14, 20, 0.99) 100%)';
-            card.style.border = '1px solid rgba(139, 92, 246, 0.25)';
+            card.style.background = 'var(--card-bg-primary, #161920)';
+            card.style.border = '1px solid var(--border-color, rgba(255, 255, 255, 0.15))';
             card.style.borderRadius = '24px';
             card.style.padding = '28px 24px 24px 24px';
             card.style.maxWidth = '400px';
             card.style.width = '100%';
-            card.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(139, 92, 246, 0.15)';
+            card.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 30px var(--primary-bg, rgba(255,255,255,0.05))';
             card.style.transform = 'scale(0.9)';
             card.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
             card.style.fontFamily = 'system-ui, -apple-system, sans-serif';
-            card.style.color = '#ffffff';
+            card.style.color = 'var(--text-main, #ffffff)';
 
             card.innerHTML = `
                 <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
-                    <div style="width: 58px; height: 58px; background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);">
+                    <div style="width: 58px; height: 58px; background: var(--primary-bg, rgba(255, 255, 255, 0.1)); border: 1px solid var(--border-color, rgba(255, 255, 255, 0.2)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; box-shadow: 0 0 15px var(--primary-bg, rgba(255,255,255,0.1));">
                         <span style="font-size: 1.6rem; user-select: none;">✨</span>
                     </div>
-                    <h4 style="margin: 0 0 10px 0; font-size: 1.2rem; font-weight: 750; color: #ffffff; letter-spacing: 0.3px; font-family: inherit;">Confirmação Requerida</h4>
-                    <p style="margin: 0 0 26px 0; font-size: 0.88rem; line-height: 1.55; color: rgba(255, 255, 255, 0.72); word-break: break-word; font-family: inherit;">${message}</p>
+                    <h4 style="margin: 0 0 10px 0; font-size: 1.2rem; font-weight: 750; color: var(--text-main, #ffffff); letter-spacing: 0.3px; font-family: inherit;">Confirmação Requerida</h4>
+                    <p style="margin: 0 0 26px 0; font-size: 0.88rem; line-height: 1.55; color: var(--text-muted, rgba(255, 255, 255, 0.72)); word-break: break-word; font-family: inherit;">${message}</p>
                     <div style="display: flex; width: 100%; gap: 12px;">
-                        <button id="confirm-btn-cancel" style="flex: 1; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.8); padding: 13px 16px; border-radius: 12px; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); outline: none; touch-action: manipulation; text-align: center;">Cancelar</button>
-                        <button id="confirm-btn-ok" style="flex: 1; background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); border: none; color: #ffffff; padding: 13px 16px; border-radius: 12px; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.35); outline: none; touch-action: manipulation; text-align: center;">Confirmar</button>
+                        <button id="confirm-btn-cancel" style="flex: 1; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08)); color: var(--text-main, rgba(255, 255, 255, 0.8)); padding: 13px 16px; border-radius: 12px; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); outline: none; touch-action: manipulation; text-align: center;">Cancelar</button>
+                        <button id="confirm-btn-ok" style="flex: 1; background: var(--primary, #ffffff); border: none; color: var(--bg-color, #000000); padding: 13px 16px; border-radius: 12px; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 4px 15px var(--primary-bg, rgba(255, 255, 255, 0.2)); outline: none; touch-action: manipulation; text-align: center;">Confirmar</button>
                     </div>
                 </div>
             `;
@@ -15520,25 +15520,25 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
             cancelBtn.onmouseenter = () => {
                 cancelBtn.style.background = 'rgba(255, 255, 255, 0.08)';
-                cancelBtn.style.color = '#ffffff';
-                cancelBtn.style.borderColor = 'rgba(139, 92, 246, 0.3)';
+                cancelBtn.style.color = 'var(--text-main, #ffffff)';
+                cancelBtn.style.borderColor = 'var(--primary, #ffffff)';
                 cancelBtn.style.transform = 'translateY(-1px)';
             };
             cancelBtn.onmouseleave = () => {
                 cancelBtn.style.background = 'rgba(255, 255, 255, 0.03)';
-                cancelBtn.style.color = 'rgba(255, 255, 255, 0.8)';
-                cancelBtn.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                cancelBtn.style.color = 'var(--text-muted, rgba(255, 255, 255, 0.8))';
+                cancelBtn.style.borderColor = 'var(--border-color, rgba(255, 255, 255, 0.08))';
                 cancelBtn.style.transform = 'translateY(0)';
             };
 
             okBtn.onmouseenter = () => {
-                okBtn.style.background = 'linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%)';
-                okBtn.style.boxShadow = '0 6px 20px rgba(139, 92, 246, 0.5)';
+                okBtn.style.opacity = '0.85';
+                okBtn.style.boxShadow = '0 6px 20px var(--primary-bg, rgba(255, 255, 255, 0.35))';
                 okBtn.style.transform = 'translateY(-1px)';
             };
             okBtn.onmouseleave = () => {
-                okBtn.style.background = 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)';
-                okBtn.style.boxShadow = '0 4px 15px rgba(139, 92, 246, 0.35)';
+                okBtn.style.opacity = '1';
+                okBtn.style.boxShadow = '0 4px 15px var(--primary-bg, rgba(255, 255, 255, 0.2))';
                 okBtn.style.transform = 'translateY(0)';
             };
 
