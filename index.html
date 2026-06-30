@@ -8410,7 +8410,7 @@ WITH CHECK (true);</code>
 
         async function initializeSessionAndApp() {
             updateSplashStatus(10, "Inicializando IA...");
-            await new Promise(resolve => setTimeout(resolve, 250));
+            await new Promise(resolve => setTimeout(resolve, 600));
 
             try {
                 // Carrega parâmetros de URL se existirem nocache ativo
@@ -8423,7 +8423,7 @@ WITH CHECK (true);</code>
                 // 1. Carrega configurações do LocalStorage (necessário para pegar as chaves do Supabase)
                 updateSplashStatus(25, "Sincronizando configurações...");
                 loadConfiguration();
-                await new Promise(resolve => setTimeout(resolve, 200));
+                await new Promise(resolve => setTimeout(resolve, 550));
                 
                 // Inicialização robusta do Analisador de Contexto (Substituto do módulo Gmail anterior no menu lateral)
                 updateSplashStatus(40, "Carregando módulos...");
@@ -8433,12 +8433,12 @@ WITH CHECK (true);</code>
                     console.error("Falha ao inicializar AnalisadorDeContexto:", navError);
                     addLog("Falha no Analisador de Contexto. Ignorando e continuando inicialização...", "warning");
                 }
-                await new Promise(resolve => setTimeout(resolve, 200));
+                await new Promise(resolve => setTimeout(resolve, 550));
 
                 // 2. Tenta recuperar sessão do Supabase Auth
                 updateSplashStatus(60, "Validando credenciais...");
                 checkSupabaseAuthSession();
-                await new Promise(resolve => setTimeout(resolve, 150));
+                await new Promise(resolve => setTimeout(resolve, 500));
 
                 const supabaseUrlEl = document.getElementById('supabase-url');
                 const supabaseKeyEl = document.getElementById('supabase-key');
@@ -8456,6 +8456,7 @@ WITH CHECK (true);</code>
 
                     const result = await Promise.race([connectionPromise, timeoutPromise]);
                     updateSplashStatus(90, "Sincronizando dados...");
+                    await new Promise(resolve => setTimeout(resolve, 500));
                     
                     if (result === 'timeout') {
                         addLog("Atenção: A verificação de conexão com o Supabase excedeu o limite de tempo (timeout). Prosseguindo em paralelo.", "info");
@@ -8473,7 +8474,7 @@ WITH CHECK (true);</code>
                     updateSplashStatus(85, "Carregando ambiente local...");
                     addLog("Nenhuma conexão Supabase configurada até o momento.", "info");
                     triggerAuthOrFirstGreeting();
-                    await new Promise(resolve => setTimeout(resolve, 200));
+                    await new Promise(resolve => setTimeout(resolve, 550));
                 }
             } catch (err) {
                 console.error("Erro durante a inicialização segura de sessão:", err);
@@ -8481,7 +8482,7 @@ WITH CHECK (true);</code>
             }
 
             updateSplashStatus(100, "Sistema pronto...");
-            await new Promise(resolve => setTimeout(resolve, 400));
+            await new Promise(resolve => setTimeout(resolve, 700));
             
             // Dismiss loader/splash screen smoothly under any circumstance (Sempre executado devido à garantia fora do try-catch do ping)
             try {
@@ -8490,24 +8491,24 @@ WITH CHECK (true);</code>
                     const icon = splash.querySelector('.splash-icon');
                     if (icon) {
                         // Brilho final espetacular no logo antes de sumir
-                        icon.style.transition = 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
-                        icon.style.boxShadow = '0 0 70px rgba(139, 92, 246, 0.9), inset 0 0 35px rgba(139, 92, 246, 0.6)';
-                        icon.style.transform = 'scale(1.12)';
+                        icon.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+                        icon.style.boxShadow = '0 0 75px rgba(139, 92, 246, 0.95), inset 0 0 40px rgba(139, 92, 246, 0.7)';
+                        icon.style.transform = 'scale(1.15)';
                     }
                     
-                    await new Promise(resolve => setTimeout(resolve, 150));
+                    await new Promise(resolve => setTimeout(resolve, 300));
                     
-                    splash.style.transition = 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+                    splash.style.transition = 'opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)';
                     splash.style.opacity = '0';
                     splash.style.pointerEvents = 'none';
-                    splash.style.transform = 'scale(1.05)'; // Suave recuo de câmera
+                    splash.style.transform = 'scale(1.06)'; // Suave recuo de câmera
                     
                     if (typeof addLog === 'function') {
                         addLog("[STEP 2] Widgets renderizados - Splash screen removido, elementos visuais renderizados na viewport.", "info");
                     }
                     
                     // Espera a animação de fade-out concluir e remove o elemento do DOM
-                    await new Promise(resolve => setTimeout(resolve, 650));
+                    await new Promise(resolve => setTimeout(resolve, 750));
                     try { splash.remove(); } catch(err){}
                 }
             } catch (splashErr) {
@@ -8521,6 +8522,7 @@ WITH CHECK (true);</code>
                     } catch(err){}
                 }
             }
+        }
 
             // Garante receptadores de teclado nativos robustos para inputs contra ReferenceErrors de inline engine
             try {
