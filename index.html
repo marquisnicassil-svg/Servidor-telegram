@@ -3064,7 +3064,7 @@
 
                 .dashboard-v2-grid {
                     display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
                     gap: 16px;
                 }
 
@@ -3072,8 +3072,8 @@
                 .dashboard-v2-card {
                     background: rgba(15, 23, 42, 0.45) !important;
                     border: 1px solid var(--card-border-color, var(--border-color)) !important;
-                    border-radius: 18px !important;
-                    padding: 20px !important;
+                    border-radius: 24px !important;
+                    padding: 24px 16px 20px 16px !important;
                     display: flex !important;
                     flex-direction: column !important;
                     align-items: center !important;
@@ -3085,6 +3085,8 @@
                     box-sizing: border-box !important;
                     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
                     -webkit-tap-highlight-color: transparent;
+                    min-height: 250px !important;
+                    justify-content: flex-start !important;
                 }
 
                 .dashboard-v2-card::before {
@@ -3094,10 +3096,11 @@
                     left: 0;
                     width: 100%;
                     height: 100%;
-                    background: radial-gradient(circle at 50% 0%, var(--card-glow-color, rgba(139, 92, 246, 0.06)), transparent 70%);
+                    background: radial-gradient(circle at 50% 20%, var(--card-glow-color, rgba(139, 92, 246, 0.06)), transparent 70%);
                     opacity: 0.25;
-                    transition: opacity 0.3s ease;
+                    transition: opacity 0.3s ease, transform 0.3s ease;
                     pointer-events: none;
+                    z-index: 1;
                 }
 
                 .dashboard-v2-card::after {
@@ -3119,11 +3122,12 @@
                     transform: translateY(-5px) scale(1.02) !important;
                     background: rgba(15, 23, 42, 0.7) !important;
                     border-color: var(--card-hover-border, var(--primary)) !important;
-                    box-shadow: 0 8px 24px var(--card-hover-shadow, rgba(139, 92, 246, 0.2)), 0 0 12px var(--card-hover-shadow-subtle, rgba(139, 92, 246, 0.15)) !important;
+                    box-shadow: 0 10px 25px var(--card-hover-shadow, rgba(139, 92, 246, 0.2)), 0 0 15px var(--card-hover-shadow-subtle, rgba(139, 92, 246, 0.15)) !important;
                 }
 
                 .dashboard-v2-card:hover::before {
-                    opacity: 1;
+                    opacity: 0.55;
+                    transform: scale(1.08);
                 }
 
                 .dashboard-v2-card:hover::after {
@@ -3143,12 +3147,13 @@
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    margin-bottom: 12px;
+                    margin-bottom: 14px;
                     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
                     background: var(--icon-bg, rgba(255, 255, 255, 0.04)) !important;
                     border: 1px solid var(--icon-border, rgba(255, 255, 255, 0.05)) !important;
                     color: var(--icon-color, var(--primary)) !important;
                     font-size: 1.5rem;
+                    z-index: 2;
                 }
 
                 .dashboard-v2-card:hover .dashboard-v2-card-icon-wrapper {
@@ -3157,11 +3162,13 @@
                 }
 
                 .dashboard-v2-card-title {
-                    font-size: 0.9rem;
+                    font-family: 'Space Grotesk', system-ui, sans-serif;
+                    font-size: 0.95rem;
                     font-weight: 700;
                     color: #fff;
-                    margin: 0 0 6px 0;
+                    margin: 0 0 4px 0;
                     transition: color 0.3s ease;
+                    z-index: 2;
                 }
 
                 .dashboard-v2-card:hover .dashboard-v2-card-title {
@@ -3172,18 +3179,42 @@
                     font-size: 0.72rem;
                     color: var(--text-muted);
                     line-height: 1.35;
-                    margin: 0;
-                    height: 32px;
+                    margin: 0 0 16px 0;
+                    height: 34px;
                     overflow: hidden;
                     display: -webkit-box;
                     -webkit-line-clamp: 2;
                     -webkit-box-orient: vertical;
+                    z-index: 2;
+                    flex: 1;
+                }
+
+                .dashboard-v2-card .integration-status-badge {
+                    font-size: 0.58rem;
+                    font-weight: 800;
+                    padding: 3px 10px;
+                    border-radius: 20px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 4px;
+                    z-index: 2;
+                    border: 1px solid var(--icon-border);
+                    background: var(--icon-bg);
+                    color: var(--icon-color);
+                    transition: all 0.3s ease;
+                }
+
+                .dashboard-v2-card:hover .integration-status-badge {
+                    background: var(--icon-border);
+                    box-shadow: 0 0 8px var(--icon-border);
                 }
 
                 /* Tool unique color identities */
                 .card-conversa {
                     --card-border-color: rgba(56, 189, 248, 0.15);
-                    --card-glow-color: rgba(56, 189, 248, 0.1);
+                    --card-glow-color: rgba(56, 189, 248, 0.15);
                     --card-hover-border: #38bdf8;
                     --card-hover-shadow: rgba(56, 189, 248, 0.22);
                     --card-hover-shadow-subtle: rgba(56, 189, 248, 0.12);
@@ -3196,7 +3227,7 @@
 
                 .card-agente {
                     --card-border-color: rgba(139, 92, 246, 0.15);
-                    --card-glow-color: rgba(139, 92, 246, 0.1);
+                    --card-glow-color: rgba(139, 92, 246, 0.15);
                     --card-hover-border: #8b5cf6;
                     --card-hover-shadow: rgba(139, 92, 246, 0.22);
                     --card-hover-shadow-subtle: rgba(139, 92, 246, 0.12);
@@ -3209,7 +3240,7 @@
 
                 .card-curriculo {
                     --card-border-color: rgba(16, 185, 129, 0.15);
-                    --card-glow-color: rgba(16, 185, 129, 0.1);
+                    --card-glow-color: rgba(16, 185, 129, 0.15);
                     --card-hover-border: #10b981;
                     --card-hover-shadow: rgba(16, 185, 129, 0.22);
                     --card-hover-shadow-subtle: rgba(16, 185, 129, 0.12);
@@ -3222,7 +3253,7 @@
 
                 .card-entrevista {
                     --card-border-color: rgba(245, 158, 11, 0.15);
-                    --card-glow-color: rgba(245, 158, 11, 0.1);
+                    --card-glow-color: rgba(245, 158, 11, 0.15);
                     --card-hover-border: #f59e0b;
                     --card-hover-shadow: rgba(245, 158, 11, 0.22);
                     --card-hover-shadow-subtle: rgba(245, 158, 11, 0.12);
@@ -3311,37 +3342,59 @@
                         <!-- Card 1: Nova Conversa -->
                         <div class="dashboard-v2-card dashboard-action-card card-conversa staggered-item staggered-delay-1" onclick="triggerQuickAction('chat')">
                             <div class="dashboard-v2-card-icon-wrapper">
-                                💬
+                                <svg style="width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
                             </div>
                             <h4 class="dashboard-v2-card-title">Nova Conversa</h4>
                             <p class="dashboard-v2-card-desc">Inicie um diálogo neural com a IA geral do console.</p>
+                            <span class="integration-status-badge">🟢 Conectado</span>
                         </div>
 
                         <!-- Card 2: Criar Agente -->
                         <div class="dashboard-v2-card dashboard-action-card card-agente staggered-item staggered-delay-2" onclick="triggerQuickAction('agent')">
                             <div class="dashboard-v2-card-icon-wrapper">
-                                🤖
+                                <svg style="width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24">
+                                    <rect x="2" y="5" width="20" height="13" rx="2" ry="2"></rect>
+                                    <path d="M12 18v2"></path>
+                                    <path d="M8 21h8"></path>
+                                    <circle cx="8" cy="11" r="1" fill="currentColor"></circle>
+                                    <circle cx="16" cy="11" r="1" fill="currentColor"></circle>
+                                    <path d="M10 14h4"></path>
+                                </svg>
                             </div>
                             <h4 class="dashboard-v2-card-title">Criar Agente</h4>
                             <p class="dashboard-v2-card-desc">Customize novos especialistas neurais dedicados.</p>
+                            <span class="integration-status-badge">🟢 Conectado</span>
                         </div>
 
                         <!-- Card 3: Criar Currículo -->
                         <div class="dashboard-v2-card dashboard-action-card card-curriculo staggered-item staggered-delay-3" onclick="triggerQuickAction('resume')">
                             <div class="dashboard-v2-card-icon-wrapper">
-                                📄
+                                <svg style="width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
                             </div>
                             <h4 class="dashboard-v2-card-title">Criar Currículo</h4>
                             <p class="dashboard-v2-card-desc">Monte seu currículo otimizado com inteligência artificial.</p>
+                            <span class="integration-status-badge">🟢 Conectado</span>
                         </div>
 
                         <!-- Card 4: Simular Entrevista -->
                         <div class="dashboard-v2-card dashboard-action-card card-entrevista staggered-item staggered-delay-4" onclick="triggerQuickAction('interview')">
                             <div class="dashboard-v2-card-icon-wrapper">
-                                💼
+                                <svg style="width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24">
+                                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                                </svg>
                             </div>
                             <h4 class="dashboard-v2-card-title">Simular Entrevista</h4>
                             <p class="dashboard-v2-card-desc">Treine para entrevistas com RH e testes virtuais.</p>
+                            <span class="integration-status-badge">🟢 Conectado</span>
                         </div>
                     </div>
                 </div>
