@@ -2395,52 +2395,84 @@
 
         /* Refinamentos do Portal de Acesso e Inputs de Autenticação */
         #auth-form-container .form-control {
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            background-color: rgba(255, 255, 255, 0.03) !important;
-            border-radius: 12px !important;
-            padding: 12px 14px !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            background-color: rgba(15, 23, 42, 0.5) !important;
+            border-radius: 14px !important;
+            padding: 12px 14px 12px 42px !important; /* Spacing on the left for discrete icons */
             font-size: 0.88rem !important;
             color: #ffffff !important;
-            transition: border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
-                        box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
-                        background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
             outline: none !important;
             width: 100% !important;
             box-sizing: border-box !important;
         }
         #auth-form-container .form-control:focus {
-            border-color: var(--primary) !important;
-            box-shadow: 0 0 12px rgba(138, 92, 246, 0.35) !important;
-            background-color: rgba(138, 92, 246, 0.05) !important;
+            border-color: #8b5cf6 !important;
+            box-shadow: 0 0 16px rgba(139, 92, 246, 0.35) !important;
+            background-color: rgba(139, 92, 246, 0.06) !important;
         }
         #auth-form-container .form-control::placeholder {
             color: rgba(255, 255, 255, 0.3) !important;
         }
         /* Efeito de carregamento para botões */
-        .btn-supabase-action {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            cursor: pointer;
-            border: 1px solid rgba(138, 92, 246, 0.3) !important;
-            background: linear-gradient(135deg, rgba(138, 92, 246, 0.15), rgba(138, 92, 246, 0.05)) !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+        .btn-supabase-action, .btn-auth-submit {
+            margin-top: 18px !important;
+            width: 100% !important;
+            border: none !important;
+            background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%) !important;
+            padding: 14px 18px !important;
+            font-size: 0.92rem !important;
+            font-weight: 800 !important;
+            color: #ffffff !important;
+            border-radius: 14px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35), 0 0 8px rgba(217, 70, 239, 0.15) !important;
+            cursor: pointer !important;
+            font-family: 'Space Grotesk', system-ui, sans-serif !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.8px !important;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            position: relative !important;
+            overflow: hidden !important;
+            z-index: 2 !important;
         }
-        .btn-supabase-action:hover:not(:disabled) {
-            background: linear-gradient(135deg, rgba(138, 92, 246, 0.3), rgba(138, 92, 246, 0.15)) !important;
-            border-color: var(--primary) !important;
-            box-shadow: 0 4px 15px rgba(138, 92, 246, 0.3) !important;
-            transform: translateY(-1px) !important;
+        .btn-supabase-action::after, .btn-auth-submit::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+            pointer-events: none;
+            opacity: 0;
+            z-index: -1;
         }
-        .btn-supabase-action:active:not(:disabled) {
-            transform: translateY(1px) !important;
-            box-shadow: 0 2px 6px rgba(138, 92, 246, 0.2) !important;
+        .btn-supabase-action:active::after, .btn-auth-submit:active::after {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            transition: 0s;
         }
-        .btn-supabase-action:disabled {
-            opacity: 0.6 !important;
+        .btn-supabase-action:hover:not(:disabled), .btn-auth-submit:hover:not(:disabled) {
+            transform: translateY(-2px) scale(1.02) !important;
+            box-shadow: 0 6px 22px rgba(139, 92, 246, 0.5), 0 0 12px rgba(217, 70, 239, 0.35) !important;
+            filter: brightness(1.1);
+        }
+        .btn-supabase-action:active:not(:disabled), .btn-auth-submit:active:not(:disabled) {
+            transform: translateY(1px) scale(0.97) !important;
+            box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3) !important;
+        }
+        .btn-supabase-action:disabled, .btn-auth-submit:disabled {
+            opacity: 0.65 !important;
             cursor: not-allowed !important;
-            background: rgba(255, 255, 255, 0.05) !important;
-            border-color: rgba(255, 255, 255, 0.1) !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            box-shadow: none !important;
         }
         /* Spinner CSS integrado */
         .auth-spinner {
@@ -2696,59 +2728,67 @@
         <div class="auth-gate-wrapper">
             <div class="auth-gate-logo">
                 <img src="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg" alt="Synapse Console Icon">
-                <h2>Portal de Acesso</h2>
-                <p>Para desbloquear o console de IA e sincronizar o histórico, conecte-se com sua conta segura.</p>
+                <h2>Acesse sua conta</h2>
+                <p>Sua IA, pronta para você.</p>
             </div>
 
             <!-- Formulário de Login / Cadastro / Recuperação Unificado -->
-            <div id="auth-form-container" style="display: flex; flex-direction: column; gap: 12px;">
-                <div style="display: flex; gap: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; margin-bottom: 4px;">
-                    <button class="filter-chip active" id="auth-tab-signin" onclick="setAuthTab('signin')" style="padding: 8px 10px; font-size: 0.75rem; border-radius: 8px; flex: 1; text-align: center; white-space: nowrap;">Login</button>
-                    <button class="filter-chip" id="auth-tab-signup" onclick="setAuthTab('signup')" style="padding: 8px 10px; font-size: 0.75rem; border-radius: 8px; flex: 1; text-align: center; white-space: nowrap;">Criar Conta</button>
-                    <button class="filter-chip" id="auth-tab-recover" onclick="setAuthTab('recover')" style="padding: 8px 10px; font-size: 0.75rem; border-radius: 8px; flex: 1; text-align: center; white-space: nowrap;">Recuperar</button>
+            <div id="auth-form-container" style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="auth-tabs-container">
+                    <button class="filter-chip auth-tab-btn active" id="auth-tab-signin" onclick="setAuthTab('signin')">Login</button>
+                    <button class="filter-chip auth-tab-btn" id="auth-tab-signup" onclick="setAuthTab('signup')">Criar Conta</button>
+                    <button class="filter-chip auth-tab-btn" id="auth-tab-recover" onclick="setAuthTab('recover')" style="display: none;"></button>
                 </div>
 
-                <div id="auth-username-container" style="display: none;">
-                    <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Nome de Usuário</label>
-                    <input type="text" id="auth-username" class="form-control" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" style="border-radius: 10px; padding: 10px 12px; font-size: 0.85rem;" placeholder="Ex: Maria Silva" value="">
-                    <div id="auth-username-error" style="color: #ef4444; font-size: 0.72rem; margin-top: 4px; display: none; padding-left: 4px;"></div>
-                </div>
-
-                <div id="auth-email-container">
-                    <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">E-mail do Usuário</label>
-                    <input type="email" id="auth-email" class="form-control" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" style="border-radius: 10px; padding: 10px 12px; font-size: 0.85rem;" placeholder="usuario@provedor.com" value="">
-                    <div id="auth-email-error" style="color: #ef4444; font-size: 0.72rem; margin-top: 4px; display: none; padding-left: 4px;"></div>
-                </div>
-
-                <div id="auth-password-container">
-                    <label id="auth-password-label" style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Senha de Acesso</label>
-                    <div style="position: relative; display: flex; align-items: center;">
-                        <input type="text" id="auth-password" class="form-control password-masked" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" style="border-radius: 10px; padding: 10px 42px 10px 12px; font-size: 0.85rem;" placeholder="Mínimo 6 caracteres" value="" autocomplete="off">
-                        <button type="button" onclick="togglePasswordVisibility('auth-password', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10; outline: none;" title="Exibir/Ocultar Senha">👁️</button>
+                <div id="auth-username-container" class="auth-input-group" style="display: none;">
+                    <label class="auth-input-label">Nome de Usuário</label>
+                    <div class="auth-input-wrapper">
+                        <span class="auth-input-icon">👤</span>
+                        <input type="text" id="auth-username" class="form-control" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" placeholder="Ex: Maria Silva" value="">
                     </div>
-                    <div id="auth-password-error" style="color: #ef4444; font-size: 0.72rem; margin-top: 4px; display: none; padding-left: 4px;"></div>
+                    <div id="auth-username-error" class="auth-error-text" style="display: none;"></div>
                 </div>
 
-                <div id="auth-confirm-password-container" style="display: none;">
-                    <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Confirmar Nova Senha</label>
-                    <div style="position: relative; display: flex; align-items: center;">
-                        <input type="text" id="auth-confirm-password" class="form-control password-masked" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" style="border-radius: 10px; padding: 10px 42px 10px 12px; font-size: 0.85rem;" placeholder="Confirme sua nova senha" value="" autocomplete="off">
-                        <button type="button" onclick="togglePasswordVisibility('auth-confirm-password', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10; outline: none;" title="Exibir/Ocultar Senha">👁️</button>
+                <div id="auth-email-container" class="auth-input-group">
+                    <label class="auth-input-label">E-mail</label>
+                    <div class="auth-input-wrapper">
+                        <span class="auth-input-icon">✉️</span>
+                        <input type="email" id="auth-email" class="form-control" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" placeholder="usuario@provedor.com" value="">
                     </div>
-                    <div id="auth-confirm-password-error" style="color: #ef4444; font-size: 0.72rem; margin-top: 4px; display: none; padding-left: 4px;"></div>
+                    <div id="auth-email-error" class="auth-error-text" style="display: none;"></div>
+                </div>
+
+                <div id="auth-password-container" class="auth-input-group">
+                    <label id="auth-password-label" class="auth-input-label">Senha de Acesso</label>
+                    <div class="auth-input-wrapper">
+                        <span class="auth-input-icon">🔑</span>
+                        <input type="text" id="auth-password" class="form-control password-masked" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" placeholder="Mínimo 6 caracteres" value="" autocomplete="off">
+                        <button type="button" class="auth-password-toggle" onclick="togglePasswordVisibility('auth-password', this)" title="Exibir/Ocultar Senha">👁️</button>
+                    </div>
+                    <div id="auth-password-error" class="auth-error-text" style="display: none;"></div>
+                </div>
+
+                <div id="auth-confirm-password-container" class="auth-input-group" style="display: none;">
+                    <label class="auth-input-label">Confirmar Nova Senha</label>
+                    <div class="auth-input-wrapper">
+                        <span class="auth-input-icon">🔐</span>
+                        <input type="text" id="auth-confirm-password" class="form-control password-masked" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" placeholder="Confirme sua nova senha" value="" autocomplete="off">
+                        <button type="button" class="auth-password-toggle" onclick="togglePasswordVisibility('auth-confirm-password', this)" title="Exibir/Ocultar Senha">👁️</button>
+                    </div>
+                    <div id="auth-confirm-password-error" class="auth-error-text" style="display: none;"></div>
                 </div>
 
                 <div id="auth-forgot-password-link" style="text-align: right; margin-top: -4px;">
-                    <a href="#" onclick="setAuthTab('recover'); return false;" style="font-size: 0.75rem; color: var(--primary); text-decoration: none; font-weight: 600; opacity: 0.9; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.9'">Esqueceu a senha?</a>
+                    <a href="#" onclick="setAuthTab('recover'); return false;" style="font-size: 0.75rem; color: #a78bfa; text-decoration: none; font-weight: 600; opacity: 0.85; transition: all 0.2s;" onmouseover="this.style.opacity='1'; this.style.textDecoration='underline'" onmouseout="this.style.opacity='0.85'; this.style.textDecoration='none'">Esqueceu sua senha?</a>
                 </div>
 
-                <button class="btn-supabase-action" onclick="executeSupabaseAuth()" id="auth-btn-submit" style="margin-top: 10px; width: 100%; border-color: var(--primary); background: rgba(255,255,255,0.02); padding: 12px; font-weight: bold; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <button class="btn-supabase-action btn-auth-submit" onclick="executeSupabaseAuth()" id="auth-btn-submit">
                     🔌 Fazer Login
                 </button>
             </div>
 
             <div class="auth-gate-footer">
-                🔒 Conexão Criptografada SSL • Supabase Cloud
+                🔒 Conexão segura
             </div>
         </div>
     </div>
@@ -17549,22 +17589,22 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     if (confirmPasswordContainer) confirmPasswordContainer.style.display = 'block';
                     if (forgotLink) forgotLink.style.display = 'none';
                     
-                    // Add cancel/voltar link dynamically or show a back button
+                }
+                
+                // Show/hide cancel back to login link appropriately
+                if (type === 'recover' || type === 'reset_password') {
                     let backToLoginBtn = document.getElementById('auth-reset-cancel');
                     if (!backToLoginBtn) {
                         backToLoginBtn = document.createElement('div');
                         backToLoginBtn.id = 'auth-reset-cancel';
                         backToLoginBtn.style.textAlign = 'center';
                         backToLoginBtn.style.marginTop = '12px';
-                        backToLoginBtn.innerHTML = `<a href="#" onclick="setAuthTab('signin'); return false;" style="font-size: 0.78rem; color: var(--text-muted); text-decoration: none; font-weight: 600; opacity: 0.85; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.85'">← Voltar para o Login</a>`;
+                        backToLoginBtn.innerHTML = `<a href="#" onclick="setAuthTab('signin'); return false;" style="font-size: 0.78rem; color: #a78bfa; text-decoration: none; font-weight: 600; opacity: 0.85; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.85'">← Voltar para o Login</a>`;
                         submitBtn.parentNode.insertBefore(backToLoginBtn, submitBtn.nextSibling);
                     } else {
                         backToLoginBtn.style.display = 'block';
                     }
-                }
-                
-                // Hide reset cancel if not in reset mode
-                if (type !== 'reset_password') {
+                } else {
                     const backToLoginBtn = document.getElementById('auth-reset-cancel');
                     if (backToLoginBtn) backToLoginBtn.style.display = 'none';
                 }
