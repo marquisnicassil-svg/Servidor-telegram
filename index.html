@@ -7696,7 +7696,7 @@ WITH CHECK (true);</code>
 
         // --- 1C. Galeria de Temas e Customização Estética ---
         let isConfigLoading = false;
-        let selectedThemeId = 'escuro_premium';
+        let selectedThemeId = 'obsidian_premium';
         let selectedBorders = 'rounded';
         let selectedFinish = 'flat';
         let selectedSaturation = 100;
@@ -7719,123 +7719,123 @@ WITH CHECK (true);</code>
         let accessReadingMode = false;
 
         const availableThemes = {
-            escuro_premium: {
-                name: "🌙 Escuro Premium",
-                desc: "Tema escuro AMOLED puro com detalhes prateados e contraste infinito.",
+            obsidian_premium: {
+                name: "🖤 Obsidian Black",
+                desc: "Tema premium AMOLED. Preto absoluto com toques de prata escovada e contraste perfeito para telas OLED.",
                 bg: "#000000",
-                cardBg1: "#000000",
-                cardBg2: "#050505",
-                border: "#161616",
-                textMain: "#f5f5f5",
-                textMuted: "#a3a3a3",
-                primary: "#ffffff",
-                success: "#10b981",
+                cardBg1: "#0a0a0c",
+                cardBg2: "#141416",
+                border: "#1f1f22",
+                textMain: "#fdfdfd",
+                textMuted: "#a1a1aa",
+                primary: "#e4e4e7",
+                success: "#22c55e",
                 error: "#ef4444",
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: true
             },
-            claro_premium: {
-                name: "☀️ Claro Premium",
-                desc: "Visual claro sofisticado, ideal para leitura diurna sob luz natural.",
-                bg: "#f8fafc",
+            stellar_white: {
+                name: "🤍 Stellar White",
+                desc: "Visual claro super elegante e minimalista. Utiliza tons sutis de gelo e cinza platinado para leitura agradável.",
+                bg: "#fcfcfd",
                 cardBg1: "#ffffff",
-                cardBg2: "#f1f5f9",
-                border: "#cbd5e1",
-                textMain: "#0f172a",
-                textMuted: "#475569",
+                cardBg2: "#f3f4f6",
+                border: "#e5e7eb",
+                textMain: "#111827",
+                textMuted: "#6b7280",
                 primary: "#2563eb",
-                success: "#15803d",
-                error: "#b91c1c",
+                success: "#10b981",
+                error: "#ef4444",
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: false
             },
-            synapse_oficial: {
-                name: "💜 Synapse Oficial",
-                desc: "Roxo cósmico, orquídea mística e lavanda brilhante futurista.",
-                bg: "#0a0714",
-                cardBg1: "#100c22",
-                cardBg2: "#191433",
-                border: "#3b1e6e",
-                textMain: "#faf5ff",
-                textMuted: "#b19ffb",
-                primary: "#a78bfa",
+            synapse_pro: {
+                name: "🟣 Synapse Pro",
+                desc: "A identidade visual do Synapse evoluída. Roxo profundo cósmico com destaques em neon violeta e lilás.",
+                bg: "#07050f",
+                cardBg1: "#0e0b19",
+                cardBg2: "#18142a",
+                border: "#292147",
+                textMain: "#f5f3ff",
+                textMuted: "#c4b5fd",
+                primary: "#8b5cf6",
                 success: "#34d399",
-                error: "#f87171",
+                error: "#fb7185",
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: false
             },
-            neon: {
-                name: "🌌 Neon Cyber",
-                desc: "Contraste extremo com tons neon elétricos de ciano, rosa e amarelo.",
-                bg: "#040406",
-                cardBg1: "#08080f",
-                cardBg2: "#12121e",
-                border: "#ff007f",
-                textMain: "#ffffff",
-                textMuted: "#00f0ff",
-                primary: "#00f0ff",
-                success: "#39ff14",
-                error: "#ff007f",
-                font: '"Courier New", monospace',
-                amoled: false
-            },
-            oceano: {
-                name: "🌊 Oceano Abissal",
-                desc: "Profundidades marítimas com azul marinho, cobalto e turquesa cristalino.",
-                bg: "#020813",
-                cardBg1: "#051329",
-                cardBg2: "#0c2347",
-                border: "#13376c",
-                textMain: "#f0f7ff",
-                textMuted: "#7dd3fc",
+            midnight_sapphire: {
+                name: "🌌 Midnight Sapphire",
+                desc: "Azul noturno sofisticado inspirado em pedras preciosas. Traz detalhes em cobalto e ciano cristalino.",
+                bg: "#020617",
+                cardBg1: "#071022",
+                cardBg2: "#0f172a",
+                border: "#1e293b",
+                textMain: "#f8fafc",
+                textMuted: "#94a3b8",
                 primary: "#38bdf8",
                 success: "#10b981",
                 error: "#f43f5e",
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: false
             },
-            natureza: {
-                name: "🌿 Natureza Zen",
-                desc: "Equilíbrio orgânico composto por verde musgo, floresta profunda e hortelã.",
-                bg: "#040806",
-                cardBg1: "#0a140f",
-                cardBg2: "#13261c",
-                border: "#1b3c2a",
-                textMain: "#f0fdf4",
-                textMuted: "#86efac",
-                primary: "#4ade80",
-                success: "#22c55e",
+            emerald_exec: {
+                name: "💎 Emerald Executive",
+                desc: "Um tema maduro e sóbrio em tons de verde floresta e esmeralda escuro, com acentos em ouro velho.",
+                bg: "#020704",
+                cardBg1: "#05110a",
+                cardBg2: "#081b11",
+                border: "#133423",
+                textMain: "#ecfdf5",
+                textMuted: "#6ee7b7",
+                primary: "#10b981",
+                success: "#059669",
                 error: "#ef4444",
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: false
             },
-            energia: {
-                name: "🔥 Energia Vulcânica",
-                desc: "Tons ardentes de âmbar, magma aquecido, cinzas de carvão e rubi.",
-                bg: "#090302",
-                cardBg1: "#140805",
-                cardBg2: "#22100a",
-                border: "#441a0e",
-                textMain: "#fff5f2",
-                textMuted: "#f97316",
-                primary: "#f97316",
+            cyber_gold: {
+                name: "🔱 Cyber Gold",
+                desc: "Uma estética luxuosa e futurista combinando carbono escuro com detalhes iluminados em ouro e âmbar.",
+                bg: "#0a0908",
+                cardBg1: "#12100f",
+                cardBg2: "#1c1917",
+                border: "#292524",
+                textMain: "#fffbeb",
+                textMuted: "#fcd34d",
+                primary: "#fbbf24",
+                success: "#4ade80",
+                error: "#ef4444",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: false
+            },
+            crimson_velvet: {
+                name: "🍷 Crimson Velvet",
+                desc: "Tema exótico e intenso. Preto profundo com elegantes nuances de bordô e vermelho rubi suave.",
+                bg: "#0a0405",
+                cardBg1: "#14080a",
+                cardBg2: "#200d11",
+                border: "#3e1723",
+                textMain: "#fff1f2",
+                textMuted: "#fda4af",
+                primary: "#fb7185",
                 success: "#10b981",
-                error: "#ef4444",
+                error: "#e11d48",
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: false
             },
-            minimalist: {
-                name: "⚫ Slate Minimal",
-                desc: "Foco absoluto em tons acromáticos de grafite, chumbo e prata escovada.",
-                bg: "#0a0a0c",
-                cardBg1: "#121215",
-                cardBg2: "#1a1a20",
+            monochrome_graphite: {
+                name: "🎹 Graphite Minimal",
+                desc: "Design ultra-minimalista focado no essencial. Tons calculados de grafite, chumbo e cinza titanium.",
+                bg: "#09090b",
+                cardBg1: "#121214",
+                cardBg2: "#18181b",
                 border: "#27272a",
                 textMain: "#fafafa",
                 textMuted: "#a1a1aa",
-                primary: "#d4d4d8",
-                success: "#52525b",
-                error: "#71717a",
+                primary: "#e4e4e7",
+                success: "#71717a",
+                error: "#52525b",
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: false
             }
@@ -7975,7 +7975,7 @@ WITH CHECK (true);</code>
 
         function applyThemePreset(themeId, userClicked = false) {
             if (userClicked) triggerPulse();
-            if (!availableThemes[themeId]) themeId = 'escuro_premium';
+            if (!availableThemes[themeId]) themeId = 'obsidian_premium';
             
             selectedThemeId = themeId;
             const theme = availableThemes[themeId];
@@ -8080,7 +8080,7 @@ WITH CHECK (true);</code>
             } else {
                 sw.classList.add('on');
                 document.documentElement.removeAttribute('data-theme');
-                const theme = availableThemes[selectedThemeId] || availableThemes['escuro_premium'];
+                const theme = availableThemes[selectedThemeId] || availableThemes['obsidian_premium'];
                 document.documentElement.style.setProperty('--bg-color', theme.bg);
                 document.documentElement.style.setProperty('--card-bg-primary', theme.cardBg1);
                 document.documentElement.style.setProperty('--card-bg-secondary', theme.cardBg2);
@@ -9424,7 +9424,7 @@ WITH CHECK (true);</code>
                     if (data.selectedThemeId) {
                         applyThemePreset(data.selectedThemeId);
                     } else {
-                        applyThemePreset('escuro_premium');
+                        applyThemePreset('obsidian_premium');
                     }
 
                     // 2. Aplica a cor de destaque personalizada, sobrescrevendo a padrão do tema
@@ -9548,7 +9548,7 @@ WITH CHECK (true);</code>
                     applySettingsLayoutStyle(selectedSettingsLayoutStyle);
                     updateDynamicStyles();
                 } else {
-                    applyThemePreset('escuro_premium');
+                    applyThemePreset('obsidian_premium');
                     applyBordersStyle('rounded');
                     applyVisualFinish('flat');
                     applyColorSaturation(100);
@@ -10377,7 +10377,7 @@ WITH CHECK (true);</code>
             const currentAccessReadingMode = document.getElementById('access-reading-switch')?.classList.contains('on') || false;
 
             savedAppearance = {
-                selectedThemeId: selectedThemeId || 'escuro_premium',
+                selectedThemeId: selectedThemeId || 'obsidian_premium',
                 currentAccentColor: currentAccentColor || '#38bdf8',
                 selectedBorders: selectedBorders || 'rounded',
                 selectedFinish: selectedFinish || 'flat',
@@ -10415,7 +10415,7 @@ WITH CHECK (true);</code>
             const currentAccessReadingMode = document.getElementById('access-reading-switch')?.classList.contains('on') || false;
 
             const currentSettings = {
-                selectedThemeId: selectedThemeId || 'escuro_premium',
+                selectedThemeId: selectedThemeId || 'obsidian_premium',
                 currentAccentColor: currentAccentColor || '#38bdf8',
                 selectedBorders: selectedBorders || 'rounded',
                 selectedFinish: selectedFinish || 'flat',
