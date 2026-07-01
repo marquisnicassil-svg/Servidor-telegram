@@ -2735,9 +2735,9 @@
             <!-- Formulário de Login / Cadastro / Recuperação Unificado -->
             <div id="auth-form-container" style="display: flex; flex-direction: column; gap: 10px;">
                 <div class="auth-tabs-container">
-                    <button class="filter-chip auth-tab-btn active" id="auth-tab-signin" onclick="setAuthTab('signin')">Login</button>
-                    <button class="filter-chip auth-tab-btn" id="auth-tab-signup" onclick="setAuthTab('signup')">Criar Conta</button>
-                    <button class="filter-chip auth-tab-btn" id="auth-tab-recover" onclick="setAuthTab('recover')" style="display: none;"></button>
+                    <button class="auth-tab-btn active" id="auth-tab-signin" onclick="setAuthTab('signin')">Login</button>
+                    <button class="auth-tab-btn" id="auth-tab-signup" onclick="setAuthTab('signup')">Criar Conta</button>
+                    <button class="auth-tab-btn" id="auth-tab-recover" onclick="setAuthTab('recover')" style="display: none;"></button>
                 </div>
 
                 <div id="auth-username-container" class="auth-input-group" style="display: none;">
@@ -17505,8 +17505,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             setTimeout(() => {
                 authMode = type;
                 
-                // Remove classe active de todas as abas de autenticação
-                document.querySelectorAll('#auth-form-container .filter-chip').forEach(c => c.classList.remove('active'));
+                // Remove active classes from all auth tab buttons
+                document.querySelectorAll('#auth-form-container .auth-tab-btn').forEach(c => c.classList.remove('active'));
                 document.querySelectorAll('#supabase-auth-card .filter-chip').forEach(c => c.classList.remove('active'));
                 
                 const userContainer = document.getElementById('auth-username-container');
@@ -17515,12 +17515,14 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 const confirmPasswordContainer = document.getElementById('auth-confirm-password-container');
                 const forgotLink = document.getElementById('auth-forgot-password-link');
                 const submitBtn = document.getElementById('auth-btn-submit');
-                const tabsHeader = document.querySelector('#auth-form-container > div:first-child');
+                const tabsHeader = document.querySelector('#auth-form-container .auth-tabs-container');
                 const passwordLabel = document.getElementById('auth-password-label');
+                const titleEl = document.querySelector('.auth-gate-logo h2');
+                const descEl = document.querySelector('.auth-gate-logo p');
                 
-                // Show tabs header by default unless reset_password
+                // Show tabs header by default unless reset_password or recover
                 if (tabsHeader) {
-                    tabsHeader.style.display = type === 'reset_password' ? 'none' : 'flex';
+                    tabsHeader.style.display = (type === 'reset_password' || type === 'recover') ? 'none' : 'flex';
                 }
 
                 // Hide all error alerts on tab change
@@ -17530,9 +17532,11 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     const activeTab = document.getElementById('auth-tab-signin');
                     if (activeTab) activeTab.classList.add('active');
                     
+                    if (titleEl) titleEl.innerText = 'Acesse sua conta';
+                    if (descEl) descEl.innerText = 'Sua IA, pronta para você.';
+                    
                     if (submitBtn) {
                         submitBtn.innerHTML = '🔌 Fazer Login';
-                        submitBtn.style.borderColor = 'var(--primary)';
                     }
                     const passInput = document.getElementById('auth-password');
                     if (passInput) passInput.placeholder = 'Sua senha';
@@ -17547,9 +17551,11 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     const activeTab = document.getElementById('auth-tab-signup');
                     if (activeTab) activeTab.classList.add('active');
                     
+                    if (titleEl) titleEl.innerText = 'Crie sua conta';
+                    if (descEl) descEl.innerText = 'Comece em segundos.';
+                    
                     if (submitBtn) {
                         submitBtn.innerHTML = '✨ Criar Conta';
-                        submitBtn.style.borderColor = 'var(--primary)';
                     }
                     const passInput = document.getElementById('auth-password');
                     if (passInput) passInput.placeholder = 'Mínimo de 6 caracteres';
@@ -17561,12 +17567,11 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     if (confirmPasswordContainer) confirmPasswordContainer.style.display = 'none';
                     if (forgotLink) forgotLink.style.display = 'none';
                 } else if (type === 'recover') {
-                    const activeTab = document.getElementById('auth-tab-recover');
-                    if (activeTab) activeTab.classList.add('active');
+                    if (titleEl) titleEl.innerText = 'Recuperar senha';
+                    if (descEl) descEl.innerText = 'Enviaremos um link de acesso.';
                     
                     if (submitBtn) {
-                        submitBtn.innerHTML = '✉️ Enviar Link de Recuperação';
-                        submitBtn.style.borderColor = '#f59e0b';
+                        submitBtn.innerHTML = '✉️ Enviar Link';
                     }
                     if (userContainer) userContainer.style.display = 'none';
                     if (emailContainer) emailContainer.style.display = 'block';
@@ -17575,9 +17580,11 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     if (forgotLink) forgotLink.style.display = 'none';
                 } else if (type === 'reset_password') {
                     // Reset Password mode
+                    if (titleEl) titleEl.innerText = 'Nova senha';
+                    if (descEl) descEl.innerText = 'Escolha uma senha segura.';
+                    
                     if (submitBtn) {
                         submitBtn.innerHTML = '💾 Salvar Nova Senha';
-                        submitBtn.style.borderColor = 'var(--primary)';
                     }
                     const passInput = document.getElementById('auth-password');
                     if (passInput) passInput.placeholder = 'Mínimo de 6 caracteres';
@@ -17588,7 +17595,6 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     if (passwordContainer) passwordContainer.style.display = 'block';
                     if (confirmPasswordContainer) confirmPasswordContainer.style.display = 'block';
                     if (forgotLink) forgotLink.style.display = 'none';
-                    
                 }
                 
                 // Show/hide cancel back to login link appropriately
