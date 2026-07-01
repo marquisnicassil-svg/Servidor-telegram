@@ -2427,7 +2427,7 @@
             margin-top: 18px !important;
             width: 100% !important;
             border: none !important;
-            background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%) !important;
+            background: var(--btn-gradient, linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%)) !important;
             padding: 14px 18px !important;
             font-size: 0.92rem !important;
             font-weight: 800 !important;
@@ -2437,7 +2437,7 @@
             align-items: center !important;
             justify-content: center !important;
             gap: 8px !important;
-            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35), 0 0 8px rgba(217, 70, 239, 0.15) !important;
+            box-shadow: var(--btn-shadow, 0 4px 16px rgba(139, 92, 246, 0.35), 0 0 8px rgba(217, 70, 239, 0.15)) !important;
             cursor: pointer !important;
             font-family: 'Space Grotesk', system-ui, sans-serif !important;
             text-transform: uppercase !important;
@@ -2468,8 +2468,8 @@
         }
         .btn-supabase-action:hover:not(:disabled), .btn-auth-submit:hover:not(:disabled) {
             transform: translateY(-2px) scale(1.02) !important;
-            box-shadow: 0 6px 22px rgba(139, 92, 246, 0.5), 0 0 12px rgba(217, 70, 239, 0.35) !important;
-            filter: brightness(1.1);
+            box-shadow: var(--btn-shadow-hover, 0 6px 22px rgba(139, 92, 246, 0.5), 0 0 12px rgba(217, 70, 239, 0.35)) !important;
+            filter: brightness(1.2);
         }
         .btn-supabase-action:active:not(:disabled), .btn-auth-submit:active:not(:disabled) {
             transform: translateY(1px) scale(0.97) !important;
@@ -7729,23 +7729,24 @@ WITH CHECK (true);</code>
         const availableThemes = {
             cyan_blue_neon: {
                 name: "🌊 Aurora Holográfica (Neon)",
-                desc: "Degradê neon elétrico em ciano e azul de alta intensidade. Visual ultra-moderno e brilhante com efeito de vidro reflexivo.",
+                desc: "Tema premium de alta intensidade. Fundo AMOLED preto absoluto com botões brilhantes em degradê holográfico azul-ciano ultra-neon.",
                 bg: "#000000",
-                gradientBg: "linear-gradient(319deg, hsl(183, 100%, 50%), hsl(240, 100%, 50%))",
-                cardBg1: "rgba(0, 0, 0, 0.75)",
-                cardBg2: "rgba(10, 10, 20, 0.85)",
-                gradientCard1: "linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(5, 5, 15, 0.9) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(10, 10, 25, 0.85) 0%, rgba(2, 2, 8, 0.95) 100%)",
-                border: "rgba(0, 240, 255, 0.5)",
+                gradientBg: "radial-gradient(circle at top, #02142d 0%, #000000 75%)",
+                cardBg1: "#01050c",
+                cardBg2: "#030c1a",
+                gradientCard1: "linear-gradient(135deg, rgba(2, 10, 24, 0.98) 0%, rgba(0, 2, 5, 0.99) 100%)",
+                gradientCard2: "linear-gradient(135deg, rgba(4, 18, 42, 0.98) 0%, rgba(1, 4, 10, 0.99) 100%)",
+                border: "rgba(0, 240, 255, 0.45)",
                 textMain: "#ffffff",
                 textMuted: "#bae6fd",
                 primary: "#00f0ff",
                 success: "#22c55e",
                 error: "#ef4444",
                 font: 'system-ui, -apple-system, sans-serif',
-                amoled: false,
+                amoled: true,
                 neon: true,
-                neonGlowColor: "rgba(0, 240, 255, 0.85)"
+                neonGlowColor: "rgba(0, 240, 255, 0.65)",
+                btnGradient: "linear-gradient(319deg, hsl(183, 100%, 50%), hsl(240, 100%, 50%))"
             },
             violeta_neon: {
                 name: "🔮 Violeta Neon (Premium)",
@@ -7765,7 +7766,8 @@ WITH CHECK (true);</code>
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: true,
                 neon: true,
-                neonGlowColor: "rgba(168, 85, 247, 0.65)"
+                neonGlowColor: "rgba(168, 85, 247, 0.65)",
+                btnGradient: "linear-gradient(135deg, #a855f7 0%, #d946ef 100%)"
             },
             gilded_obsidian_neon: {
                 name: "👑 Ametista Imperial & Ouro (Prorrogação)",
@@ -7785,7 +7787,8 @@ WITH CHECK (true);</code>
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: true,
                 neon: true,
-                neonGlowColor: "rgba(168, 85, 247, 0.55)"
+                neonGlowColor: "rgba(168, 85, 247, 0.55)",
+                btnGradient: "linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%)"
             },
             azul_neon: {
                 name: "⚡ Azul Elétrico (Neon)",
@@ -7805,7 +7808,8 @@ WITH CHECK (true);</code>
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: true,
                 neon: true,
-                neonGlowColor: "rgba(14, 165, 233, 0.65)"
+                neonGlowColor: "rgba(14, 165, 233, 0.65)",
+                btnGradient: "linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)"
             },
             verde_neon: {
                 name: "🟢 Esmeralda Cyber (Neon)",
@@ -7825,7 +7829,8 @@ WITH CHECK (true);</code>
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: true,
                 neon: true,
-                neonGlowColor: "rgba(34, 197, 94, 0.65)"
+                neonGlowColor: "rgba(34, 197, 94, 0.65)",
+                btnGradient: "linear-gradient(135deg, #22c55e 0%, #10b981 100%)"
             },
             pink_neon: {
                 name: "💖 Sakura Neon (Glow)",
@@ -7845,7 +7850,8 @@ WITH CHECK (true);</code>
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: true,
                 neon: true,
-                neonGlowColor: "rgba(236, 72, 153, 0.65)"
+                neonGlowColor: "rgba(236, 72, 153, 0.65)",
+                btnGradient: "linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)"
             },
             laranja_neon: {
                 name: "🔥 Vulcão Laranja (Neon)",
@@ -7865,7 +7871,8 @@ WITH CHECK (true);</code>
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: true,
                 neon: true,
-                neonGlowColor: "rgba(249, 115, 22, 0.65)"
+                neonGlowColor: "rgba(249, 115, 22, 0.65)",
+                btnGradient: "linear-gradient(135deg, #f97316 0%, #ea580c 100%)"
             }
         };
 
@@ -8036,9 +8043,20 @@ WITH CHECK (true);</code>
                 const glowColor = theme.neonGlowColor || adjustedPrimary;
                 document.documentElement.style.setProperty('--glow-shadow', `0 0 15px ${glowColor}`);
                 document.documentElement.style.setProperty('--border-weight', `1.5px`);
+                document.documentElement.style.setProperty('--btn-shadow', `0 4px 16px ${glowColor}, 0 0 8px ${glowColor}`);
+                document.documentElement.style.setProperty('--btn-shadow-hover', `0 6px 22px ${glowColor}, 0 0 15px ${glowColor}`);
             } else {
                 document.documentElement.style.setProperty('--glow-shadow', `none`);
                 document.documentElement.style.setProperty('--border-weight', `1px`);
+                document.documentElement.style.setProperty('--btn-shadow', `0 4px 12px rgba(0, 0, 0, 0.35)`);
+                document.documentElement.style.setProperty('--btn-shadow-hover', `0 6px 18px rgba(0, 0, 0, 0.5)`);
+            }
+
+            // Apply button gradient configurations
+            if (theme.btnGradient) {
+                document.documentElement.style.setProperty('--btn-gradient', theme.btnGradient);
+            } else {
+                document.documentElement.style.setProperty('--btn-gradient', `linear-gradient(135deg, ${adjustedPrimary} 0%, rgba(255, 255, 255, 0.15) 100%)`);
             }
 
             // Dynamic RGB calculations for seamless theme overlay blending
