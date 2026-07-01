@@ -7728,13 +7728,13 @@ WITH CHECK (true);</code>
 
         const availableThemes = {
             obsidian_premium: {
-                name: "🖤 Obsidian Black",
-                desc: "Tema premium AMOLED. Preto absoluto com detalhes em cinza titânio e contraste impecável.",
+                name: "🖤 Obsidian Black (AMOLED)",
+                desc: "Tema minimalista de luxo para telas OLED. Preto absoluto com acentos em cinza platinado e contraste infinito.",
                 bg: "#000000",
                 cardBg1: "#0a0a0c",
                 cardBg2: "#141416",
                 border: "#1f1f22",
-                textMain: "#fdfdfd",
+                textMain: "#ffffff",
                 textMuted: "#a1a1aa",
                 primary: "#e4e4e7",
                 success: "#22c55e",
@@ -7742,16 +7742,35 @@ WITH CHECK (true);</code>
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: true
             },
+            gilded_luxury_degrade: {
+                name: "👑 Gilded Carbon (Degradê & Luxo)",
+                desc: "Carbono escuro combinado com um degradê suave em âmbar e dourado imperial escovado. Design executivo premium.",
+                bg: "#080705",
+                gradientBg: "radial-gradient(circle at top right, #1f180c 0%, #080604 60%, #030201 100%)",
+                cardBg1: "#0f0d0a",
+                cardBg2: "#1a1610",
+                gradientCard1: "linear-gradient(135deg, rgba(28, 24, 16, 0.75) 0%, rgba(12, 10, 7, 0.9) 100%)",
+                gradientCard2: "linear-gradient(135deg, rgba(42, 35, 24, 0.8) 0%, rgba(18, 15, 10, 0.95) 100%)",
+                border: "rgba(245, 158, 11, 0.35)",
+                textMain: "#fffcf0",
+                textMuted: "#fcd34d",
+                primary: "#fbbf24",
+                success: "#10b981",
+                error: "#ef4444",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: false,
+                backdropFilter: "blur(16px)"
+            },
             synapse_holo_degrade: {
-                name: "🔮 Synapse Holo (Degradê)",
-                desc: "Roxo holográfico e violeta neon em degradê cósmico fluido. Visual translúcido sofisticado.",
+                name: "🔮 Synapse Cosmic (Holográfico)",
+                desc: "Roxo profundo e violeta em degradê cósmico com efeito translúcido glassmorphism altamente sofisticado.",
                 bg: "#05020c",
                 gradientBg: "radial-gradient(circle at top right, #201040 0%, #080414 55%, #030107 100%)",
-                cardBg1: "rgba(10, 6, 22, 0.45)",
-                cardBg2: "rgba(20, 12, 38, 0.55)",
-                gradientCard1: "linear-gradient(135deg, rgba(16, 10, 32, 0.65) 0%, rgba(6, 4, 14, 0.8) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(28, 16, 52, 0.7) 0%, rgba(10, 6, 22, 0.8) 100%)",
-                border: "rgba(139, 92, 246, 0.3)",
+                cardBg1: "#0e081c",
+                cardBg2: "#180e30",
+                gradientCard1: "linear-gradient(135deg, rgba(22, 13, 44, 0.6) 0%, rgba(10, 6, 22, 0.85) 100%)",
+                gradientCard2: "linear-gradient(135deg, rgba(38, 22, 74, 0.65) 0%, rgba(18, 10, 34, 0.9) 100%)",
+                border: "rgba(139, 92, 246, 0.35)",
                 textMain: "#f5f3ff",
                 textMuted: "#c4b5fd",
                 primary: "#a78bfa",
@@ -7763,13 +7782,13 @@ WITH CHECK (true);</code>
             },
             aurora_borealis_degrade: {
                 name: "🌌 Midnight Aurora (Degradê)",
-                desc: "Degradê suave inspirado em auroras polares, mesclando azul cobalto, safira e verde marinho.",
+                desc: "Degradê sutil de azul cobalto profundo a verde marinho, recriando as auroras polares com toques de azul gelo.",
                 bg: "#01050e",
-                gradientBg: "linear-gradient(135deg, #02122c 0%, #010614 100%)",
-                cardBg1: "rgba(4, 12, 28, 0.5)",
-                cardBg2: "rgba(8, 22, 48, 0.6)",
-                gradientCard1: "linear-gradient(135deg, rgba(6, 18, 38, 0.6) 0%, rgba(2, 6, 16, 0.8) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(12, 34, 68, 0.65) 0%, rgba(4, 14, 30, 0.85) 100%)",
+                gradientBg: "linear-gradient(135deg, #021430 0%, #010614 60%, #000105 100%)",
+                cardBg1: "#040c1d",
+                cardBg2: "#08162f",
+                gradientCard1: "linear-gradient(135deg, rgba(6, 20, 44, 0.6) 0%, rgba(2, 7, 18, 0.85) 100%)",
+                gradientCard2: "linear-gradient(135deg, rgba(12, 36, 76, 0.65) 0%, rgba(4, 13, 32, 0.9) 100%)",
                 border: "rgba(56, 189, 248, 0.35)",
                 textMain: "#f8fafc",
                 textMuted: "#94a3b8",
@@ -7781,12 +7800,12 @@ WITH CHECK (true);</code>
                 backdropFilter: "blur(16px)"
             },
             cyber_neon_glow: {
-                name: "⚡ Cyberpunk Neon (Neon)",
-                desc: "Estilo cyber clássico de altíssimo contraste. Preto infinito com traços brilhantes de ciano e magenta neon.",
+                name: "⚡ Cyberpunk Neon (Glow)",
+                desc: "Estilo cyberpunk de altíssimo contraste elétrico. Preto absoluto com traços iluminados em ciano neon.",
                 bg: "#000000",
-                cardBg1: "#030305",
-                cardBg2: "#07070c",
-                border: "rgba(255, 0, 127, 0.8)",
+                cardBg1: "#040406",
+                cardBg2: "#09090e",
+                border: "#00f0ff",
                 textMain: "#ffffff",
                 textMuted: "#00f0ff",
                 primary: "#00f0ff",
@@ -7795,15 +7814,15 @@ WITH CHECK (true);</code>
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: true,
                 neon: true,
-                neonGlowColor: "rgba(0, 240, 255, 0.45)"
+                neonGlowColor: "rgba(0, 240, 255, 0.55)"
             },
             toxic_matrix_neon: {
-                name: "🟢 Emerald Matrix (Neon)",
-                desc: "Tema hacker puro. Linhas de código em verde neon sobre fundo preto absoluto com brilho cibernético.",
+                name: "🟢 Emerald Matrix (Hacker)",
+                desc: "Estética hacker clássica de terminal retro. Verde fosforescente ultra vibrante sobre preto absoluto.",
                 bg: "#000000",
                 cardBg1: "#020402",
-                cardBg2: "#050905",
-                border: "rgba(57, 255, 20, 0.8)",
+                cardBg2: "#040804",
+                border: "#39ff14",
                 textMain: "#f0fdf4",
                 textMuted: "#39ff14",
                 primary: "#39ff14",
@@ -7812,56 +7831,18 @@ WITH CHECK (true);</code>
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: true,
                 neon: true,
-                neonGlowColor: "rgba(57, 255, 20, 0.45)"
-            },
-            solar_flare_degrade: {
-                name: "🔥 Solar Flare (Degradê)",
-                desc: "Pôr do sol vulcânico em degradê de bordeaux a âmbar elétrico com sombras profundas e quentes.",
-                bg: "#070205",
-                gradientBg: "radial-gradient(circle at top left, #300a16 0%, #0d0307 65%, #020103 100%)",
-                cardBg1: "rgba(14, 5, 10, 0.55)",
-                cardBg2: "rgba(26, 8, 18, 0.65)",
-                gradientCard1: "linear-gradient(135deg, rgba(26, 8, 18, 0.65) 0%, rgba(8, 2, 5, 0.8) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(42, 12, 28, 0.7) 0%, rgba(14, 4, 9, 0.85) 100%)",
-                border: "rgba(244, 63, 94, 0.3)",
-                textMain: "#fff5f2",
-                textMuted: "#fdba74",
-                primary: "#f97316",
-                success: "#10b981",
-                error: "#ef4444",
-                font: 'system-ui, -apple-system, sans-serif',
-                amoled: false,
-                backdropFilter: "blur(16px)"
-            },
-            royal_gold_degrade: {
-                name: "👑 Royal Gold (Degradê)",
-                desc: "Estética de luxo com dourados imperiais e iluminação âmbar cintilante.",
-                bg: "#050402",
-                gradientBg: "radial-gradient(circle at center, #1c1407 0%, #080603 75%, #020201 100%)",
-                cardBg1: "rgba(14, 11, 7, 0.6)",
-                cardBg2: "rgba(25, 20, 12, 0.7)",
-                gradientCard1: "linear-gradient(135deg, rgba(22, 18, 10, 0.7) 0%, rgba(8, 6, 4, 0.85) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(36, 28, 16, 0.75) 0%, rgba(14, 11, 7, 0.9) 100%)",
-                border: "rgba(251, 191, 36, 0.35)",
-                textMain: "#fffbeb",
-                textMuted: "#fcd34d",
-                primary: "#fbbf24",
-                success: "#4ade80",
-                error: "#ef4444",
-                font: 'system-ui, -apple-system, sans-serif',
-                amoled: false,
-                backdropFilter: "blur(16px)"
+                neonGlowColor: "rgba(57, 255, 20, 0.55)"
             },
             crimson_velvet_degrade: {
-                name: "🍷 Crimson Velvet (Degradê)",
-                desc: "Vermelho rubi misturado a tons de veludo preto em um degradê suntuoso.",
+                name: "🍷 Crimson Velvet (Bordeaux)",
+                desc: "Vermelho rubi misturado a tons de veludo preto em um degradê suntuoso e requintado.",
                 bg: "#050102",
                 gradientBg: "radial-gradient(circle at top, #2d040c 0%, #090103 70%, #010000 100%)",
-                cardBg1: "rgba(16, 4, 7, 0.55)",
-                cardBg2: "rgba(28, 6, 12, 0.65)",
-                gradientCard1: "linear-gradient(135deg, rgba(24, 6, 10, 0.65) 0%, rgba(8, 2, 3, 0.85) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(38, 8, 16, 0.7) 0%, rgba(16, 4, 7, 0.9) 100%)",
-                border: "rgba(225, 29, 72, 0.3)",
+                cardBg1: "#120406",
+                cardBg2: "#22060b",
+                gradientCard1: "linear-gradient(135deg, rgba(28, 6, 12, 0.65) 0%, rgba(8, 2, 3, 0.85) 100%)",
+                gradientCard2: "linear-gradient(135deg, rgba(46, 10, 20, 0.7) 0%, rgba(14, 3, 6, 0.9) 100%)",
+                border: "rgba(225, 29, 72, 0.35)",
                 textMain: "#fff1f2",
                 textMuted: "#fda4af",
                 primary: "#fb7185",
@@ -7872,7 +7853,7 @@ WITH CHECK (true);</code>
                 backdropFilter: "blur(16px)"
             },
             stellar_white: {
-                name: "🤍 Stellar White",
+                name: "🤍 Stellar White (Claro)",
                 desc: "Visual claro super elegante e minimalista. Utiliza tons sutis de gelo e cinza platinado para leitura agradável.",
                 bg: "#fcfcfd",
                 cardBg1: "#ffffff",
@@ -8037,9 +8018,9 @@ WITH CHECK (true);</code>
             document.documentElement.style.setProperty('--bg-color', theme.bg);
             document.documentElement.style.setProperty('--bg-gradient', theme.gradientBg || 'none');
             document.documentElement.style.setProperty('--card-bg-primary', theme.cardBg1);
-            document.documentElement.style.setProperty('--card-bg-primary-grad', theme.gradientCard1 || 'none');
+            document.documentElement.style.setProperty('--card-bg-primary-grad', theme.gradientCard1 || theme.cardBg1);
             document.documentElement.style.setProperty('--card-bg-secondary', theme.cardBg2);
-            document.documentElement.style.setProperty('--card-bg-secondary-grad', theme.gradientCard2 || 'none');
+            document.documentElement.style.setProperty('--card-bg-secondary-grad', theme.gradientCard2 || theme.cardBg2);
             document.documentElement.style.setProperty('--border-color', theme.border);
             document.documentElement.style.setProperty('--text-main', theme.textMain);
             document.documentElement.style.setProperty('--text-muted', theme.textMuted);
