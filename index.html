@@ -3071,7 +3071,7 @@
                 /* Premium action card */
                 .dashboard-v2-card {
                     background: rgba(15, 23, 42, 0.45) !important;
-                    border: 1px solid var(--border-color) !important;
+                    border: 1px solid var(--card-border-color, var(--border-color)) !important;
                     border-radius: 18px !important;
                     padding: 20px !important;
                     display: flex !important;
@@ -3082,7 +3082,9 @@
                     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
                     position: relative !important;
                     overflow: hidden !important;
+                    box-sizing: border-box !important;
                     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+                    -webkit-tap-highlight-color: transparent;
                 }
 
                 .dashboard-v2-card::before {
@@ -3092,21 +3094,42 @@
                     left: 0;
                     width: 100%;
                     height: 100%;
-                    background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.06), transparent 70%);
-                    opacity: 0;
+                    background: radial-gradient(circle at 50% 0%, var(--card-glow-color, rgba(139, 92, 246, 0.06)), transparent 70%);
+                    opacity: 0.25;
                     transition: opacity 0.3s ease;
                     pointer-events: none;
                 }
 
+                .dashboard-v2-card::after {
+                    content: '';
+                    position: absolute;
+                    top: 14px;
+                    right: 14px;
+                    width: 6px;
+                    height: 6px;
+                    border-radius: 50%;
+                    background: var(--indicator-color, var(--primary));
+                    box-shadow: 0 0 8px var(--indicator-color, var(--primary));
+                    opacity: 0.6;
+                    transition: all 0.3s ease;
+                    z-index: 2;
+                }
+
                 .dashboard-v2-card:hover {
                     transform: translateY(-5px) scale(1.02) !important;
-                    background: rgba(15, 23, 42, 0.75) !important;
-                    border-color: var(--primary) !important;
-                    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.2), 0 0 12px rgba(139, 92, 246, 0.15) !important;
+                    background: rgba(15, 23, 42, 0.7) !important;
+                    border-color: var(--card-hover-border, var(--primary)) !important;
+                    box-shadow: 0 8px 24px var(--card-hover-shadow, rgba(139, 92, 246, 0.2)), 0 0 12px var(--card-hover-shadow-subtle, rgba(139, 92, 246, 0.15)) !important;
                 }
 
                 .dashboard-v2-card:hover::before {
                     opacity: 1;
+                }
+
+                .dashboard-v2-card:hover::after {
+                    opacity: 1;
+                    transform: scale(1.3);
+                    box-shadow: 0 0 12px var(--indicator-color, var(--primary));
                 }
 
                 .dashboard-v2-card:active {
@@ -3122,13 +3145,15 @@
                     justify-content: center;
                     margin-bottom: 12px;
                     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-                    background: rgba(255, 255, 255, 0.04);
-                    border: 1px solid rgba(255, 255, 255, 0.05);
+                    background: var(--icon-bg, rgba(255, 255, 255, 0.04)) !important;
+                    border: 1px solid var(--icon-border, rgba(255, 255, 255, 0.05)) !important;
+                    color: var(--icon-color, var(--primary)) !important;
                     font-size: 1.5rem;
                 }
 
                 .dashboard-v2-card:hover .dashboard-v2-card-icon-wrapper {
                     transform: rotate(6deg) scale(1.1);
+                    box-shadow: 0 0 14px var(--icon-border, rgba(255, 255, 255, 0.15));
                 }
 
                 .dashboard-v2-card-title {
@@ -3136,6 +3161,11 @@
                     font-weight: 700;
                     color: #fff;
                     margin: 0 0 6px 0;
+                    transition: color 0.3s ease;
+                }
+
+                .dashboard-v2-card:hover .dashboard-v2-card-title {
+                    color: var(--indicator-color, #fff);
                 }
 
                 .dashboard-v2-card-desc {
@@ -3148,6 +3178,65 @@
                     display: -webkit-box;
                     -webkit-line-clamp: 2;
                     -webkit-box-orient: vertical;
+                }
+
+                /* Tool unique color identities */
+                .card-conversa {
+                    --card-border-color: rgba(56, 189, 248, 0.15);
+                    --card-glow-color: rgba(56, 189, 248, 0.1);
+                    --card-hover-border: #38bdf8;
+                    --card-hover-shadow: rgba(56, 189, 248, 0.22);
+                    --card-hover-shadow-subtle: rgba(56, 189, 248, 0.12);
+                    --ripple-color: rgba(56, 189, 248, 0.35);
+                    --indicator-color: #38bdf8;
+                    --icon-bg: rgba(56, 189, 248, 0.08);
+                    --icon-border: rgba(56, 189, 248, 0.15);
+                    --icon-color: #38bdf8;
+                }
+
+                .card-agente {
+                    --card-border-color: rgba(139, 92, 246, 0.15);
+                    --card-glow-color: rgba(139, 92, 246, 0.1);
+                    --card-hover-border: #8b5cf6;
+                    --card-hover-shadow: rgba(139, 92, 246, 0.22);
+                    --card-hover-shadow-subtle: rgba(139, 92, 246, 0.12);
+                    --ripple-color: rgba(139, 92, 246, 0.35);
+                    --indicator-color: #8b5cf6;
+                    --icon-bg: rgba(139, 92, 246, 0.08);
+                    --icon-border: rgba(139, 92, 246, 0.15);
+                    --icon-color: #8b5cf6;
+                }
+
+                .card-curriculo {
+                    --card-border-color: rgba(16, 185, 129, 0.15);
+                    --card-glow-color: rgba(16, 185, 129, 0.1);
+                    --card-hover-border: #10b981;
+                    --card-hover-shadow: rgba(16, 185, 129, 0.22);
+                    --card-hover-shadow-subtle: rgba(16, 185, 129, 0.12);
+                    --ripple-color: rgba(16, 185, 129, 0.35);
+                    --indicator-color: #10b981;
+                    --icon-bg: rgba(16, 185, 129, 0.08);
+                    --icon-border: rgba(16, 185, 129, 0.15);
+                    --icon-color: #10b981;
+                }
+
+                .card-entrevista {
+                    --card-border-color: rgba(245, 158, 11, 0.15);
+                    --card-glow-color: rgba(245, 158, 11, 0.1);
+                    --card-hover-border: #f59e0b;
+                    --card-hover-shadow: rgba(245, 158, 11, 0.22);
+                    --card-hover-shadow-subtle: rgba(245, 158, 11, 0.12);
+                    --ripple-color: rgba(245, 158, 11, 0.35);
+                    --indicator-color: #f59e0b;
+                    --icon-bg: rgba(245, 158, 11, 0.08);
+                    --icon-border: rgba(245, 158, 11, 0.15);
+                    --icon-color: #f59e0b;
+                }
+
+                /* Ripple overlay mapping */
+                .dashboard-v2-card .ripple-effect {
+                    background: var(--ripple-color, rgba(139, 92, 246, 0.35)) !important;
+                    z-index: 5 !important;
                 }
 
                 /* Row-style activity card */
@@ -3220,8 +3309,8 @@
                     <h3 class="dashboard-v2-section-title">⚡ Ações Rápidas</h3>
                     <div class="dashboard-v2-grid">
                         <!-- Card 1: Nova Conversa -->
-                        <div class="dashboard-v2-card dashboard-action-card staggered-item staggered-delay-1" onclick="triggerQuickAction('chat')">
-                            <div class="dashboard-v2-card-icon-wrapper" style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.15); color: #38bdf8;">
+                        <div class="dashboard-v2-card dashboard-action-card card-conversa staggered-item staggered-delay-1" onclick="triggerQuickAction('chat')">
+                            <div class="dashboard-v2-card-icon-wrapper">
                                 💬
                             </div>
                             <h4 class="dashboard-v2-card-title">Nova Conversa</h4>
@@ -3229,8 +3318,8 @@
                         </div>
 
                         <!-- Card 2: Criar Agente -->
-                        <div class="dashboard-v2-card dashboard-action-card staggered-item staggered-delay-2" onclick="triggerQuickAction('agent')">
-                            <div class="dashboard-v2-card-icon-wrapper" style="background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.15); color: #8b5cf6;">
+                        <div class="dashboard-v2-card dashboard-action-card card-agente staggered-item staggered-delay-2" onclick="triggerQuickAction('agent')">
+                            <div class="dashboard-v2-card-icon-wrapper">
                                 🤖
                             </div>
                             <h4 class="dashboard-v2-card-title">Criar Agente</h4>
@@ -3238,8 +3327,8 @@
                         </div>
 
                         <!-- Card 3: Criar Currículo -->
-                        <div class="dashboard-v2-card dashboard-action-card staggered-item staggered-delay-3" onclick="triggerQuickAction('resume')">
-                            <div class="dashboard-v2-card-icon-wrapper" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.15); color: #10b981;">
+                        <div class="dashboard-v2-card dashboard-action-card card-curriculo staggered-item staggered-delay-3" onclick="triggerQuickAction('resume')">
+                            <div class="dashboard-v2-card-icon-wrapper">
                                 📄
                             </div>
                             <h4 class="dashboard-v2-card-title">Criar Currículo</h4>
@@ -3247,8 +3336,8 @@
                         </div>
 
                         <!-- Card 4: Simular Entrevista -->
-                        <div class="dashboard-v2-card dashboard-action-card staggered-item staggered-delay-4" onclick="triggerQuickAction('interview')">
-                            <div class="dashboard-v2-card-icon-wrapper" style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.15); color: #f59e0b;">
+                        <div class="dashboard-v2-card dashboard-action-card card-entrevista staggered-item staggered-delay-4" onclick="triggerQuickAction('interview')">
+                            <div class="dashboard-v2-card-icon-wrapper">
                                 💼
                             </div>
                             <h4 class="dashboard-v2-card-title">Simular Entrevista</h4>
