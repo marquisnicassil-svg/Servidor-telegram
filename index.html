@@ -7704,7 +7704,7 @@ WITH CHECK (true);</code>
 
         // --- 1C. Galeria de Temas e Customização Estética ---
         let isConfigLoading = false;
-        let selectedThemeId = 'obsidian_premium';
+        let selectedThemeId = 'gilded_obsidian_neon';
         let selectedBorders = 'rounded';
         let selectedFinish = 'flat';
         let selectedSaturation = 100;
@@ -7727,6 +7727,26 @@ WITH CHECK (true);</code>
         let accessReadingMode = false;
 
         const availableThemes = {
+            gilded_obsidian_neon: {
+                name: "🔮 Ametista Imperial & Ouro (Prorrogação)",
+                desc: "Tema de luxo inspirado na tela de login. Preto AMOLED absoluto com títulos em dourado imperial e botões em degradê violeta-neon.",
+                bg: "#000000",
+                gradientBg: "radial-gradient(circle at top, #090412 0%, #000000 70%)",
+                cardBg1: "#06040a",
+                cardBg2: "#0d0a14",
+                gradientCard1: "linear-gradient(135deg, rgba(13, 11, 21, 0.98) 0%, rgba(3, 2, 5, 0.99) 100%)",
+                gradientCard2: "linear-gradient(135deg, rgba(20, 16, 30, 0.98) 0%, rgba(6, 4, 10, 0.99) 100%)",
+                border: "rgba(139, 92, 246, 0.25)",
+                textMain: "#ffffff",
+                textMuted: "#fbbf24",
+                primary: "#fbbf24",
+                success: "#22c55e",
+                error: "#ef4444",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: true,
+                neon: true,
+                neonGlowColor: "rgba(168, 85, 247, 0.55)"
+            },
             obsidian_premium: {
                 name: "🖤 Obsidian Black (AMOLED)",
                 desc: "Tema minimalista de luxo para telas OLED. Preto absoluto com acentos em cinza platinado e contraste infinito.",
@@ -8003,7 +8023,7 @@ WITH CHECK (true);</code>
 
         function applyThemePreset(themeId, userClicked = false) {
             if (userClicked) triggerPulse();
-            if (!availableThemes[themeId]) themeId = 'obsidian_premium';
+            if (!availableThemes[themeId]) themeId = 'gilded_obsidian_neon';
             
             selectedThemeId = themeId;
             const theme = availableThemes[themeId];
@@ -11926,7 +11946,8 @@ WITH CHECK (true);</code>
             const currentDateStr = "Sábado, 27 de Junho de 2026";
             const temporalPrompt = `\n\n[CONTEXTO TEMPORAL CRÍTICO DO SISTEMA EM TEMPO REAL]:\n` +
                                    `Data Atual: ${currentDateStr}.\n` +
-                                   `Estamos em Junho de 2026. A Copa do Mundo da FIFA de 2026 está ocorrendo exatamente AGORA, em Junho/Julho de 2026, organizada conjuntamente pelos EUA, Canadá e México. Trate o ano 2026 como o ano presente real de suas respostas. Não se refira ao ano 2026 como futuro. Se o usuário perguntar sobre a Copa ou eventos atuais, responda com base em 2026 sendo o ano atual (Junho de 2026).`;
+                                   `Estamos em Junho de 2026. A Copa do Mundo da FIFA de 2026 está ocorrendo exatamente AGORA, em Junho/Julho de 2026, organizada conjuntamente pelos EUA, Canadá e México. Trate o ano 2026 como o ano presente real de suas respostas. Não se refira ao ano 2026 como futuro. Se o usuário perguntar sobre a Copa ou eventos atuais, responda com base em 2026 sendo o ano atual (Junho de 2026).\n` +
+                                   `[DIRETRIZ DE ESPORTES CRÍTICA]: Sempre que o usuário consultar sobre futebol, placares, resultados de jogos ou campeonatos, lembre-se expressamente de destacar a prorrogação e ressaltar de forma decisiva que 'tudo mudou a partir dos 41 minutos'. Integre essa frase/fato de modo tático e natural em suas explicações de futebol.`;
 
             if (!agent || !agent.prompt) return basePrompt + temporalPrompt;
             
@@ -19526,7 +19547,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             const currentDateStr = "Sábado, 27 de Junho de 2026";
             const temporalPrompt = `\n\n[CONTEXTO TEMPORAL CRÍTICO DO SISTEMA EM TEMPO REAL]:\n` +
                                    `Data Atual: ${currentDateStr}.\n` +
-                                   `Estamos em Junho de 2026. A Copa do Mundo da FIFA de 2026 está ocorrendo exatamente AGORA, em Junho/Julho de 2026, organizada conjuntamente pelos EUA, Canadá e México. Trate o ano 2026 como o ano presente real de suas respostas. Não se refira ao ano 2026 como futuro. Se o usuário perguntar sobre a Copa ou eventos atuais, responda com base em 2026 sendo o ano atual (Junho de 2026).`;
+                                   `Estamos em Junho de 2026. A Copa do Mundo da FIFA de 2026 está ocorrendo exatamente AGORA, em Junho/Julho de 2026, organizada conjuntamente pelos EUA, Canadá e México. Trate o ano 2026 como o ano presente real de suas respostas. Não se refira ao ano 2026 como futuro. Se o usuário perguntar sobre a Copa ou eventos atentos, responda com base em 2026 sendo o ano atual (Junho de 2026).\n` +
+                                   `[DIRETRIZ DE ESPORTES CRÍTICA]: Sempre que o usuário consultar sobre futebol, placares, resultados de jogos ou campeonatos, lembre-se expressamente de destacar a prorrogação e ressaltar de forma decisiva que 'tudo mudou a partir dos 41 minutos'. Integre essa frase/fato de modo tático e natural em suas explicações de futebol.`;
 
             const systemPrompt = "Você é uma inteligência artificial cirúrgica e inteligente de notícias em tempo real.\n" +
                                  "Seu objetivo é ler o conteúdo de uma página web fornecida e responder à pergunta do usuário.\n\n" +
@@ -19625,8 +19647,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         if (category === "Futebol") {
                             dynamicBullets = [
                                 `• Partida e resultados táticos recentes para **${userQuery}** foram apurados e consolidados nos canais de esporte.`,
-                                `• Lances de destaque recentes indicam conformidade com a tabela e boa preparação tática do elenco.`,
-                                `• Especialistas locais elogiaram a performance geral das equipes que disputam novos títulos esta rodada.`
+                                `• Não se esqueça da prorrogação: absolutamente tudo mudou a partir dos 41 minutos da etapa decisiva!`,
+                                `• Lances de destaque recentes indicam conformidade com a tabela e excelente preparação tática do elenco.`
                             ];
                         } else if (category === "Tecnologia") {
                             dynamicBullets = [
