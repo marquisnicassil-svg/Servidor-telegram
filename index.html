@@ -1361,6 +1361,41 @@
             gap: 24px;
             animation: splash-intro 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+        .splash-icon-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .splash-icon-container::before {
+            content: '';
+            position: absolute;
+            top: 6px; left: 6px; right: 6px; bottom: 6px;
+            border-radius: 36px;
+            border: 2px dashed rgba(139, 92, 246, 0.4);
+            animation: techRotate 15s linear infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .splash-icon-container::after {
+            content: '';
+            position: absolute;
+            top: 0px; left: 0px; right: 0px; bottom: 0px;
+            border-radius: 42px;
+            border: 1px solid rgba(236, 72, 153, 0.2);
+            animation: techRotateOpposite 10s linear infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+        @keyframes techRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes techRotateOpposite {
+            0% { transform: rotate(360deg); }
+            100% { transform: rotate(0deg); }
+        }
         .splash-icon {
             position: relative;
             width: 110px;
@@ -1454,7 +1489,7 @@
             width: 0%;
             background: linear-gradient(90deg, #8b5cf6 0%, #a78bfa 50%, #ec4899 100%);
             border-radius: 10px;
-            transition: width 0.9s cubic-bezier(0.1, 0.8, 0.2, 1);
+            transition: width 0.25s cubic-bezier(0.1, 0.8, 0.2, 1);
             position: relative;
             box-shadow: 0 0 12px rgba(139, 92, 246, 0.8), 0 0 4px rgba(236, 72, 153, 0.6);
         }
@@ -1482,14 +1517,24 @@
             margin-top: 8px;
         }
         .splash-status-text-anim {
-            color: rgba(255, 255, 255, 0.55);
-            font-size: 0.82rem;
-            font-family: 'JetBrains Mono', monospace, system-ui, sans-serif;
-            letter-spacing: 0.8px;
+            background: linear-gradient(90deg, #a78bfa, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            font-size: 0.85rem;
+            font-family: 'Fira Code', 'JetBrains Mono', monospace, system-ui, sans-serif;
+            letter-spacing: 1px;
+            font-weight: bold;
             text-transform: uppercase;
-            text-shadow: 0 0 8px rgba(139, 92, 246, 0.3);
+            animation: splashTextPulse 1.5s infinite ease-in-out;
             opacity: 1;
             transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes splashTextPulse {
+            0% { opacity: 0.65; filter: drop-shadow(0 0 2px rgba(139, 92, 246, 0.2)); }
+            50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5)); }
+            100% { opacity: 0.65; filter: drop-shadow(0 0 2px rgba(139, 92, 246, 0.2)); }
         }
         .splash-status-fadeout {
             opacity: 0 !important;
@@ -2509,9 +2554,11 @@
         <div id="splash-particles-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 1;"></div>
         
         <div class="splash-content">
-            <div class="splash-icon">
-                <img src="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg" alt="Synapse Console Icon">
-                <div class="splash-logo-shimmer"></div>
+            <div class="splash-icon-container">
+                <div class="splash-icon">
+                    <img src="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg" alt="Synapse Console Icon">
+                    <div class="splash-logo-shimmer"></div>
+                </div>
             </div>
             
             <div class="splash-title-wrapper">
@@ -8807,14 +8854,19 @@ WITH CHECK (true);</code>
 
                 // Detecta se um novo Service Worker assumiu o controle e recarrega para aplicar as novas alterações
                 let refreshing = false;
+                let activeController = navigator.serviceWorker.controller;
                 navigator.serviceWorker.addEventListener('controllerchange', () => {
-                    if (!refreshing) {
-                        refreshing = true;
-                        addLog("Nova versão instalada com sucesso! Recarregando sistema...", "sys");
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1000);
+                    if (refreshing) return;
+                    if (!activeController) {
+                        // First time activation and claiming, no need to reload
+                        activeController = navigator.serviceWorker.controller;
+                        return;
                     }
+                    refreshing = true;
+                    addLog("Nova versão instalada com sucesso! Recarregando sistema...", "sys");
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
                 });
             }
 
@@ -8824,20 +8876,20 @@ WITH CHECK (true);</code>
 
         async function initializeSessionAndApp() {
             updateSplashStatus(10, "Inicializando IA...");
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 150));
 
             try {
                 // Carrega parâmetros de URL se existirem nocache ativo
                 if (window.location.search.includes('nocache=')) {
                     setTimeout(() => {
                         addLog("🔄 Sistema reiniciado com bypass total de cache executado com sucesso!", "success");
-                    }, 100);
+                    }, 50);
                 }
 
                 // 1. Carrega configurações do LocalStorage (necessário para pegar as chaves do Supabase)
                 updateSplashStatus(25, "Sincronizando configurações...");
                 loadConfiguration();
-                await new Promise(resolve => setTimeout(resolve, 900));
+                await new Promise(resolve => setTimeout(resolve, 120));
                 
                 // Inicialização robusta do Analisador de Contexto (Substituto do módulo Gmail anterior no menu lateral)
                 updateSplashStatus(40, "Carregando módulos...");
@@ -8847,12 +8899,12 @@ WITH CHECK (true);</code>
                     console.error("Falha ao inicializar AnalisadorDeContexto:", navError);
                     addLog("Falha no Analisador de Contexto. Ignorando e continuando inicialização...", "warning");
                 }
-                await new Promise(resolve => setTimeout(resolve, 950));
+                await new Promise(resolve => setTimeout(resolve, 120));
 
                 // 2. Tenta recuperar sessão do Supabase Auth
                 updateSplashStatus(60, "Validando credenciais...");
                 checkSupabaseAuthSession();
-                await new Promise(resolve => setTimeout(resolve, 900));
+                await new Promise(resolve => setTimeout(resolve, 120));
 
                 const supabaseUrlEl = document.getElementById('supabase-url');
                 const supabaseKeyEl = document.getElementById('supabase-key');
@@ -8861,7 +8913,7 @@ WITH CHECK (true);</code>
 
                 if (url && key) {
                     const connectionPromise = testSupabaseConnection();
-                    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve('timeout'), 1800));
+                    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve('timeout'), 1500));
 
                     const statusMsg = supabaseSession && supabaseSession.user 
                         ? `Acessando conta de ${supabaseSession.user.email}...` 
@@ -8870,7 +8922,7 @@ WITH CHECK (true);</code>
 
                     const result = await Promise.race([connectionPromise, timeoutPromise]);
                     updateSplashStatus(90, "Sincronizando dados...");
-                    await new Promise(resolve => setTimeout(resolve, 900));
+                    await new Promise(resolve => setTimeout(resolve, 150));
                     
                     if (result === 'timeout') {
                         addLog("Atenção: A verificação de conexão com o Supabase excedeu o limite de tempo (timeout). Prosseguindo em paralelo.", "info");
@@ -8888,7 +8940,7 @@ WITH CHECK (true);</code>
                     updateSplashStatus(85, "Carregando ambiente local...");
                     addLog("Nenhuma conexão Supabase configurada até o momento.", "info");
                     triggerAuthOrFirstGreeting();
-                    await new Promise(resolve => setTimeout(resolve, 950));
+                    await new Promise(resolve => setTimeout(resolve, 150));
                 }
             } catch (err) {
                 console.error("Erro durante a inicialização segura de sessão:", err);
@@ -8896,7 +8948,7 @@ WITH CHECK (true);</code>
             }
 
             updateSplashStatus(100, "Sistema pronto...");
-            await new Promise(resolve => setTimeout(resolve, 1200));
+            await new Promise(resolve => setTimeout(resolve, 200));
             
             // Dismiss loader/splash screen smoothly under any circumstance (Sempre executado devido à garantia fora do try-catch do ping)
             try {
@@ -16776,11 +16828,15 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                                 return await testSupabaseConnection();
                             } else {
                                 // Se falhou, remove a sessão
+                                const hadSession = !!supabaseSession;
                                 supabaseSession = null;
                                 localStorage.removeItem('supabase_auth_session');
                                 updateAuthUI();
-                                addLog("Credenciais locais de usuário expiradas limpas. Reconectando sob nível Anônimo automaticamente...", "info");
-                                setTimeout(() => testSupabaseConnection(), 200);
+                                addLog("Credenciais locais de usuário expiradas limpas.", "info");
+                                if (hadSession) {
+                                    addLog("Reconectando sob nível Anônimo automaticamente...", "info");
+                                    setTimeout(() => testSupabaseConnection(), 200);
+                                }
                             }
                         } else {
                             updateCloudIndicators('error', `Falha (${response.status})`);
