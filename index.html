@@ -7704,7 +7704,7 @@ WITH CHECK (true);</code>
 
         // --- 1C. Galeria de Temas e Customização Estética ---
         let isConfigLoading = false;
-        let selectedThemeId = 'violeta_neon';
+        let selectedThemeId = 'cyan_blue_neon';
         let selectedBorders = 'rounded';
         let selectedFinish = 'flat';
         let selectedSaturation = 100;
@@ -7727,6 +7727,26 @@ WITH CHECK (true);</code>
         let accessReadingMode = false;
 
         const availableThemes = {
+            cyan_blue_neon: {
+                name: "🌊 Aurora Holográfica (Neon)",
+                desc: "Degradê neon elétrico em ciano e azul de alta intensidade. Visual ultra-moderno e brilhante com efeito de vidro reflexivo.",
+                bg: "#000000",
+                gradientBg: "linear-gradient(319deg, hsl(183, 100%, 50%), hsl(240, 100%, 50%))",
+                cardBg1: "rgba(0, 0, 0, 0.75)",
+                cardBg2: "rgba(10, 10, 20, 0.85)",
+                gradientCard1: "linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(5, 5, 15, 0.9) 100%)",
+                gradientCard2: "linear-gradient(135deg, rgba(10, 10, 25, 0.85) 0%, rgba(2, 2, 8, 0.95) 100%)",
+                border: "rgba(0, 240, 255, 0.5)",
+                textMain: "#ffffff",
+                textMuted: "#bae6fd",
+                primary: "#00f0ff",
+                success: "#22c55e",
+                error: "#ef4444",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: false,
+                neon: true,
+                neonGlowColor: "rgba(0, 240, 255, 0.85)"
+            },
             violeta_neon: {
                 name: "🔮 Violeta Neon (Premium)",
                 desc: "Tema premium de alta intensidade. Fundo AMOLED preto absoluto com botões e detalhes em degradê violeta-neon ultra brilhante.",
@@ -7983,7 +8003,7 @@ WITH CHECK (true);</code>
 
         function applyThemePreset(themeId, userClicked = false) {
             if (userClicked) triggerPulse();
-            if (!availableThemes[themeId]) themeId = 'violeta_neon';
+            if (!availableThemes[themeId]) themeId = 'cyan_blue_neon';
             
             selectedThemeId = themeId;
             const theme = availableThemes[themeId];
@@ -8094,7 +8114,7 @@ WITH CHECK (true);</code>
                 sw.classList.remove('on');
                 document.documentElement.setAttribute('data-theme', 'dark');
                 // Adjust variables in active theme if matching amoled switch
-                const theme = availableThemes[selectedThemeId] || availableThemes['violeta_neon'];
+                const theme = availableThemes[selectedThemeId] || availableThemes['cyan_blue_neon'];
                 document.documentElement.style.setProperty('--bg-color', theme.bg !== '#000000' ? theme.bg : '#0f1115');
                 document.documentElement.style.setProperty('--bg-gradient', theme.gradientBg || 'none');
                 document.documentElement.style.setProperty('--card-bg-primary', theme.cardBg1);
@@ -8106,7 +8126,7 @@ WITH CHECK (true);</code>
             } else {
                 sw.classList.add('on');
                 document.documentElement.removeAttribute('data-theme');
-                const theme = availableThemes[selectedThemeId] || availableThemes['violeta_neon'];
+                const theme = availableThemes[selectedThemeId] || availableThemes['cyan_blue_neon'];
                 document.documentElement.style.setProperty('--bg-color', '#000000');
                 document.documentElement.style.setProperty('--bg-gradient', 'none');
                 document.documentElement.style.setProperty('--card-bg-primary', '#000000');
@@ -9453,7 +9473,7 @@ WITH CHECK (true);</code>
                     if (data.selectedThemeId) {
                         applyThemePreset(data.selectedThemeId);
                     } else {
-                        applyThemePreset('violeta_neon');
+                        applyThemePreset('cyan_blue_neon');
                     }
 
                     // 2. Aplica a cor de destaque personalizada, sobrescrevendo a padrão do tema
@@ -9577,7 +9597,7 @@ WITH CHECK (true);</code>
                     applySettingsLayoutStyle(selectedSettingsLayoutStyle);
                     updateDynamicStyles();
                 } else {
-                    applyThemePreset('violeta_neon');
+                    applyThemePreset('cyan_blue_neon');
                     applyBordersStyle('rounded');
                     applyVisualFinish('flat');
                     applyColorSaturation(100);
@@ -10406,7 +10426,7 @@ WITH CHECK (true);</code>
             const currentAccessReadingMode = document.getElementById('access-reading-switch')?.classList.contains('on') || false;
 
             savedAppearance = {
-                selectedThemeId: selectedThemeId || 'violeta_neon',
+                selectedThemeId: selectedThemeId || 'cyan_blue_neon',
                 currentAccentColor: currentAccentColor || '#38bdf8',
                 selectedBorders: selectedBorders || 'rounded',
                 selectedFinish: selectedFinish || 'flat',
@@ -10444,7 +10464,7 @@ WITH CHECK (true);</code>
             const currentAccessReadingMode = document.getElementById('access-reading-switch')?.classList.contains('on') || false;
 
             const currentSettings = {
-                selectedThemeId: selectedThemeId || 'violeta_neon',
+                selectedThemeId: selectedThemeId || 'cyan_blue_neon',
                 currentAccentColor: currentAccentColor || '#38bdf8',
                 selectedBorders: selectedBorders || 'rounded',
                 selectedFinish: selectedFinish || 'flat',
