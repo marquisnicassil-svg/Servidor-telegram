@@ -50,8 +50,11 @@
             /* Padrão: Super Black AMOLED (Pixels apagados) */
             --bg-color: #000000;
             --bg-rgb: 0, 0, 0;
+            --bg-gradient: none;
             --card-bg-primary: #000000;
             --card-bg-secondary: #0a0a0a;
+            --card-bg-primary-grad: none;
+            --card-bg-secondary-grad: none;
             --border-color: #1a1a1a;
             --text-main: #f5f5f5;
             --text-muted: #737373;
@@ -150,6 +153,7 @@
         .supabase-card, .config-subview-card, .config-subview .supabase-card, .card {
             border-radius: var(--card-border-radius) !important;
             border: var(--border-weight) solid var(--border-color) !important;
+            background: var(--card-bg-primary-grad, var(--card-bg-primary)) !important;
             box-shadow: var(--glow-shadow) !important;
             backdrop-filter: var(--backdrop-filter) !important;
             -webkit-backdrop-filter: var(--backdrop-filter) !important;
@@ -158,14 +162,14 @@
         .dashboard-action-card {
             border-radius: var(--card-border-radius) !important;
             border: var(--border-weight) solid var(--border-color) !important;
-            background: var(--card-bg-primary) !important;
+            background: var(--card-bg-primary-grad, var(--card-bg-primary)) !important;
             box-shadow: var(--glow-shadow) !important;
         }
 
         .activity-row {
             border-radius: var(--input-border-radius) !important;
             border: var(--border-weight) solid var(--border-color) !important;
-            background: var(--card-bg-secondary) !important;
+            background: var(--card-bg-secondary-grad, var(--card-bg-secondary)) !important;
         }
         
         /* Estilos de layout das configurações customizáveis */
@@ -297,6 +301,10 @@
 
         body {
             background-color: var(--bg-color);
+            background-image: var(--bg-gradient, none);
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
             color: var(--text-main);
             font-family: var(--font-family);
             line-height: 1.5;
@@ -310,7 +318,7 @@
             -webkit-user-select: none !important;
             -webkit-touch-callout: none !important;
             pointer-events: auto !important;
-            transition: background-color 0.3s;
+            transition: background-color 0.4s, background-image 0.4s;
         }
 
         /* Desabilita seleção e toque longo nativo em todo o app por padrão */
@@ -7721,7 +7729,7 @@ WITH CHECK (true);</code>
         const availableThemes = {
             obsidian_premium: {
                 name: "🖤 Obsidian Black",
-                desc: "Tema premium AMOLED. Preto absoluto com toques de prata escovada e contraste perfeito para telas OLED.",
+                desc: "Tema premium AMOLED. Preto absoluto com detalhes em cinza titânio e contraste impecável.",
                 bg: "#000000",
                 cardBg1: "#0a0a0c",
                 cardBg2: "#141416",
@@ -7733,6 +7741,135 @@ WITH CHECK (true);</code>
                 error: "#ef4444",
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: true
+            },
+            synapse_holo_degrade: {
+                name: "🔮 Synapse Holo (Degradê)",
+                desc: "Roxo holográfico e violeta neon em degradê cósmico fluido. Visual translúcido sofisticado.",
+                bg: "#05020c",
+                gradientBg: "radial-gradient(circle at top right, #201040 0%, #080414 55%, #030107 100%)",
+                cardBg1: "rgba(10, 6, 22, 0.45)",
+                cardBg2: "rgba(20, 12, 38, 0.55)",
+                gradientCard1: "linear-gradient(135deg, rgba(16, 10, 32, 0.65) 0%, rgba(6, 4, 14, 0.8) 100%)",
+                gradientCard2: "linear-gradient(135deg, rgba(28, 16, 52, 0.7) 0%, rgba(10, 6, 22, 0.8) 100%)",
+                border: "rgba(139, 92, 246, 0.3)",
+                textMain: "#f5f3ff",
+                textMuted: "#c4b5fd",
+                primary: "#a78bfa",
+                success: "#34d399",
+                error: "#fb7185",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: false,
+                backdropFilter: "blur(16px)"
+            },
+            aurora_borealis_degrade: {
+                name: "🌌 Midnight Aurora (Degradê)",
+                desc: "Degradê suave inspirado em auroras polares, mesclando azul cobalto, safira e verde marinho.",
+                bg: "#01050e",
+                gradientBg: "linear-gradient(135deg, #02122c 0%, #010614 100%)",
+                cardBg1: "rgba(4, 12, 28, 0.5)",
+                cardBg2: "rgba(8, 22, 48, 0.6)",
+                gradientCard1: "linear-gradient(135deg, rgba(6, 18, 38, 0.6) 0%, rgba(2, 6, 16, 0.8) 100%)",
+                gradientCard2: "linear-gradient(135deg, rgba(12, 34, 68, 0.65) 0%, rgba(4, 14, 30, 0.85) 100%)",
+                border: "rgba(56, 189, 248, 0.35)",
+                textMain: "#f8fafc",
+                textMuted: "#94a3b8",
+                primary: "#38bdf8",
+                success: "#10b981",
+                error: "#f43f5e",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: false,
+                backdropFilter: "blur(16px)"
+            },
+            cyber_neon_glow: {
+                name: "⚡ Cyberpunk Neon (Neon)",
+                desc: "Estilo cyber clássico de altíssimo contraste. Preto infinito com traços brilhantes de ciano e magenta neon.",
+                bg: "#000000",
+                cardBg1: "#030305",
+                cardBg2: "#07070c",
+                border: "rgba(255, 0, 127, 0.8)",
+                textMain: "#ffffff",
+                textMuted: "#00f0ff",
+                primary: "#00f0ff",
+                success: "#39ff14",
+                error: "#ff007f",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: true,
+                neon: true,
+                neonGlowColor: "rgba(0, 240, 255, 0.45)"
+            },
+            toxic_matrix_neon: {
+                name: "🟢 Emerald Matrix (Neon)",
+                desc: "Tema hacker puro. Linhas de código em verde neon sobre fundo preto absoluto com brilho cibernético.",
+                bg: "#000000",
+                cardBg1: "#020402",
+                cardBg2: "#050905",
+                border: "rgba(57, 255, 20, 0.8)",
+                textMain: "#f0fdf4",
+                textMuted: "#39ff14",
+                primary: "#39ff14",
+                success: "#22c55e",
+                error: "#ef4444",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: true,
+                neon: true,
+                neonGlowColor: "rgba(57, 255, 20, 0.45)"
+            },
+            solar_flare_degrade: {
+                name: "🔥 Solar Flare (Degradê)",
+                desc: "Pôr do sol vulcânico em degradê de bordeaux a âmbar elétrico com sombras profundas e quentes.",
+                bg: "#070205",
+                gradientBg: "radial-gradient(circle at top left, #300a16 0%, #0d0307 65%, #020103 100%)",
+                cardBg1: "rgba(14, 5, 10, 0.55)",
+                cardBg2: "rgba(26, 8, 18, 0.65)",
+                gradientCard1: "linear-gradient(135deg, rgba(26, 8, 18, 0.65) 0%, rgba(8, 2, 5, 0.8) 100%)",
+                gradientCard2: "linear-gradient(135deg, rgba(42, 12, 28, 0.7) 0%, rgba(14, 4, 9, 0.85) 100%)",
+                border: "rgba(244, 63, 94, 0.3)",
+                textMain: "#fff5f2",
+                textMuted: "#fdba74",
+                primary: "#f97316",
+                success: "#10b981",
+                error: "#ef4444",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: false,
+                backdropFilter: "blur(16px)"
+            },
+            royal_gold_degrade: {
+                name: "👑 Royal Gold (Degradê)",
+                desc: "Estética de luxo com dourados imperiais e iluminação âmbar cintilante.",
+                bg: "#050402",
+                gradientBg: "radial-gradient(circle at center, #1c1407 0%, #080603 75%, #020201 100%)",
+                cardBg1: "rgba(14, 11, 7, 0.6)",
+                cardBg2: "rgba(25, 20, 12, 0.7)",
+                gradientCard1: "linear-gradient(135deg, rgba(22, 18, 10, 0.7) 0%, rgba(8, 6, 4, 0.85) 100%)",
+                gradientCard2: "linear-gradient(135deg, rgba(36, 28, 16, 0.75) 0%, rgba(14, 11, 7, 0.9) 100%)",
+                border: "rgba(251, 191, 36, 0.35)",
+                textMain: "#fffbeb",
+                textMuted: "#fcd34d",
+                primary: "#fbbf24",
+                success: "#4ade80",
+                error: "#ef4444",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: false,
+                backdropFilter: "blur(16px)"
+            },
+            crimson_velvet_degrade: {
+                name: "🍷 Crimson Velvet (Degradê)",
+                desc: "Vermelho rubi misturado a tons de veludo preto em um degradê suntuoso.",
+                bg: "#050102",
+                gradientBg: "radial-gradient(circle at top, #2d040c 0%, #090103 70%, #010000 100%)",
+                cardBg1: "rgba(16, 4, 7, 0.55)",
+                cardBg2: "rgba(28, 6, 12, 0.65)",
+                gradientCard1: "linear-gradient(135deg, rgba(24, 6, 10, 0.65) 0%, rgba(8, 2, 3, 0.85) 100%)",
+                gradientCard2: "linear-gradient(135deg, rgba(38, 8, 16, 0.7) 0%, rgba(16, 4, 7, 0.9) 100%)",
+                border: "rgba(225, 29, 72, 0.3)",
+                textMain: "#fff1f2",
+                textMuted: "#fda4af",
+                primary: "#fb7185",
+                success: "#10b981",
+                error: "#e11d48",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: false,
+                backdropFilter: "blur(16px)"
             },
             stellar_white: {
                 name: "🤍 Stellar White",
@@ -7746,96 +7883,6 @@ WITH CHECK (true);</code>
                 primary: "#2563eb",
                 success: "#10b981",
                 error: "#ef4444",
-                font: 'system-ui, -apple-system, sans-serif',
-                amoled: false
-            },
-            synapse_pro: {
-                name: "🟣 Synapse Pro",
-                desc: "A identidade visual do Synapse evoluída. Roxo profundo cósmico com destaques em neon violeta e lilás.",
-                bg: "#07050f",
-                cardBg1: "#0e0b19",
-                cardBg2: "#18142a",
-                border: "#292147",
-                textMain: "#f5f3ff",
-                textMuted: "#c4b5fd",
-                primary: "#8b5cf6",
-                success: "#34d399",
-                error: "#fb7185",
-                font: 'system-ui, -apple-system, sans-serif',
-                amoled: false
-            },
-            midnight_sapphire: {
-                name: "🌌 Midnight Sapphire",
-                desc: "Azul noturno sofisticado inspirado em pedras preciosas. Traz detalhes em cobalto e ciano cristalino.",
-                bg: "#020617",
-                cardBg1: "#071022",
-                cardBg2: "#0f172a",
-                border: "#1e293b",
-                textMain: "#f8fafc",
-                textMuted: "#94a3b8",
-                primary: "#38bdf8",
-                success: "#10b981",
-                error: "#f43f5e",
-                font: 'system-ui, -apple-system, sans-serif',
-                amoled: false
-            },
-            emerald_exec: {
-                name: "💎 Emerald Executive",
-                desc: "Um tema maduro e sóbrio em tons de verde floresta e esmeralda escuro, com acentos em ouro velho.",
-                bg: "#020704",
-                cardBg1: "#05110a",
-                cardBg2: "#081b11",
-                border: "#133423",
-                textMain: "#ecfdf5",
-                textMuted: "#6ee7b7",
-                primary: "#10b981",
-                success: "#059669",
-                error: "#ef4444",
-                font: 'system-ui, -apple-system, sans-serif',
-                amoled: false
-            },
-            cyber_gold: {
-                name: "🔱 Cyber Gold",
-                desc: "Uma estética luxuosa e futurista combinando carbono escuro com detalhes iluminados em ouro e âmbar.",
-                bg: "#0a0908",
-                cardBg1: "#12100f",
-                cardBg2: "#1c1917",
-                border: "#292524",
-                textMain: "#fffbeb",
-                textMuted: "#fcd34d",
-                primary: "#fbbf24",
-                success: "#4ade80",
-                error: "#ef4444",
-                font: 'system-ui, -apple-system, sans-serif',
-                amoled: false
-            },
-            crimson_velvet: {
-                name: "🍷 Crimson Velvet",
-                desc: "Tema exótico e intenso. Preto profundo com elegantes nuances de bordô e vermelho rubi suave.",
-                bg: "#0a0405",
-                cardBg1: "#14080a",
-                cardBg2: "#200d11",
-                border: "#3e1723",
-                textMain: "#fff1f2",
-                textMuted: "#fda4af",
-                primary: "#fb7185",
-                success: "#10b981",
-                error: "#e11d48",
-                font: 'system-ui, -apple-system, sans-serif',
-                amoled: false
-            },
-            monochrome_graphite: {
-                name: "🎹 Graphite Minimal",
-                desc: "Design ultra-minimalista focado no essencial. Tons calculados de grafite, chumbo e cinza titanium.",
-                bg: "#09090b",
-                cardBg1: "#121214",
-                cardBg2: "#18181b",
-                border: "#27272a",
-                textMain: "#fafafa",
-                textMuted: "#a1a1aa",
-                primary: "#e4e4e7",
-                success: "#71717a",
-                error: "#52525b",
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: false
             }
@@ -7872,7 +7919,7 @@ WITH CHECK (true);</code>
                     </div>
                     <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
                         <span style="width: 12px; height: 12px; border-radius: 50%; background-color: ${item.primary}; border: 1px solid #fff; display: inline-block;"></span>
-                        <span style="width: 12px; height: 12px; border-radius: 50%; background-color: ${item.bg}; border: 1px solid rgba(255,255,255,0.2); display: inline-block;"></span>
+                        <span style="width: 12px; height: 12px; border-radius: 50%; background: ${item.gradientBg || item.bg}; border: 1px solid rgba(255,255,255,0.2); display: inline-block;"></span>
                     </div>
                 `;
                 container.appendChild(card);
@@ -7988,8 +8035,11 @@ WITH CHECK (true);</code>
 
             // Set variables
             document.documentElement.style.setProperty('--bg-color', theme.bg);
+            document.documentElement.style.setProperty('--bg-gradient', theme.gradientBg || 'none');
             document.documentElement.style.setProperty('--card-bg-primary', theme.cardBg1);
+            document.documentElement.style.setProperty('--card-bg-primary-grad', theme.gradientCard1 || 'none');
             document.documentElement.style.setProperty('--card-bg-secondary', theme.cardBg2);
+            document.documentElement.style.setProperty('--card-bg-secondary-grad', theme.gradientCard2 || 'none');
             document.documentElement.style.setProperty('--border-color', theme.border);
             document.documentElement.style.setProperty('--text-main', theme.textMain);
             document.documentElement.style.setProperty('--text-muted', theme.textMuted);
@@ -7998,6 +8048,17 @@ WITH CHECK (true);</code>
             document.documentElement.style.setProperty('--success', adjustedSuccess);
             document.documentElement.style.setProperty('--error', adjustedError);
             document.documentElement.style.setProperty('--font-family', theme.font);
+            document.documentElement.style.setProperty('--backdrop-filter', theme.backdropFilter || 'none');
+
+            // Apply neon and glow configurations
+            if (theme.neon) {
+                const glowColor = theme.neonGlowColor || adjustedPrimary;
+                document.documentElement.style.setProperty('--glow-shadow', `0 0 15px ${glowColor}`);
+                document.documentElement.style.setProperty('--border-weight', `1.5px`);
+            } else {
+                document.documentElement.style.setProperty('--glow-shadow', `none`);
+                document.documentElement.style.setProperty('--border-weight', `1px`);
+            }
 
             // Dynamic RGB calculations for seamless theme overlay blending
             const hexToRgbStr = (hColor) => {
@@ -8072,19 +8133,26 @@ WITH CHECK (true);</code>
                 sw.classList.remove('on');
                 document.documentElement.setAttribute('data-theme', 'dark');
                 // Adjust variables in active theme if matching amoled switch
-                document.documentElement.style.setProperty('--bg-color', '#0f1115');
-                document.documentElement.style.setProperty('--card-bg-primary', '#161920');
-                document.documentElement.style.setProperty('--card-bg-secondary', '#20242d');
-                document.documentElement.style.setProperty('--border-color', '#2b303b');
-                document.getElementById('theme-color-meta').setAttribute('content', '#0f1115');
+                const theme = availableThemes[selectedThemeId] || availableThemes['obsidian_premium'];
+                document.documentElement.style.setProperty('--bg-color', theme.bg !== '#000000' ? theme.bg : '#0f1115');
+                document.documentElement.style.setProperty('--bg-gradient', theme.gradientBg || 'none');
+                document.documentElement.style.setProperty('--card-bg-primary', theme.cardBg1);
+                document.documentElement.style.setProperty('--card-bg-primary-grad', theme.gradientCard1 || 'none');
+                document.documentElement.style.setProperty('--card-bg-secondary', theme.cardBg2);
+                document.documentElement.style.setProperty('--card-bg-secondary-grad', theme.gradientCard2 || 'none');
+                document.documentElement.style.setProperty('--border-color', theme.border);
+                document.getElementById('theme-color-meta').setAttribute('content', theme.bg);
             } else {
                 sw.classList.add('on');
                 document.documentElement.removeAttribute('data-theme');
                 const theme = availableThemes[selectedThemeId] || availableThemes['obsidian_premium'];
-                document.documentElement.style.setProperty('--bg-color', theme.bg);
-                document.documentElement.style.setProperty('--card-bg-primary', theme.cardBg1);
-                document.documentElement.style.setProperty('--card-bg-secondary', theme.cardBg2);
-                document.documentElement.style.setProperty('--border-color', theme.border);
+                document.documentElement.style.setProperty('--bg-color', '#000000');
+                document.documentElement.style.setProperty('--bg-gradient', 'none');
+                document.documentElement.style.setProperty('--card-bg-primary', '#000000');
+                document.documentElement.style.setProperty('--card-bg-primary-grad', 'none');
+                document.documentElement.style.setProperty('--card-bg-secondary', '#050505');
+                document.documentElement.style.setProperty('--card-bg-secondary-grad', 'none');
+                document.documentElement.style.setProperty('--border-color', '#111111');
                 document.getElementById('theme-color-meta').setAttribute('content', '#000000');
             }
             addLog(`Modo AMOLED Super Black ${!isOn ? 'Ativado' : 'Desativado'}`, "info");
