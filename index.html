@@ -9330,6 +9330,34 @@ WITH CHECK (true);</code>
                     cliInputEl.addEventListener('keydown', function(event) {
                         if (event && event.key === 'Enter') {
                             executeCliCommand();
+                        } else if (event && event.key === 'ArrowUp') {
+                            if (typeof cliHistory !== 'undefined' && cliHistory.length > 0) {
+                                if (cliHistoryIndex === -1) {
+                                    currentCliTemp = cliInputEl.value;
+                                    cliHistoryIndex = cliHistory.length - 1;
+                                } else if (cliHistoryIndex > 0) {
+                                    cliHistoryIndex--;
+                                }
+                                cliInputEl.value = cliHistory[cliHistoryIndex];
+                                event.preventDefault();
+                                setTimeout(() => {
+                                    cliInputEl.selectionStart = cliInputEl.selectionEnd = cliInputEl.value.length;
+                                }, 0);
+                            }
+                        } else if (event && event.key === 'ArrowDown') {
+                            if (typeof cliHistory !== 'undefined' && cliHistoryIndex !== -1) {
+                                cliHistoryIndex++;
+                                if (cliHistoryIndex >= cliHistory.length) {
+                                    cliHistoryIndex = -1;
+                                    cliInputEl.value = currentCliTemp;
+                                } else {
+                                    cliInputEl.value = cliHistory[cliHistoryIndex];
+                                }
+                                event.preventDefault();
+                                setTimeout(() => {
+                                    cliInputEl.selectionStart = cliInputEl.selectionEnd = cliInputEl.value.length;
+                                }, 0);
+                            }
                         }
                     });
                 }
@@ -9932,6 +9960,19 @@ WITH CHECK (true);</code>
         let logsHistoryBuffer = [];
         let terminalReqCount = 0;
 
+        // Histórico de comandos executados no terminal (CLI)
+        let cliHistory = [];
+        try {
+            const savedCliHistory = localStorage.getItem('cliHistory');
+            if (savedCliHistory) {
+                cliHistory = JSON.parse(savedCliHistory);
+            }
+        } catch (e) {
+            console.error("Erro ao carregar histórico da CLI:", e);
+        }
+        let cliHistoryIndex = -1;
+        let currentCliTemp = "";
+
         function addLog(text, type = "info") {
             const container = document.getElementById('logs-panel');
             if(!container) return;
@@ -10272,6 +10313,18 @@ WITH CHECK (true);</code>
 
             const val = input.value.trim();
             if (!val) return;
+
+            // Salva no histórico de comandos se for diferente do último
+            if (typeof cliHistory !== 'undefined') {
+                if (cliHistory.length === 0 || cliHistory[cliHistory.length - 1] !== val) {
+                    cliHistory.push(val);
+                    try {
+                        localStorage.setItem('cliHistory', JSON.stringify(cliHistory));
+                    } catch (e) {}
+                }
+                cliHistoryIndex = -1;
+                currentCliTemp = "";
+            }
 
             input.value = ""; // Limpa campo
 
