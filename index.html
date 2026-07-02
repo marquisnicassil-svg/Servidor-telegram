@@ -7704,7 +7704,7 @@ WITH CHECK (true);</code>
 
         // --- 1C. Galeria de Temas e Customização Estética ---
         let isConfigLoading = false;
-        let selectedThemeId = 'aurora_neon_85';
+        let selectedThemeId = 'cyan_blue_neon';
         let selectedBorders = 'rounded';
         let selectedFinish = 'flat';
         let selectedSaturation = 100;
@@ -7727,32 +7727,11 @@ WITH CHECK (true);</code>
         let accessReadingMode = false;
 
         const availableThemes = {
-            aurora_neon_85: {
-                name: "🔮 Aurora Neon 85°",
-                desc: "Fundo preto absoluto AMOLED com botões brilhantes em gradê ciano-azul rotacionado a 85 graus.",
-                bg: "#000000",
-                gradientBg: "none",
-                cardBg1: "#060608",
-                cardBg2: "#0c0c14",
-                gradientCard1: "linear-gradient(135deg, rgba(8, 8, 12, 0.98) 0%, rgba(2, 2, 4, 0.99) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(16, 16, 24, 0.98) 0%, rgba(4, 4, 8, 0.99) 100%)",
-                border: "rgba(0, 240, 255, 0.45)",
-                textMain: "#ffffff",
-                textMuted: "#bae6fd",
-                primary: "#00f0ff",
-                success: "#22c55e",
-                error: "#ef4444",
-                font: 'system-ui, -apple-system, sans-serif',
-                amoled: true,
-                neon: true,
-                neonGlowColor: "rgba(0, 240, 255, 0.65)",
-                btnGradient: "linear-gradient(85deg, hsl(183, 100%, 50%), hsl(240, 100%, 50%))"
-            },
             cyan_blue_neon: {
                 name: "🌊 Aurora Holográfica (Neon)",
                 desc: "Tema premium de alta intensidade. Fundo AMOLED preto absoluto com botões brilhantes em degradê holográfico azul-ciano ultra-neon.",
                 bg: "#000000",
-                gradientBg: "radial-gradient(circle at top, #02142d 0%, #000000 75%)",
+                gradientBg: "none",
                 cardBg1: "#01050c",
                 cardBg2: "#030c1a",
                 gradientCard1: "linear-gradient(135deg, rgba(2, 10, 24, 0.98) 0%, rgba(0, 2, 5, 0.99) 100%)",
@@ -7767,7 +7746,7 @@ WITH CHECK (true);</code>
                 amoled: true,
                 neon: true,
                 neonGlowColor: "rgba(0, 240, 255, 0.65)",
-                btnGradient: "linear-gradient(319deg, hsl(183, 100%, 50%), hsl(240, 100%, 50%))"
+                btnGradient: "linear-gradient(85deg, hsl(183, 100%, 50%), hsl(240, 100%, 50%))"
             },
             violeta_neon: {
                 name: "🔮 Violeta Neon (Premium)",
@@ -8031,7 +8010,7 @@ WITH CHECK (true);</code>
 
         function applyThemePreset(themeId, userClicked = false) {
             if (userClicked) triggerPulse();
-            if (!availableThemes[themeId]) themeId = 'aurora_neon_85';
+            if (!availableThemes[themeId]) themeId = 'cyan_blue_neon';
             
             selectedThemeId = themeId;
             const theme = availableThemes[themeId];
@@ -8153,7 +8132,7 @@ WITH CHECK (true);</code>
                 sw.classList.remove('on');
                 document.documentElement.setAttribute('data-theme', 'dark');
                 // Adjust variables in active theme if matching amoled switch
-                const theme = availableThemes[selectedThemeId] || availableThemes['aurora_neon_85'];
+                const theme = availableThemes[selectedThemeId] || availableThemes['cyan_blue_neon'];
                 document.documentElement.style.setProperty('--bg-color', theme.bg !== '#000000' ? theme.bg : '#0f1115');
                 document.documentElement.style.setProperty('--bg-gradient', theme.gradientBg || 'none');
                 document.documentElement.style.setProperty('--card-bg-primary', theme.cardBg1);
@@ -8165,7 +8144,7 @@ WITH CHECK (true);</code>
             } else {
                 sw.classList.add('on');
                 document.documentElement.removeAttribute('data-theme');
-                const theme = availableThemes[selectedThemeId] || availableThemes['aurora_neon_85'];
+                const theme = availableThemes[selectedThemeId] || availableThemes['cyan_blue_neon'];
                 document.documentElement.style.setProperty('--bg-color', '#000000');
                 document.documentElement.style.setProperty('--bg-gradient', 'none');
                 document.documentElement.style.setProperty('--card-bg-primary', '#000000');
@@ -9512,7 +9491,7 @@ WITH CHECK (true);</code>
                     if (data.selectedThemeId) {
                         applyThemePreset(data.selectedThemeId);
                     } else {
-                        applyThemePreset('aurora_neon_85');
+                        applyThemePreset('cyan_blue_neon');
                     }
 
                     // 2. Aplica a cor de destaque personalizada, sobrescrevendo a padrão do tema
@@ -9636,7 +9615,7 @@ WITH CHECK (true);</code>
                     applySettingsLayoutStyle(selectedSettingsLayoutStyle);
                     updateDynamicStyles();
                 } else {
-                    applyThemePreset('aurora_neon_85');
+                    applyThemePreset('cyan_blue_neon');
                     applyBordersStyle('rounded');
                     applyVisualFinish('flat');
                     applyColorSaturation(100);
@@ -10465,7 +10444,7 @@ WITH CHECK (true);</code>
             const currentAccessReadingMode = document.getElementById('access-reading-switch')?.classList.contains('on') || false;
 
             savedAppearance = {
-                selectedThemeId: selectedThemeId || 'aurora_neon_85',
+                selectedThemeId: selectedThemeId || 'cyan_blue_neon',
                 currentAccentColor: currentAccentColor || '#38bdf8',
                 selectedBorders: selectedBorders || 'rounded',
                 selectedFinish: selectedFinish || 'flat',
@@ -10503,7 +10482,7 @@ WITH CHECK (true);</code>
             const currentAccessReadingMode = document.getElementById('access-reading-switch')?.classList.contains('on') || false;
 
             const currentSettings = {
-                selectedThemeId: selectedThemeId || 'aurora_neon_85',
+                selectedThemeId: selectedThemeId || 'cyan_blue_neon',
                 currentAccentColor: currentAccentColor || '#38bdf8',
                 selectedBorders: selectedBorders || 'rounded',
                 selectedFinish: selectedFinish || 'flat',
