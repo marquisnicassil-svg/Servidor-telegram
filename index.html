@@ -248,7 +248,6 @@
 
         .btn-universal {
             border-radius: var(--btn-border-radius) !important;
-            box-shadow: var(--glow-shadow) !important;
         }
         
         .form-control, input, textarea, select {
@@ -926,8 +925,8 @@
 
         .btn-universal {
             width: 100%;
-            background-color: var(--text-main);
-            color: var(--bg-color);
+            background: var(--btn-gradient, var(--text-main));
+            color: var(--primary-contrast, var(--bg-color));
             font-size: 1rem;
             font-weight: 700;
             padding: 16px;
@@ -935,11 +934,19 @@
             border-radius: 16px;
             cursor: pointer;
             margin-top: 0.5rem;
-            transition: opacity 0.2s;
+            box-shadow: var(--btn-shadow, var(--glow-shadow));
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btn-universal:hover {
+            box-shadow: var(--btn-shadow-hover, var(--btn-shadow, var(--glow-shadow)));
+            transform: translateY(-2px);
+            opacity: 0.95;
         }
 
         .btn-universal:active {
-            opacity: 0.7;
+            transform: translateY(0px) scale(0.98);
+            opacity: 0.8;
         }
 
         /* Botão de Salvar Aparência Premium */
@@ -4795,7 +4802,7 @@ CREATE TRIGGER on_synapse_user_signed_up
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_synapse_user();
                             </textarea>
-                            <button class="btn-universal" onclick="copyAdminSQLToClipboard()" style="position: absolute; right: 10px; bottom: 10px; padding: 6px 12px; font-size: 0.72rem; height: auto; background: var(--primary); color: var(--bg-color); font-weight: bold; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(56, 189, 248, 0.25);">📋 Copiar SQL</button>
+                            <button class="btn-universal" onclick="copyAdminSQLToClipboard()" style="position: absolute; right: 10px; bottom: 10px; padding: 6px 12px; font-size: 0.72rem; height: auto; background: var(--btn-gradient, var(--primary)); color: var(--primary-contrast, var(--bg-color)); font-weight: bold; border-radius: 8px; border: none; cursor: pointer; box-shadow: var(--btn-shadow);">📋 Copiar SQL</button>
                         </div>
                     </div>
                 </div>
@@ -5194,7 +5201,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                             <li>Acesso prioritário a novos Agentes Especialistas</li>
                             <li>Remoção de marcas d'água no exportador</li>
                         </ul>
-                        <button onclick="openSubscriptionCheckoutModal('pro')" class="btn-universal" style="background: var(--primary); border: none; color: #000; font-weight: bold; width: 100%; border-radius: 10px; padding: 12px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Adquirir Plano Pro ⭐</button>
+                        <button onclick="openSubscriptionCheckoutModal('pro')" class="btn-universal" style="border: none; width: 100%; border-radius: 10px; padding: 12px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; margin-top: 0.5rem;">Adquirir Plano Pro ⭐</button>
                     </div>
 
                     <!-- Plano 3: ULTRA -->
@@ -5359,9 +5366,8 @@ CREATE TRIGGER on_synapse_user_signed_up
                             </div>
                         </div>
 
-                        <!-- Buttons actions -->
                         <div style="display: flex; gap: 8px; margin-top: 4px;">
-                            <button type="button" class="btn-universal" onclick="saveCustomTheme()" style="flex: 1; background: var(--primary, #00f0ff); color: #000; font-weight: bold; border: none; border-radius: 10px; padding: 12px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">Salvar e Aplicar Tema 🚀</button>
+                            <button type="button" class="btn-universal" onclick="saveCustomTheme()" style="flex: 1; border: none; border-radius: 10px; padding: 12px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 0;">Salvar e Aplicar Tema 🚀</button>
                             <button type="button" onclick="clearCustomThemes()" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; border-radius: 10px; padding: 0 14px; font-size: 0.8rem; font-weight: bold; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'" title="Excluir Todos os Temas Criados">Limpar 🗑️</button>
                         </div>
                     </div>
@@ -5603,7 +5609,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 8px; color: #fff;">💾 Criar Novo Perfil Visual</label>
                         <div style="display: flex; gap: 8px; margin-bottom: 12px;">
                             <input type="text" id="profile-name-input" class="form-control" placeholder="Ex: Meu Tema Cósmico" style="flex: 1; height: 42px; background: var(--card-bg-secondary); border: 1px solid var(--border-color); border-radius: 10px; color: #fff; padding: 0 12px; outline: none; font-size: 0.85rem;">
-                            <button class="btn-universal" onclick="saveVisualProfile()" style="width: auto; height: 42px; padding: 0 16px; font-size: 0.85rem; margin: 0; white-space: nowrap; background: var(--primary); color: var(--bg-color); font-weight: bold;">Salvar 💾</button>
+                            <button class="btn-universal" onclick="saveVisualProfile()" style="width: auto; height: 42px; padding: 0 16px; font-size: 0.85rem; margin: 0; white-space: nowrap; border: none;">Salvar 💾</button>
                         </div>
                         <div style="display: flex; gap: 8px;">
                             <button class="btn-universal" onclick="importVisualProfile()" style="flex: 1; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); font-size: 0.78rem; height: 36px; padding: 0; margin: 0; color: #fff;">Importar Perfil 📥</button>
@@ -8814,7 +8820,7 @@ WITH CHECK (true);</code>
                         <span style="font-size: 0.7rem; color: var(--text-muted); background: rgba(255,255,255,0.04); padding: 2px 6px; border-radius: 4px;">ID: ${profile.id.substring(0, 6)}</span>
                     </div>
                     <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                        <button onclick="loadVisualProfile('${profile.id}')" style="flex: 1; min-width: 60px; height: 32px; font-size: 0.75rem; font-weight: bold; border-radius: 8px; border: none; background: var(--primary); color: var(--bg-color); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">Ativar 🔌</button>
+                        <button onclick="loadVisualProfile('${profile.id}')" class="btn-universal" style="flex: 1; min-width: 60px; height: 32px; font-size: 0.75rem; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 0;">Ativar 🔌</button>
                         <button onclick="renameVisualProfile('${profile.id}')" style="flex: 1; min-width: 60px; height: 32px; font-size: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #fff; cursor: pointer;">Renomear ✏️</button>
                         <button onclick="duplicateVisualProfile('${profile.id}')" style="flex: 1; min-width: 60px; height: 32px; font-size: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #fff; cursor: pointer;">Duplicar 👥</button>
                         <button onclick="deleteVisualProfile('${profile.id}')" style="flex: 1; min-width: 60px; height: 32px; font-size: 0.75rem; border-radius: 8px; border: 1px solid #dc2626; background: rgba(220, 38, 38, 0.1); color: #f87171; cursor: pointer;">Excluir 🗑️</button>
@@ -12805,8 +12811,6 @@ WITH CHECK (true);</code>
                 const btnSave = document.createElement('button');
                 btnSave.className = 'btn-universal';
                 btnSave.textContent = "Salvar Alterações ✨";
-                btnSave.style.background = 'var(--primary)';
-                btnSave.style.color = 'var(--primary-contrast, #000000)';
                 btnSave.onclick = () => {
                     const txt = inputFact.value.trim();
                     if (!txt) return;
@@ -12859,8 +12863,6 @@ WITH CHECK (true);</code>
                 const btnSave = document.createElement('button');
                 btnSave.className = 'btn-universal';
                 btnSave.textContent = "Salvar Link 🔗";
-                btnSave.style.background = 'var(--primary)';
-                btnSave.style.color = 'var(--primary-contrast, #000000)';
                 btnSave.onclick = () => {
                     const t = inputTitle.value.trim();
                     const u = inputUrl.value.trim();
@@ -12914,8 +12916,6 @@ WITH CHECK (true);</code>
                 const btnSave = document.createElement('button');
                 btnSave.className = 'btn-universal';
                 btnSave.textContent = "Salvar Dados 📁";
-                btnSave.style.background = 'var(--primary)';
-                btnSave.style.color = 'var(--primary-contrast, #000000)';
                 btnSave.onclick = () => {
                     const n = inputName.value.trim();
                     if (!n) return;
@@ -13098,8 +13098,6 @@ WITH CHECK (true);</code>
             const btnAdd = document.createElement('button');
             btnAdd.className = 'btn-universal';
             btnAdd.textContent = "Registrar Recursos ✨";
-            btnAdd.style.background = 'var(--primary)';
-            btnAdd.style.color = 'var(--primary-contrast, #000000)';
             btnAdd.onclick = () => {
                 const type = selectType.value;
                 
