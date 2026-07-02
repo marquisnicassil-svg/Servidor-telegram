@@ -8054,6 +8054,8 @@ WITH CHECK (true);</code>
         let currentAccentGradientEnd = '#0000ff';
         let currentAccentGradientAngle = 135;
         let currentAccentGradientOn = false;
+        let isManualAccentOverrideActive = false;
+        let isManualAccentGradientActive = false;
 
         // Funções utilitárias de cores para alterar a intensidade/saturação matematicamente (sem filtros CSS bugados na body)
         function hexToHsl(hex) {
@@ -8176,6 +8178,22 @@ WITH CHECK (true);</code>
             
             selectedThemeId = themeId;
             const theme = availableThemes[themeId];
+
+            // Clear manual accent overrides when a theme preset is applied
+            isManualAccentOverrideActive = false;
+            isManualAccentGradientActive = false;
+            currentAccentGradientOn = false;
+
+            const gSw = document.getElementById('manual-accent-gradient-switch');
+            if (gSw) {
+                gSw.classList.remove('on');
+                const endCont = document.getElementById('manual-accent-end-container');
+                if (endCont) endCont.style.display = 'none';
+                const angleCont = document.getElementById('manual-accent-angle-container');
+                if (angleCont) angleCont.style.display = 'none';
+                const labelStart = document.getElementById('manual-accent-start-label');
+                if (labelStart) labelStart.innerText = 'Cor Principal';
+            }
 
             // Pre-fill the Custom Theme creator fields when a theme is selected
             const nameInput = document.getElementById('custom-theme-name');
@@ -8396,6 +8414,8 @@ WITH CHECK (true);</code>
             // Allows fine tuning override color of active theme
             currentAccentColor = color;
             currentAccentGradientOn = false;
+            isManualAccentOverrideActive = true;
+            isManualAccentGradientActive = false;
             const satVal = selectedSaturation || 100;
             const adjustedColor = adjustColorIntensity(color, satVal);
             
@@ -8432,6 +8452,8 @@ WITH CHECK (true);</code>
             currentAccentGradientEnd = colorEnd;
             currentAccentGradientAngle = parseInt(angle);
             currentAccentGradientOn = true;
+            isManualAccentOverrideActive = false;
+            isManualAccentGradientActive = true;
 
             const satVal = selectedSaturation || 100;
             const adjustedStart = adjustColorIntensity(colorStart, satVal);
@@ -8604,16 +8626,12 @@ WITH CHECK (true);</code>
             if (slider) slider.value = val;
 
             // Re-aplica cores matematicamente sem precisar de filtros pesados e bugados
-            if (currentAccentColor) {
+            if (isManualAccentGradientActive) {
+                setAccentGradient(currentAccentGradientStart, currentAccentGradientEnd, currentAccentGradientAngle);
+            } else if (isManualAccentOverrideActive) {
                 setAccent(currentAccentColor);
-            }
-            if (selectedThemeId) {
-                const savedAccent = currentAccentColor;
+            } else if (selectedThemeId) {
                 applyThemePreset(selectedThemeId);
-                const theme = availableThemes[selectedThemeId];
-                if (theme && theme.primary !== savedAccent) {
-                    setAccent(savedAccent);
-                }
             }
             
             addLog(`Intensidade de saturação otimizada fisicamente para: ${val}%`, "info");
@@ -9113,7 +9131,7 @@ WITH CHECK (true);</code>
                 selectedThemeId = settings.selectedThemeId;
                 applyThemePreset(selectedThemeId);
             }
-            if (settings.accentGradientOn) {
+            if (settings.isManualAccentGradientActive) {
                 currentAccentGradientOn = true;
                 currentAccentGradientStart = settings.accentGradientStart || settings.currentAccentColor;
                 currentAccentGradientEnd = settings.accentGradientEnd || '#0000ff';
@@ -9127,7 +9145,7 @@ WITH CHECK (true);</code>
                     document.getElementById('manual-accent-start-label').innerText = 'Cor Inicial';
                 }
                 setAccentGradient(currentAccentGradientStart, currentAccentGradientEnd, currentAccentGradientAngle);
-            } else if (settings.currentAccentColor) {
+            } else if (settings.isManualAccentOverrideActive) {
                 currentAccentGradientOn = false;
                 const gSw = document.getElementById('manual-accent-gradient-switch');
                 if (gSw) {
@@ -9138,6 +9156,11 @@ WITH CHECK (true);</code>
                 }
                 currentAccentColor = settings.currentAccentColor;
                 setAccent(currentAccentColor);
+            } else {
+                // Sem override manual - limpa estados para respeitar o padrão do tema selecionado
+                isManualAccentOverrideActive = false;
+                isManualAccentGradientActive = false;
+                currentAccentGradientOn = false;
             }
             if (settings.selectedBorders) {
                 selectedBorders = settings.selectedBorders;
@@ -9854,8 +9877,8 @@ WITH CHECK (true);</code>
                         applyThemePreset('cyan_blue_neon');
                     }
 
-                    // 2. Aplica a cor de destaque personalizada, sobrescrevendo a padrão do tema
-                    if (data.accentGradientOn) {
+                    // 2. Aplica a cor de destaque personalizada, sobrescrevendo a padrão do tema apenas se estivesse ativada manualmente
+                    if (data.isManualAccentGradientActive) {
                         currentAccentGradientOn = true;
                         currentAccentGradientStart = data.accentGradientStart || data.accentColor;
                         currentAccentGradientEnd = data.accentGradientEnd || '#0000ff';
@@ -9869,7 +9892,7 @@ WITH CHECK (true);</code>
                             document.getElementById('manual-accent-start-label').innerText = 'Cor Inicial';
                         }
                         setAccentGradient(currentAccentGradientStart, currentAccentGradientEnd, currentAccentGradientAngle);
-                    } else if (data.accentColor) {
+                    } else if (data.isManualAccentOverrideActive) {
                         currentAccentGradientOn = false;
                         const gSw = document.getElementById('manual-accent-gradient-switch');
                         if (gSw) {
@@ -9886,6 +9909,11 @@ WITH CHECK (true);</code>
                             }
                         });
                         setAccent(data.accentColor, matchedEl);
+                    } else {
+                        // Sem override manual - limpa estados para respeitar o padrão do tema selecionado
+                        isManualAccentOverrideActive = false;
+                        isManualAccentGradientActive = false;
+                        currentAccentGradientOn = false;
                     }
 
                     // 3. Aplica o arredondamento de bordas (sincronizando os dois seletores se houver)
@@ -10761,6 +10789,8 @@ WITH CHECK (true);</code>
                 accentGradientStart: currentAccentGradientStart,
                 accentGradientEnd: currentAccentGradientEnd,
                 accentGradientAngle: currentAccentGradientAngle,
+                isManualAccentOverrideActive: isManualAccentOverrideActive,
+                isManualAccentGradientActive: isManualAccentGradientActive,
                 
                 // Supabase Connection Settings
                 supabaseUrl: document.getElementById('supabase-url').value.trim(),
@@ -10861,6 +10891,8 @@ WITH CHECK (true);</code>
                 accentGradientStart: currentAccentGradientStart || '#0000ff',
                 accentGradientEnd: currentAccentGradientEnd || '#0000ff',
                 accentGradientAngle: currentAccentGradientAngle || 135,
+                isManualAccentOverrideActive: isManualAccentOverrideActive || false,
+                isManualAccentGradientActive: isManualAccentGradientActive || false,
                 selectedBorders: selectedBorders || 'rounded',
                 selectedFinish: selectedFinish || 'flat',
                 selectedSaturation: selectedSaturation !== undefined ? parseInt(selectedSaturation) : 100,
@@ -10903,6 +10935,8 @@ WITH CHECK (true);</code>
                 accentGradientStart: currentAccentGradientStart || '#0000ff',
                 accentGradientEnd: currentAccentGradientEnd || '#0000ff',
                 accentGradientAngle: currentAccentGradientAngle || 135,
+                isManualAccentOverrideActive: isManualAccentOverrideActive || false,
+                isManualAccentGradientActive: isManualAccentGradientActive || false,
                 selectedBorders: selectedBorders || 'rounded',
                 selectedFinish: selectedFinish || 'flat',
                 selectedSaturation: selectedSaturation !== undefined ? parseInt(selectedSaturation) : 100,
