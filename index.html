@@ -7896,8 +7896,21 @@ WITH CHECK (true);</code>
             const gradientColor1 = document.getElementById('custom-theme-grad-start')?.value || '#00f0ff';
             const gradientColor2 = document.getElementById('custom-theme-grad-end')?.value || '#0000ff';
 
-            // Generate an ID for the custom theme
-            const customThemeKey = 'custom_theme_' + themeName.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now();
+            // Check if a custom theme with the same name already exists to update it instead of creating duplicates
+            let customThemeKey = null;
+            const cleanThemeName = themeName.trim().toLowerCase();
+            for (const key of Object.keys(availableThemes)) {
+                if (key.startsWith('custom_theme_')) {
+                    const existingClean = availableThemes[key].name.replace(/^🎨\s*/, '').trim().toLowerCase();
+                    if (existingClean === cleanThemeName) {
+                        customThemeKey = key;
+                        break;
+                    }
+                }
+            }
+            if (!customThemeKey) {
+                customThemeKey = 'custom_theme_' + themeName.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now();
+            }
 
             const customTheme = {
                 name: "🎨 " + themeName,
@@ -8102,12 +8115,105 @@ WITH CHECK (true);</code>
             }
         }
 
+        function ensureHexColor(colorStr) {
+            if (!colorStr) return '#00f0ff';
+            colorStr = colorStr.trim();
+            if (colorStr.startsWith('#')) {
+                if (colorStr.length === 9) {
+                    return colorStr.substring(0, 7);
+                }
+                if (colorStr.length === 7 || colorStr.length === 4) {
+                    return colorStr;
+                }
+            }
+            if (colorStr.startsWith('rgba') || colorStr.startsWith('rgb')) {
+                const match = colorStr.match(/\d+/g);
+                if (match && match.length >= 3) {
+                    const r = parseInt(match[0]).toString(16).padStart(2, '0');
+                    const g = parseInt(match[1]).toString(16).padStart(2, '0');
+                    const b = parseInt(match[2]).toString(16).padStart(2, '0');
+                    return `#${r}${g}${b}`;
+                }
+            }
+            return '#00f0ff';
+        }
+
         function applyThemePreset(themeId, userClicked = false) {
             if (userClicked) triggerPulse();
             if (!availableThemes[themeId]) themeId = 'cyan_blue_neon';
             
             selectedThemeId = themeId;
             const theme = availableThemes[themeId];
+
+            // Pre-fill the Custom Theme creator fields when a theme is selected
+            const nameInput = document.getElementById('custom-theme-name');
+            if (nameInput) {
+                if (themeId.startsWith('custom_theme_')) {
+                    nameInput.value = theme.name.replace(/^🎨\s*/, '');
+                } else {
+                    nameInput.value = '';
+                }
+            }
+
+            const primaryInput = document.getElementById('custom-theme-primary');
+            if (primaryInput) primaryInput.value = ensureHexColor(theme.primary);
+
+            const neonToggle = document.getElementById('custom-theme-neon-toggle');
+            if (neonToggle) {
+                if (theme.neon) {
+                    if (!neonToggle.classList.contains('on')) neonToggle.classList.add('on');
+                } else {
+                    if (neonToggle.classList.contains('on')) neonToggle.classList.remove('on');
+                }
+            }
+
+            const glowInput = document.getElementById('custom-theme-glow-color');
+            if (glowInput) {
+                let glowVal = theme.neonGlowColor || theme.primary;
+                glowInput.value = ensureHexColor(glowVal);
+            }
+
+            const card1Input = document.getElementById('custom-theme-card1');
+            if (card1Input) card1Input.value = ensureHexColor(theme.cardBg1);
+
+            const card2Input = document.getElementById('custom-theme-card2');
+            if (card2Input) card2Input.value = ensureHexColor(theme.cardBg2);
+
+            let angle = 90;
+            if (theme.btnGradient) {
+                const angleMatch = theme.btnGradient.match(/(\d+)deg/);
+                if (angleMatch) angle = parseInt(angleMatch[1]);
+            }
+            const angleSlider = document.getElementById('custom-theme-angle');
+            if (angleSlider) angleSlider.value = angle;
+            const angleVal = document.getElementById('custom-theme-angle-val');
+            if (angleVal) angleVal.innerText = angle + '°';
+
+            let gradStart = theme.primary;
+            let gradEnd = theme.primary;
+            if (theme.btnGradient) {
+                const hexMatches = theme.btnGradient.match(/#[0-9a-fA-F]{6,8}/g);
+                if (hexMatches && hexMatches.length >= 2) {
+                    gradStart = hexMatches[0];
+                    gradEnd = hexMatches[1];
+                } else if (hexMatches && hexMatches.length === 1) {
+                    gradStart = hexMatches[0];
+                    gradEnd = hexMatches[0];
+                } else if (theme.btnGradient.includes('hsl(183')) {
+                    gradStart = '#00f0ff';
+                    gradEnd = '#0000ff';
+                }
+            }
+            const gradStartInput = document.getElementById('custom-theme-grad-start');
+            if (gradStartInput) gradStartInput.value = ensureHexColor(gradStart);
+            const gradEndInput = document.getElementById('custom-theme-grad-end');
+            if (gradEndInput) gradEndInput.value = ensureHexColor(gradEnd);
+
+            try {
+                updateCustomThemePreview();
+            } catch (e) {
+                console.error("Erro ao atualizar preview do tema customizado:", e);
+            }
             
             // Get adjusted colors based on selectedSaturation
             const satVal = selectedSaturation || 100;
