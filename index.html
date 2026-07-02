@@ -5377,11 +5377,37 @@ CREATE TRIGGER on_synapse_user_signed_up
                     <div class="supabase-card" style="margin-bottom: 20px; text-align: left; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 14px;">
                         
                         <!-- Picker de Cor Personalizada -->
-                        <div class="form-group">
-                            <label style="font-size: 0.82rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">🎨 Cor de Destaque Personalizada</label>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <input type="color" id="manual-accent-picker" style="width: 52px; height: 40px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="setAccent(this.value, null)">
-                                <span style="font-size: 0.75rem; color: var(--text-muted);">Defina manualmente a cor principal para botões, bordas e destaques.</span>
+                        <div class="form-group" style="display: flex; flex-direction: column; gap: 10px;">
+                            <label style="font-size: 0.82rem; font-weight: bold; display: block; color: #fff; margin-bottom: 2px;">🎨 Cor de Destaque Personalizada</label>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 8px; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); padding: 12px; border-radius: 12px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                                    <span style="font-size: 0.72rem; color: var(--text-muted);">Configure uma cor sólida ou um degradê neon para botões e realces:</span>
+                                    <div style="display: flex; align-items: center; gap: 6px; cursor: pointer;" onclick="toggleManualAccentGradient()">
+                                        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: bold;">Ativar Degradê</span>
+                                        <div class="toggle-switch" id="manual-accent-gradient-switch" style="cursor: pointer;"></div>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <input type="color" id="manual-accent-picker" style="width: 52px; height: 40px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="onManualAccentInput()">
+                                        <span style="font-size: 0.72rem; color: var(--text-main); font-weight: 600;" id="manual-accent-start-label">Cor Principal</span>
+                                    </div>
+                                    
+                                    <div id="manual-accent-end-container" style="display: none; align-items: center; gap: 8px;">
+                                        <input type="color" id="manual-accent-gradient-end" value="#0000ff" style="width: 52px; height: 40px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="onManualAccentInput()">
+                                        <span style="font-size: 0.72rem; color: var(--text-main); font-weight: 600;">Cor Final</span>
+                                    </div>
+                                </div>
+
+                                <div id="manual-accent-angle-container" style="display: none; flex-direction: column; gap: 4px; margin-top: 4px;">
+                                    <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: bold;">Ângulo do Degradê</span>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <input type="range" id="manual-accent-gradient-angle" min="0" max="360" value="135" style="flex: 1; accent-color: var(--primary, #ffffff); cursor: pointer;" oninput="document.getElementById('manual-accent-angle-val').innerText = this.value + '°'; onManualAccentInput();">
+                                        <span id="manual-accent-angle-val" style="font-size: 0.75rem; color: #fff; font-family: monospace; font-weight: bold; min-width: 35px; text-align: right;">135°</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -8024,6 +8050,10 @@ WITH CHECK (true);</code>
         }
 
         let currentAccentColor = '#ffffff';
+        let currentAccentGradientStart = '#0000ff';
+        let currentAccentGradientEnd = '#0000ff';
+        let currentAccentGradientAngle = 135;
+        let currentAccentGradientOn = false;
 
         // Funções utilitárias de cores para alterar a intensidade/saturação matematicamente (sem filtros CSS bugados na body)
         function hexToHsl(hex) {
@@ -8365,6 +8395,7 @@ WITH CHECK (true);</code>
         function setAccent(color, element) {
             // Allows fine tuning override color of active theme
             currentAccentColor = color;
+            currentAccentGradientOn = false;
             const satVal = selectedSaturation || 100;
             const adjustedColor = adjustColorIntensity(color, satVal);
             
@@ -8378,6 +8409,9 @@ WITH CHECK (true);</code>
                 document.documentElement.style.setProperty('--primary-bg', `rgba(${r}, ${g}, ${b}, 0.15)`);
                 document.documentElement.style.setProperty('--primary-rgb', `${r}, ${g}, ${b}`);
             }
+
+            // Define automatic beautiful gradient for buttons
+            document.documentElement.style.setProperty('--btn-gradient', `linear-gradient(135deg, ${adjustedColor} 0%, rgba(255, 255, 255, 0.15) 100%)`);
             
             const picker = document.getElementById('manual-accent-picker');
             if (picker) picker.value = color;
@@ -8389,6 +8423,76 @@ WITH CHECK (true);</code>
             }
             if (!isConfigLoading) {
                 checkAppearanceChanges();
+            }
+        }
+
+        function setAccentGradient(colorStart, colorEnd, angle) {
+            currentAccentColor = colorStart;
+            currentAccentGradientStart = colorStart;
+            currentAccentGradientEnd = colorEnd;
+            currentAccentGradientAngle = parseInt(angle);
+            currentAccentGradientOn = true;
+
+            const satVal = selectedSaturation || 100;
+            const adjustedStart = adjustColorIntensity(colorStart, satVal);
+            const adjustedEnd = adjustColorIntensity(colorEnd, satVal);
+
+            document.documentElement.style.setProperty('--primary', adjustedStart);
+            document.documentElement.style.setProperty('--primary-contrast', getContrastColor(adjustedStart));
+            
+            const hex = adjustedStart.replace('#', '');
+            if (hex.length === 6) {
+                const r = parseInt(hex.substring(0,2), 16);
+                const g = parseInt(hex.substring(2,4), 16);
+                const b = parseInt(hex.substring(4,6), 16);
+                document.documentElement.style.setProperty('--primary-bg', `rgba(${r}, ${g}, ${b}, 0.15)`);
+                document.documentElement.style.setProperty('--primary-rgb', `${r}, ${g}, ${b}`);
+            }
+
+            const customGrad = `linear-gradient(${angle}deg, ${adjustedStart} 0%, ${adjustedEnd} 100%)`;
+            document.documentElement.style.setProperty('--btn-gradient', customGrad);
+
+            const pickerStart = document.getElementById('manual-accent-picker');
+            if (pickerStart) pickerStart.value = colorStart;
+            const pickerEnd = document.getElementById('manual-accent-gradient-end');
+            if (pickerEnd) pickerEnd.value = colorEnd;
+            const sliderAngle = document.getElementById('manual-accent-gradient-angle');
+            if (sliderAngle) sliderAngle.value = angle;
+
+            if (!isConfigLoading) {
+                checkAppearanceChanges();
+            }
+        }
+
+        function toggleManualAccentGradient() {
+            const sw = document.getElementById('manual-accent-gradient-switch');
+            if (!sw) return;
+            triggerPulse();
+            const isOn = sw.classList.contains('on');
+            if (isOn) {
+                sw.classList.remove('on');
+                document.getElementById('manual-accent-end-container').style.display = 'none';
+                document.getElementById('manual-accent-angle-container').style.display = 'none';
+                document.getElementById('manual-accent-start-label').innerText = 'Cor Principal';
+            } else {
+                sw.classList.add('on');
+                document.getElementById('manual-accent-end-container').style.display = 'flex';
+                document.getElementById('manual-accent-angle-container').style.display = 'flex';
+                document.getElementById('manual-accent-start-label').innerText = 'Cor Inicial';
+            }
+            onManualAccentInput();
+        }
+
+        function onManualAccentInput() {
+            const colorStart = document.getElementById('manual-accent-picker').value;
+            const hasGrad = document.getElementById('manual-accent-gradient-switch')?.classList.contains('on') || false;
+            
+            if (hasGrad) {
+                const colorEnd = document.getElementById('manual-accent-gradient-end').value;
+                const angle = document.getElementById('manual-accent-gradient-angle').value;
+                setAccentGradient(colorStart, colorEnd, angle);
+            } else {
+                setAccent(colorStart);
             }
         }
 
@@ -8971,7 +9075,11 @@ WITH CHECK (true);</code>
                     accessLargeIcons,
                     accessReduceAnimations,
                     accessReadingMode,
-                    currentAccentColor
+                    currentAccentColor,
+                    accentGradientOn: currentAccentGradientOn,
+                    accentGradientStart: currentAccentGradientStart,
+                    accentGradientEnd: currentAccentGradientEnd,
+                    accentGradientAngle: currentAccentGradientAngle
                 }
             };
             
@@ -9005,7 +9113,29 @@ WITH CHECK (true);</code>
                 selectedThemeId = settings.selectedThemeId;
                 applyThemePreset(selectedThemeId);
             }
-            if (settings.currentAccentColor) {
+            if (settings.accentGradientOn) {
+                currentAccentGradientOn = true;
+                currentAccentGradientStart = settings.accentGradientStart || settings.currentAccentColor;
+                currentAccentGradientEnd = settings.accentGradientEnd || '#0000ff';
+                currentAccentGradientAngle = settings.accentGradientAngle || 135;
+                
+                const gSw = document.getElementById('manual-accent-gradient-switch');
+                if (gSw) {
+                    gSw.classList.add('on');
+                    document.getElementById('manual-accent-end-container').style.display = 'flex';
+                    document.getElementById('manual-accent-angle-container').style.display = 'flex';
+                    document.getElementById('manual-accent-start-label').innerText = 'Cor Inicial';
+                }
+                setAccentGradient(currentAccentGradientStart, currentAccentGradientEnd, currentAccentGradientAngle);
+            } else if (settings.currentAccentColor) {
+                currentAccentGradientOn = false;
+                const gSw = document.getElementById('manual-accent-gradient-switch');
+                if (gSw) {
+                    gSw.classList.remove('on');
+                    document.getElementById('manual-accent-end-container').style.display = 'none';
+                    document.getElementById('manual-accent-angle-container').style.display = 'none';
+                    document.getElementById('manual-accent-start-label').innerText = 'Cor Principal';
+                }
                 currentAccentColor = settings.currentAccentColor;
                 setAccent(currentAccentColor);
             }
@@ -9725,7 +9855,29 @@ WITH CHECK (true);</code>
                     }
 
                     // 2. Aplica a cor de destaque personalizada, sobrescrevendo a padrão do tema
-                    if (data.accentColor) {
+                    if (data.accentGradientOn) {
+                        currentAccentGradientOn = true;
+                        currentAccentGradientStart = data.accentGradientStart || data.accentColor;
+                        currentAccentGradientEnd = data.accentGradientEnd || '#0000ff';
+                        currentAccentGradientAngle = data.accentGradientAngle || 135;
+                        
+                        const gSw = document.getElementById('manual-accent-gradient-switch');
+                        if (gSw) {
+                            gSw.classList.add('on');
+                            document.getElementById('manual-accent-end-container').style.display = 'flex';
+                            document.getElementById('manual-accent-angle-container').style.display = 'flex';
+                            document.getElementById('manual-accent-start-label').innerText = 'Cor Inicial';
+                        }
+                        setAccentGradient(currentAccentGradientStart, currentAccentGradientEnd, currentAccentGradientAngle);
+                    } else if (data.accentColor) {
+                        currentAccentGradientOn = false;
+                        const gSw = document.getElementById('manual-accent-gradient-switch');
+                        if (gSw) {
+                            gSw.classList.remove('on');
+                            document.getElementById('manual-accent-end-container').style.display = 'none';
+                            document.getElementById('manual-accent-angle-container').style.display = 'none';
+                            document.getElementById('manual-accent-start-label').innerText = 'Cor Principal';
+                        }
                         let matchedEl = null;
                         const circles = document.querySelectorAll('.color-circle');
                         circles.forEach(c => {
@@ -10605,6 +10757,10 @@ WITH CHECK (true);</code>
                 systemPrompt: document.getElementById('system-prompt').value, // Preserve formatting
                 isAmoled: document.getElementById('amoled-switch').classList.contains('on'),
                 accentColor: currentAccentColor,
+                accentGradientOn: currentAccentGradientOn,
+                accentGradientStart: currentAccentGradientStart,
+                accentGradientEnd: currentAccentGradientEnd,
+                accentGradientAngle: currentAccentGradientAngle,
                 
                 // Supabase Connection Settings
                 supabaseUrl: document.getElementById('supabase-url').value.trim(),
@@ -10701,6 +10857,10 @@ WITH CHECK (true);</code>
             savedAppearance = {
                 selectedThemeId: selectedThemeId || 'cyan_blue_neon',
                 currentAccentColor: currentAccentColor || '#38bdf8',
+                accentGradientOn: currentAccentGradientOn || false,
+                accentGradientStart: currentAccentGradientStart || '#0000ff',
+                accentGradientEnd: currentAccentGradientEnd || '#0000ff',
+                accentGradientAngle: currentAccentGradientAngle || 135,
                 selectedBorders: selectedBorders || 'rounded',
                 selectedFinish: selectedFinish || 'flat',
                 selectedSaturation: selectedSaturation !== undefined ? parseInt(selectedSaturation) : 100,
@@ -10739,6 +10899,10 @@ WITH CHECK (true);</code>
             const currentSettings = {
                 selectedThemeId: selectedThemeId || 'cyan_blue_neon',
                 currentAccentColor: currentAccentColor || '#38bdf8',
+                accentGradientOn: currentAccentGradientOn || false,
+                accentGradientStart: currentAccentGradientStart || '#0000ff',
+                accentGradientEnd: currentAccentGradientEnd || '#0000ff',
+                accentGradientAngle: currentAccentGradientAngle || 135,
                 selectedBorders: selectedBorders || 'rounded',
                 selectedFinish: selectedFinish || 'flat',
                 selectedSaturation: selectedSaturation !== undefined ? parseInt(selectedSaturation) : 100,
