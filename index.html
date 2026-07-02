@@ -570,11 +570,12 @@
         }
 
         .chat-message.user {
-            background-color: var(--primary);
+            background: var(--btn-gradient, var(--primary));
             color: var(--primary-contrast, #ffffff) !important; /* Contraste inteligente */
             font-weight: 500;
             align-self: flex-end;
             border-radius: 18px 18px 0px 18px !important;
+            box-shadow: var(--btn-shadow, none);
         }
 
         .chat-message.bot {
@@ -672,7 +673,7 @@
         }
 
         .chat-btn-send {
-            background-color: var(--primary);
+            background: var(--btn-gradient, var(--primary));
             color: var(--primary-contrast, #ffffff) !important;
             border: none;
             border-radius: 50%;
@@ -683,7 +684,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.1s, background-color 0.3s;
+            box-shadow: var(--btn-shadow, none);
+            transition: transform 0.1s, background 0.3s, box-shadow 0.3s;
         }
 
         .chat-btn-send:active {
@@ -3709,7 +3711,7 @@
                 
                 <textarea id="transl-input" class="form-control" rows="4" placeholder="Cole aqui o texto original que deseja traduzir..." data-i18n="transl_placeholder"></textarea>
                 
-                <button class="btn-universal" style="background-color: var(--primary); color: var(--bg-color); border: none; border-radius: 24px; padding: 14px; font-size: 0.95rem; font-weight: 600; cursor: pointer; text-align: center; display: block; width: 100%; transition: opacity 0.2s;" onclick="doTranslation()" data-i18n="transl_btn_exec">Realizar Tradução ✨</button>
+                <button class="btn-universal" style="border: none; padding: 14px; font-size: 0.95rem; display: block; width: 100%;" onclick="doTranslation()" data-i18n="transl_btn_exec">Realizar Tradução ✨</button>
                 
                 <div style="position: relative;">
                     <textarea id="transl-output" class="form-control" rows="5" placeholder="A tradução aparecerá aqui..." readonly style="background-color: var(--card-bg-primary); padding-bottom: 50px;" data-i18n="transl_output_placeholder"></textarea>
@@ -3809,7 +3811,7 @@
   
                 <div style="padding: 12px; border-top: 1px solid var(--border-color); display: flex; gap: 10px; background: rgba(var(--bg-rgb, 0,0,0), 0.3); align-items: center;">
                     <input id="int-chat-input" type="text" class="form-control" style="flex: 1; min-width: 0; padding: 12px 18px; border-radius: 24px; background-color: var(--card-bg-secondary); border: 1px solid var(--border-color); height: 48px; color: var(--text-main);" placeholder="Digite sua resposta completa..." onkeypress="handleIntKeyPress(event)">
-                    <button class="chat-btn-send" style="background-color: var(--primary); color: var(--primary-contrast, #000); border: none; border-radius: 24px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;" onclick="submitWebAnswer()">
+                    <button class="chat-btn-send" style="border: none; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;" onclick="submitWebAnswer()">
                         <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="m21.412 11.537-18-10A1 1 0 0 0 2.2 2.8l2 8.2 11 1 1.01-.01-12.01 1 .01 8.2a1 1 0 0 0 1.2.9l18-10a1 1 0 0 0-.008-1.753z"></path></svg>
                     </button>
                 </div>
@@ -8464,7 +8466,7 @@ WITH CHECK (true);</code>
                 const pill = document.getElementById('layout-pill-' + p);
                 if (pill) {
                     if (p === selectedSettingsLayoutStyle) {
-                        pill.style.background = 'var(--primary)';
+                        pill.style.background = 'var(--btn-gradient, var(--primary))';
                         pill.style.color = 'var(--primary-contrast, #000)';
                     } else {
                         pill.style.background = 'transparent';
@@ -14654,7 +14656,7 @@ WITH CHECK (true);</code>
             bubble.style.marginBottom = '12px';
             bubble.innerHTML = `
                 <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: bold; margin-bottom: 2px; text-align: right;">👤 Você</div>
-                <div style="background: var(--primary); color: #000; padding: 10px 14px; border-radius: 12px 4px 12px 12px; font-size: 0.88rem; line-height: 1.4; text-align: left;">${text}</div>
+                <div style="background: var(--btn-gradient, var(--primary)); color: var(--primary-contrast, #ffffff); box-shadow: var(--btn-shadow, none); padding: 10px 14px; border-radius: 12px 4px 12px 12px; font-size: 0.88rem; line-height: 1.4; text-align: left;">${text}</div>
             `;
             chatScroll.appendChild(bubble);
             chatScroll.scrollTop = chatScroll.scrollHeight;
