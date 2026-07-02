@@ -5273,6 +5273,99 @@ CREATE TRIGGER on_synapse_user_signed_up
                         <!-- Preenchido dinamicamente via Javascript -->
                     </div>
 
+                    <!-- Criador de Tema Personalizado -->
+                    <div class="supabase-card" style="margin-top: 10px; margin-bottom: 20px; text-align: left; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 14px;">
+                        <div style="display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px; margin-bottom: 6px;">
+                            <span style="font-size: 1.3rem;">🎨</span>
+                            <div>
+                                <h4 style="font-size: 0.95rem; font-weight: 800; color: #fff; margin: 0;">Criar Tema Personalizado</h4>
+                                <p style="font-size: 0.7rem; color: var(--text-muted); margin: 2px 0 0 0;">Crie seu próprio tema AMOLED com botões degradê e brilhos neon.</p>
+                            </div>
+                        </div>
+
+                        <!-- Nome do tema -->
+                        <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                            <label style="font-size: 0.8rem; font-weight: 700; color: #fff;">Nome do Tema</label>
+                            <input type="text" id="custom-theme-name" placeholder="Ex: Galáxia Neon" style="background: rgba(255,255,255,0.04); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; height: 40px; padding: 0 12px; font-size: 0.82rem; outline: none; transition: border 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border-color)'">
+                        </div>
+
+                        <!-- Cor de Destaque -->
+                        <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                            <label style="font-size: 0.8rem; font-weight: 700; color: #fff;">Cor de Destaque Primária (Neon/Acentos)</label>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="color" id="custom-theme-primary" value="#00f0ff" style="width: 52px; height: 38px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="updateCustomThemePreview()">
+                                <span style="font-size: 0.72rem; color: var(--text-muted);">Defina a cor dos acentos do sistema e itens ativos.</span>
+                            </div>
+                        </div>
+
+                        <!-- Brilho Neon Toggle & Picker -->
+                        <div class="form-group" style="display: flex; flex-direction: column; gap: 8px; background: rgba(255,255,255,0.01); border: 1px dashed rgba(255,255,255,0.08); padding: 12px; border-radius: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="display: flex; flex-direction: column; gap: 2px; text-align: left;">
+                                    <span style="font-size: 0.8rem; font-weight: 700; color: #fff;">Efeito de Brilho Neon (Glow)</span>
+                                    <span style="font-size: 0.68rem; color: var(--text-muted);">Ativa sombras e bordas com efeito de brilho fluorescente.</span>
+                                </div>
+                                <div class="toggle-switch on" id="custom-theme-neon-toggle" onclick="this.classList.toggle('on'); updateCustomThemePreview();" style="cursor: pointer;"></div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
+                                <input type="color" id="custom-theme-glow-color" value="#00f0ff" style="width: 52px; height: 38px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="updateCustomThemePreview()">
+                                <span style="font-size: 0.72rem; color: var(--text-muted);">Cor do brilho neon (recomenda-se um tom luminoso).</span>
+                            </div>
+                        </div>
+
+                        <!-- Cores dos Cards (AMOLED Black) -->
+                        <div class="form-group" style="display: flex; flex-direction: column; gap: 8px; background: rgba(255,255,255,0.01); border: 1px dashed rgba(255,255,255,0.08); padding: 12px; border-radius: 12px;">
+                            <label style="font-size: 0.8rem; font-weight: 700; color: #fff;">Estilo dos Cards (Tons Escuros)</label>
+                            <span style="font-size: 0.68rem; color: var(--text-muted); display: block; margin-bottom: 4px;">O fundo principal continua preto absoluto e os cards ganham esse tom sutil.</span>
+                            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <input type="color" id="custom-theme-card1" value="#01050c" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;">
+                                    <span style="font-size: 0.7rem; color: var(--text-main);">Card Primário</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <input type="color" id="custom-theme-card2" value="#030c1a" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;">
+                                    <span style="font-size: 0.7rem; color: var(--text-main);">Card Secundário</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Degradê do Botão -->
+                        <div class="form-group" style="display: flex; flex-direction: column; gap: 8px; background: rgba(255,255,255,0.01); border: 1px dashed rgba(255,255,255,0.08); padding: 12px; border-radius: 12px;">
+                            <label style="font-size: 0.8rem; font-weight: 700; color: #fff; margin-bottom: 2px;">Configurar Degradê dos Botões (Efeito Neon)</label>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <span style="font-size: 0.72rem; color: var(--text-main);">Ângulo do Degradê</span>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <input type="range" id="custom-theme-angle" min="0" max="360" value="90" style="flex: 1; accent-color: var(--primary, #ffffff); cursor: pointer;" oninput="document.getElementById('custom-theme-angle-val').innerText = this.value + '°'; updateCustomThemePreview();">
+                                    <span id="custom-theme-angle-val" style="font-size: 0.75rem; color: #fff; font-family: monospace; font-weight: bold; min-width: 35px; text-align: right;">90°</span>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 12px; margin-top: 6px; flex-wrap: wrap;">
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <input type="color" id="custom-theme-grad-start" value="#00f0ff" style="width: 44px; height: 34px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="updateCustomThemePreview()">
+                                    <span style="font-size: 0.7rem; color: var(--text-muted);">Início</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <input type="color" id="custom-theme-grad-end" value="#0000ff" style="width: 44px; height: 34px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="updateCustomThemePreview()">
+                                    <span style="font-size: 0.7rem; color: var(--text-muted);">Fim</span>
+                                </div>
+                            </div>
+
+                            <!-- Live button preview -->
+                            <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
+                                <span style="font-size: 0.68rem; color: var(--text-muted);">Prévia do Botão:</span>
+                                <button type="button" id="custom-theme-btn-preview" style="width: 100%; border: none; padding: 12px; font-size: 0.82rem; font-weight: 800; color: #fff; border-radius: 12px; cursor: default; pointer-events: none; text-transform: uppercase; font-family: 'Space Grotesk', system-ui, sans-serif;">Botão de Exemplo ✨</button>
+                            </div>
+                        </div>
+
+                        <!-- Buttons actions -->
+                        <div style="display: flex; gap: 8px; margin-top: 4px;">
+                            <button type="button" class="btn-universal" onclick="saveCustomTheme()" style="flex: 1; background: var(--primary, #00f0ff); color: #000; font-weight: bold; border: none; border-radius: 10px; padding: 12px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">Salvar e Aplicar Tema 🚀</button>
+                            <button type="button" onclick="clearCustomThemes()" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; border-radius: 10px; padding: 0 14px; font-size: 0.8rem; font-weight: bold; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'" title="Excluir Todos os Temas Criados">Limpar 🗑️</button>
+                        </div>
+                    </div>
+
                     <div class="supabase-card" style="margin-bottom: 20px; text-align: left; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 14px;">
                         
                         <!-- Picker de Cor Personalizada -->
@@ -7728,8 +7821,8 @@ WITH CHECK (true);</code>
 
         const availableThemes = {
             cyan_blue_neon: {
-                name: "🌊 Aurora Holográfica (Neon)",
-                desc: "Tema premium de alta intensidade. Fundo AMOLED preto absoluto com botões brilhantes em degradê holográfico azul-ciano ultra-neon.",
+                name: "🌊 Aurora Holográfica (Padrão)",
+                desc: "Tema padrão do sistema de alta intensidade. Fundo AMOLED preto absoluto com botões brilhantes em degradê holográfico azul-ciano ultra-neon.",
                 bg: "#000000",
                 gradientBg: "none",
                 cardBg1: "#01050c",
@@ -7747,134 +7840,129 @@ WITH CHECK (true);</code>
                 neon: true,
                 neonGlowColor: "rgba(0, 240, 255, 0.65)",
                 btnGradient: "linear-gradient(90deg, hsl(183, 100%, 50%), hsl(240, 100%, 50%))"
-            },
-            violeta_neon: {
-                name: "🔮 Violeta Neon (Premium)",
-                desc: "Tema premium de alta intensidade. Fundo AMOLED preto absoluto com botões e detalhes em degradê violeta-neon ultra brilhante.",
-                bg: "#000000",
-                gradientBg: "radial-gradient(circle at top, #140529 0%, #000000 75%)",
-                cardBg1: "#050308",
-                cardBg2: "#0c0814",
-                gradientCard1: "linear-gradient(135deg, rgba(12, 6, 24, 0.98) 0%, rgba(2, 1, 4, 0.99) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(22, 11, 42, 0.98) 0%, rgba(5, 3, 10, 0.99) 100%)",
-                border: "rgba(168, 85, 247, 0.45)",
-                textMain: "#ffffff",
-                textMuted: "#d8b4fe",
-                primary: "#a855f7",
-                success: "#22c55e",
-                error: "#ef4444",
-                font: 'system-ui, -apple-system, sans-serif',
-                amoled: true,
-                neon: true,
-                neonGlowColor: "rgba(168, 85, 247, 0.65)",
-                btnGradient: "linear-gradient(135deg, #a855f7 0%, #d946ef 100%)"
-            },
-            gilded_obsidian_neon: {
-                name: "👑 Ametista Imperial & Ouro (Prorrogação)",
-                desc: "Tema de luxo inspirado na tela de login. Preto AMOLED absoluto com títulos em dourado imperial e botões em degradê violeta-neon.",
-                bg: "#000000",
-                gradientBg: "radial-gradient(circle at top, #090412 0%, #000000 70%)",
-                cardBg1: "#06040a",
-                cardBg2: "#0d0a14",
-                gradientCard1: "linear-gradient(135deg, rgba(13, 11, 21, 0.98) 0%, rgba(3, 2, 5, 0.99) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(20, 16, 30, 0.98) 0%, rgba(6, 4, 10, 0.99) 100%)",
-                border: "rgba(139, 92, 246, 0.25)",
-                textMain: "#ffffff",
-                textMuted: "#fbbf24",
-                primary: "#fbbf24",
-                success: "#22c55e",
-                error: "#ef4444",
-                font: 'system-ui, -apple-system, sans-serif',
-                amoled: true,
-                neon: true,
-                neonGlowColor: "rgba(168, 85, 247, 0.55)",
-                btnGradient: "linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%)"
-            },
-            azul_neon: {
-                name: "⚡ Azul Elétrico (Neon)",
-                desc: "Preto absoluto com brilho azul cobalto e ciano de altíssima fidelidade. Estética futurista premium e fria.",
-                bg: "#000000",
-                gradientBg: "radial-gradient(circle at top, #031430 0%, #000000 75%)",
-                cardBg1: "#02050e",
-                cardBg2: "#050c1f",
-                gradientCard1: "linear-gradient(135deg, rgba(4, 11, 28, 0.98) 0%, rgba(1, 2, 6, 0.99) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(8, 20, 48, 0.98) 0%, rgba(2, 4, 12, 0.99) 100%)",
-                border: "rgba(56, 189, 248, 0.45)",
-                textMain: "#ffffff",
-                textMuted: "#bae6fd",
-                primary: "#0ea5e9",
-                success: "#22c55e",
-                error: "#ef4444",
-                font: 'system-ui, -apple-system, sans-serif',
-                amoled: true,
-                neon: true,
-                neonGlowColor: "rgba(14, 165, 233, 0.65)",
-                btnGradient: "linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)"
-            },
-            verde_neon: {
-                name: "🟢 Esmeralda Cyber (Neon)",
-                desc: "Verde esmeralda radioativo e puríssimo sobre preto AMOLED profundo. Perfeito para visual hacker futurista.",
-                bg: "#000000",
-                gradientBg: "radial-gradient(circle at top, #021a0a 0%, #000000 75%)",
-                cardBg1: "#010502",
-                cardBg2: "#030c04",
-                gradientCard1: "linear-gradient(135deg, rgba(2, 10, 4, 0.98) 0%, rgba(0, 2, 1, 0.99) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(5, 22, 10, 0.98) 0%, rgba(1, 4, 2, 0.99) 100%)",
-                border: "rgba(34, 197, 94, 0.45)",
-                textMain: "#ffffff",
-                textMuted: "#bbf7d0",
-                primary: "#22c55e",
-                success: "#22c55e",
-                error: "#ef4444",
-                font: 'system-ui, -apple-system, sans-serif',
-                amoled: true,
-                neon: true,
-                neonGlowColor: "rgba(34, 197, 94, 0.65)",
-                btnGradient: "linear-gradient(135deg, #22c55e 0%, #10b981 100%)"
-            },
-            pink_neon: {
-                name: "💖 Sakura Neon (Glow)",
-                desc: "Rosa magenta de alta voltagem combinado com preto absoluto. Visual de altíssima personalidade e sofisticação.",
-                bg: "#000000",
-                gradientBg: "radial-gradient(circle at top, #240316 0%, #000000 75%)",
-                cardBg1: "#080105",
-                cardBg2: "#14030d",
-                gradientCard1: "linear-gradient(135deg, rgba(16, 2, 10, 0.98) 0%, rgba(2, 0, 1, 0.99) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(32, 4, 20, 0.98) 0%, rgba(5, 1, 3, 0.99) 100%)",
-                border: "rgba(236, 72, 153, 0.45)",
-                textMain: "#ffffff",
-                textMuted: "#fbcfe8",
-                primary: "#ec4899",
-                success: "#22c55e",
-                error: "#ef4444",
-                font: 'system-ui, -apple-system, sans-serif',
-                amoled: true,
-                neon: true,
-                neonGlowColor: "rgba(236, 72, 153, 0.65)",
-                btnGradient: "linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)"
-            },
-            laranja_neon: {
-                name: "🔥 Vulcão Laranja (Neon)",
-                desc: "Laranja magma incandescente e brilhante sobre o escuro infinito. Visual enérgico e poderoso.",
-                bg: "#000000",
-                gradientBg: "radial-gradient(circle at top, #1e0902 0%, #000000 75%)",
-                cardBg1: "#050100",
-                cardBg2: "#120400",
-                gradientCard1: "linear-gradient(135deg, rgba(12, 3, 0, 0.98) 0%, rgba(1, 0, 0, 0.99) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(26, 6, 0, 0.98) 0%, rgba(4, 1, 0, 0.99) 100%)",
-                border: "rgba(249, 115, 22, 0.45)",
-                textMain: "#ffffff",
-                textMuted: "#fed7aa",
-                primary: "#f97316",
-                success: "#22c55e",
-                error: "#ef4444",
-                font: 'system-ui, -apple-system, sans-serif',
-                amoled: true,
-                neon: true,
-                neonGlowColor: "rgba(249, 115, 22, 0.65)",
-                btnGradient: "linear-gradient(135deg, #f97316 0%, #ea580c 100%)"
             }
         };
+
+        // Carrega temas customizados salvos pelo usuário do localStorage
+        try {
+            const savedCustomThemes = localStorage.getItem('ai_console_custom_themes');
+            if (savedCustomThemes) {
+                const customThemes = JSON.parse(savedCustomThemes);
+                Object.keys(customThemes).forEach(key => {
+                    availableThemes[key] = customThemes[key];
+                });
+            }
+        } catch (e) {
+            console.error("Erro ao carregar temas customizados:", e);
+        }
+
+        function updateCustomThemePreview() {
+            const btn = document.getElementById('custom-theme-btn-preview');
+            if (!btn) return;
+            const angle = document.getElementById('custom-theme-angle')?.value || 90;
+            const c1 = document.getElementById('custom-theme-grad-start')?.value || '#00f0ff';
+            const c2 = document.getElementById('custom-theme-grad-end')?.value || '#0000ff';
+            const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? true;
+            const glowColor = document.getElementById('custom-theme-glow-color')?.value || '#00f0ff';
+
+            btn.style.background = `linear-gradient(${angle}deg, ${c1}, ${c2})`;
+            if (neonOn) {
+                btn.style.boxShadow = `0 4px 16px ${glowColor}, 0 0 8px ${glowColor}`;
+            } else {
+                btn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.35)';
+            }
+        }
+
+        function saveCustomTheme() {
+            const nameInput = document.getElementById('custom-theme-name');
+            const themeName = nameInput ? nameInput.value.trim() : '';
+            if (!themeName) {
+                showAppToast("Por favor, digite um nome para o seu tema!", "warning");
+                return;
+            }
+
+            const primaryColor = document.getElementById('custom-theme-primary')?.value || '#00f0ff';
+            const borderGlowColor = document.getElementById('custom-theme-glow-color')?.value || '#00f0ff';
+            const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? true;
+            const cardBg1Color = document.getElementById('custom-theme-card1')?.value || '#01050c';
+            const cardBg2Color = document.getElementById('custom-theme-card2')?.value || '#030c1a';
+            const gradientAngle = document.getElementById('custom-theme-angle')?.value || 90;
+            const gradientColor1 = document.getElementById('custom-theme-grad-start')?.value || '#00f0ff';
+            const gradientColor2 = document.getElementById('custom-theme-grad-end')?.value || '#0000ff';
+
+            // Generate an ID for the custom theme
+            const customThemeKey = 'custom_theme_' + themeName.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now();
+
+            const customTheme = {
+                name: "🎨 " + themeName,
+                desc: `Tema personalizado. Cor de destaque: ${primaryColor}.`,
+                bg: "#000000",
+                gradientBg: "none",
+                cardBg1: cardBg1Color,
+                cardBg2: cardBg2Color,
+                gradientCard1: `linear-gradient(135deg, ${cardBg1Color}ee 0%, #000000ff 100%)`,
+                gradientCard2: `linear-gradient(135deg, ${cardBg2Color}ee 0%, #000000ff 100%)`,
+                border: borderGlowColor + "73", // add opacity
+                textMain: "#ffffff",
+                textMuted: primaryColor,
+                primary: primaryColor,
+                success: "#22c55e",
+                error: "#ef4444",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: true,
+                neon: neonOn,
+                neonGlowColor: borderGlowColor + "a6",
+                btnGradient: `linear-gradient(${gradientAngle}deg, ${gradientColor1}, ${gradientColor2})`
+            };
+
+            // Save in memory
+            availableThemes[customThemeKey] = customTheme;
+
+            // Save in localStorage
+            try {
+                let savedThemes = {};
+                const savedStr = localStorage.getItem('ai_console_custom_themes');
+                if (savedStr) {
+                    savedThemes = JSON.parse(savedStr);
+                }
+                savedThemes[customThemeKey] = customTheme;
+                localStorage.setItem('ai_console_custom_themes', JSON.stringify(savedThemes));
+            } catch (e) {
+                console.error("Erro ao salvar tema customizado no localStorage:", e);
+            }
+
+            // Render theme list and apply
+            renderThemesGrid();
+            applyThemePreset(customThemeKey, true);
+            
+            // Save general config so active theme is persisted
+            saveConfiguration();
+
+            if (nameInput) nameInput.value = '';
+            showAppToast(`Tema "${themeName}" criado e aplicado com sucesso! 🚀`, "success");
+            addLog(`Tema personalizado criado: "${themeName}"`, "success");
+        }
+
+        function clearCustomThemes() {
+            showAppConfirm("Deseja realmente remover todos os seus temas personalizados criados?", () => {
+                // Delete keys starting with custom_theme_ from availableThemes
+                Object.keys(availableThemes).forEach(key => {
+                    if (key.startsWith('custom_theme_')) {
+                        delete availableThemes[key];
+                    }
+                });
+
+                localStorage.removeItem('ai_console_custom_themes');
+                
+                // Switch back to default
+                applyThemePreset('cyan_blue_neon', true);
+                renderThemesGrid();
+                saveConfiguration();
+
+                showAppToast("Temas personalizados removidos! 🗑️", "success");
+                addLog("Todos os temas personalizados foram limpos", "info");
+            });
+        }
 
         function renderThemesGrid() {
             const container = document.getElementById('themes-grid-container');
