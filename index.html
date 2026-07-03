@@ -2191,7 +2191,7 @@
         }
         .form-control:focus, input:focus, textarea:focus, select:focus {
             border-color: var(--primary) !important;
-            box-shadow: 0 0 14px rgba(139, 92, 246, 0.22), 0 0 0 3px rgba(138, 92, 246, 0.18) !important;
+            box-shadow: 0 0 14px rgba(var(--primary-rgb, 139, 92, 246), 0.22), 0 0 0 3px rgba(var(--primary-rgb, 138, 92, 246), 0.18) !important;
             background-color: rgba(255, 255, 255, 0.01) !important;
         }
 
@@ -2278,8 +2278,8 @@
             width: 56px;
             height: 56px;
             border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #38bdf8, #8b5cf6, #06b6d4);
-            box-shadow: 0 0 24px rgba(139, 92, 246, 0.55), 
+            background: radial-gradient(circle at 30% 30%, var(--primary, #38bdf8), var(--primary-bg, rgba(139, 92, 246, 0.2)), #06b6d4);
+            box-shadow: 0 0 24px rgba(var(--primary-rgb, 139, 92, 246), 0.55), 
                         inset -4px -4px 12px rgba(0, 0, 0, 0.4),
                         inset 4px 4px 12px rgba(255, 255, 255, 0.4);
             animation: orbePulse 2s ease-in-out infinite, orbeRotate 6s linear infinite;
@@ -2296,7 +2296,7 @@
             right: -8px;
             bottom: -8px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(var(--primary-rgb), 0.25) 0%, rgba(139, 92, 246, 0.1) 50%, transparent 70%);
+            background: radial-gradient(circle, rgba(var(--primary-rgb), 0.25) 0%, rgba(var(--primary-rgb), 0.1) 50%, transparent 70%);
             animation: haloPulse 2s ease-in-out infinite;
             z-index: -1;
         }
@@ -2318,7 +2318,7 @@
         @keyframes orbePulse {
             0%, 100% {
                 transform: scale(1);
-                box-shadow: 0 0 20px rgba(139, 92, 246, 0.5), 
+                box-shadow: 0 0 20px rgba(var(--primary-rgb, 139, 92, 246), 0.5), 
                             inset -3px -3px 8px rgba(0,0,0,0.4), 
                             inset 3px 3px 8px rgba(255,255,255,0.4);
             }
@@ -5346,6 +5346,15 @@ CREATE TRIGGER on_synapse_user_signed_up
                         <div id="advanced-theme-colors" style="display: none; flex-direction: column; gap: 14px; background: rgba(255,255,255,0.01); border: 1px dashed rgba(255,255,255,0.06); padding: 14px; border-radius: 14px; margin-top: 4px;">
                             <span style="font-size: 0.75rem; font-weight: bold; color: #a78bfa; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px;">⚙️ Ajustes de Cores Individuais</span>
 
+                            <!-- Cor do Fundo Principal -->
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label style="font-size: 0.78rem; font-weight: 700; color: #fff;">Cor de Fundo da Tela (Principal)</label>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <input type="color" id="custom-theme-bg" value="#0a0a0c" style="width: 44px; height: 34px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
+                                    <span style="font-size: 0.68rem; color: var(--text-muted);">Cor de fundo principal de todo o aplicativo.</span>
+                                </div>
+                            </div>
+
                             <!-- Cor do Brilho Neon -->
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
                                 <label style="font-size: 0.78rem; font-weight: 700; color: #fff;">Cor do Brilho Glow</label>
@@ -8000,11 +8009,12 @@ WITH CHECK (true);</code>
             const primaryHsl = hexToHsl(primaryColor);
             const textMutedColor = hslToHex(primaryHsl.h, Math.min(primaryHsl.s, 25), 78);
             const nonAmoledBg = hslToHex(primaryHsl.h, Math.min(primaryHsl.s, 14), 4.5);
+            const customBgColor = document.getElementById('custom-theme-bg')?.value || (amoledOn ? "#000000" : nonAmoledBg);
 
             availableThemes['custom_active'] = {
                 name: "🎨 Tema Personalizado",
                 desc: `Tema personalizado ativo. Cor de destaque: ${primaryColor}.`,
-                bg: amoledOn ? "#000000" : nonAmoledBg,
+                bg: customBgColor,
                 gradientBg: "none",
                 cardBg1: cardBg1Color,
                 cardBg2: cardBg2Color,
@@ -8230,7 +8240,18 @@ WITH CHECK (true);</code>
                     card2 = hslToHex(hsl.h, Math.min(25, hsl.s), 3.8);
                 }
 
+                // Main screen background matching the primary color's hue
+                let bg;
+                if (amoledOn) {
+                    bg = '#000000';
+                } else {
+                    bg = hslToHex(hsl.h, Math.min(14, hsl.s), 4.5);
+                }
+                
                 // 2. Set values in input controls (silently)
+                const bgInput = document.getElementById('custom-theme-bg');
+                if (bgInput) bgInput.value = bg;
+
                 const glowInput = document.getElementById('custom-theme-glow-color');
                 if (glowInput) glowInput.value = glowColor;
 
@@ -8254,6 +8275,7 @@ WITH CHECK (true);</code>
                     gradEnd: gradEnd,
                     cardBg1: card1,
                     cardBg2: card2,
+                    bg: bg,
                     angle: document.getElementById('custom-theme-angle')?.value || 90,
                     neonOn: document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? true,
                     amoledOn: amoledOn
@@ -8294,6 +8316,7 @@ WITH CHECK (true);</code>
             const gradEnd = document.getElementById('custom-theme-grad-end')?.value || '#8a6f27';
             const cardBg1 = document.getElementById('custom-theme-card1')?.value || '#0a0a0a';
             const cardBg2 = document.getElementById('custom-theme-card2')?.value || '#121212';
+            const bg = document.getElementById('custom-theme-bg')?.value || '#0a0a0c';
             const angle = document.getElementById('custom-theme-angle')?.value || 90;
             const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? true;
 
@@ -8304,6 +8327,7 @@ WITH CHECK (true);</code>
                 gradEnd: gradEnd,
                 cardBg1: cardBg1,
                 cardBg2: cardBg2,
+                bg: bg,
                 angle: angle,
                 neonOn: neonOn,
                 amoledOn: amoledOn
@@ -8331,11 +8355,22 @@ WITH CHECK (true);</code>
             document.documentElement.style.setProperty('--primary-bg', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`);
             document.documentElement.style.setProperty('--primary-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
 
-            // Cards backgrounds
+            // Main Background and RGB variable calculations
+            if (colors.bg) {
+                document.documentElement.style.setProperty('--bg-color', colors.bg);
+                const bgRgb = hexToRgb(colors.bg);
+                document.documentElement.style.setProperty('--bg-rgb', `${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}`);
+            }
+
+            // Cards backgrounds and RGB variable calculations
             document.documentElement.style.setProperty('--card-bg-primary', colors.cardBg1);
             document.documentElement.style.setProperty('--card-bg-primary-grad', colors.cardBg1);
             document.documentElement.style.setProperty('--card-bg-secondary', colors.cardBg2);
             document.documentElement.style.setProperty('--card-bg-secondary-grad', colors.cardBg2);
+            if (colors.cardBg1) {
+                const cardRgb = hexToRgb(colors.cardBg1);
+                document.documentElement.style.setProperty('--card-bg-rgb', `${cardRgb.r}, ${cardRgb.g}, ${cardRgb.b}`);
+            }
 
             // Borders - Use a nice transparent border color of primary
             document.documentElement.style.setProperty('--border-color', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.45)`);
@@ -8415,11 +8450,12 @@ WITH CHECK (true);</code>
             const primaryHsl = hexToHsl(primaryColor);
             const textMutedColor = hslToHex(primaryHsl.h, Math.min(primaryHsl.s, 25), 78);
             const nonAmoledBg = hslToHex(primaryHsl.h, Math.min(primaryHsl.s, 14), 4.5);
+            const customBgColor = document.getElementById('custom-theme-bg')?.value || (amoledOn ? "#000000" : nonAmoledBg);
 
             const customTheme = {
                 name: "🎨 " + themeName,
                 desc: `Tema personalizado. Cor de destaque: ${primaryColor}.`,
-                bg: amoledOn ? "#000000" : nonAmoledBg,
+                bg: customBgColor,
                 gradientBg: "none",
                 cardBg1: cardBg1Color,
                 cardBg2: cardBg2Color,
@@ -8723,6 +8759,9 @@ WITH CHECK (true);</code>
 
             const card2Input = document.getElementById('custom-theme-card2');
             if (card2Input) card2Input.value = ensureHexColor(theme.cardBg2);
+
+            const bgInput = document.getElementById('custom-theme-bg');
+            if (bgInput) bgInput.value = ensureHexColor(theme.bg);
 
             let angle = 90;
             if (theme.btnGradient) {
