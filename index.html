@@ -5313,6 +5313,26 @@ CREATE TRIGGER on_synapse_user_signed_up
                             </div>
                         </div>
 
+                        <!-- Opção de Degradê Personalizado de 2 Cores para Smart Sync -->
+                        <div id="smart-sync-gradient-option" style="display: flex; flex-direction: column; gap: 10px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-top: -4px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleSyncTwoColorGradient()">
+                                <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
+                                    <span style="font-weight: 700; font-size: 0.8rem; color: #fff;">🌈 Degradê Personalizado (2 Cores)</span>
+                                    <span style="color: var(--text-muted); font-size: 0.68rem;">Escolha uma segunda cor para compor o degradê do botão.</span>
+                                </div>
+                                <div class="toggle-switch" id="custom-theme-two-color-toggle"></div>
+                            </div>
+                            
+                            <!-- Segunda Cor do Degradê (Visível apenas se o toggle estiver ativo) -->
+                            <div id="custom-theme-second-color-container" style="display: none; align-items: center; gap: 12px; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 10px; margin-top: 2px;">
+                                <input type="color" id="custom-theme-primary-second" value="#0000ff" style="width: 50px; height: 38px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="onSecondColorInput(this.value)">
+                                <div style="display: flex; flex-direction: column; gap: 2px;">
+                                    <span style="font-size: 0.72rem; color: #fff; font-weight: 600;">Segunda Cor do Degradê</span>
+                                    <span style="font-size: 0.66rem; color: var(--text-muted);">Define o tom de encerramento do degradê.</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Brilho Neon Toggle (Sempre Visível) -->
                         <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); padding: 12px; border-radius: 12px; cursor: pointer;" onclick="toggleNeonGlow()">
                             <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
@@ -7889,12 +7909,67 @@ WITH CHECK (true);</code>
                     availableThemes[key] = customThemes[key];
                 });
             }
+            const savedActiveTheme = localStorage.getItem('ai_console_custom_active_theme');
+            if (savedActiveTheme) {
+                availableThemes['custom_active'] = JSON.parse(savedActiveTheme);
+            }
         } catch (e) {
             console.error("Erro ao carregar temas customizados:", e);
         }
 
         // --- Smart Cohesive Theme Customizer Functions ---
         let isCohesiveSyncActive = true; // Enabled by default
+
+        function updateCustomActiveTheme() {
+            if (isConfigLoading) return;
+
+            const primaryColor = document.getElementById('custom-theme-primary')?.value || '#00f0ff';
+            const borderGlowColor = document.getElementById('custom-theme-glow-color')?.value || '#00f0ff';
+            const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? true;
+            const cardBg1Color = document.getElementById('custom-theme-card1')?.value || '#01050c';
+            const cardBg2Color = document.getElementById('custom-theme-card2')?.value || '#030c1a';
+            const gradientAngle = document.getElementById('custom-theme-angle')?.value || 90;
+            const gradientColor1 = document.getElementById('custom-theme-grad-start')?.value || '#00f0ff';
+            const gradientColor2 = document.getElementById('custom-theme-grad-end')?.value || '#0000ff';
+
+            const amoledOn = document.getElementById('amoled-switch')?.classList.contains('on') ?? false;
+
+            availableThemes['custom_active'] = {
+                name: "🎨 Tema Personalizado",
+                desc: `Tema personalizado ativo. Cor de destaque: ${primaryColor}.`,
+                bg: amoledOn ? "#000000" : "#020617",
+                gradientBg: "none",
+                cardBg1: cardBg1Color,
+                cardBg2: cardBg2Color,
+                gradientCard1: `linear-gradient(135deg, ${cardBg1Color}ee 0%, #000000ff 100%)`,
+                gradientCard2: `linear-gradient(135deg, ${cardBg2Color}ee 0%, #000000ff 100%)`,
+                border: borderGlowColor + "73",
+                textMain: "#ffffff",
+                textMuted: "#bae6fd",
+                primary: primaryColor,
+                success: "#22c55e",
+                error: "#ef4444",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: amoledOn,
+                neon: neonOn,
+                neonGlowColor: borderGlowColor + "a6",
+                btnGradient: `linear-gradient(${gradientAngle}deg, ${gradientColor1}, ${gradientColor2})`
+            };
+
+            const prevSelectedId = selectedThemeId;
+            selectedThemeId = 'custom_active';
+
+            // Save active theme state in localStorage
+            try {
+                localStorage.setItem('ai_console_custom_active_theme', JSON.stringify(availableThemes['custom_active']));
+            } catch (e) {
+                console.error("Erro ao salvar tema customizado ativo no localStorage:", e);
+            }
+
+            if (prevSelectedId !== 'custom_active') {
+                renderThemesGrid();
+            }
+        }
 
         function toggleCohesiveSync() {
             triggerPulse();
@@ -7915,6 +7990,40 @@ WITH CHECK (true);</code>
                 const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#00f0ff';
                 onPrimaryColorInput(currentPrimary);
             }
+            updateCustomActiveTheme();
+            if (!isConfigLoading) {
+                checkAppearanceChanges();
+            }
+        }
+
+        function toggleSyncTwoColorGradient() {
+            triggerPulse();
+            const sw = document.getElementById('custom-theme-two-color-toggle');
+            if (!sw) return;
+            const isOn = sw.classList.contains('on');
+            const secondColorContainer = document.getElementById('custom-theme-second-color-container');
+            
+            if (isOn) {
+                sw.classList.remove('on');
+                if (secondColorContainer) secondColorContainer.style.display = 'none';
+            } else {
+                sw.classList.add('on');
+                if (secondColorContainer) secondColorContainer.style.display = 'flex';
+            }
+            // Trigger instant update of current primary color to update gradient end
+            const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#00f0ff';
+            onPrimaryColorInput(currentPrimary);
+            updateCustomActiveTheme();
+            if (!isConfigLoading) {
+                checkAppearanceChanges();
+            }
+        }
+
+        function onSecondColorInput(hexColor) {
+            if (!hexColor) return;
+            const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#00f0ff';
+            onPrimaryColorInput(currentPrimary);
+            updateCustomActiveTheme();
             if (!isConfigLoading) {
                 checkAppearanceChanges();
             }
@@ -7937,6 +8046,7 @@ WITH CHECK (true);</code>
             } else {
                 onAdvancedColorInput();
             }
+            updateCustomActiveTheme();
             if (!isConfigLoading) {
                 checkAppearanceChanges();
             }
@@ -8034,8 +8144,14 @@ WITH CHECK (true);</code>
                 const glowColor = hexColor;
                 const gradStart = hexColor;
                 
-                // Button gradient end is a darkened shade
-                const gradEnd = hslToHex(hsl.h, hsl.s, Math.max(8, hsl.l - 22));
+                // Button gradient end is a darkened shade, or custom second color if enabled
+                const isTwoColorOn = document.getElementById('custom-theme-two-color-toggle')?.classList.contains('on') ?? false;
+                let gradEnd;
+                if (isTwoColorOn) {
+                    gradEnd = document.getElementById('custom-theme-primary-second')?.value || '#0000ff';
+                } else {
+                    gradEnd = hslToHex(hsl.h, hsl.s, Math.max(8, hsl.l - 22));
+                }
                 
                 // Cards backgrounds are extremely dark slate matching the primary color's hue
                 let card1, card2;
@@ -8094,6 +8210,7 @@ WITH CHECK (true);</code>
                 updateCustomThemePreview();
             }
 
+            updateCustomActiveTheme();
             if (!isConfigLoading) {
                 checkAppearanceChanges();
             }
@@ -8125,6 +8242,7 @@ WITH CHECK (true);</code>
                 amoledOn: amoledOn
             });
 
+            updateCustomActiveTheme();
             if (!isConfigLoading) {
                 checkAppearanceChanges();
             }
@@ -8303,6 +8421,7 @@ WITH CHECK (true);</code>
             container.innerHTML = '';
             
             Object.keys(availableThemes).forEach(key => {
+                if (key === 'custom_active') return; // Skip temporary custom active theme from the gallery
                 const item = availableThemes[key];
                 const isActive = (selectedThemeId === key);
                 
@@ -8555,6 +8674,23 @@ WITH CHECK (true);</code>
             if (gradStartInput) gradStartInput.value = ensureHexColor(gradStart);
             const gradEndInput = document.getElementById('custom-theme-grad-end');
             if (gradEndInput) gradEndInput.value = ensureHexColor(gradEnd);
+
+            // Sync the Smart Sync 2-color gradient toggle and inputs
+            const primarySecondInput = document.getElementById('custom-theme-primary-second');
+            if (primarySecondInput) primarySecondInput.value = ensureHexColor(gradEnd);
+
+            const twoColorToggle = document.getElementById('custom-theme-two-color-toggle');
+            const secondColorContainer = document.getElementById('custom-theme-second-color-container');
+            if (twoColorToggle) {
+                const isDifferent = (ensureHexColor(gradStart) !== ensureHexColor(gradEnd));
+                if (isDifferent) {
+                    if (!twoColorToggle.classList.contains('on')) twoColorToggle.classList.add('on');
+                    if (secondColorContainer) secondColorContainer.style.display = 'flex';
+                } else {
+                    if (twoColorToggle.classList.contains('on')) twoColorToggle.classList.remove('on');
+                    if (secondColorContainer) secondColorContainer.style.display = 'none';
+                }
+            }
 
             try {
                 updateCustomThemePreview();
@@ -17042,6 +17178,11 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 container.style.maxWidth = '380px';
                 container.style.pointerEvents = 'none';
                 document.body.appendChild(container);
+            } else {
+                // Prevent identical duplicate warnings from stacking clutter
+                const existingToasts = Array.from(container.children);
+                const isDuplicate = existingToasts.some(t => t.innerText.includes(message));
+                if (isDuplicate) return;
             }
             
             const toast = document.createElement('div');
