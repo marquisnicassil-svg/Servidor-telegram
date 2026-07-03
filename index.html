@@ -5305,7 +5305,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
                             <label style="font-size: 0.8rem; font-weight: 700; color: #fff;">Cor de Destaque Principal</label>
                             <div style="display: flex; align-items: center; gap: 12px;">
-                                <input type="color" id="custom-theme-primary" value="#00f0ff" style="width: 56px; height: 42px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="onPrimaryColorInput(this.value)">
+                                <input type="color" id="custom-theme-primary" value="#dfb15b" style="width: 56px; height: 42px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="onPrimaryColorInput(this.value)">
                                 <div style="display: flex; flex-direction: column; gap: 2px;">
                                     <span style="font-size: 0.72rem; color: #fff; font-weight: 600;">Selecione o tom base</span>
                                     <span style="font-size: 0.66rem; color: var(--text-muted);">As outras cores se harmonizarão a esta se o Smart Sync estiver ativo.</span>
@@ -5350,7 +5350,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
                                 <label style="font-size: 0.78rem; font-weight: 700; color: #fff;">Cor do Brilho Glow</label>
                                 <div style="display: flex; align-items: center; gap: 10px;">
-                                    <input type="color" id="custom-theme-glow-color" value="#00f0ff" style="width: 44px; height: 34px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
+                                    <input type="color" id="custom-theme-glow-color" value="#dfb15b" style="width: 44px; height: 34px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
                                     <span style="font-size: 0.68rem; color: var(--text-muted);">Tom da aura luminosa nos botões e bordas.</span>
                                 </div>
                             </div>
@@ -5360,11 +5360,11 @@ CREATE TRIGGER on_synapse_user_signed_up
                                 <label style="font-size: 0.78rem; font-weight: 700; color: #fff;">Cores dos Cartões (Tons de Fundo)</label>
                                 <div style="display: flex; gap: 12px; flex-wrap: wrap;">
                                     <div style="display: flex; align-items: center; gap: 6px;">
-                                        <input type="color" id="custom-theme-card1" value="#01050c" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
+                                        <input type="color" id="custom-theme-card1" value="#0a0a0a" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
                                         <span style="font-size: 0.68rem; color: var(--text-main);">Card Primário</span>
                                     </div>
                                     <div style="display: flex; align-items: center; gap: 6px;">
-                                        <input type="color" id="custom-theme-card2" value="#030c1a" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
+                                        <input type="color" id="custom-theme-card2" value="#121212" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
                                         <span style="font-size: 0.68rem; color: var(--text-main);">Card Secundário</span>
                                     </div>
                                 </div>
@@ -5375,11 +5375,11 @@ CREATE TRIGGER on_synapse_user_signed_up
                                 <label style="font-size: 0.78rem; font-weight: 700; color: #fff;">Degradê do Botão Principal</label>
                                 <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 4px;">
                                     <div style="display: flex; align-items: center; gap: 6px;">
-                                        <input type="color" id="custom-theme-grad-start" value="#00f0ff" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
+                                        <input type="color" id="custom-theme-grad-start" value="#dfb15b" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
                                         <span style="font-size: 0.68rem; color: var(--text-muted);">Início</span>
                                     </div>
                                     <div style="display: flex; align-items: center; gap: 6px;">
-                                        <input type="color" id="custom-theme-grad-end" value="#0000ff" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
+                                        <input type="color" id="custom-theme-grad-end" value="#8a6f27" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
                                         <span style="font-size: 0.68rem; color: var(--text-muted);">Fim</span>
                                     </div>
                                 </div>
@@ -5422,7 +5422,7 @@ CREATE TRIGGER on_synapse_user_signed_up
 
                     <!-- Hidden container to preserve legacy element IDs and ensure 100% backward compatibility -->
                     <div style="display: none;">
-                        <input type="color" id="manual-accent-picker" value="#00f0ff">
+                        <input type="color" id="manual-accent-picker" value="#dfb15b">
                         <div id="manual-accent-gradient-switch" class="toggle-switch"></div>
                         <div id="manual-accent-end-container">
                             <input type="color" id="manual-accent-gradient-end" value="#0000ff">
@@ -7877,25 +7877,88 @@ WITH CHECK (true);</code>
 
         const availableThemes = {
             cyan_blue_neon: {
-                name: "🌊 Aurora Holográfica (Padrão)",
-                desc: "Tema padrão do sistema de alta intensidade. Fundo AMOLED preto absoluto com botões brilhantes em degradê holográfico azul-ciano ultra-neon.",
+                name: "👑 Ouro Obsidian Imperial (Padrão)",
+                desc: "Tema padrão ultra-premium do sistema. Fundo AMOLED preto absoluto combinado com acentos luxuosos de ouro escovado e auras quentes.",
                 bg: "#000000",
                 gradientBg: "none",
-                cardBg1: "#020813",
-                cardBg2: "#071124",
-                gradientCard1: "linear-gradient(135deg, rgba(2, 8, 19, 0.98) 0%, rgba(0, 2, 5, 0.99) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(7, 17, 36, 0.98) 0%, rgba(1, 4, 10, 0.99) 100%)",
-                border: "rgba(0, 240, 255, 0.35)",
+                cardBg1: "#0a0a0a",
+                cardBg2: "#121212",
+                gradientCard1: "linear-gradient(135deg, rgba(13, 13, 13, 0.98) 0%, rgba(5, 5, 5, 0.99) 100%)",
+                gradientCard2: "linear-gradient(135deg, rgba(22, 22, 22, 0.98) 0%, rgba(12, 12, 12, 0.99) 100%)",
+                border: "rgba(223, 177, 91, 0.22)",
                 textMain: "#ffffff",
-                textMuted: "#bae6fd",
-                primary: "#00f0ff",
+                textMuted: "#dfb15b",
+                primary: "#dfb15b",
                 success: "#10b981",
                 error: "#ef4444",
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: true,
                 neon: true,
-                neonGlowColor: "rgba(0, 240, 255, 0.5)",
-                btnGradient: "linear-gradient(135deg, #00f0ff 0%, #0044ff 100%)"
+                neonGlowColor: "rgba(223, 177, 91, 0.35)",
+                btnGradient: "linear-gradient(135deg, #dfb15b 0%, #8a6f27 100%)"
+            },
+            amethyst_twilight: {
+                name: "🔮 Ametista Real & Ultravioleta",
+                desc: "Estética mística e luxuosa. Fundo AMOLED escuro com detalhes em violeta vibrante e degradê de neon púrpura.",
+                bg: "#000000",
+                gradientBg: "none",
+                cardBg1: "#080510",
+                cardBg2: "#110b22",
+                gradientCard1: "linear-gradient(135deg, rgba(12, 8, 24, 0.98) 0%, rgba(5, 3, 10, 0.99) 100%)",
+                gradientCard2: "linear-gradient(135deg, rgba(22, 14, 44, 0.98) 0%, rgba(10, 6, 20, 0.99) 100%)",
+                border: "rgba(168, 85, 247, 0.25)",
+                textMain: "#ffffff",
+                textMuted: "#c084fc",
+                primary: "#a855f7",
+                success: "#10b981",
+                error: "#ef4444",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: true,
+                neon: true,
+                neonGlowColor: "rgba(168, 85, 247, 0.4)",
+                btnGradient: "linear-gradient(135deg, #a855f7 0%, #6366f1 100%)"
+            },
+            deep_emerald: {
+                name: "🌲 Esmeralda Imperial & Jade",
+                desc: "Elegância orgânica inspirada em alta joalheria. Fundo preto absoluto com tons verde-esmeralda ricos e refinados.",
+                bg: "#000000",
+                gradientBg: "none",
+                cardBg1: "#020a06",
+                cardBg2: "#05140c",
+                gradientCard1: "linear-gradient(135deg, rgba(3, 13, 8, 0.98) 0%, rgba(1, 4, 3, 0.99) 100%)",
+                gradientCard2: "linear-gradient(135deg, rgba(7, 26, 16, 0.98) 0%, rgba(3, 10, 6, 0.99) 100%)",
+                border: "rgba(16, 185, 129, 0.25)",
+                textMain: "#ffffff",
+                textMuted: "#34d399",
+                primary: "#10b981",
+                success: "#10b981",
+                error: "#ef4444",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: true,
+                neon: true,
+                neonGlowColor: "rgba(16, 185, 129, 0.4)",
+                btnGradient: "linear-gradient(135deg, #10b981 0%, #064e3b 100%)"
+            },
+            cyberpunk_crimson: {
+                name: "🔴 Eclipse Escarlate & Carmesim",
+                desc: "Alta intensidade e contraste cinematográfico. Combinação de vermelho sangue brilhante com bordas em chamas escuras.",
+                bg: "#000000",
+                gradientBg: "none",
+                cardBg1: "#0c0202",
+                cardBg2: "#180404",
+                gradientCard1: "linear-gradient(135deg, rgba(16, 3, 3, 0.98) 0%, rgba(5, 1, 1, 0.99) 100%)",
+                gradientCard2: "linear-gradient(135deg, rgba(28, 6, 6, 0.98) 0%, rgba(12, 2, 2, 0.99) 100%)",
+                border: "rgba(239, 68, 68, 0.25)",
+                textMain: "#ffffff",
+                textMuted: "#f87171",
+                primary: "#ef4444",
+                success: "#10b981",
+                error: "#ef4444",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: true,
+                neon: true,
+                neonGlowColor: "rgba(239, 68, 68, 0.4)",
+                btnGradient: "linear-gradient(135deg, #ef4444 0%, #991b1b 100%)"
             }
         };
 
@@ -7922,14 +7985,14 @@ WITH CHECK (true);</code>
         function updateCustomActiveTheme() {
             if (isConfigLoading) return;
 
-            const primaryColor = document.getElementById('custom-theme-primary')?.value || '#00f0ff';
-            const borderGlowColor = document.getElementById('custom-theme-glow-color')?.value || '#00f0ff';
+            const primaryColor = document.getElementById('custom-theme-primary')?.value || '#dfb15b';
+            const borderGlowColor = document.getElementById('custom-theme-glow-color')?.value || '#dfb15b';
             const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? true;
-            const cardBg1Color = document.getElementById('custom-theme-card1')?.value || '#01050c';
-            const cardBg2Color = document.getElementById('custom-theme-card2')?.value || '#030c1a';
+            const cardBg1Color = document.getElementById('custom-theme-card1')?.value || '#0a0a0a';
+            const cardBg2Color = document.getElementById('custom-theme-card2')?.value || '#121212';
             const gradientAngle = document.getElementById('custom-theme-angle')?.value || 90;
-            const gradientColor1 = document.getElementById('custom-theme-grad-start')?.value || '#00f0ff';
-            const gradientColor2 = document.getElementById('custom-theme-grad-end')?.value || '#0000ff';
+            const gradientColor1 = document.getElementById('custom-theme-grad-start')?.value || '#dfb15b';
+            const gradientColor2 = document.getElementById('custom-theme-grad-end')?.value || '#8a6f27';
 
             const amoledOn = document.getElementById('amoled-switch')?.classList.contains('on') ?? false;
 
@@ -7986,7 +8049,7 @@ WITH CHECK (true);</code>
                 isCohesiveSyncActive = true;
                 if (advContainer) advContainer.style.display = 'none';
                 // Trigger instant sync with current primary color
-                const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#00f0ff';
+                const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#dfb15b';
                 onPrimaryColorInput(currentPrimary);
             }
             updateCustomActiveTheme();
@@ -8010,7 +8073,7 @@ WITH CHECK (true);</code>
                 if (secondColorContainer) secondColorContainer.style.display = 'flex';
             }
             // Trigger instant update of current primary color to update gradient end
-            const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#00f0ff';
+            const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#dfb15b';
             onPrimaryColorInput(currentPrimary);
             updateCustomActiveTheme();
             if (!isConfigLoading) {
@@ -8020,7 +8083,7 @@ WITH CHECK (true);</code>
 
         function onSecondColorInput(hexColor) {
             if (!hexColor) return;
-            const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#00f0ff';
+            const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#dfb15b';
             onPrimaryColorInput(currentPrimary);
             updateCustomActiveTheme();
             if (!isConfigLoading) {
@@ -8040,7 +8103,7 @@ WITH CHECK (true);</code>
             }
             // Trigger update
             if (isCohesiveSyncActive) {
-                const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#00f0ff';
+                const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#dfb15b';
                 onPrimaryColorInput(currentPrimary);
             } else {
                 onAdvancedColorInput();
@@ -8220,12 +8283,12 @@ WITH CHECK (true);</code>
             updateCustomThemePreview();
             
             const amoledOn = document.getElementById('amoled-switch')?.classList.contains('on') ?? false;
-            const primaryColor = document.getElementById('custom-theme-primary')?.value || '#00f0ff';
-            const glowColor = document.getElementById('custom-theme-glow-color')?.value || '#00f0ff';
-            const gradStart = document.getElementById('custom-theme-grad-start')?.value || '#00f0ff';
-            const gradEnd = document.getElementById('custom-theme-grad-end')?.value || '#0000ff';
-            const cardBg1 = document.getElementById('custom-theme-card1')?.value || '#01050c';
-            const cardBg2 = document.getElementById('custom-theme-card2')?.value || '#030c1a';
+            const primaryColor = document.getElementById('custom-theme-primary')?.value || '#dfb15b';
+            const glowColor = document.getElementById('custom-theme-glow-color')?.value || '#dfb15b';
+            const gradStart = document.getElementById('custom-theme-grad-start')?.value || '#dfb15b';
+            const gradEnd = document.getElementById('custom-theme-grad-end')?.value || '#8a6f27';
+            const cardBg1 = document.getElementById('custom-theme-card1')?.value || '#0a0a0a';
+            const cardBg2 = document.getElementById('custom-theme-card2')?.value || '#121212';
             const angle = document.getElementById('custom-theme-angle')?.value || 90;
             const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? true;
 
@@ -8297,10 +8360,10 @@ WITH CHECK (true);</code>
             const btn = document.getElementById('custom-theme-btn-preview');
             if (!btn) return;
             const angle = document.getElementById('custom-theme-angle')?.value || 90;
-            const c1 = document.getElementById('custom-theme-grad-start')?.value || '#00f0ff';
-            const c2 = document.getElementById('custom-theme-grad-end')?.value || '#0000ff';
+            const c1 = document.getElementById('custom-theme-grad-start')?.value || '#dfb15b';
+            const c2 = document.getElementById('custom-theme-grad-end')?.value || '#8a6f27';
             const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? true;
-            const glowColor = document.getElementById('custom-theme-glow-color')?.value || '#00f0ff';
+            const glowColor = document.getElementById('custom-theme-glow-color')?.value || '#dfb15b';
 
             btn.style.background = `linear-gradient(${angle}deg, ${c1}, ${c2})`;
             if (neonOn) {
@@ -8318,14 +8381,14 @@ WITH CHECK (true);</code>
                 return;
             }
 
-            const primaryColor = document.getElementById('custom-theme-primary')?.value || '#00f0ff';
-            const borderGlowColor = document.getElementById('custom-theme-glow-color')?.value || '#00f0ff';
+            const primaryColor = document.getElementById('custom-theme-primary')?.value || '#dfb15b';
+            const borderGlowColor = document.getElementById('custom-theme-glow-color')?.value || '#dfb15b';
             const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? true;
-            const cardBg1Color = document.getElementById('custom-theme-card1')?.value || '#01050c';
-            const cardBg2Color = document.getElementById('custom-theme-card2')?.value || '#030c1a';
+            const cardBg1Color = document.getElementById('custom-theme-card1')?.value || '#0a0a0a';
+            const cardBg2Color = document.getElementById('custom-theme-card2')?.value || '#121212';
             const gradientAngle = document.getElementById('custom-theme-angle')?.value || 90;
-            const gradientColor1 = document.getElementById('custom-theme-grad-start')?.value || '#00f0ff';
-            const gradientColor2 = document.getElementById('custom-theme-grad-end')?.value || '#0000ff';
+            const gradientColor1 = document.getElementById('custom-theme-grad-start')?.value || '#dfb15b';
+            const gradientColor2 = document.getElementById('custom-theme-grad-end')?.value || '#8a6f27';
 
             // Check if a custom theme with the same name already exists to update it instead of creating duplicates
             let customThemeKey = null;
@@ -8561,7 +8624,7 @@ WITH CHECK (true);</code>
         }
 
         function ensureHexColor(colorStr) {
-            if (!colorStr) return '#00f0ff';
+            if (!colorStr) return '#dfb15b';
             colorStr = colorStr.trim();
             if (colorStr.startsWith('#')) {
                 if (colorStr.length === 9) {
@@ -8580,7 +8643,7 @@ WITH CHECK (true);</code>
                     return `#${r}${g}${b}`;
                 }
             }
-            return '#00f0ff';
+            return '#dfb15b';
         }
 
         function applyThemePreset(themeId, userClicked = false) {
@@ -8672,8 +8735,8 @@ WITH CHECK (true);</code>
                     gradStart = hexMatches[0];
                     gradEnd = hexMatches[0];
                 } else if (theme.btnGradient.includes('hsl(183')) {
-                    gradStart = '#00f0ff';
-                    gradEnd = '#0000ff';
+                    gradStart = '#dfb15b';
+                    gradEnd = '#8a6f27';
                 }
             }
             const gradStartInput = document.getElementById('custom-theme-grad-start');
@@ -8844,7 +8907,7 @@ WITH CHECK (true);</code>
                 document.getElementById('theme-color-meta').setAttribute('content', '#000000');
             }
             if (isCohesiveSyncActive) {
-                const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#00f0ff';
+                const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#dfb15b';
                 onPrimaryColorInput(currentPrimary);
             }
             addLog(`Modo AMOLED Super Black ${!isOn ? 'Ativado' : 'Desativado'}`, "info");
