@@ -5495,7 +5495,6 @@ CREATE TRIGGER on_synapse_user_signed_up
                         </div>
 
                     </div>
-                </div>
 
                 <!-- CATEGORIA 2: PERSONALIZAÇÃO AVANÇADA -->
                 <div id="appearance-cat-advanced" class="appearance-cat-section" style="display: none; flex-direction: column; gap: 16px;">
@@ -7882,21 +7881,21 @@ WITH CHECK (true);</code>
                 desc: "Tema padrão do sistema de alta intensidade. Fundo AMOLED preto absoluto com botões brilhantes em degradê holográfico azul-ciano ultra-neon.",
                 bg: "#000000",
                 gradientBg: "none",
-                cardBg1: "#01050c",
-                cardBg2: "#030c1a",
-                gradientCard1: "linear-gradient(135deg, rgba(2, 10, 24, 0.98) 0%, rgba(0, 2, 5, 0.99) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(4, 18, 42, 0.98) 0%, rgba(1, 4, 10, 0.99) 100%)",
-                border: "rgba(0, 240, 255, 0.45)",
+                cardBg1: "#020813",
+                cardBg2: "#071124",
+                gradientCard1: "linear-gradient(135deg, rgba(2, 8, 19, 0.98) 0%, rgba(0, 2, 5, 0.99) 100%)",
+                gradientCard2: "linear-gradient(135deg, rgba(7, 17, 36, 0.98) 0%, rgba(1, 4, 10, 0.99) 100%)",
+                border: "rgba(0, 240, 255, 0.35)",
                 textMain: "#ffffff",
                 textMuted: "#bae6fd",
                 primary: "#00f0ff",
-                success: "#22c55e",
+                success: "#10b981",
                 error: "#ef4444",
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: true,
                 neon: true,
-                neonGlowColor: "rgba(0, 240, 255, 0.65)",
-                btnGradient: "linear-gradient(90deg, hsl(183, 100%, 50%), hsl(240, 100%, 50%))"
+                neonGlowColor: "rgba(0, 240, 255, 0.5)",
+                btnGradient: "linear-gradient(135deg, #00f0ff 0%, #0044ff 100%)"
             }
         };
 
@@ -8421,7 +8420,7 @@ WITH CHECK (true);</code>
             container.innerHTML = '';
             
             Object.keys(availableThemes).forEach(key => {
-                if (key === 'custom_active') return; // Skip temporary custom active theme from the gallery
+                if (key === 'custom_active' && selectedThemeId !== 'custom_active') return; // Skip temporary custom active theme unless selected
                 const item = availableThemes[key];
                 const isActive = (selectedThemeId === key);
                 
@@ -8430,20 +8429,27 @@ WITH CHECK (true);</code>
                 card.style.alignItems = 'center';
                 card.style.justifyContent = 'space-between';
                 card.style.padding = '12px 14px';
-                card.style.background = isActive ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.01)';
-                card.style.border = isActive ? '1px solid var(--primary)' : '1px solid var(--border-color)';
+                card.style.background = isActive ? 'rgba(56, 189, 248, 0.08)' : 'rgba(255,255,255,0.01)';
+                card.style.border = isActive ? '1.5px solid var(--primary)' : '1px solid var(--border-color)';
                 card.style.borderRadius = '12px';
                 card.style.cursor = 'pointer';
                 card.style.transition = 'all 0.2s';
-                card.onclick = () => { applyThemePreset(key, true); };
+                
+                if (key === 'custom_active') {
+                    card.onclick = () => { showAppToast("Você já está usando seu tema personalizado! Salve-o na galeria abaixo se desejar guardá-lo. 💾", "info"); };
+                } else {
+                    card.onclick = () => { applyThemePreset(key, true); };
+                }
                 
                 card.innerHTML = `
                     <div style="display: flex; flex-direction: column; gap: 4px; text-align: left; flex: 1; padding-right: 12px;">
                         <span style="font-weight: 700; font-size: 0.88rem; color: #ffffff; display: flex; align-items: center; gap: 6px;">
-                            ${item.name}
-                            ${isActive ? '<span style="color: var(--primary); font-size: 0.78rem;">● Selecionado</span>' : ''}
+                            ${key === 'custom_active' ? '🎨 Tema Personalizado (Em Uso)' : item.name}
+                            ${isActive ? '<span style="color: var(--primary); font-size: 0.78rem; font-weight: 800;">● Ativo</span>' : ''}
                         </span>
-                        <span style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.3;">${item.desc}</span>
+                        <span style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.3;">
+                            ${key === 'custom_active' ? 'Você customizou as cores e estilos na seção abaixo. Guarde este tema salvando-o na galeria!' : item.desc}
+                        </span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
                         <span style="width: 12px; height: 12px; border-radius: 50%; background-color: ${item.primary}; border: 1px solid #fff; display: inline-block;"></span>
