@@ -5282,134 +5282,137 @@ CREATE TRIGGER on_synapse_user_signed_up
                         <!-- Preenchido dinamicamente via Javascript -->
                     </div>
 
-                    <!-- Criador de Tema Personalizado -->
+                    <!-- PERSONALIZADOR DE CORES COESAS (UPGRADED) -->
                     <div class="supabase-card" style="margin-top: 10px; margin-bottom: 20px; text-align: left; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 14px;">
                         <div style="display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px; margin-bottom: 6px;">
                             <span style="font-size: 1.3rem;">🎨</span>
                             <div>
-                                <h4 style="font-size: 0.95rem; font-weight: 800; color: #fff; margin: 0;">Criar Tema Personalizado</h4>
-                                <p style="font-size: 0.7rem; color: var(--text-muted); margin: 2px 0 0 0;">Crie seu próprio tema AMOLED com botões degradê e brilhos neon.</p>
+                                <h4 style="font-size: 0.95rem; font-weight: 800; color: #fff; margin: 0;">Personalizar Cores e Estilos</h4>
+                                <p style="font-size: 0.7rem; color: var(--text-muted); margin: 2px 0 0 0;">Crie uma identidade visual coesa em tempo real ou ajuste cada detalhe.</p>
                             </div>
                         </div>
 
-                        <!-- Nome do tema -->
+                        <!-- Sincronização de Cores Coesas (Smart Sync) -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(56, 189, 248, 0.05); border: 1px dashed rgba(56, 189, 248, 0.2); padding: 12px; border-radius: 12px; cursor: pointer;" onclick="toggleCohesiveSync()">
+                            <div style="text-align: left; display: flex; flex-direction: column; gap: 2px; padding-right: 12px; flex: 1;">
+                                <span style="font-weight: 700; font-size: 0.82rem; color: #38bdf8; display: flex; align-items: center; gap: 6px;">✨ Sincronização Inteligente (Recomendado)</span>
+                                <span style="color: var(--text-muted); font-size: 0.68rem;">Garante harmonia absoluta adaptando cartões, botões e glows automaticamente ao tom selecionado.</span>
+                            </div>
+                            <div class="toggle-switch on" id="custom-theme-sync-toggle"></div>
+                        </div>
+
+                        <!-- Cor Principal (Sempre Visível) -->
                         <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
-                            <label style="font-size: 0.8rem; font-weight: 700; color: #fff;">Nome do Tema</label>
-                            <input type="text" id="custom-theme-name" placeholder="Ex: Galáxia Neon" style="background: rgba(255,255,255,0.04); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; height: 40px; padding: 0 12px; font-size: 0.82rem; outline: none; transition: border 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border-color)'">
-                        </div>
-
-                        <!-- Cor de Destaque -->
-                        <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
-                            <label style="font-size: 0.8rem; font-weight: 700; color: #fff;">Cor de Destaque Primária (Neon/Acentos)</label>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <input type="color" id="custom-theme-primary" value="#00f0ff" style="width: 52px; height: 38px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="updateCustomThemePreview()">
-                                <span style="font-size: 0.72rem; color: var(--text-muted);">Defina a cor dos acentos do sistema e itens ativos.</span>
-                            </div>
-                        </div>
-
-                        <!-- Brilho Neon Toggle & Picker -->
-                        <div class="form-group" style="display: flex; flex-direction: column; gap: 8px; background: rgba(255,255,255,0.01); border: 1px dashed rgba(255,255,255,0.08); padding: 12px; border-radius: 12px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div style="display: flex; flex-direction: column; gap: 2px; text-align: left;">
-                                    <span style="font-size: 0.8rem; font-weight: 700; color: #fff;">Efeito de Brilho Neon (Glow)</span>
-                                    <span style="font-size: 0.68rem; color: var(--text-muted);">Ativa sombras e bordas com efeito de brilho fluorescente.</span>
-                                </div>
-                                <div class="toggle-switch on" id="custom-theme-neon-toggle" onclick="this.classList.toggle('on'); updateCustomThemePreview();" style="cursor: pointer;"></div>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
-                                <input type="color" id="custom-theme-glow-color" value="#00f0ff" style="width: 52px; height: 38px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="updateCustomThemePreview()">
-                                <span style="font-size: 0.72rem; color: var(--text-muted);">Cor do brilho neon (recomenda-se um tom luminoso).</span>
-                            </div>
-                        </div>
-
-                        <!-- Cores dos Cards (AMOLED Black) -->
-                        <div class="form-group" style="display: flex; flex-direction: column; gap: 8px; background: rgba(255,255,255,0.01); border: 1px dashed rgba(255,255,255,0.08); padding: 12px; border-radius: 12px;">
-                            <label style="font-size: 0.8rem; font-weight: 700; color: #fff;">Estilo dos Cards (Tons Escuros)</label>
-                            <span style="font-size: 0.68rem; color: var(--text-muted); display: block; margin-bottom: 4px;">O fundo principal continua preto absoluto e os cards ganham esse tom sutil.</span>
-                            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                                <div style="display: flex; align-items: center; gap: 6px;">
-                                    <input type="color" id="custom-theme-card1" value="#01050c" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;">
-                                    <span style="font-size: 0.7rem; color: var(--text-main);">Card Primário</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 6px;">
-                                    <input type="color" id="custom-theme-card2" value="#030c1a" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;">
-                                    <span style="font-size: 0.7rem; color: var(--text-main);">Card Secundário</span>
+                            <label style="font-size: 0.8rem; font-weight: 700; color: #fff;">Cor de Destaque Principal</label>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <input type="color" id="custom-theme-primary" value="#00f0ff" style="width: 56px; height: 42px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="onPrimaryColorInput(this.value)">
+                                <div style="display: flex; flex-direction: column; gap: 2px;">
+                                    <span style="font-size: 0.72rem; color: #fff; font-weight: 600;">Selecione o tom base</span>
+                                    <span style="font-size: 0.66rem; color: var(--text-muted);">As outras cores se harmonizarão a esta se o Smart Sync estiver ativo.</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Degradê do Botão -->
-                        <div class="form-group" style="display: flex; flex-direction: column; gap: 8px; background: rgba(255,255,255,0.01); border: 1px dashed rgba(255,255,255,0.08); padding: 12px; border-radius: 12px;">
-                            <label style="font-size: 0.8rem; font-weight: 700; color: #fff; margin-bottom: 2px;">Configurar Degradê dos Botões (Efeito Neon)</label>
-                            
-                            <div style="display: flex; flex-direction: column; gap: 4px;">
-                                <span style="font-size: 0.72rem; color: var(--text-main);">Ângulo do Degradê</span>
+                        <!-- Brilho Neon Toggle (Sempre Visível) -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); padding: 12px; border-radius: 12px; cursor: pointer;" onclick="toggleNeonGlow()">
+                            <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-weight: 700; font-size: 0.8rem; color: #fff;">Efeito de Brilho Neon (Glow)</span>
+                                <span style="color: var(--text-muted); font-size: 0.68rem;">Ativa sombreados e destaques com brilho fluorescente.</span>
+                            </div>
+                            <div class="toggle-switch on" id="custom-theme-neon-toggle"></div>
+                        </div>
+
+                        <!-- SEÇÃO AVANÇADA (Ocultada se Sincronização estiver ativa) -->
+                        <div id="advanced-theme-colors" style="display: none; flex-direction: column; gap: 14px; background: rgba(255,255,255,0.01); border: 1px dashed rgba(255,255,255,0.06); padding: 14px; border-radius: 14px; margin-top: 4px;">
+                            <span style="font-size: 0.75rem; font-weight: bold; color: #a78bfa; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px;">⚙️ Ajustes de Cores Individuais</span>
+
+                            <!-- Cor do Brilho Neon -->
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label style="font-size: 0.78rem; font-weight: 700; color: #fff;">Cor do Brilho Glow</label>
                                 <div style="display: flex; align-items: center; gap: 10px;">
-                                    <input type="range" id="custom-theme-angle" min="0" max="360" value="90" style="flex: 1; accent-color: var(--primary, #ffffff); cursor: pointer;" oninput="document.getElementById('custom-theme-angle-val').innerText = this.value + '°'; updateCustomThemePreview();">
-                                    <span id="custom-theme-angle-val" style="font-size: 0.75rem; color: #fff; font-family: monospace; font-weight: bold; min-width: 35px; text-align: right;">90°</span>
+                                    <input type="color" id="custom-theme-glow-color" value="#00f0ff" style="width: 44px; height: 34px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
+                                    <span style="font-size: 0.68rem; color: var(--text-muted);">Tom da aura luminosa nos botões e bordas.</span>
                                 </div>
                             </div>
 
-                            <div style="display: flex; gap: 12px; margin-top: 6px; flex-wrap: wrap;">
-                                <div style="display: flex; align-items: center; gap: 6px;">
-                                    <input type="color" id="custom-theme-grad-start" value="#00f0ff" style="width: 44px; height: 34px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="updateCustomThemePreview()">
-                                    <span style="font-size: 0.7rem; color: var(--text-muted);">Início</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 6px;">
-                                    <input type="color" id="custom-theme-grad-end" value="#0000ff" style="width: 44px; height: 34px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="updateCustomThemePreview()">
-                                    <span style="font-size: 0.7rem; color: var(--text-muted);">Fim</span>
+                            <!-- Cores dos Cards -->
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label style="font-size: 0.78rem; font-weight: 700; color: #fff;">Cores dos Cartões (Tons de Fundo)</label>
+                                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <input type="color" id="custom-theme-card1" value="#01050c" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
+                                        <span style="font-size: 0.68rem; color: var(--text-main);">Card Primário</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <input type="color" id="custom-theme-card2" value="#030c1a" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
+                                        <span style="font-size: 0.68rem; color: var(--text-main);">Card Secundário</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Live button preview -->
-                            <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
-                                <span style="font-size: 0.68rem; color: var(--text-muted);">Prévia do Botão:</span>
-                                <button type="button" id="custom-theme-btn-preview" style="width: 100%; border: none; padding: 12px; font-size: 0.82rem; font-weight: 800; color: #fff; border-radius: 12px; cursor: default; pointer-events: none; text-transform: uppercase; font-family: 'Space Grotesk', system-ui, sans-serif;">Botão de Exemplo ✨</button>
+                            <!-- Degradê do Botão -->
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label style="font-size: 0.78rem; font-weight: 700; color: #fff;">Degradê do Botão Principal</label>
+                                <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 4px;">
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <input type="color" id="custom-theme-grad-start" value="#00f0ff" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
+                                        <span style="font-size: 0.68rem; color: var(--text-muted);">Início</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <input type="color" id="custom-theme-grad-end" value="#0000ff" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
+                                        <span style="font-size: 0.68rem; color: var(--text-muted);">Fim</span>
+                                    </div>
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <span style="font-size: 0.68rem; color: var(--text-muted);">Ângulo da Graduação</span>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <input type="range" id="custom-theme-angle" min="0" max="360" value="90" style="flex: 1; accent-color: var(--primary, #ffffff); cursor: pointer;" oninput="document.getElementById('custom-theme-angle-val').innerText = this.value + '°'; onAdvancedColorInput();">
+                                        <span id="custom-theme-angle-val" style="font-size: 0.75rem; color: #fff; font-family: monospace; font-weight: bold; min-width: 35px; text-align: right;">90°</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div style="display: flex; gap: 8px; margin-top: 4px;">
-                            <button type="button" class="btn-universal" onclick="saveCustomTheme()" style="flex: 1; border: none; border-radius: 10px; padding: 12px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 0;">Salvar e Aplicar Tema 🚀</button>
-                            <button type="button" onclick="clearCustomThemes()" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; border-radius: 10px; padding: 0 14px; font-size: 0.8rem; font-weight: bold; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'" title="Excluir Todos os Temas Criados">Limpar 🗑️</button>
+                        <!-- Prévia do Botão e Estilo -->
+                        <div style="margin-top: 4px; display: flex; flex-direction: column; gap: 6px; background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.03); padding: 12px; border-radius: 12px;">
+                            <span style="font-size: 0.68rem; color: var(--text-muted);">Visualização do Botão de Ação:</span>
+                            <button type="button" id="custom-theme-btn-preview" style="width: 100%; border: none; padding: 12px; font-size: 0.82rem; font-weight: 800; color: #fff; border-radius: 12px; cursor: default; pointer-events: none; text-transform: uppercase; font-family: 'Space Grotesk', system-ui, sans-serif;">Botão de Exemplo ✨</button>
                         </div>
+
+                        <!-- Opção de Salvar este Tema Personalizado (Acordeão super discreto) -->
+                        <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px; margin-top: 4px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-bottom: 8px;" onclick="toggleSaveThemeAccordion()">
+                                <span style="font-size: 0.78rem; font-weight: bold; color: #fff; display: flex; align-items: center; gap: 4px;">💾 Deseja salvar este tema na galeria? <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">(Opcional)</span></span>
+                                <span id="save-theme-chevron" style="font-size: 0.75rem; color: var(--text-muted);">▼</span>
+                            </div>
+                            
+                            <div id="save-theme-accordion-content" style="display: none; flex-direction: column; gap: 10px; margin-top: 10px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); padding: 10px; border-radius: 10px;">
+                                <div style="display: flex; flex-direction: column; gap: 6px;">
+                                    <label style="font-size: 0.72rem; font-weight: bold; color: var(--text-muted);">Nome do seu Tema Customizado</label>
+                                    <input type="text" id="custom-theme-name" placeholder="Ex: Galáxia Vermelha, Eclipse Verde..." style="background: rgba(255,255,255,0.03); color: #fff; border: 1px solid var(--border-color); border-radius: 8px; height: 36px; padding: 0 10px; font-size: 0.8rem; outline: none;">
+                                </div>
+                                <div style="display: flex; gap: 8px; margin-top: 4px;">
+                                    <button type="button" class="btn-universal" onclick="saveCustomTheme()" style="flex: 1; border: none; border-radius: 8px; padding: 10px; font-size: 0.78rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; margin: 0; background: var(--primary);">Salvar na Galeria 🚀</button>
+                                    <button type="button" onclick="clearCustomThemes()" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; border-radius: 8px; padding: 0 10px; font-size: 0.75rem; font-weight: bold; cursor: pointer;" title="Excluir Todos os Temas Criados">Limpar Galeria 🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <div class="supabase-card" style="margin-bottom: 20px; text-align: left; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 14px;">
-                        
-                        <!-- Picker de Cor Personalizada -->
-                        <div class="form-group" style="display: flex; flex-direction: column; gap: 10px;">
-                            <label style="font-size: 0.82rem; font-weight: bold; display: block; color: #fff; margin-bottom: 2px;">🎨 Cor de Destaque Personalizada</label>
-                            
-                            <div style="display: flex; flex-direction: column; gap: 8px; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); padding: 12px; border-radius: 12px;">
-                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
-                                    <span style="font-size: 0.72rem; color: var(--text-muted);">Configure uma cor sólida ou um degradê neon para botões e realces:</span>
-                                    <div style="display: flex; align-items: center; gap: 6px; cursor: pointer;" onclick="toggleManualAccentGradient()">
-                                        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: bold;">Ativar Degradê</span>
-                                        <div class="toggle-switch" id="manual-accent-gradient-switch" style="cursor: pointer;"></div>
-                                    </div>
-                                </div>
-
-                                <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
-                                    <div style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="color" id="manual-accent-picker" style="width: 52px; height: 40px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="onManualAccentInput()">
-                                        <span style="font-size: 0.72rem; color: var(--text-main); font-weight: 600;" id="manual-accent-start-label">Cor Principal</span>
-                                    </div>
-                                    
-                                    <div id="manual-accent-end-container" style="display: none; align-items: center; gap: 8px;">
-                                        <input type="color" id="manual-accent-gradient-end" value="#0000ff" style="width: 52px; height: 40px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="onManualAccentInput()">
-                                        <span style="font-size: 0.72rem; color: var(--text-main); font-weight: 600;">Cor Final</span>
-                                    </div>
-                                </div>
-
-                                <div id="manual-accent-angle-container" style="display: none; flex-direction: column; gap: 4px; margin-top: 4px;">
-                                    <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: bold;">Ângulo do Degradê</span>
-                                    <div style="display: flex; align-items: center; gap: 10px;">
-                                        <input type="range" id="manual-accent-gradient-angle" min="0" max="360" value="135" style="flex: 1; accent-color: var(--primary, #ffffff); cursor: pointer;" oninput="document.getElementById('manual-accent-angle-val').innerText = this.value + '°'; onManualAccentInput();">
-                                        <span id="manual-accent-angle-val" style="font-size: 0.75rem; color: #fff; font-family: monospace; font-weight: bold; min-width: 35px; text-align: right;">135°</span>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- Hidden container to preserve legacy element IDs and ensure 100% backward compatibility -->
+                    <div style="display: none;">
+                        <input type="color" id="manual-accent-picker" value="#00f0ff">
+                        <div id="manual-accent-gradient-switch" class="toggle-switch"></div>
+                        <div id="manual-accent-end-container">
+                            <input type="color" id="manual-accent-gradient-end" value="#0000ff">
                         </div>
+                        <div id="manual-accent-angle-container">
+                            <input type="range" id="manual-accent-gradient-angle" value="135">
+                        </div>
+                        <span id="manual-accent-start-label"></span>
+                        <span id="manual-accent-angle-val"></span>
+                    </div>
 
                         <!-- Slider de Intensidade de Cores -->
                         <div class="form-group">
@@ -7890,6 +7893,289 @@ WITH CHECK (true);</code>
             console.error("Erro ao carregar temas customizados:", e);
         }
 
+        // --- Smart Cohesive Theme Customizer Functions ---
+        let isCohesiveSyncActive = true; // Enabled by default
+
+        function toggleCohesiveSync() {
+            triggerPulse();
+            const sw = document.getElementById('custom-theme-sync-toggle');
+            if (!sw) return;
+            const isOn = sw.classList.contains('on');
+            const advContainer = document.getElementById('advanced-theme-colors');
+            
+            if (isOn) {
+                sw.classList.remove('on');
+                isCohesiveSyncActive = false;
+                if (advContainer) advContainer.style.display = 'flex';
+            } else {
+                sw.classList.add('on');
+                isCohesiveSyncActive = true;
+                if (advContainer) advContainer.style.display = 'none';
+                // Trigger instant sync with current primary color
+                const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#00f0ff';
+                onPrimaryColorInput(currentPrimary);
+            }
+            if (!isConfigLoading) {
+                checkAppearanceChanges();
+            }
+        }
+
+        function toggleNeonGlow() {
+            triggerPulse();
+            const sw = document.getElementById('custom-theme-neon-toggle');
+            if (!sw) return;
+            const isOn = sw.classList.contains('on');
+            if (isOn) {
+                sw.classList.remove('on');
+            } else {
+                sw.classList.add('on');
+            }
+            // Trigger update
+            if (isCohesiveSyncActive) {
+                const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#00f0ff';
+                onPrimaryColorInput(currentPrimary);
+            } else {
+                onAdvancedColorInput();
+            }
+            if (!isConfigLoading) {
+                checkAppearanceChanges();
+            }
+        }
+
+        function toggleSaveThemeAccordion() {
+            const accordion = document.getElementById('save-theme-accordion-content');
+            const chevron = document.getElementById('save-theme-chevron');
+            if (!accordion) return;
+            if (accordion.style.display === 'none' || !accordion.style.display) {
+                accordion.style.display = 'flex';
+                if (chevron) chevron.innerText = '▲';
+            } else {
+                accordion.style.display = 'none';
+                if (chevron) chevron.innerText = '▼';
+            }
+        }
+
+        // Color helper functions
+        function hexToRgb(hex) {
+            hex = hex.replace(/^#/, '');
+            if (hex.length === 3) {
+                hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+            }
+            const num = parseInt(hex, 16);
+            return {
+                r: (num >> 16) & 255,
+                g: (num >> 8) & 255,
+                b: num & 255
+            };
+        }
+
+        function rgbToHex(r, g, b) {
+            const toHex = x => {
+                const val = Math.max(0, Math.min(255, Math.round(x)));
+                const h = val.toString(16);
+                return h.length === 1 ? '0' + h : h;
+            };
+            return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+        }
+
+        function hexToHsl(hex) {
+            const rgb = hexToRgb(hex);
+            let r = rgb.r / 255, g = rgb.g / 255, b = rgb.b / 255;
+            let max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            if (max === min) {
+                h = s = 0; // achromatic
+            } else {
+                let d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+            return { h: h * 360, s: s * 100, l: l * 100 };
+        }
+
+        function hslToHex(h, s, l) {
+            h /= 360;
+            s /= 100;
+            l /= 100;
+            let r, g, b;
+            if (s === 0) {
+                r = g = b = l; // achromatic
+            } else {
+                const hue2rgb = (p, q, t) => {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1/6) return p + (q - p) * 6 * t;
+                    if (t < 1/2) return q;
+                    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                    return p;
+                };
+                let q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                let p = 2 * l - q;
+                r = hue2rgb(p, q, h + 1/3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1/3);
+            }
+            return rgbToHex(r * 255, g * 255, b * 255);
+        }
+
+        function onPrimaryColorInput(hexColor) {
+            if (!hexColor) return;
+            const amoledOn = document.getElementById('amoled-switch')?.classList.contains('on') ?? false;
+            
+            if (isCohesiveSyncActive) {
+                const hsl = hexToHsl(hexColor);
+                
+                // 1. Calculate matching colors
+                const glowColor = hexColor;
+                const gradStart = hexColor;
+                
+                // Button gradient end is a darkened shade
+                const gradEnd = hslToHex(hsl.h, hsl.s, Math.max(8, hsl.l - 22));
+                
+                // Cards backgrounds are extremely dark slate matching the primary color's hue
+                let card1, card2;
+                if (amoledOn) {
+                    card1 = '#000000';
+                    card2 = hslToHex(hsl.h, Math.min(20, hsl.s), 2.2);
+                } else {
+                    card1 = hslToHex(hsl.h, Math.min(25, hsl.s), 1.8);
+                    card2 = hslToHex(hsl.h, Math.min(25, hsl.s), 3.8);
+                }
+
+                // 2. Set values in input controls (silently)
+                const glowInput = document.getElementById('custom-theme-glow-color');
+                if (glowInput) glowInput.value = glowColor;
+
+                const gradStartInput = document.getElementById('custom-theme-grad-start');
+                if (gradStartInput) gradStartInput.value = gradStart;
+
+                const gradEndInput = document.getElementById('custom-theme-grad-end');
+                if (gradEndInput) gradEndInput.value = gradEnd;
+
+                const card1Input = document.getElementById('custom-theme-card1');
+                if (card1Input) card1Input.value = card1;
+
+                const card2Input = document.getElementById('custom-theme-card2');
+                if (card2Input) card2Input.value = card2;
+
+                // 3. Apply changes directly in real-time to active UI
+                applyLiveColors({
+                    primary: hexColor,
+                    glowColor: glowColor,
+                    gradStart: gradStart,
+                    gradEnd: gradEnd,
+                    cardBg1: card1,
+                    cardBg2: card2,
+                    angle: document.getElementById('custom-theme-angle')?.value || 90,
+                    neonOn: document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? true,
+                    amoledOn: amoledOn
+                });
+            } else {
+                // If sync is off, changing the primary color just updates the --primary CSS variable
+                document.documentElement.style.setProperty('--primary', hexColor);
+                document.documentElement.style.setProperty('--primary-contrast', getContrastColor(hexColor));
+                
+                const rgb = hexToRgb(hexColor);
+                document.documentElement.style.setProperty('--primary-bg', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`);
+                document.documentElement.style.setProperty('--primary-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+                
+                // Update glowing and border colors if sync is off but glow toggle is on
+                const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? true;
+                if (neonOn) {
+                    const glowColor = document.getElementById('custom-theme-glow-color')?.value || hexColor;
+                    document.documentElement.style.setProperty('--glow-shadow', `0 0 15px ${glowColor}`);
+                }
+                
+                updateCustomThemePreview();
+            }
+
+            if (!isConfigLoading) {
+                checkAppearanceChanges();
+            }
+        }
+
+        function onAdvancedColorInput() {
+            // Triggered when editing custom pickers individually with sync off
+            updateCustomThemePreview();
+            
+            const amoledOn = document.getElementById('amoled-switch')?.classList.contains('on') ?? false;
+            const primaryColor = document.getElementById('custom-theme-primary')?.value || '#00f0ff';
+            const glowColor = document.getElementById('custom-theme-glow-color')?.value || '#00f0ff';
+            const gradStart = document.getElementById('custom-theme-grad-start')?.value || '#00f0ff';
+            const gradEnd = document.getElementById('custom-theme-grad-end')?.value || '#0000ff';
+            const cardBg1 = document.getElementById('custom-theme-card1')?.value || '#01050c';
+            const cardBg2 = document.getElementById('custom-theme-card2')?.value || '#030c1a';
+            const angle = document.getElementById('custom-theme-angle')?.value || 90;
+            const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? true;
+
+            applyLiveColors({
+                primary: primaryColor,
+                glowColor: glowColor,
+                gradStart: gradStart,
+                gradEnd: gradEnd,
+                cardBg1: cardBg1,
+                cardBg2: cardBg2,
+                angle: angle,
+                neonOn: neonOn,
+                amoledOn: amoledOn
+            });
+
+            if (!isConfigLoading) {
+                checkAppearanceChanges();
+            }
+        }
+
+        function applyLiveColors(colors) {
+            // Applies visual colors globally in real-time
+            const satVal = selectedSaturation || 100;
+            const adjustedPrimary = adjustColorIntensity(colors.primary, satVal);
+            const adjustedGlow = adjustColorIntensity(colors.glowColor, satVal);
+            const adjustedGradStart = adjustColorIntensity(colors.gradStart, satVal);
+            const adjustedGradEnd = adjustColorIntensity(colors.gradEnd, satVal);
+
+            // Update CSS Custom Properties
+            document.documentElement.style.setProperty('--primary', adjustedPrimary);
+            document.documentElement.style.setProperty('--primary-contrast', getContrastColor(adjustedPrimary));
+            
+            const rgb = hexToRgb(adjustedPrimary);
+            document.documentElement.style.setProperty('--primary-bg', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`);
+            document.documentElement.style.setProperty('--primary-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+
+            // Cards backgrounds
+            document.documentElement.style.setProperty('--card-bg-primary', colors.cardBg1);
+            document.documentElement.style.setProperty('--card-bg-primary-grad', colors.cardBg1);
+            document.documentElement.style.setProperty('--card-bg-secondary', colors.cardBg2);
+            document.documentElement.style.setProperty('--card-bg-secondary-grad', colors.cardBg2);
+
+            // Borders - Use a nice transparent border color of primary
+            document.documentElement.style.setProperty('--border-color', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.45)`);
+
+            // Glow Shadows
+            if (colors.neonOn) {
+                document.documentElement.style.setProperty('--glow-shadow', `0 0 15px ${adjustedGlow}`);
+                document.documentElement.style.setProperty('--border-weight', `1.5px`);
+                document.documentElement.style.setProperty('--btn-shadow', `0 4px 16px ${adjustedGlow}, 0 0 8px ${adjustedGlow}`);
+                document.documentElement.style.setProperty('--btn-shadow-hover', `0 6px 22px ${adjustedGlow}, 0 0 15px ${adjustedGlow}`);
+            } else {
+                document.documentElement.style.setProperty('--glow-shadow', `none`);
+                document.documentElement.style.setProperty('--border-weight', `1px`);
+                document.documentElement.style.setProperty('--btn-shadow', `0 4px 12px rgba(0, 0, 0, 0.35)`);
+                document.documentElement.style.setProperty('--btn-shadow-hover', `0 6px 18px rgba(0, 0, 0, 0.5)`);
+            }
+
+            // Button Gradient
+            const gradStr = `linear-gradient(${colors.angle}deg, ${adjustedGradStart} 0%, ${adjustedGradEnd} 100%)`;
+            document.documentElement.style.setProperty('--btn-gradient', gradStr);
+
+            // Update live preview
+            updateCustomThemePreview();
+        }
+
         function updateCustomThemePreview() {
             const btn = document.getElementById('custom-theme-btn-preview');
             if (!btn) return;
@@ -8195,6 +8481,17 @@ WITH CHECK (true);</code>
                 if (labelStart) labelStart.innerText = 'Cor Principal';
             }
 
+            // Sincronizar o switch de Sincronização Inteligente
+            const syncToggle = document.getElementById('custom-theme-sync-toggle');
+            if (syncToggle) {
+                if (!syncToggle.classList.contains('on')) {
+                    syncToggle.classList.add('on');
+                }
+                isCohesiveSyncActive = true;
+                const advContainer = document.getElementById('advanced-theme-colors');
+                if (advContainer) advContainer.style.display = 'none';
+            }
+
             // Pre-fill the Custom Theme creator fields when a theme is selected
             const nameInput = document.getElementById('custom-theme-name');
             if (nameInput) {
@@ -8403,6 +8700,10 @@ WITH CHECK (true);</code>
                 document.documentElement.style.setProperty('--card-bg-secondary-grad', 'none');
                 document.documentElement.style.setProperty('--border-color', '#111111');
                 document.getElementById('theme-color-meta').setAttribute('content', '#000000');
+            }
+            if (isCohesiveSyncActive) {
+                const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#00f0ff';
+                onPrimaryColorInput(currentPrimary);
             }
             addLog(`Modo AMOLED Super Black ${!isOn ? 'Ativado' : 'Desativado'}`, "info");
             if (!isConfigLoading) {
