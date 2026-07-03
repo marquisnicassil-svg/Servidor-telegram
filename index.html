@@ -587,7 +587,7 @@
             padding: 10px 42px 28px 14px;
         }
 
-        .chat-message.bot:has(.chat-msg-avatar) {
+        .chat-message.bot.has-avatar {
             padding-left: 52px !important;
         }
 
@@ -7951,7 +7951,7 @@ WITH CHECK (true);</code>
                 gradientCard2: `linear-gradient(135deg, ${cardBg2Color}ee 0%, #000000ff 100%)`,
                 border: borderGlowColor + "73", // add opacity
                 textMain: "#ffffff",
-                textMuted: primaryColor,
+                textMuted: "#94a3b8",
                 primary: primaryColor,
                 success: "#22c55e",
                 error: "#ef4444",
@@ -12009,6 +12009,9 @@ WITH CHECK (true);</code>
                 document.getElementById('agent-desc').value = '';
                 document.getElementById('agent-prompt').value = '';
                 document.getElementById('agent-welcome').value = '';
+                if (document.getElementById('agent-avatar')) document.getElementById('agent-avatar').value = '';
+                if (document.getElementById('agent-category')) document.getElementById('agent-category').value = 'Personalizado';
+                if (document.getElementById('agent-color')) document.getElementById('agent-color').value = '#38BDF8';
                 document.getElementById('agent-form-title').innerText = i18n('agent_form_title_new') || '🤖 Criar Agente Personalizado';
             }
         }
@@ -12021,9 +12024,12 @@ WITH CHECK (true);</code>
             const desc = document.getElementById('agent-desc').value.trim();
             const prompt = document.getElementById('agent-prompt').value.trim();
             const welcome = document.getElementById('agent-welcome').value.trim();
+            const avatar = document.getElementById('agent-avatar')?.value.trim() || '';
+            const category = document.getElementById('agent-category')?.value || 'Personalizado';
+            const color = document.getElementById('agent-color')?.value || '#38BDF8';
 
             if (!name) {
-                const errorMsg = currentLanguage === 'pt' ? 'Por favor, insira o nome do agente.' : (currentLanguage === 'en' ? 'Please enter the agent name.' : 'Por favor, ingrese el nombre del agente.');
+                const errorMsg = currentLanguage === 'pt' ? 'Por favor, insira o nome do agente.' : (currentLanguage === 'en' ? 'Please enter the agent name.' : 'Por favor, ingrese el nombre des agente.');
                 showAppToast(errorMsg, "error");
                 return;
             }
@@ -12044,6 +12050,9 @@ WITH CHECK (true);</code>
                 description: desc,
                 prompt: prompt,
                 welcome: welcome,
+                avatar: avatar,
+                category: category,
+                color: color,
                 isCustom: true
             };
 
@@ -12085,6 +12094,9 @@ WITH CHECK (true);</code>
             document.getElementById('agent-desc').value = agent.description || '';
             document.getElementById('agent-prompt').value = agent.prompt || '';
             document.getElementById('agent-welcome').value = agent.welcome || '';
+            if (document.getElementById('agent-avatar')) document.getElementById('agent-avatar').value = agent.avatar || '';
+            if (document.getElementById('agent-category')) document.getElementById('agent-category').value = agent.category || 'Personalizado';
+            if (document.getElementById('agent-color')) document.getElementById('agent-color').value = agent.color || '#38BDF8';
             
             document.getElementById('agent-form-title').innerText = currentLanguage === 'pt' ? '✏️ Editar Agente' : (currentLanguage === 'en' ? '✏️ Edit Agent' : '✏️ Editar Agente');
             
@@ -12184,7 +12196,7 @@ WITH CHECK (true);</code>
                     const escapedForSpeech = welcomeMsg.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
                     const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
                     
-                    container.innerHTML = `<div class="chat-message bot" style="border-left: 3px solid ${activeAssis.color || '#38BDF8'};">${getAgentAvatarHtml(id)}${formatAIResponse(welcomeMsg)}${readerHtml}</div>`;
+                    container.innerHTML = `<div class="chat-message bot has-avatar" style="border-left: 3px solid ${activeAssis.color || '#38BDF8'};">${getAgentAvatarHtml(id)}${formatAIResponse(welcomeMsg)}${readerHtml}</div>`;
                     scrollToBottom();
                     saveChatSession();
                 }
@@ -12498,11 +12510,15 @@ WITH CHECK (true);</code>
                 const escapedForSpeech = cleanText.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
                 const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
                 const activeId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
+                const activeAssis = getAllAgents().find(a => a.id === activeId) || getAllAgents()[0];
+                const activeColor = activeAssis ? (activeAssis.color || '#38BDF8') : '#38BDF8';
 
                 const allBotMessages = document.getElementById('chat-messages').querySelectorAll('.chat-message.bot');
                 let modified = false;
                 allBotMessages.forEach(msg => {
                     if (msg.innerHTML.includes("Sua sessão está ativa") || msg.innerHTML.includes("via Supabase") || msg.innerHTML.includes("Sessão segura ativa") || msg.innerHTML.includes("Sessão segura em nuvem ativa")) {
+                        msg.classList.add('has-avatar');
+                        msg.style.borderLeft = `3px solid ${activeColor}`;
                         msg.innerHTML = `${getAgentAvatarHtml(activeId)}${formatAIResponse(cleanText)}${readerHtml}`;
                         modified = true;
                     }
@@ -12526,7 +12542,9 @@ WITH CHECK (true);</code>
                 const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
                 
                 const activeId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
-                document.getElementById('chat-messages').innerHTML = `<div class="chat-message bot">${getAgentAvatarHtml(activeId)}${formatAIResponse(welcomeText)}${readerHtml}</div>`;
+                const activeAssis = getAllAgents().find(a => a.id === activeId) || getAllAgents()[0];
+                const activeColor = activeAssis ? (activeAssis.color || '#38BDF8') : '#38BDF8';
+                document.getElementById('chat-messages').innerHTML = `<div class="chat-message bot has-avatar" style="border-left: 3px solid ${activeColor};">${getAgentAvatarHtml(activeId)}${formatAIResponse(welcomeText)}${readerHtml}</div>`;
                 saveChatSession();
             }
             if (savedHistory) {
@@ -13548,7 +13566,9 @@ WITH CHECK (true);</code>
             const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
             
             const activeId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
-            document.getElementById('chat-messages').innerHTML = `<div class="chat-message bot">${getAgentAvatarHtml(activeId)}${formatAIResponse(welcomeText)}${readerHtml}</div>`;
+            const activeAssis = getAllAgents().find(a => a.id === activeId) || getAllAgents()[0];
+            const activeColor = activeAssis ? (activeAssis.color || '#38BDF8') : '#38BDF8';
+            document.getElementById('chat-messages').innerHTML = `<div class="chat-message bot has-avatar" style="border-left: 3px solid ${activeColor};">${getAgentAvatarHtml(activeId)}${formatAIResponse(welcomeText)}${readerHtml}</div>`;
             
             saveChatSession();
             addLog("Memória do chat apagada manualmente.", "info");
@@ -13668,12 +13688,17 @@ WITH CHECK (true);</code>
 
             // Insere sinal de processamento (Orbe IA com mensagens dinâmicas)
             const loader = document.createElement('div');
-            loader.className = 'chat-message bot';
+            loader.className = 'chat-message bot has-avatar';
+            const activeIdForLoader = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
+            const activeAssisForLoader = getAllAgents().find(a => a.id === activeIdForLoader) || getAllAgents()[0];
+            const activeColorForLoader = activeAssisForLoader ? (activeAssisForLoader.color || '#38BDF8') : '#38BDF8';
+            loader.style.borderLeft = `3px solid ${activeColorForLoader}`;
             loader.style.display = 'flex';
             loader.style.alignItems = 'center';
             loader.style.gap = '12px';
-            loader.style.padding = '14px 20px';
+            loader.style.padding = '14px 20px 14px 52px';
             loader.innerHTML = `
+                ${getAgentAvatarHtml(activeIdForLoader)}
                 <div class="synapse-orbe-inline">
                     <div class="synapse-orbe" style="width: 24px; height: 24px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #38bdf8, #8b5cf6, #06b6d4); box-shadow: 0 0 10px rgba(139, 92, 246, 0.5), inset -2px -2px 6px rgba(0,0,0,0.4), inset 2px 2px 6px rgba(255,255,255,0.4); animation: orbePulse 2s ease-in-out infinite, orbeRotate 6s linear infinite; position: relative;"></div>
                 </div>
@@ -13733,7 +13758,8 @@ WITH CHECK (true);</code>
                     loader.style.alignItems = '';
                     loader.style.gap = '';
                     loader.style.padding = '';
-                    loader.innerHTML = formatAIResponse(aiReply) + readerHtml;
+                    loader.style.borderLeft = `3px solid ${activeColorForLoader}`;
+                    loader.innerHTML = getAgentAvatarHtml(activeIdForLoader) + formatAIResponse(aiReply) + readerHtml;
                     scrollToBottom();
                     saveChatSession();
                     triggerPulse();
@@ -13887,7 +13913,8 @@ WITH CHECK (true);</code>
                 loader.style.alignItems = '';
                 loader.style.gap = '';
                 loader.style.padding = '';
-                loader.innerHTML = formatAIResponse(aiReply) + readerHtml;
+                loader.style.borderLeft = `3px solid ${activeColorForLoader}`;
+                loader.innerHTML = getAgentAvatarHtml(activeIdForLoader) + formatAIResponse(aiReply) + readerHtml;
                 scrollToBottom();
                 saveChatSession();
                 triggerPulse();
@@ -17320,7 +17347,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 if (existingWelcome) {
                     existingWelcome.innerHTML = `${getAgentAvatarHtml(activeId)}${formatAIResponse(cleanText)}${readerHtml}`;
                 } else {
-                    const msgHtml = `<div class="chat-message bot" id="${welcomeMsgId}">${getAgentAvatarHtml(activeId)}${formatAIResponse(cleanText)}${readerHtml}</div>`;
+                    const msgHtml = `<div class="chat-message bot has-avatar" id="${welcomeMsgId}">${getAgentAvatarHtml(activeId)}${formatAIResponse(cleanText)}${readerHtml}</div>`;
 
                     if (isFirstLoad && (!chatHistoryObjects || chatHistoryObjects.length <= 1)) {
                         container.innerHTML = msgHtml;
@@ -17331,7 +17358,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     } else {
                         const welcomeDiv = document.createElement('div');
                         welcomeDiv.id = welcomeMsgId;
-                        welcomeDiv.className = 'chat-message bot';
+                        welcomeDiv.className = 'chat-message bot has-avatar';
                         welcomeDiv.innerHTML = `${getAgentAvatarHtml(activeId)}${formatAIResponse(cleanText)}${readerHtml}`;
                         container.appendChild(welcomeDiv);
                         
@@ -19979,8 +20006,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
             // 2. Adiciona o sinalizador de carregamento do bot
             const loader = document.createElement('div');
-            loader.className = 'chat-message bot';
-            loader.innerText = "Processando conteúdo extraído focado na pergunta...";
+            loader.className = 'chat-message bot has-avatar';
+            const activeIdForLoader = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
+            loader.innerHTML = `${getAgentAvatarHtml(activeIdForLoader)}<span style="vertical-align: middle;">Processando conteúdo extraído focado na pergunta...</span>`;
             chatContainer.appendChild(loader);
             scrollToBottom();
 
@@ -20152,8 +20180,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 }
 
                 const botMsg = document.createElement('div');
-                botMsg.className = 'chat-message bot';
-                botMsg.innerHTML = formatAIResponse(summaryReply);
+                botMsg.className = 'chat-message bot has-avatar';
+                const activeIdForBotMsg = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
+                botMsg.innerHTML = getAgentAvatarHtml(activeIdForBotMsg) + formatAIResponse(summaryReply);
                 
                 // Botão "Abrir Página Original" logo abaixo do resumo gerado
                 const openBtn = document.createElement('a');
