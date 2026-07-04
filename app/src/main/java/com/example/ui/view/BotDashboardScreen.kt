@@ -364,7 +364,8 @@ fun BotDashboardScreen(
                         },
                         onClearWebhook = {
                             viewModel.clearTelegramWebhook()
-                        }
+                        },
+                        viewModel = viewModel
                     )
                     5 -> TranslatorTab(viewModel = viewModel)
                     6 -> InterviewSimulatorTab(viewModel = viewModel)
@@ -1140,7 +1141,8 @@ fun SettingsTab(
     onSaveSettings: (String, String, Float, String, String, String, String) -> Unit,
     onVerifyToken: (String) -> Unit,
     onUpdateTheme: (Boolean, String) -> Unit,
-    onClearWebhook: () -> Unit
+    onClearWebhook: () -> Unit,
+    viewModel: BotViewModel
 ) {
     var token by remember(initialToken) { mutableStateOf(initialToken) }
     var systemPrompt by remember(initialPrompt) { mutableStateOf(initialPrompt) }
@@ -1261,6 +1263,12 @@ fun SettingsTab(
                         title = "Conexão e Banco de Dados",
                         subtitle = "Configurações do Supabase, URLs do projeto, tabelas e backups",
                         onClick = { activeSettingsView = "database" }
+                    )
+                    SettingsMenuItem(
+                        icon = "🔔",
+                        title = "Notificações",
+                        subtitle = "Controle como você recebe alertas do sistema, mensagens, atualizações e segurança",
+                        onClick = { activeSettingsView = "notifications" }
                     )
                     SettingsMenuItem(
                         icon = "👤",
@@ -2743,6 +2751,107 @@ fun SettingsTab(
                                 ) {
                                     Text("🔑 Sessão Segura Ativa", color = Color(0xFF38BDF8), fontWeight = FontWeight.Bold)
                                 }
+                            }
+                        }
+                    }
+                }
+
+                "notifications" -> {
+                    item {
+                        Text(
+                            text = "🔔 CONFIGURAÇÕES DE NOTIFICAÇÕES",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = Color.White
+                        )
+                    }
+
+                    item {
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    text = "Preferências de Alerta",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                    color = Color.White
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = "Ative ou desative as notificações de acordo com suas preferências. Alterações são aplicadas em tempo real.",
+                                    fontSize = 12.sp,
+                                    color = Color(0xFF94A3B8)
+                                )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                NotificationToggleRow(
+                                    title = "Notificações Gerais",
+                                    description = "Alertas gerais do sistema, inicialização e status de bots.",
+                                    checked = viewModel.notifSystemOn.collectAsStateWithLifecycle().value,
+                                    onCheckedChange = { viewModel.updateNotificationSetting("notif_system_on", it) }
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Box(Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF334155)))
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                NotificationToggleRow(
+                                    title = "Notificações de Mensagens",
+                                    description = "Mensagens de chat, respostas recebidas e novas conexões.",
+                                    checked = viewModel.notifMessagesOn.collectAsStateWithLifecycle().value,
+                                    onCheckedChange = { viewModel.updateNotificationSetting("notif_messages_on", it) }
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Box(Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF334155)))
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                NotificationToggleRow(
+                                    title = "Notificações de Atualizações",
+                                    description = "Atualizações do console, sincronização de cache e novidades.",
+                                    checked = viewModel.notifUpdatesOn.collectAsStateWithLifecycle().value,
+                                    onCheckedChange = { viewModel.updateNotificationSetting("notif_updates_on", it) }
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Box(Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF334155)))
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                NotificationToggleRow(
+                                    title = "Notificações de Integrações",
+                                    description = "Eventos de webhook, Telegram, Discord, Make e Zapier.",
+                                    checked = viewModel.notifIntegrationsOn.collectAsStateWithLifecycle().value,
+                                    onCheckedChange = { viewModel.updateNotificationSetting("notif_integrations_on", it) }
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Box(Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF334155)))
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                NotificationToggleRow(
+                                    title = "Notificações de Segurança",
+                                    description = "Avisos de login, backup em nuvem e chaves expiradas.",
+                                    checked = viewModel.notifSecurityOn.collectAsStateWithLifecycle().value,
+                                    onCheckedChange = { viewModel.updateNotificationSetting("notif_security_on", it) }
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Box(Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF334155)))
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                NotificationToggleRow(
+                                    title = "🔇 Modo Silencioso",
+                                    description = "Desativa temporariamente todos os alertas sonoros e visuais.",
+                                    checked = viewModel.notifSilentMode.collectAsStateWithLifecycle().value,
+                                    onCheckedChange = { viewModel.updateNotificationSetting("notif_silent_mode", it) },
+                                    isSilentMode = true
+                                )
                             }
                         }
                     }
@@ -4642,6 +4751,48 @@ fun <T> SynapseBottomSheetPicker(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun NotificationToggleRow(
+    title: String,
+    description: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    isSilentMode: Boolean = false
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f).padding(end = 16.dp)) {
+            Text(
+                text = title,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                color = if (isSilentMode) Color(0xFFFB7185) else Color.White
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = description,
+                fontSize = 11.sp,
+                color = Color(0xFF94A3B8)
+            )
+        }
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = if (isSilentMode) Color(0xFFE11D48) else Color(0xFF38BDF8),
+                checkedTrackColor = if (isSilentMode) Color(0xFFFDA4AF).copy(alpha = 0.5f) else Color(0xFF38BDF8).copy(alpha = 0.3f),
+                uncheckedThumbColor = Color(0xFF94A3B8),
+                uncheckedTrackColor = Color(0xFF334155)
+            )
+        )
     }
 }
 

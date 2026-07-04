@@ -1,4 +1,4 @@
-const CACHE_NAME = 'console-ia-cache-v20';
+const CACHE_NAME = 'console-ia-cache-v22';
 const urlsToCache = [
   './',
   './index.html',

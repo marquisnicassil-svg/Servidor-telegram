@@ -49,6 +49,37 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
             .putString("accent_color_hex", accentHex)
             .apply()
     }
+
+    // --- Persistence for Notification Preferences ---
+    private val _notifSystemOn = MutableStateFlow(sharedPrefs.getBoolean("notif_system_on", true))
+    val notifSystemOn: StateFlow<Boolean> = _notifSystemOn.asStateFlow()
+
+    private val _notifMessagesOn = MutableStateFlow(sharedPrefs.getBoolean("notif_messages_on", true))
+    val notifMessagesOn: StateFlow<Boolean> = _notifMessagesOn.asStateFlow()
+
+    private val _notifUpdatesOn = MutableStateFlow(sharedPrefs.getBoolean("notif_updates_on", true))
+    val notifUpdatesOn: StateFlow<Boolean> = _notifUpdatesOn.asStateFlow()
+
+    private val _notifIntegrationsOn = MutableStateFlow(sharedPrefs.getBoolean("notif_integrations_on", true))
+    val notifIntegrationsOn: StateFlow<Boolean> = _notifIntegrationsOn.asStateFlow()
+
+    private val _notifSecurityOn = MutableStateFlow(sharedPrefs.getBoolean("notif_security_on", true))
+    val notifSecurityOn: StateFlow<Boolean> = _notifSecurityOn.asStateFlow()
+
+    private val _notifSilentMode = MutableStateFlow(sharedPrefs.getBoolean("notif_silent_mode", false))
+    val notifSilentMode: StateFlow<Boolean> = _notifSilentMode.asStateFlow()
+
+    fun updateNotificationSetting(key: String, value: Boolean) {
+        sharedPrefs.edit().putBoolean(key, value).apply()
+        when (key) {
+            "notif_system_on" -> _notifSystemOn.value = value
+            "notif_messages_on" -> _notifMessagesOn.value = value
+            "notif_updates_on" -> _notifUpdatesOn.value = value
+            "notif_integrations_on" -> _notifIntegrationsOn.value = value
+            "notif_security_on" -> _notifSecurityOn.value = value
+            "notif_silent_mode" -> _notifSilentMode.value = value
+        }
+    }
     
     // --- Database Flows for UI ---
     val configState: StateFlow<BotConfigEntity?>

@@ -5152,6 +5152,25 @@ CREATE TRIGGER on_synapse_user_signed_up
                         </svg>
                     </div>
 
+                    <!-- Opção Nova: Notificações -->
+                    <div class="config-index-item" onclick="openConfigSubView('notifications')">
+                        <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
+                            <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: rgba(var(--primary-rgb, 255,255,255), 0.08); flex-shrink: 0;">
+                                <svg style="width: 20px; height: 20px; stroke: var(--primary); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                                </svg>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);" data-i18n="menu_notifications_title">Notificações</span>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;" data-i18n="menu_notifications_desc">Controle como você recebe alertas do sistema, mensagens e segurança</span>
+                            </div>
+                        </div>
+                        <svg style="width: 16px; height: 16px; stroke: var(--text-muted); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0;" viewBox="0 0 24 24">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </div>
+
                     <!-- Opção Nova: Acessibilidade, Voz e Leitura -->
                     <div class="config-index-item" onclick="openConfigSubView('accessibility')">
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
@@ -5267,6 +5286,74 @@ CREATE TRIGGER on_synapse_user_signed_up
                 <button class="btn-universal" style="background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.4); color: #fbbf24; margin-top: 10px;" onclick="forceAppUpdateAndClearCache()" data-i18n="limpar_cache">
                     🔄 Limpar Cache & Forçar Atualização
                 </button>
+            </div>
+
+            <!-- SUB-VIEW: NOTIFICAÇÕES -->
+            <div id="config-subview-notifications" class="config-subview" style="display: none;">
+                <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;" data-i18n="voltar_ajustes">⬅️ Voltar para Ajustes</button>
+                
+                <div class="section-header" style="text-align: left; margin-bottom: 12px;">
+                    <h2 style="font-size: 1.4rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px;">🔔 Notificações e Alertas</h2>
+                    <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; line-height: 1.3;">Gerencie de forma granular como e quando deseja receber alertas, pop-ups visuais e relatórios de atividades.</p>
+                </div>
+
+                <div class="supabase-card" style="margin-bottom: 20px; text-align: left; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 14px;">
+                    
+                    <!-- Notificação 1: Geral -->
+                    <div class="theme-toggle" onclick="toggleNotificationUI('notif-system-switch')" style="padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.15s;">
+                        <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
+                            <span style="font-weight: 600; display: block; font-size: 0.85rem; color: #fff;">📢 Notificações Gerais</span>
+                            <span style="color: var(--text-muted); font-size: 0.70rem;">Alertas globais do sistema, status do robô e inicialização</span>
+                        </div>
+                        <div class="toggle-switch on" id="notif-system-switch"></div>
+                    </div>
+
+                    <!-- Notificação 2: Mensagens -->
+                    <div class="theme-toggle" onclick="toggleNotificationUI('notif-messages-switch')" style="padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.15s;">
+                        <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
+                            <span style="font-weight: 600; display: block; font-size: 0.85rem; color: #fff;">💬 Notificações de Mensagens</span>
+                            <span style="color: var(--text-muted); font-size: 0.70rem;">Popups de novas mensagens enviadas e respostas da IA</span>
+                        </div>
+                        <div class="toggle-switch on" id="notif-messages-switch"></div>
+                    </div>
+
+                    <!-- Notificação 3: Atualizações -->
+                    <div class="theme-toggle" onclick="toggleNotificationUI('notif-updates-switch')" style="padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.15s;">
+                        <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
+                            <span style="font-weight: 600; display: block; font-size: 0.85rem; color: #fff;">🔄 Notificações de Atualizações</span>
+                            <span style="color: var(--text-muted); font-size: 0.70rem;">Informações de novidades, sincronização de cache e patches</span>
+                        </div>
+                        <div class="toggle-switch on" id="notif-updates-switch"></div>
+                    </div>
+
+                    <!-- Notificação 4: Integrações -->
+                    <div class="theme-toggle" onclick="toggleNotificationUI('notif-integrations-switch')" style="padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.15s;">
+                        <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
+                            <span style="font-weight: 600; display: block; font-size: 0.85rem; color: #fff;">🔌 Notificações de Integrações</span>
+                            <span style="color: var(--text-muted); font-size: 0.70rem;">Mensagens de webhooks externos, Telegram, Discord, Make e Zapier</span>
+                        </div>
+                        <div class="toggle-switch on" id="notif-integrations-switch"></div>
+                    </div>
+
+                    <!-- Notificação 5: Segurança -->
+                    <div class="theme-toggle" onclick="toggleNotificationUI('notif-security-switch')" style="padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.15s;">
+                        <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
+                            <span style="font-weight: 600; display: block; font-size: 0.85rem; color: #fff;">🔑 Notificações de Segurança</span>
+                            <span style="color: var(--text-muted); font-size: 0.70rem;">Status de autenticação, expiração de tokens e backup Postgres</span>
+                        </div>
+                        <div class="toggle-switch on" id="notif-security-switch"></div>
+                    </div>
+
+                    <!-- Notificação 6: Modo Silencioso -->
+                    <div class="theme-toggle" onclick="toggleNotificationUI('notif-silent-switch')" style="padding: 10px 12px; border-radius: 12px; background: rgba(239, 68, 68, 0.03); border: 1px solid rgba(239, 68, 68, 0.15); display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.15s;">
+                        <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
+                            <span style="font-weight: 700; display: block; font-size: 0.85rem; color: #f43f5e;">🔇 Modo Silencioso</span>
+                            <span style="color: rgba(244, 63, 94, 0.75); font-size: 0.70rem;">Desativa sons e alertas visuais temporariamente do console</span>
+                        </div>
+                        <div class="toggle-switch" id="notif-silent-switch"></div>
+                    </div>
+
+                </div>
             </div>
 
             <!-- SUB-VIEW 7: SELEÇÃO DE IDIOMAS DO SISTEMA -->
@@ -7417,6 +7504,8 @@ WITH CHECK (true);</code>
                 "aparencia_temas_desc": "Modo AMOLED, cores de destaque e customização visual",
                 "conexao_telegram": "Conexão Bot do Telegram",
                 "conexao_telegram_desc": "Insira o token do BotFather e configure a integração do robô",
+                "menu_notifications_title": "Notificações",
+                "menu_notifications_desc": "Controle como você recebe alertas do sistema, mensagens e segurança",
                 "motor_ai": "Motor de Inteligência Artificial",
                 "motor_ai_desc": "Gerencie provedores como Gemini, OpenAI, Groq, chaves de API e prompts",
                 "banco_dados": "Conexão e Banco de Dados",
@@ -7508,6 +7597,8 @@ WITH CHECK (true);</code>
                 "aparencia_temas_desc": "AMOLED mode, glowing accent colors and custom setups",
                 "conexao_telegram": "Telegram Bot Setup",
                 "conexao_telegram_desc": "Configure Telegram BotFather token to capture remote logs",
+                "menu_notifications_title": "Notifications",
+                "menu_notifications_desc": "Control how you receive system alerts, messages, and security updates",
                 "motor_ai": "Artificial Intelligence",
                 "motor_ai_desc": "Manage API endpoints and credentials for Gemini, OpenAI and Groq",
                 "banco_dados": "Database & Cloud",
@@ -7599,6 +7690,8 @@ WITH CHECK (true);</code>
                 "aparencia_temas_desc": "Modo AMOLED, tonos de color y moldes estéticos nativos",
                 "conexao_telegram": "Enlace de Telegram Bot",
                 "conexao_telegram_desc": "Ingrese el token de seguridad para vincular registros remotos",
+                "menu_notifications_title": "Notificaciones",
+                "menu_notifications_desc": "Controle cómo recibe alertas del sistema, mensajes y seguridad",
                 "motor_ai": "Motores de Inteligencia",
                 "motor_ai_desc": "Establezca credenciales para Gemini, OpenAI o Groq en el sistema",
                 "banco_dados": "Nube y Bases de Datos",
@@ -9216,6 +9309,34 @@ WITH CHECK (true);</code>
             }
         }
 
+        function toggleNotificationUI(id) {
+            triggerPulse();
+            const sw = document.getElementById(id);
+            if (!sw) return;
+            const isOn = sw.classList.contains('on');
+            if (isOn) {
+                sw.classList.remove('on');
+            } else {
+                sw.classList.add('on');
+            }
+            
+            let name = "Notificação";
+            if (id === 'notif-system-switch') name = "Notificações Gerais";
+            else if (id === 'notif-messages-switch') name = "Notificações de Mensagens";
+            else if (id === 'notif-updates-switch') name = "Notificações de Atualizações";
+            else if (id === 'notif-integrations-switch') name = "Notificações de Integrações";
+            else if (id === 'notif-security-switch') name = "Notificações de Segurança";
+            else if (id === 'notif-silent-switch') name = "Modo Silencioso";
+
+            const newStateStr = !isOn ? 'Ativada(o)' : 'Desativada(o)';
+            addLog(`${name} ${newStateStr} em tempo real.`, "info");
+            showAppToast(`${name} ${newStateStr}!`);
+            
+            if (!isConfigLoading) {
+                saveConfiguration();
+            }
+        }
+
         function setAccent(color, element) {
             // Allows fine tuning override color of active theme
             currentAccentColor = color;
@@ -10609,6 +10730,24 @@ WITH CHECK (true);</code>
                     }
                     applyTransitionsState();
 
+                    // Restaura parâmetros de Notificações
+                    const loadNotifSwitch = (elId, val) => {
+                        const sw = document.getElementById(elId);
+                        if (sw) {
+                            if (val === undefined || val === true) {
+                                sw.classList.add('on');
+                            } else {
+                                sw.classList.remove('on');
+                            }
+                        }
+                    };
+                    loadNotifSwitch('notif-system-switch', data.notifSystemOn);
+                    loadNotifSwitch('notif-messages-switch', data.notifMessagesOn);
+                    loadNotifSwitch('notif-updates-switch', data.notifUpdatesOn);
+                    loadNotifSwitch('notif-integrations-switch', data.notifIntegrationsOn);
+                    loadNotifSwitch('notif-security-switch', data.notifSecurityOn);
+                    loadNotifSwitch('notif-silent-switch', data.notifSilentMode === true);
+
                     // Restaura idioma e voz
                     if (data.currentLanguage !== undefined) {
                         currentLanguage = data.currentLanguage;
@@ -11603,6 +11742,14 @@ WITH CHECK (true);</code>
                 supabaseKey: document.getElementById('supabase-key').value.trim(),
                 supabaseTable: document.getElementById('supabase-table').value.trim(),
                 supabaseAuto: document.getElementById('supabase-auto-switch').classList.contains('on'),
+
+                // Parâmetros de Notificações
+                notifSystemOn: document.getElementById('notif-system-switch')?.classList.contains('on') ?? true,
+                notifMessagesOn: document.getElementById('notif-messages-switch')?.classList.contains('on') ?? true,
+                notifUpdatesOn: document.getElementById('notif-updates-switch')?.classList.contains('on') ?? true,
+                notifIntegrationsOn: document.getElementById('notif-integrations-switch')?.classList.contains('on') ?? true,
+                notifSecurityOn: document.getElementById('notif-security-switch')?.classList.contains('on') ?? true,
+                notifSilentMode: document.getElementById('notif-silent-switch')?.classList.contains('on') ?? false,
 
                 // Ajustes de Voz & Acessibilidade
                 speechRate: parseFloat(document.getElementById('speech-rate').value),
