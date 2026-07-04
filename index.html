@@ -20445,24 +20445,35 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
         // 8.1 Integração Firebase Auth + Supabase (Login com Google)
         // ==========================================================================
         let firebaseInitialized = false;
+        let firebaseInitError = null;
 
         async function initFirebase() {
             if (firebaseInitialized) return true;
             try {
                 addLog("Carregando configurações do Firebase Auth...", "sys");
-                const response = await fetch('/firebase-applet-config.json');
+                let response = await fetch('./firebase-applet-config.json');
                 if (!response.ok) {
-                    throw new Error("Arquivo 'firebase-applet-config.json' não encontrado no servidor.");
+                    // Tenta com caminho absoluto se o relativo falhar
+                    response = await fetch('/firebase-applet-config.json');
+                }
+                if (!response.ok) {
+                    throw new Error(`Arquivo 'firebase-applet-config.json' retornou status ${response.status}.`);
                 }
                 const firebaseConfig = await response.json();
                 
+                if (typeof firebase === 'undefined') {
+                    throw new Error("SDK do Firebase (objeto 'firebase') não foi carregado. Verifique a conexão com a internet ou se scripts externos estão bloqueados no seu navegador.");
+                }
+
                 // Inicializa o SDK do Firebase
                 firebase.initializeApp(firebaseConfig);
                 firebaseInitialized = true;
+                firebaseInitError = null;
                 addLog("Firebase Auth inicializado com sucesso para Google Login!", "success");
                 return true;
             } catch (err) {
                 console.error("Erro ao inicializar Firebase Auth:", err);
+                firebaseInitError = err.message;
                 addLog(`Erro de inicialização do Firebase: ${err.message}`, "error");
                 return false;
             }
@@ -20490,7 +20501,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             try {
                 const initialized = await initFirebase();
                 if (!initialized) {
-                    throw new Error("Não foi possível carregar as credenciais do Firebase.");
+                    throw new Error(firebaseInitError || "Não foi possível carregar as credenciais do Firebase.");
                 }
 
                 const provider = new firebase.auth.GoogleAuthProvider();
