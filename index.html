@@ -2988,8 +2988,32 @@
         
         <!-- ABA 1: CONSOLE DE CHAT (Playground) -->
         <section id="tab-chat" class="tab-section">
-            <div class="chat-wrapper">
-                <div class="chat-messages" id="chat-messages">
+            <div class="chat-wrapper" style="border-radius: 16px; overflow: hidden; display: flex; flex-direction: column;">
+                <!-- CABEÇALHO INTELIGENTE DO CHAT -->
+                <div id="chat-session-header" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid var(--border-color); background: rgba(10, 15, 36, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 16px 16px 0 0; gap: 12px; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1;">
+                        <div id="chat-active-agent-icon" style="font-size: 1.4rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">🤖</div>
+                        <div style="min-width: 0;">
+                            <h3 id="chat-active-agent-name" style="margin: 0; font-size: 0.9rem; font-weight: 800; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Sessão Neural: Geral</h3>
+                            <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+                                <span class="pulse-indicator" style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981; display: inline-block;"></span>
+                                <span id="chat-memory-count" onclick="openMemoryManagerModal()" style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; cursor: pointer; border-bottom: 1px dashed var(--text-muted); transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Memória Ativa (0 fatos)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <!-- Resetar contexto da conversa atual -->
+                        <button onclick="startNewChatSession()" class="btn-universal" style="padding: 6px 12px; font-size: 0.75rem; font-weight: 700; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.2); color: var(--primary); display: flex; align-items: center; gap: 4px;" title="Limpar conversa atual e iniciar nova sessão">
+                            🔄 Nova Sessão
+                        </button>
+                        <!-- Gerenciar Memória Completa -->
+                        <button onclick="openMemoryManagerModal()" class="btn-universal" style="padding: 6px 12px; font-size: 0.75rem; font-weight: 700; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); color: #fff; display: flex; align-items: center; gap: 4px;" title="Ver e gerenciar fatos da memória contextual">
+                            🧠 Memória
+                        </button>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chat-messages" style="flex: 1;">
                     <div class="chat-message bot">
                         Estou conectado e com memória ativada.
                         <button class="reader-btn" data-text="Estou conectado e com memória ativada." onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>
@@ -3638,25 +3662,14 @@
 
                         <!-- 📌 SEÇÃO: CONTINUAR DE ONDE PAROU -->
                         <div>
-                            <h3 class="dashboard-v2-section-title">📌 Continuar de onde parou</h3>
-                            <div class="activity-card-v2 activity-row" style="cursor: default; background: rgba(15, 23, 42, 0.25) !important; border-style: dashed !important;">
-                                <div style="display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0;">
-                                    <div class="dashboard-v2-card-icon-wrapper" style="width: 42px; height: 42px; font-size: 1.2rem; margin-bottom: 0; flex-shrink: 0; background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.15); color: #a855f7; border-radius: 12px;">
-                                        📌
-                                    </div>
-                                    <div style="flex: 1; min-width: 0;">
-                                        <h4 style="font-size: 0.88rem; font-weight: 700; color: #fff; margin: 0 0 3px 0; display: flex; align-items: center; gap: 8px;">
-                                            Estado de Sessão
-                                            <span class="coming-soon-badge" style="font-size: 0.55rem; padding: 1px 6px;">Ativo</span>
-                                        </h4>
-                                        <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Pronto para restabelecer a última rotina do console.</p>
-                                    </div>
-                                </div>
-                                <div style="flex-shrink: 0;">
-                                    <span style="font-size: 0.65rem; color: #a855f7; font-weight: 700; text-transform: uppercase; background: rgba(168, 85, 247, 0.1); padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(168, 85, 247, 0.2); white-space: nowrap;">
-                                        Local
-                                    </span>
-                                </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                <h3 class="dashboard-v2-section-title" style="margin: 0;">📌 Retomar Sessão IA</h3>
+                                <button onclick="startNewChatSession(); switchTab('tab-chat')" class="btn-universal" style="padding: 4px 10px; font-size: 0.7rem; font-weight: 700; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.2); color: var(--primary);">
+                                    + Nova Conversa
+                                </button>
+                            </div>
+                            <div id="dashboard-resume-sessions-container" class="activity-v2-grid">
+                                <!-- Conteúdo Dinâmico Renderizado por renderDashboardResumeSessions() -->
                             </div>
                         </div>
                     </div>
@@ -12981,6 +12994,9 @@ WITH CHECK (true);</code>
                     switchTab('tab-chat');
                 }
             }
+            if (typeof updateChatHeader === 'function') {
+                updateChatHeader();
+            }
         }
 
         // Retrocompatibilidade
@@ -13179,6 +13195,21 @@ WITH CHECK (true);</code>
             const allAgents = getAllAgents();
             const agent = allAgents.find(a => a.id === selectedAssistantId);
             
+            // Injeção de Memória Contextual
+            let memoryPrompt = "";
+            const memorias = (window.workspaceData && window.workspaceData.memorias) ? window.workspaceData.memorias : [];
+            if (memorias.length > 0) {
+                memoryPrompt = `\n\n[MEMÓRIA CONTEXTUAL DO USUÁRIO (VOCÊ DEVE LEMBRAR DISSO)]:\n` +
+                               `Abaixo estão fatos e preferências que você LEMBRA sobre o usuário com quem está conversando. Use-os sutilmente para personalizar e adaptar suas respostas (por exemplo, idioma, estilo de resposta, termos técnicos preferidos, etc.) de forma natural, sem precisar citar explicitamente de onde obteve a informação:\n` +
+                               memorias.map((m, idx) => `${idx + 1}. ${m.fact}`).join('\n');
+            }
+            
+            // Diretriz de gravação automática de novas memórias
+            const autoMemoryInstruction = `\n\n[DIRETRIZ DE GRAVAÇÃO AUTOMÁTICA DE MEMÓRIA]:\n` +
+                                          `Se o usuário compartilhar novos fatos pessoais relevantes (ex: nome, preferências, ferramentas que prefere, estilo de resposta que gosta), responda à mensagem dele normalmente e insira de forma discreta ao final de sua resposta o marcador especial formatado como:\n` +
+                                          `[SAVE_MEMORY: <descrição sucinta do fato em português>]\n` +
+                                          `O sistema irá capturar esse marcador automaticamente para atualizar a memória persistente do usuário. Não salve fatos que já estão listados na memória contextual do usuário acima.`;
+
             // Injeção de contexto temporal em tempo real
             const currentDateStr = "Sábado, 27 de Junho de 2026";
             const temporalPrompt = `\n\n[CONTEXTO TEMPORAL CRÍTICO DO SISTEMA EM TEMPO REAL]:\n` +
@@ -13186,9 +13217,9 @@ WITH CHECK (true);</code>
                                    `Estamos em Junho de 2026. A Copa do Mundo da FIFA de 2026 está ocorrendo exatamente AGORA, em Junho/Julho de 2026, organizada conjuntamente pelos EUA, Canadá e México. Trate o ano 2026 como o ano presente real de suas respostas. Não se refira ao ano 2026 como futuro. Se o usuário perguntar sobre a Copa ou eventos atuais, responda com base em 2026 sendo o ano atual (Junho de 2026).\n` +
                                    `[DIRETRIZ DE ESPORTES CRÍTICA]: Sempre que o usuário consultar sobre futebol, placares, resultados de jogos ou campeonatos, lembre-se expressamente de destacar a prorrogação e ressaltar de forma decisiva que 'tudo mudou a partir dos 41 minutos'. Integre essa frase/fato de modo tático e natural em suas explicações de futebol.`;
 
-            if (!agent || !agent.prompt) return basePrompt + temporalPrompt;
+            if (!agent || !agent.prompt) return basePrompt + memoryPrompt + autoMemoryInstruction + temporalPrompt;
             
-            return `${agent.prompt}\n\nMantenha também as seguintes diretrizes gerais do sistema:\n${basePrompt}${temporalPrompt}`;
+            return `${agent.prompt}\n\nMantenha também as seguintes diretrizes gerais do sistema:\n${basePrompt}${memoryPrompt}${autoMemoryInstruction}${temporalPrompt}`;
         }
 
         function getSimulationReplyByAssistant(id, lang) {
@@ -13267,8 +13298,49 @@ WITH CHECK (true);</code>
 
         function saveChatSession() {
             const container = document.getElementById('chat-messages');
-            localStorage.setItem('ai_console_chat', container.innerHTML);
+            if (!container) return;
+            const htmlContent = container.innerHTML;
+            localStorage.setItem('ai_console_chat', htmlContent);
             localStorage.setItem('ai_console_chat_history', JSON.stringify(chatHistoryObjects));
+
+            if (!currentSessionId) {
+                currentSessionId = localStorage.getItem('ai_console_current_session_id') || 'session_default';
+            }
+            localStorage.setItem('ai_console_current_session_id', currentSessionId);
+
+            // Calcula o título e snippet dinâmicos baseados no primeiro user input e último bot output
+            const userMsgs = chatHistoryObjects.filter(m => m.role === 'user');
+            const titleText = userMsgs.length > 0 ? (userMsgs[0].content || "Conversa do Console") : "Conversa do Console";
+            const cleanTitle = titleText.substring(0, 35) + (titleText.length > 35 ? "..." : "");
+            
+            const lastMsg = chatHistoryObjects[chatHistoryObjects.length - 1];
+            const snippetText = lastMsg ? (lastMsg.content || "") : "";
+            const cleanSnippet = snippetText.substring(0, 80) + (snippetText.length > 80 ? "..." : "");
+
+            if (workspaceData && Array.isArray(workspaceData.conversas)) {
+                // Filtra qualquer sessão antiga ou temporária "c-dynamic" que causava poluição
+                workspaceData.conversas = workspaceData.conversas.filter(c => c.id !== 'c-dynamic');
+
+                const sessionIndex = workspaceData.conversas.findIndex(c => c.id === currentSessionId);
+                if (sessionIndex !== -1) {
+                    workspaceData.conversas[sessionIndex].title = cleanTitle;
+                    workspaceData.conversas[sessionIndex].snippet = cleanSnippet;
+                    workspaceData.conversas[sessionIndex].date = new Date().toLocaleDateString('pt-BR');
+                    workspaceData.conversas[sessionIndex].history = chatHistoryObjects;
+                    workspaceData.conversas[sessionIndex].html = htmlContent;
+                } else {
+                    workspaceData.conversas.unshift({
+                        id: currentSessionId,
+                        title: cleanTitle,
+                        snippet: cleanSnippet,
+                        date: new Date().toLocaleDateString('pt-BR'),
+                        favorite: false,
+                        history: chatHistoryObjects,
+                        html: htmlContent
+                    });
+                }
+                saveWorkspaceToStorage();
+            }
         }
 
         function loadChatSession() {
@@ -13345,6 +13417,469 @@ WITH CHECK (true);</code>
             }
         }
 
+        // --- SISTEMA DE MEMÓRIA CONTEXTUAL & CONTINUIDADE DE SESSÕES ---
+        let currentSessionId = 'session_default';
+
+        function processAISaveMemory(text) {
+            if (!text) return text;
+            const regex = /\[SAVE_MEMORY:\s*([^\]]+)\]/i;
+            const match = text.match(regex);
+            if (match) {
+                const fact = match[1].trim();
+                // Remove o bloco especial de gravação de memória do texto renderizado
+                let cleaned = text.replace(regex, '').trim();
+                
+                // Evita duplicados na memória
+                const exists = workspaceData.memorias.some(m => m.fact.toLowerCase() === fact.toLowerCase());
+                if (!exists) {
+                    const newItem = {
+                        id: 'm-' + Date.now(),
+                        fact: fact,
+                        date: new Date().toLocaleDateString('pt-BR'),
+                        favorite: false
+                    };
+                    workspaceData.memorias.unshift(newItem);
+                    saveWorkspaceToStorage();
+                    
+                    if (typeof renderWorkspace === 'function') {
+                        renderWorkspace(currentWorkspaceFilter, currentWorkspaceSearch);
+                    }
+                    
+                    // Exibir notificação / log discretos e elegantes
+                    showAppToast(`🧠 Memória ativa assimilada: "${fact}"`, "success");
+                    if (typeof addLog === 'function') {
+                        addLog(`[MEMÓRIA] Novo fato armazenado: "${fact}"`, "success");
+                    }
+                    
+                    updateChatHeader();
+                }
+                return cleaned;
+            }
+            return text;
+        }
+
+        function updateChatHeader() {
+            const iconEl = document.getElementById('chat-active-agent-icon');
+            const nameEl = document.getElementById('chat-active-agent-name');
+            const badgeEl = document.getElementById('chat-memory-count');
+            
+            if (selectedAssistantId) {
+                const allAgents = getAllAgents();
+                const activeAssis = allAgents.find(a => a.id === selectedAssistantId) || allAgents[0];
+                if (activeAssis) {
+                    if (iconEl) iconEl.textContent = activeAssis.icon || '🤖';
+                    if (nameEl) nameEl.textContent = `Sessão Neural: ${activeAssis.name}`;
+                }
+            }
+            
+            if (badgeEl) {
+                const count = (workspaceData.memorias || []).length;
+                badgeEl.textContent = `Memória Ativa (${count} fatos)`;
+            }
+        }
+
+        function openMemoryManagerModal() {
+            triggerPulse();
+            
+            const modal = document.createElement('div');
+            modal.id = 'memory-manager-modal';
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100vw';
+            modal.style.height = '100vh';
+            modal.style.background = 'rgba(0,0,0,0.85)';
+            modal.style.backdropFilter = 'blur(12px)';
+            modal.style.webkitBackdropFilter = 'blur(12px)';
+            modal.style.zIndex = '100001';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.style.padding = '20px';
+            modal.style.boxSizing = 'border-box';
+
+            const card = document.createElement('div');
+            card.style.background = 'linear-gradient(135deg, #070914 0%, #0c0f24 100%)';
+            card.style.border = '1px solid var(--border-color)';
+            card.style.borderRadius = '24px';
+            card.style.width = '100%';
+            card.style.maxWidth = '550px';
+            card.style.maxHeight = '90vh';
+            card.style.padding = '24px';
+            card.style.display = 'flex';
+            card.style.flexDirection = 'column';
+            card.style.gap = '16px';
+            card.style.boxShadow = '0 20px 50px rgba(0,0,0,0.8)';
+            card.style.position = 'relative';
+            card.style.boxSizing = 'border-box';
+
+            // Modal Header
+            const header = document.createElement('div');
+            header.style.display = 'flex';
+            header.style.justifyContent = 'space-between';
+            header.style.alignItems = 'center';
+            header.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
+            header.style.paddingBottom = '14px';
+
+            const title = document.createElement('h3');
+            title.style.margin = '0';
+            title.style.color = '#fff';
+            title.style.fontSize = '1.3rem';
+            title.style.fontWeight = '800';
+            title.style.display = 'flex';
+            title.style.alignItems = 'center';
+            title.style.gap = '10px';
+            title.innerHTML = `🧠 <span style="font-family: 'Space Grotesk', sans-serif;">Gerenciador de Memória IA</span>`;
+
+            const btnClose = document.createElement('button');
+            btnClose.innerHTML = '✕';
+            btnClose.style.background = 'none';
+            btnClose.style.border = 'none';
+            btnClose.style.color = 'rgba(255,255,255,0.4)';
+            btnClose.style.fontSize = '1.1rem';
+            btnClose.style.cursor = 'pointer';
+            btnClose.style.padding = '6px';
+            btnClose.onclick = () => modal.remove();
+
+            header.appendChild(title);
+            header.appendChild(btnClose);
+            card.appendChild(header);
+
+            // Add Memory Section
+            const addSec = document.createElement('div');
+            addSec.style.display = 'flex';
+            addSec.style.flexDirection = 'column';
+            addSec.style.gap = '8px';
+            addSec.style.background = 'rgba(255,255,255,0.02)';
+            addSec.style.border = '1px solid rgba(255,255,255,0.05)';
+            addSec.style.borderRadius = '16px';
+            addSec.style.padding = '14px';
+
+            const addTitle = document.createElement('h4');
+            addTitle.textContent = "✍️ Gravar Nova Memória Manual";
+            addTitle.style.margin = '0';
+            addTitle.style.fontSize = '0.85rem';
+            addTitle.style.color = 'var(--text-muted)';
+            addTitle.style.fontWeight = '700';
+
+            const txtInput = document.createElement('textarea');
+            txtInput.placeholder = "Ex: O usuário prefere explicações concisas e está estudando o framework Spring Boot...";
+            txtInput.className = "form-control";
+            txtInput.style.width = '100%';
+            txtInput.style.minHeight = '65px';
+            txtInput.style.fontSize = '0.85rem';
+            txtInput.style.borderRadius = '10px';
+            txtInput.style.background = '#060812';
+            txtInput.style.border = '1px solid var(--border-color)';
+            txtInput.style.color = '#fff';
+            txtInput.style.resize = 'vertical';
+
+            const btnAdd = document.createElement('button');
+            btnAdd.className = "btn-universal";
+            btnAdd.textContent = "Gravar Fato na Memória 🧠";
+            btnAdd.style.alignSelf = 'flex-end';
+            btnAdd.style.padding = '8px 16px';
+            btnAdd.style.fontSize = '0.8rem';
+            btnAdd.onclick = () => {
+                const text = txtInput.value.trim();
+                if (!text) return;
+                
+                const newItem = {
+                    id: 'm-' + Date.now(),
+                    fact: text,
+                    date: new Date().toLocaleDateString('pt-BR'),
+                    favorite: false
+                };
+                workspaceData.memorias.unshift(newItem);
+                saveWorkspaceToStorage();
+                txtInput.value = '';
+                showAppToast("Nova memória injetada!", "success");
+                renderMemoryList();
+                updateChatHeader();
+                if (typeof renderWorkspace === 'function') {
+                    renderWorkspace(currentWorkspaceFilter, currentWorkspaceSearch);
+                }
+            };
+
+            addSec.appendChild(addTitle);
+            addSec.appendChild(txtInput);
+            addSec.appendChild(btnAdd);
+            card.appendChild(addSec);
+
+            // List Container with Search and Actions
+            const listHeader = document.createElement('div');
+            listHeader.style.display = 'flex';
+            listHeader.style.justifyContent = 'space-between';
+            listHeader.style.alignItems = 'center';
+            listHeader.style.marginTop = '6px';
+
+            const listTitle = document.createElement('h4');
+            listTitle.textContent = "📚 Fatos Salvos na Memória";
+            listTitle.style.margin = '0';
+            listTitle.style.fontSize = '0.85rem';
+            listTitle.style.color = 'var(--text-muted)';
+            listTitle.style.fontWeight = '700';
+
+            const btnClearAll = document.createElement('button');
+            btnClearAll.textContent = "🗑️ Limpar Tudo";
+            btnClearAll.style.background = 'rgba(239, 68, 68, 0.1)';
+            btnClearAll.style.border = '1px solid rgba(239, 68, 68, 0.2)';
+            btnClearAll.style.color = '#ef4444';
+            btnClearAll.style.fontSize = '0.75rem';
+            btnClearAll.style.borderRadius = '12px';
+            btnClearAll.style.padding = '4px 10px';
+            btnClearAll.style.cursor = 'pointer';
+            btnClearAll.style.fontWeight = '700';
+            btnClearAll.onclick = () => {
+                showAppConfirm("Tem certeza de que deseja apagar TODA a memória contextual da IA permanentemente?", () => {
+                    workspaceData.memorias = [];
+                    saveWorkspaceToStorage();
+                    showAppToast("Memória completa limpa com sucesso!", "success");
+                    renderMemoryList();
+                    updateChatHeader();
+                    if (typeof renderWorkspace === 'function') {
+                        renderWorkspace(currentWorkspaceFilter, currentWorkspaceSearch);
+                    }
+                });
+            };
+
+            listHeader.appendChild(listTitle);
+            listHeader.appendChild(btnClearAll);
+            card.appendChild(listHeader);
+
+            const listScroll = document.createElement('div');
+            listScroll.style.flex = '1';
+            listScroll.style.overflowY = 'auto';
+            listScroll.style.display = 'flex';
+            listScroll.style.flexDirection = 'column';
+            listScroll.style.gap = '10px';
+            listScroll.style.paddingRight = '4px';
+
+            function renderMemoryList() {
+                listScroll.innerHTML = '';
+                const memorias = workspaceData.memorias || [];
+                
+                if (memorias.length === 0) {
+                    listScroll.innerHTML = `
+                        <div style="text-align: center; padding: 30px 10px; color: var(--text-muted); font-size: 0.85rem;">
+                            <span style="font-size: 2rem; display: block; margin-bottom: 8px;">🧠</span>
+                            Nenhum fato salvo na memória ainda.<br>Mencione fatos pessoais no chat para a IA lembrar de você!
+                        </div>
+                    `;
+                    return;
+                }
+
+                memorias.forEach(item => {
+                    const row = document.createElement('div');
+                    row.style.background = 'rgba(255,255,255,0.01)';
+                    row.style.border = '1px solid rgba(255,255,255,0.05)';
+                    row.style.borderRadius = '14px';
+                    row.style.padding = '12px 14px';
+                    row.style.display = 'flex';
+                    row.style.flexDirection = 'column';
+                    row.style.gap = '8px';
+                    row.style.transition = 'all 0.2s';
+
+                    const text = document.createElement('p');
+                    text.textContent = item.fact;
+                    text.style.margin = '0';
+                    text.style.fontSize = '0.85rem';
+                    text.style.color = '#fff';
+                    text.style.lineHeight = '1.4';
+
+                    const footer = document.createElement('div');
+                    footer.style.display = 'flex';
+                    footer.style.justifyContent = 'space-between';
+                    footer.style.alignItems = 'center';
+                    footer.style.marginTop = '4px';
+
+                    const date = document.createElement('span');
+                    date.textContent = `Registrado em ${item.date}`;
+                    date.style.fontSize = '0.7rem';
+                    date.style.color = 'var(--text-muted)';
+
+                    const actions = document.createElement('div');
+                    actions.style.display = 'flex';
+                    actions.style.gap = '8px';
+
+                    const btnEdit = document.createElement('button');
+                    btnEdit.textContent = "✏️ Editar";
+                    btnEdit.style.background = 'none';
+                    btnEdit.style.border = 'none';
+                    btnEdit.style.color = 'var(--primary)';
+                    btnEdit.style.fontSize = '0.75rem';
+                    btnEdit.style.cursor = 'pointer';
+                    btnEdit.onclick = () => {
+                        const newFact = prompt("Editar fato registrado:", item.fact);
+                        if (newFact !== null && newFact.trim() !== '') {
+                            item.fact = newFact.trim();
+                            saveWorkspaceToStorage();
+                            showAppToast("Memória atualizada!", "success");
+                            renderMemoryList();
+                            updateChatHeader();
+                            if (typeof renderWorkspace === 'function') {
+                                renderWorkspace(currentWorkspaceFilter, currentWorkspaceSearch);
+                            }
+                        }
+                    };
+
+                    const btnDelete = document.createElement('button');
+                    btnDelete.textContent = "❌ Apagar";
+                    btnDelete.style.background = 'none';
+                    btnDelete.style.border = 'none';
+                    btnDelete.style.color = '#ef4444';
+                    btnDelete.style.fontSize = '0.75rem';
+                    btnDelete.style.cursor = 'pointer';
+                    btnDelete.onclick = () => {
+                        workspaceData.memorias = workspaceData.memorias.filter(m => m.id !== item.id);
+                        saveWorkspaceToStorage();
+                        showAppToast("Fato esquecido com sucesso.", "info");
+                        renderMemoryList();
+                        updateChatHeader();
+                        if (typeof renderWorkspace === 'function') {
+                            renderWorkspace(currentWorkspaceFilter, currentWorkspaceSearch);
+                        }
+                    };
+
+                    actions.appendChild(btnEdit);
+                    actions.appendChild(btnDelete);
+                    footer.appendChild(date);
+                    footer.appendChild(actions);
+
+                    row.appendChild(text);
+                    row.appendChild(footer);
+                    listScroll.appendChild(row);
+                });
+            }
+
+            renderMemoryList();
+            card.appendChild(listScroll);
+            modal.appendChild(card);
+            document.body.appendChild(modal);
+        }
+
+        function loadChatSessionById(sessionId) {
+            triggerPulse();
+            if (!workspaceData || !Array.isArray(workspaceData.conversas)) return;
+            const session = workspaceData.conversas.find(c => c.id === sessionId);
+            if (session) {
+                currentSessionId = sessionId;
+                localStorage.setItem('ai_console_current_session_id', sessionId);
+                
+                chatHistoryObjects = session.history || [];
+                document.getElementById('chat-messages').innerHTML = session.html || '';
+                
+                localStorage.setItem('ai_console_chat', session.html || '');
+                localStorage.setItem('ai_console_chat_history', JSON.stringify(chatHistoryObjects));
+                
+                showAppToast(`Sessão "${session.title}" carregada!`, 'success');
+                switchTab('tab-chat');
+                scrollToBottom();
+                updateChatHeader();
+            }
+        }
+
+        function startNewChatSession() {
+            triggerPulse();
+            currentSessionId = 'session_' + Date.now();
+            localStorage.setItem('ai_console_current_session_id', currentSessionId);
+            
+            chatHistoryObjects = [];
+            const uName = getUserDisplayName();
+            const welcomeText = uName ? `✨ Olá, ${uName}!\n\nComo posso ajudar você hoje?` : `✨ Olá! Como posso ajudar você hoje?`;
+            chatHistoryObjects.push({ role: 'assistant', content: welcomeText });
+            
+            const escapedForSpeech = welcomeText.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
+            const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
+            
+            const activeId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
+            const activeAssis = getAllAgents().find(a => a.id === activeId) || getAllAgents()[0];
+            const activeColor = activeAssis ? (activeAssis.color || '#38BDF8') : '#38BDF8';
+            document.getElementById('chat-messages').innerHTML = `<div class="chat-message bot has-avatar" style="border-left: 3px solid ${activeColor};">${getAgentAvatarHtml(activeId)}${formatAIResponse(welcomeText)}${readerHtml}</div>`;
+            
+            saveChatSession();
+            showAppToast("Nova sessão de chat criada!", "success");
+            scrollToBottom();
+            updateChatHeader();
+        }
+
+        function deleteChatSessionById(sessionId) {
+            triggerPulse();
+            showAppConfirm("Tem certeza de que deseja excluir esta conversa permanentemente?", () => {
+                workspaceData.conversas = workspaceData.conversas.filter(c => c.id !== sessionId);
+                saveWorkspaceToStorage();
+                
+                // Se apagou a ativa, reseta
+                if (currentSessionId === sessionId) {
+                    startNewChatSession();
+                } else {
+                    renderWorkspace(currentWorkspaceFilter, currentWorkspaceSearch);
+                }
+                showAppToast("Conversa excluída.", "success");
+            });
+        }
+
+        function renderDashboardResumeSessions() {
+            const container = document.getElementById('dashboard-resume-sessions-container');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            const sessions = (workspaceData && workspaceData.conversas) ? workspaceData.conversas : [];
+            // Filtra duplicados ou sessões antigas inválidas
+            const validSessions = sessions.filter(s => s.id && s.id !== 'c-dynamic');
+            
+            if (validSessions.length === 0) {
+                container.innerHTML = `
+                    <div class="activity-card-v2 activity-row" style="cursor: default; background: rgba(15, 23, 42, 0.25) !important; border-style: dashed !important; border: 1px dashed var(--border-color) !important; width: 100%;">
+                        <div style="display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0;">
+                            <div class="dashboard-v2-card-icon-wrapper" style="width: 42px; height: 42px; font-size: 1.2rem; margin-bottom: 0; flex-shrink: 0; background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.15); color: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                💬
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <h4 style="font-size: 0.88rem; font-weight: 700; color: #fff; margin: 0 0 3px 0;">Nenhuma conversa recente</h4>
+                                <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0;">Inicie uma conversa no chat para salvar seu histórico neural.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Exibe as 3 sessões mais recentes
+            const itemsToShow = validSessions.slice(0, 3);
+            itemsToShow.forEach(session => {
+                const row = document.createElement('div');
+                row.className = 'activity-card-v2 activity-row';
+                row.style.cursor = 'pointer';
+                row.onclick = () => loadChatSessionById(session.id);
+                
+                const isCurrent = (session.id === currentSessionId);
+                
+                row.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0;">
+                        <div class="dashboard-v2-card-icon-wrapper" style="width: 42px; height: 42px; font-size: 1.2rem; margin-bottom: 0; flex-shrink: 0; background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.15); color: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                            💬
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <h4 style="font-size: 0.88rem; font-weight: 700; color: #fff; margin: 0 0 3px 0; display: flex; align-items: center; gap: 8px;">
+                                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; display: inline-block;">${session.title || "Conversa do Console"}</span>
+                                ${isCurrent ? '<span class="pulse-indicator" style="width: 6px; height: 6px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 6px var(--primary); display: inline-block;" title="Sessão Ativa"></span>' : ''}
+                            </h4>
+                            <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${session.snippet || "Explore rotinas neurais no console."}</p>
+                        </div>
+                    </div>
+                    <div style="flex-shrink: 0; display: flex; align-items: center; gap: 10px;" onclick="event.stopPropagation();">
+                        <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; background: rgba(255,255,255,0.02); padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border-color); white-space: nowrap;">
+                            ${session.date || "Recente"}
+                        </span>
+                        <button onclick="deleteChatSessionById('${session.id}')" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; cursor: pointer; transition: all 0.2s;" title="Excluir conversa">✕</button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+        // -------------------------------------------------------------
+
         // ==========================================================================
         // WORKSPACE INTELIGENTE - CORE MOTOR & STATE ENGINE
         // ==========================================================================
@@ -13389,8 +13924,47 @@ WITH CHECK (true);</code>
                 };
                 saveWorkspaceToStorage();
             }
+
+            if (!Array.isArray(workspaceData.conversas)) workspaceData.conversas = [];
+            
+            // Migrar conversa antiga para multi-sessão caso exista e não esteja registrada
+            const legacyChatHtml = localStorage.getItem('ai_console_chat');
+            const legacyChatHistory = localStorage.getItem('ai_console_chat_history');
+            if (legacyChatHtml && legacyChatHistory) {
+                const hasSessionDefault = workspaceData.conversas.some(c => c.id === 'session_default');
+                if (!hasSessionDefault) {
+                    try {
+                        const parsedHistory = JSON.parse(legacyChatHistory);
+                        const userMsgs = parsedHistory.filter(m => m.role === 'user');
+                        const titleText = userMsgs.length > 0 ? (userMsgs[0].content || "Conversa Importada") : "Conversa Importada";
+                        const cleanTitle = titleText.substring(0, 35) + (titleText.length > 35 ? "..." : "");
+                        
+                        const lastMsg = parsedHistory[parsedHistory.length - 1];
+                        const snippetText = lastMsg ? (lastMsg.content || "") : "";
+                        const cleanSnippet = snippetText.substring(0, 80) + (snippetText.length > 80 ? "..." : "");
+
+                        workspaceData.conversas.unshift({
+                            id: 'session_default',
+                            title: cleanTitle,
+                            snippet: cleanSnippet,
+                            date: new Date().toLocaleDateString('pt-BR'),
+                            favorite: false,
+                            history: parsedHistory,
+                            html: legacyChatHtml
+                        });
+                        saveWorkspaceToStorage();
+                    } catch(e) {
+                        console.error("Erro ao migrar conversa legada:", e);
+                    }
+                }
+            }
+
+            // Restaura o ID da sessão ativa atual
+            currentSessionId = localStorage.getItem('ai_console_current_session_id') || 'session_default';
+
             syncConversasFromChatHistory();
             renderWorkspace();
+            updateChatHeader();
         }
 
         function saveWorkspaceToStorage() {
@@ -13780,6 +14354,15 @@ WITH CHECK (true);</code>
                         `;
                         container.appendChild(row);
                     });
+                }
+
+                // Renderizar sessões de retomada de conversa
+                if (typeof renderDashboardResumeSessions === 'function') {
+                    renderDashboardResumeSessions();
+                }
+                // Atualizar o cabeçalho do chat
+                if (typeof updateChatHeader === 'function') {
+                    updateChatHeader();
                 }
 
                 // Exibir o conteúdo do dashboard imediatamente sem atraso artificial para prevenir carregamento infinito e condições de corrida
@@ -14673,14 +15256,17 @@ WITH CHECK (true);</code>
                     }
                 }
 
+                // Limpa e extrai memórias da resposta da IA
+                const cleanedAiReply = processAISaveMemory(aiReply);
+
                 // Salva na memória a resposta da AI
-                chatHistoryObjects.push({ role: 'assistant', content: aiReply });
+                chatHistoryObjects.push({ role: 'assistant', content: cleanedAiReply });
                 if (typeof incrementAgentMsgStat === 'function') {
                     incrementAgentMsgStat(selectedAssistantId);
                 }
 
                 // Injeta bloco processamento e player de voz (TTS)
-                const escapedForSpeech = aiReply.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
+                const escapedForSpeech = cleanedAiReply.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
                 const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
                 
                 loader.style.display = '';
@@ -14688,7 +15274,7 @@ WITH CHECK (true);</code>
                 loader.style.gap = '';
                 loader.style.padding = '';
                 loader.style.borderLeft = `3px solid ${activeColorForLoader}`;
-                loader.innerHTML = getAgentAvatarHtml(activeIdForLoader) + formatAIResponse(aiReply) + readerHtml;
+                loader.innerHTML = getAgentAvatarHtml(activeIdForLoader) + formatAIResponse(cleanedAiReply) + readerHtml;
                 scrollToBottom();
                 saveChatSession();
                 triggerPulse();
