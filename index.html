@@ -4589,49 +4589,107 @@
             </div>
 
             <!-- CONTEÚDO DO PAINEL PRINCIPAL (Inicialmente Oculto) -->
-            <div id="admin-main-panel" style="display: none; flex-direction: column; gap: 20px;">
+            <div id="admin-main-panel" style="display: none; flex-direction: column; gap: 24px;">
                 
-                <!-- CARD DE RESUMO E STATS -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                    <div class="supabase-card" style="margin-bottom: 0; padding: 15px; gap: 8px;">
-                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Usuários Registrados</span>
-                        <div style="display: flex; align-items: baseline; gap: 8px;">
-                            <span id="admin-stat-users-count" style="font-size: 1.8rem; font-weight: bold; color: var(--primary);">0</span>
-                            <span style="font-size: 0.75rem; color: #4ade80;">Ativos 🟢</span>
+                <style>
+                /* Estilos e animações para o Painel Administrativo Premium */
+                @keyframes adminPulse {
+                    0% { transform: scale(1); box-shadow: 0 0 4px rgba(var(--primary-rgb, 139, 92, 246), 0.4); }
+                    100% { transform: scale(1.05); box-shadow: 0 0 12px rgba(var(--primary-rgb, 139, 92, 246), 0.8); }
+                }
+
+                @keyframes pulseRed {
+                    0%, 100% { opacity: 0.8; }
+                    50% { opacity: 1; filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.8)); }
+                }
+
+                .help-btn {
+                    transition: transform 0.2s, color 0.2s;
+                }
+                .help-btn:hover {
+                    transform: scale(1.2) rotate(15deg);
+                }
+
+                .admin-accordion-item {
+                    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                }
+
+                .admin-accordion-header:hover {
+                    background: rgba(255, 255, 255, 0.02) !important;
+                }
+
+                .admin-accordion-content {
+                    transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s, padding 0.3s;
+                }
+
+                /* Tooltip dynamic styling */
+                .help-tip-box {
+                    background: rgba(var(--primary-rgb, 139, 92, 246), 0.04) !important;
+                    border: 1px dashed rgba(var(--primary-rgb, 139, 92, 246), 0.2) !important;
+                    color: var(--text-muted) !important;
+                    font-size: 0.75rem !important;
+                    line-height: 1.4 !important;
+                    border-radius: 10px !important;
+                    padding: 0;
+                    max-height: 0;
+                    opacity: 0;
+                    overflow: hidden;
+                    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                }
+                </style>
+
+                <!-- NOVO PAINEL DE RESUMO E STATS DE ALTA FIDELIDADE -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
+                    <div class="supabase-card" style="margin-bottom: 0; padding: 18px; gap: 6px; position: relative; overflow: hidden; background: linear-gradient(135deg, var(--card-bg-secondary) 0%, rgba(var(--primary-rgb, 139, 92, 246), 0.02) 100%);">
+                        <div style="position: absolute; right: 15px; top: 15px; font-size: 1.5rem; opacity: 0.15; pointer-events: none;">👥</div>
+                        <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Usuários Sincronizados</span>
+                        <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 4px;">
+                            <span id="admin-stat-users-count" style="font-size: 1.8rem; font-weight: 800; color: var(--primary);">0</span>
+                            <span style="font-size: 0.72rem; color: #4ade80; background: rgba(74, 222, 128, 0.08); padding: 2px 6px; border-radius: 6px; font-weight: bold; display: flex; align-items: center; gap: 4px;">Ativos <span style="width:5px; height:5px; background:#4ade80; border-radius:50%; display:inline-block;"></span></span>
                         </div>
                     </div>
-                    <div class="supabase-card" style="margin-bottom: 0; padding: 15px; gap: 8px;">
-                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Ações Executadas (Histórico)</span>
-                        <div style="display: flex; align-items: baseline; gap: 8px;">
-                            <span id="admin-stat-actions-count" style="font-size: 1.8rem; font-weight: bold; color: #38bdf8;">0</span>
-                            <span style="font-size: 0.75rem; color: var(--text-muted);">requisições</span>
+                    <div class="supabase-card" style="margin-bottom: 0; padding: 18px; gap: 6px; position: relative; overflow: hidden; background: linear-gradient(135deg, var(--card-bg-secondary) 0%, rgba(56, 189, 248, 0.02) 100%);">
+                        <div style="position: absolute; right: 15px; top: 15px; font-size: 1.5rem; opacity: 0.15; pointer-events: none;">📈</div>
+                        <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Ações no Sistema</span>
+                        <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 4px;">
+                            <span id="admin-stat-actions-count" style="font-size: 1.8rem; font-weight: 800; color: #38bdf8;">0</span>
+                            <span style="font-size: 0.72rem; color: #38bdf8; background: rgba(56, 189, 248, 0.08); padding: 2px 6px; border-radius: 6px; font-weight: bold;">histórico</span>
                         </div>
                     </div>
-                    <div class="supabase-card" style="margin-bottom: 0; padding: 15px; gap: 8px;">
-                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Contas Suspensas</span>
-                        <div style="display: flex; align-items: baseline; gap: 8px;">
-                            <span id="admin-stat-banned-count" style="font-size: 1.8rem; font-weight: bold; color: #ef4444;">0</span>
-                            <span style="font-size: 0.75rem; color: #ef4444;">restritos 🚫</span>
+                    <div class="supabase-card" style="margin-bottom: 0; padding: 18px; gap: 6px; position: relative; overflow: hidden; background: linear-gradient(135deg, var(--card-bg-secondary) 0%, rgba(239, 68, 68, 0.02) 100%);">
+                        <div style="position: absolute; right: 15px; top: 15px; font-size: 1.5rem; opacity: 0.15; pointer-events: none;">🚫</div>
+                        <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Contas Suspensas</span>
+                        <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 4px;">
+                            <span id="admin-stat-banned-count" style="font-size: 1.8rem; font-weight: 800; color: #ef4444;">0</span>
+                            <span style="font-size: 0.72rem; color: #ef4444; background: rgba(239, 68, 68, 0.08); padding: 2px 6px; border-radius: 6px; font-weight: bold;">bloqueados</span>
+                        </div>
+                    </div>
+                    <div class="supabase-card" style="margin-bottom: 0; padding: 18px; gap: 6px; position: relative; overflow: hidden; background: linear-gradient(135deg, var(--card-bg-secondary) 0%, rgba(74, 222, 128, 0.02) 100%);">
+                        <div style="position: absolute; right: 15px; top: 15px; font-size: 1.5rem; opacity: 0.15; pointer-events: none;">🛡️</div>
+                        <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Status do Console</span>
+                        <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 4px;">
+                            <span style="font-size: 1.25rem; font-weight: 800; color: #4ade80;">OPERACIONAL</span>
+                            <span style="font-size: 0.72rem; color: var(--text-muted);">Sincronia OK</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- LISTA DE USUÁRIOS COMPLETA -->
-                <div class="supabase-card" style="margin-bottom: 0;">
+                <div class="supabase-card" style="margin-bottom: 0; border-radius: 20px;">
                     <div class="supabase-card-header">
                         <span class="supabase-card-title">👥 Usuários Cadastrados & Moderação</span>
-                        <span class="supabase-status-badge" style="color: #4ade80; border-color: rgba(74,222,128,0.2);">Acesso Direto</span>
+                        <span class="supabase-status-badge" style="color: #4ade80; border-color: rgba(74,222,128,0.2); font-weight: bold;">Sincronismo Supabase</span>
                     </div>
                     <div style="overflow-x: auto; margin-top: 10px;">
                         <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; color: var(--text-main);">
                             <thead>
                                 <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-weight: bold;">
-                                    <th style="padding: 10px 8px;">Usuário / E-mail</th>
-                                    <th style="padding: 10px 8px;">Registrado em</th>
-                                    <th style="padding: 10px 8px; text-align: center;">Usos</th>
-                                    <th style="padding: 10px 8px;">Serviço Mais Ativo</th>
-                                    <th style="padding: 10px 8px;">Status</th>
-                                    <th style="padding: 10px 8px; text-align: right;">Ações de Moderação</th>
+                                    <th style="padding: 12px 10px;">Usuário / E-mail</th>
+                                    <th style="padding: 12px 10px;">Registrado em</th>
+                                    <th style="padding: 12px 10px; text-align: center;">Usos</th>
+                                    <th style="padding: 12px 10px;">Serviço Mais Ativo</th>
+                                    <th style="padding: 12px 10px;">Status</th>
+                                    <th style="padding: 12px 10px; text-align: right;">Ações de Moderação</th>
                                 </tr>
                             </thead>
                             <tbody id="admin-users-table-body">
@@ -4642,89 +4700,205 @@
                 </div>
 
                 <!-- MONITOR DE ATIVIDADES DE USUÁRIOS -->
-                <div class="supabase-card" style="margin-bottom: 0;">
+                <div class="supabase-card" style="margin-bottom: 0; border-radius: 20px;">
                     <div class="supabase-card-header">
                         <span class="supabase-card-title">🖥️ Histórico de Atividades Recentes</span>
-                        <button class="btn-universal" onclick="clearAdminLogs()" style="padding: 4px 10px; font-size: 0.75rem; height: auto; background-color: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444;">Limpar Histórico Local</button>
+                        <button class="btn-universal" onclick="clearAdminLogs()" style="padding: 6px 12px; font-size: 0.75rem; height: auto; background-color: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); color: #ef4444; border-radius: 10px; font-weight: bold;">Limpar Histórico Local</button>
                     </div>
-                    <div style="max-height: 250px; overflow-y: auto; margin-top: 10px; font-family: monospace; font-size: 0.8rem; background: rgba(0,0,0,0.2); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px;" id="admin-activity-logs-container">
+                    <div style="max-height: 250px; overflow-y: auto; margin-top: 10px; font-family: monospace; font-size: 0.8rem; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px; border: 1px solid rgba(255,255,255,0.03);" id="admin-activity-logs-container">
                         <!-- Preenchido dinamicamente -->
                     </div>
                 </div>
 
-                <!-- CONFIGURAÇÕES DE MODERAÇÃO E INSTRUÇÕES SQL -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
-                    <!-- Ajustes Admin -->
-                    <div class="supabase-card" style="margin-bottom: 0;">
-                        <div class="supabase-card-header">
-                            <span class="supabase-card-title">⚙️ Ajustes de Dono do Console</span>
+                <!-- BARRA DE PESQUISA E INDICADOR DE ALTERAÇÕES -->
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
+                    <h3 style="font-size: 1rem; font-weight: bold; color: var(--text-main); margin-bottom: 2px; display: flex; align-items: center; gap: 8px;">⚙️ Configurações do Proprietário</h3>
+                    
+                    <div class="search-container" style="position: relative; display: flex; align-items: center; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 14px; padding: 4px 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: all 0.3s;">
+                        <span style="font-size: 1rem; margin-right: 10px; opacity: 0.6;">🔍</span>
+                        <input type="text" id="admin-config-search" placeholder="Procurar configurações administrativas (ex: senha, api key, sql)..." style="background: transparent; border: none; outline: none; color: #fff; font-size: 0.85rem; padding: 10px 0; width: 100%; font-weight: 500;" oninput="filterAdminConfigs(this.value)">
+                        
+                        <!-- Dynamic Unsaved Changes Badge -->
+                        <span id="admin-unsaved-badge" style="display: none; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); font-size: 0.7rem; font-weight: bold; padding: 4px 10px; border-radius: 8px; margin-left: 10px; white-space: nowrap; align-items: center; gap: 5px; animation: pulseRed 2s infinite;">
+                            <span style="display:inline-block; width:6px; height:6px; background:#f87171; border-radius:50%;"></span>
+                            Alterações não salvas
+                        </span>
+                    </div>
+                </div>
+
+                <!-- SEÇÕES DE CONFIGURAÇÃO EM ACCORDION RECOLHÍVEL -->
+                <div class="admin-accordion-container" style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px;">
+                    
+                    <!-- ACCORDION CARD 1: AJUSTES DE ACESSO DO DONO -->
+                    <div class="admin-accordion-item" id="accordion-safety" style="border: 1px solid var(--border-color); border-radius: 18px; background: var(--card-bg-secondary); overflow: hidden;">
+                        <div class="admin-accordion-header" onclick="toggleAdminAccordion('accordion-safety')" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; cursor: pointer; transition: background 0.2s;">
+                            <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
+                                <div class="accordion-icon-box" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 12px; background: rgba(167, 139, 250, 0.08); border: 1px solid rgba(167, 139, 250, 0.15); color: #a78bfa; font-size: 1.15rem; flex-shrink: 0; transition: all 0.3s;">
+                                    🔑
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 3px;">
+                                    <span class="accordion-title" style="font-weight: 700; font-size: 0.95rem; color: #fff; display: flex; align-items: center; gap: 8px;">
+                                        Acesso & Segurança do Proprietário
+                                    </span>
+                                    <span style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.3;">E-mail de whitelist e senha PIN do painel administrativo.</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <span class="unsaved-dot" id="dot-safety" style="display: none; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 10px #ef4444;"></span>
+                                <span class="accordion-arrow" style="font-size: 0.75rem; color: var(--text-muted); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);">▼</span>
+                            </div>
                         </div>
-                        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
-                            <div>
-                                <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">E-mail Administrador Whitelist</label>
-                                <input type="email" id="admin-settings-email" class="form-control" placeholder="nicassil2017@gmail.com" onchange="saveAdminConfigSettings()">
-                            </div>
-                            <div>
-                                <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">Nova Senha do Painel</label>
-                                <input type="text" id="admin-settings-pass" class="form-control password-masked" placeholder="Senha do painel" onchange="saveAdminConfigSettings()" autocomplete="off">
-                            </div>
-                            <div style="display: flex; gap: 10px; margin-top: 5px;">
-                                <button class="btn-universal" onclick="saveAdminConfigSettings(true)" style="background-color: var(--primary); color: var(--bg-color); height: 38px; font-size: 0.8rem; border-radius: 8px;">Salvar Ajustes</button>
-                                <button class="btn-universal" onclick="lockAdminSession()" style="background-color: transparent; border: 1px solid var(--border-color); color: var(--text-muted); height: 38px; font-size: 0.8rem; border-radius: 8px;">Bloquear Painel</button>
+                        <div class="admin-accordion-content" id="content-safety" style="max-height: 0px; opacity: 0; overflow: hidden; padding: 0 20px;">
+                            <div style="padding: 10px 0 20px; display: flex; flex-direction: column; gap: 16px; border-top: 1px solid rgba(255,255,255,0.03);">
+                                <div>
+                                    <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                                        <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; margin-bottom: 0;">E-mail Administrador Whitelist</label>
+                                        <button type="button" class="help-btn" onclick="toggleHelpTip('tip-admin-email')" style="background: none; border: none; padding: 0; color: var(--text-muted); cursor: pointer; font-size: 0.8rem; margin-left: 6px; outline: none;">❔</button>
+                                    </div>
+                                    <div class="help-tip-box" id="tip-admin-email">
+                                        Este e-mail terá acesso completo e automático ao Painel Administrativo assim que o usuário correspondente fizer login no console, ignorando a exigência do PIN de segurança.
+                                    </div>
+                                    <input type="email" id="admin-settings-email" class="form-control" placeholder="nicassil2017@gmail.com" oninput="checkAdminSettingsDirty()" style="border-radius: 10px; padding: 10px; font-size: 0.85rem;">
+                                </div>
+                                <div>
+                                    <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                                        <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; margin-bottom: 0;">Nova Senha / PIN do Painel</label>
+                                        <button type="button" class="help-btn" onclick="toggleHelpTip('tip-admin-pass')" style="background: none; border: none; padding: 0; color: var(--text-muted); cursor: pointer; font-size: 0.8rem; margin-left: 6px; outline: none;">❔</button>
+                                    </div>
+                                    <div class="help-tip-box" id="tip-admin-pass">
+                                        A senha ou PIN secundário necessário para liberar o acesso ao painel de moderação administrativa caso o usuário ativo não esteja logado em uma conta contida na whitelist de e-mail.
+                                    </div>
+                                    <input type="text" id="admin-settings-pass" class="form-control password-masked" placeholder="Senha de segurança" oninput="checkAdminSettingsDirty()" autocomplete="off" style="border-radius: 10px; padding: 10px; font-size: 0.85rem;">
+                                </div>
+                                <div style="display: flex; gap: 12px; margin-top: 8px;">
+                                    <button class="btn-universal" onclick="saveAllAdminSettingsCombined()" style="background-color: var(--primary); color: var(--bg-color); height: 40px; font-size: 0.8rem; border-radius: 10px; font-weight: bold;">Salvar Ajustes 💾</button>
+                                    <button class="btn-universal" onclick="lockAdminSession()" style="background-color: transparent; border: 1px solid var(--border-color); color: var(--text-muted); height: 40px; font-size: 0.8rem; border-radius: 10px; font-weight: bold;">🔒 Bloquear Painel</button>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Modo de Testes (API Global do Proprietário) -->
-                    <div class="supabase-card" style="margin-bottom: 0;">
-                        <div class="supabase-card-header">
-                            <span class="supabase-card-title">⚙️ Modo de Testes (Chave API do Dono)</span>
+                    <!-- ACCORDION CARD 2: MODO DE TESTES E CHAVE API MESTRE -->
+                    <div class="admin-accordion-item" id="accordion-master" style="border: 1px solid var(--border-color); border-radius: 18px; background: var(--card-bg-secondary); overflow: hidden;">
+                        <div class="admin-accordion-header" onclick="toggleAdminAccordion('accordion-master')" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; cursor: pointer; transition: background 0.2s;">
+                            <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
+                                <div class="accordion-icon-box" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 12px; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.15); color: #38bdf8; font-size: 1.15rem; flex-shrink: 0; transition: all 0.3s;">
+                                    🌍
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 3px;">
+                                    <span class="accordion-title" style="font-weight: 700; font-size: 0.95rem; color: #fff;">Chave API Mestre (Modo de Teste Coletivo)</span>
+                                    <span style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.3;">API global de fallback para permitir testes dos usuários sem chave individual.</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <span class="unsaved-dot" id="dot-master" style="display: none; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 10px #ef4444;"></span>
+                                <span class="accordion-arrow" style="font-size: 0.75rem; color: var(--text-muted); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);">▼</span>
+                            </div>
                         </div>
-                        <p style="font-size: 0.75rem; color: var(--text-muted); margin: 4px 0;">Use esta opção para permitir que os usuários consigam mandar mensagem para a inteligência artificial através da sua API, mesmo que eles não configurem chave nenhuma individualmente.</p>
-                        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-                            <div>
-                                <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">Status da API de Teste Coletivo</label>
-                                <select id="admin-master-active" class="form-control" onchange="saveAdminMasterApiSettings()" style="border-radius: 8px;">
-                                    <option value="false">🔴 Desativado (Exigir chave individual)</option>
-                                    <option value="true">🟢 Ativado (Usar chave master se usuário não tiver)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">Chave de API Mestre (API Key)</label>
-                                <input type="text" id="admin-master-key" class="form-control password-masked" placeholder="Insira a chave mestre para teste" onchange="saveAdminMasterApiSettings()" style="border-radius: 8px;" autocomplete="off">
-                            </div>
-                            <div>
-                                <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">Tipo da API</label>
-                                <select id="admin-master-type" class="form-control" onchange="onAdminMasterTypeChange()" style="border-radius: 8px;">
-                                    <option value="GEMINI">Google Gemini API</option>
-                                    <option value="OPENAI">OpenAI / Compatível</option>
-                                    <option value="GROQ">Groq Cloud API</option>
-                                    <option value="OPENROUTER">OpenRouter (Open-Routing)</option>
-                                    <option value="CUSTOM">Provedor Customizado</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">URL Base da API</label>
-                                <input type="text" id="admin-master-url" class="form-control" placeholder="https://generativelanguage.googleapis.com/" onchange="saveAdminMasterApiSettings()" style="border-radius: 8px;">
-                            </div>
-                            <div>
-                                <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; display: block; margin-bottom: 4px;">Modelo Padrão da API</label>
-                                <select id="admin-master-model-select" class="form-control" onchange="onAdminMasterModelSelectChange()" style="border-radius: 8px; margin-bottom: 8px;">
-                                    <!-- Populated dynamically based on provider -->
-                                </select>
-                                <input type="text" id="admin-master-model" class="form-control" placeholder="gemini-1.5-flash" onchange="saveAdminMasterApiSettings()" style="border-radius: 8px; display: none;">
+                        <div class="admin-accordion-content" id="content-master" style="max-height: 0px; opacity: 0; overflow: hidden; padding: 0 20px;">
+                            <div style="padding: 10px 0 20px; display: flex; flex-direction: column; gap: 16px; border-top: 1px solid rgba(255,255,255,0.03);">
+                                
+                                <div>
+                                    <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                                        <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; margin-bottom: 0;">Status da API de Teste Coletivo</label>
+                                        <button type="button" class="help-btn" onclick="toggleHelpTip('tip-master-active')" style="background: none; border: none; padding: 0; color: var(--text-muted); cursor: pointer; font-size: 0.8rem; margin-left: 6px; outline: none;">❔</button>
+                                    </div>
+                                    <div class="help-tip-box" id="tip-master-active">
+                                        Ative para que qualquer usuário consiga realizar consultas à inteligência artificial do Synapse Console utilizando a sua chave mestre como fallback caso eles mesmos não tenham configurado chaves individuais.
+                                    </div>
+                                    <select id="admin-master-active" class="form-control" onchange="checkAdminSettingsDirty()" style="border-radius: 10px; padding: 10px; font-size: 0.85rem;">
+                                        <option value="false">🔴 Desativado (Exigir chave individual)</option>
+                                        <option value="true">🟢 Ativado (Usar chave master se usuário não tiver)</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                                        <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; margin-bottom: 0;">Chave de API Mestre (API Key)</label>
+                                        <button type="button" class="help-btn" onclick="toggleHelpTip('tip-master-key')" style="background: none; border: none; padding: 0; color: var(--text-muted); cursor: pointer; font-size: 0.8rem; margin-left: 6px; outline: none;">❔</button>
+                                    </div>
+                                    <div class="help-tip-box" id="tip-master-key">
+                                        A chave secreta da API (Gemini, OpenAI, Groq, etc.) usada para cobrir os testes coletivos. Mantenha essa chave protegida e configurada adequadamente.
+                                    </div>
+                                    <input type="text" id="admin-master-key" class="form-control password-masked" placeholder="Insira a chave mestre para teste" oninput="checkAdminSettingsDirty()" style="border-radius: 10px; padding: 10px; font-size: 0.85rem;" autocomplete="off">
+                                </div>
+
+                                <div>
+                                    <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                                        <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; margin-bottom: 0;">Provedor / Tipo da API</label>
+                                        <button type="button" class="help-btn" onclick="toggleHelpTip('tip-master-type')" style="background: none; border: none; padding: 0; color: var(--text-muted); cursor: pointer; font-size: 0.8rem; margin-left: 6px; outline: none;">❔</button>
+                                    </div>
+                                    <div class="help-tip-box" id="tip-master-type">
+                                        O tipo de provedor de API que você está utilizando. Ao alterar o provedor, a URL Base e as sugestões de modelos serão pré-carregadas automaticamente para simplificar sua configuração.
+                                    </div>
+                                    <select id="admin-master-type" class="form-control" onchange="onAdminMasterTypeChange()" style="border-radius: 10px; padding: 10px; font-size: 0.85rem;">
+                                        <option value="GEMINI">Google Gemini API</option>
+                                        <option value="OPENAI">OpenAI / Compatível</option>
+                                        <option value="GROQ">Groq Cloud API</option>
+                                        <option value="OPENROUTER">OpenRouter (Open-Routing)</option>
+                                        <option value="CUSTOM">Provedor Customizado</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                                        <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; margin-bottom: 0;">URL Base da API</label>
+                                        <button type="button" class="help-btn" onclick="toggleHelpTip('tip-master-url')" style="background: none; border: none; padding: 0; color: var(--text-muted); cursor: pointer; font-size: 0.8rem; margin-left: 6px; outline: none;">❔</button>
+                                    </div>
+                                    <div class="help-tip-box" id="tip-master-url">
+                                        A URL raiz de endpoint para as requisições HTTP da API. Por padrão, usa as URLs oficiais de cada provedor, mas você pode usar proxies reversos ou endpoints locais.
+                                    </div>
+                                    <input type="text" id="admin-master-url" class="form-control" placeholder="https://generativelanguage.googleapis.com/" oninput="checkAdminSettingsDirty()" style="border-radius: 10px; padding: 10px; font-size: 0.85rem;">
+                                </div>
+
+                                <div>
+                                    <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                                        <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; margin-bottom: 0;">Modelo Mestre de IA</label>
+                                        <button type="button" class="help-btn" onclick="toggleHelpTip('tip-master-model')" style="background: none; border: none; padding: 0; color: var(--text-muted); cursor: pointer; font-size: 0.8rem; margin-left: 6px; outline: none;">❔</button>
+                                    </div>
+                                    <div class="help-tip-box" id="tip-master-model">
+                                        O identificador do modelo de linguagem de IA (LLM) que responderá as dúvidas de chat (ex: gemini-1.5-flash ou gpt-4o-mini).
+                                    </div>
+                                    <select id="admin-master-model-select" class="form-control" onchange="onAdminMasterModelSelectChange()" style="border-radius: 10px; padding: 10px; font-size: 0.85rem; margin-bottom: 8px;">
+                                        <!-- Populated dynamically based on provider -->
+                                    </select>
+                                    <input type="text" id="admin-master-model" class="form-control" placeholder="gemini-1.5-flash" oninput="checkAdminSettingsDirty()" style="border-radius: 10px; padding: 10px; font-size: 0.85rem; display: none;">
+                                </div>
+
+                                <div style="display: flex; margin-top: 8px;">
+                                    <button class="btn-universal" onclick="saveAllAdminSettingsCombined()" style="background-color: var(--primary); color: var(--bg-color); height: 40px; font-size: 0.8rem; border-radius: 10px; font-weight: bold;">Salvar Chave & API 🌍</button>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Instruções SQL -->
-                    <div class="supabase-card" style="margin-bottom: 0;">
-                        <div class="supabase-card-header">
-                            <span class="supabase-card-title">🗄️ Integração Real no Supabase SQL</span>
+                    <!-- ACCORDION CARD 3: BANCO DE DADOS & INSTRUÇÕES SQL -->
+                    <div class="admin-accordion-item" id="accordion-database" style="border: 1px solid var(--border-color); border-radius: 18px; background: var(--card-bg-secondary); overflow: hidden;">
+                        <div class="admin-accordion-header" onclick="toggleAdminAccordion('accordion-database')" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; cursor: pointer; transition: background 0.2s;">
+                            <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
+                                <div class="accordion-icon-box" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 12px; background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.15); color: #fbbf24; font-size: 1.15rem; flex-shrink: 0; transition: all 0.3s;">
+                                    🗄️
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 3px;">
+                                    <span class="accordion-title" style="font-weight: 700; font-size: 0.95rem; color: #fff;">Integração de Banco de Dados & Supabase SQL</span>
+                                    <span style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.3;">Scripts de configuração de tabelas e triggers do Supabase.</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <span class="accordion-arrow" style="font-size: 0.75rem; color: var(--text-muted); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);">▼</span>
+                            </div>
                         </div>
-                        <p style="font-size: 0.75rem; color: var(--text-muted); margin: 4px 0;">Para sincronizar todos os celulares em tempo real e ver os usuários cadastrados automaticamente, execute o script SQL abaixo no **SQL Editor** do seu painel Supabase:</p>
-                        <div style="position: relative; margin-top: 6px;">
-                            <textarea readonly class="form-control" style="font-family: monospace; font-size: 0.72rem; height: 260px; background-color: rgba(0,0,0,0.5); border-radius: 10px; padding: 10px; line-height: 1.4; color: #38bdf8;" id="admin-sql-instructions">
+                        <div class="admin-accordion-content" id="content-database" style="max-height: 0px; opacity: 0; overflow: hidden; padding: 0 20px;">
+                            <div style="padding: 10px 0 20px; display: flex; flex-direction: column; gap: 12px; border-top: 1px solid rgba(255,255,255,0.03);">
+                                <div style="display: flex; align-items: center; margin-bottom: 2px;">
+                                    <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0; flex: 1;">Para sincronizar todos os aparelhos em tempo real e ver os usuários cadastrados automaticamente no Painel de Moderação, execute o script SQL abaixo no **SQL Editor** do seu painel Supabase:</p>
+                                    <button type="button" class="help-btn" onclick="toggleHelpTip('tip-sql-instructions')" style="background: none; border: none; padding: 0; color: var(--text-muted); cursor: pointer; font-size: 0.8rem; margin-left: 6px; outline: none; flex-shrink: 0;">❔</button>
+                                </div>
+                                <div class="help-tip-box" id="tip-sql-instructions">
+                                    Este script cria as tabelas `synapse_users` para controle de bans/mutes e `synapse_activity_logs` para rastrear as ações dos usuários. Ele também configura um trigger de banco de dados (`on_synapse_user_signed_up`) que vincula o login padrão do Supabase Auth ao seu Console de forma automática em tempo real.
+                                </div>
+                                <div style="position: relative; margin-top: 6px;">
+                                    <textarea readonly class="form-control" style="font-family: monospace; font-size: 0.72rem; height: 260px; background-color: rgba(0,0,0,0.5); border-radius: 12px; padding: 12px; line-height: 1.4; color: #38bdf8; border: 1px solid rgba(255,255,255,0.02);" id="admin-sql-instructions">
 -- 1. CRIAÇÃO DAS TABELAS DE AUDITORIA E USUÁRIOS
 CREATE TABLE IF NOT EXISTS public.synapse_users (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -4803,12 +4977,30 @@ DROP TRIGGER IF EXISTS on_synapse_user_signed_up ON auth.users;
 CREATE TRIGGER on_synapse_user_signed_up
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_synapse_user();
-                            </textarea>
-                            <button class="btn-universal" onclick="copyAdminSQLToClipboard()" style="position: absolute; right: 10px; bottom: 10px; padding: 6px 12px; font-size: 0.72rem; height: auto; background: var(--btn-gradient, var(--primary)); color: var(--primary-contrast, var(--bg-color)); font-weight: bold; border-radius: 8px; border: none; cursor: pointer; box-shadow: var(--btn-shadow);">📋 Copiar SQL</button>
+                                    </textarea>
+                                    <button class="btn-universal" onclick="copyAdminSQLToClipboard()" style="position: absolute; right: 12px; bottom: 12px; padding: 6px 14px; font-size: 0.72rem; height: auto; background: var(--btn-gradient, var(--primary)); color: var(--primary-contrast, var(--bg-color)); font-weight: bold; border-radius: 8px; border: none; cursor: pointer; box-shadow: var(--btn-shadow);">📋 Copiar SQL</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
                 </div>
 
+            </div>
+
+            <!-- NOVO PAINEL DE BOTÕES FIXOS NA PARTE INFERIOR (STICKY SAVE ACTIONS BAR) -->
+            <div id="admin-sticky-bar" style="position: fixed; bottom: -120px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 650px; background: rgba(var(--card-bg-rgb, 18, 18, 18), 0.85); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--border-color); border-radius: 20px; display: flex; align-items: center; justify-content: space-between; padding: 15px 24px; z-index: 1000; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.75), 0 0 16px rgba(var(--primary-rgb, 139, 92, 246), 0.15); transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); gap: 15px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 12px; text-align: left; min-width: 250px; flex: 1;">
+                    <span style="font-size: 1.3rem; animation: adminPulse 1.5s infinite alternate; border-radius:50%; display:inline-block; padding: 2px;">⚠️</span>
+                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <span style="font-size: 0.9rem; font-weight: bold; color: #fff;">Alterações Não Salvas</span>
+                        <span style="font-size: 0.72rem; color: var(--text-muted);">As alterações de configuração do painel ainda não foram salvas.</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn-universal" onclick="discardAdminChanges()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: var(--text-muted); padding: 10px 18px; font-size: 0.8rem; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s; height: 40px;">Descartar</button>
+                    <button class="btn-universal" onclick="saveAllAdminSettingsCombined()" style="background: linear-gradient(135deg, var(--primary) 0%, #a78bfa 100%); color: var(--bg-color); border: none; padding: 10px 22px; font-size: 0.8rem; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: var(--btn-shadow); height: 40px;">Salvar Tudo 💾</button>
+                </div>
             </div>
         </section>
 
@@ -21106,29 +21298,35 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             if (gate) gate.style.display = "none";
             if (mainView) mainView.style.display = "flex";
 
-            // Preenche paineis de controle
-            const adminEmailInput = document.getElementById('admin-settings-email');
-            const adminPassInput = document.getElementById('admin-settings-pass');
-            if (adminEmailInput) adminEmailInput.value = localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com";
-            if (adminPassInput) adminPassInput.value = localStorage.getItem('synapse_admin_pin') || "123456";
+            // Preenche paineis de controle se não estiver com edições pendentes
+            if (!window.adminSettingsDirty) {
+                const adminEmailInput = document.getElementById('admin-settings-email');
+                const adminPassInput = document.getElementById('admin-settings-pass');
+                if (adminEmailInput) adminEmailInput.value = localStorage.getItem('synapse_admin_email') || "nicassil2017@gmail.com";
+                if (adminPassInput) adminPassInput.value = localStorage.getItem('synapse_admin_pin') || "123456";
 
-            // Preenche paineis de controle de API Mestre
-            const masterActiveInput = document.getElementById('admin-master-active');
-            const masterKeyInput = document.getElementById('admin-master-key');
-            const masterTypeInput = document.getElementById('admin-master-type');
-            const masterUrlInput = document.getElementById('admin-master-url');
-            const masterModelInput = document.getElementById('admin-master-model');
+                // Preenche paineis de controle de API Mestre
+                const masterActiveInput = document.getElementById('admin-master-active');
+                const masterKeyInput = document.getElementById('admin-master-key');
+                const masterTypeInput = document.getElementById('admin-master-type');
+                const masterUrlInput = document.getElementById('admin-master-url');
+                const masterModelInput = document.getElementById('admin-master-model');
 
-            if (masterActiveInput) masterActiveInput.value = localStorage.getItem('synapse_admin_master_active') || 'false';
-            if (masterKeyInput) masterKeyInput.value = localStorage.getItem('synapse_admin_master_key') || '';
-            if (masterTypeInput) masterTypeInput.value = localStorage.getItem('synapse_admin_master_type') || 'GEMINI';
-            if (masterUrlInput) masterUrlInput.value = localStorage.getItem('synapse_admin_master_url') || 'https://generativelanguage.googleapis.com/';
-            if (masterModelInput) masterModelInput.value = localStorage.getItem('synapse_admin_master_model') || 'gemini-1.5-flash';
+                if (masterActiveInput) masterActiveInput.value = localStorage.getItem('synapse_admin_master_active') || 'false';
+                if (masterKeyInput) masterKeyInput.value = localStorage.getItem('synapse_admin_master_key') || '';
+                if (masterTypeInput) masterTypeInput.value = localStorage.getItem('synapse_admin_master_type') || 'GEMINI';
+                if (masterUrlInput) masterUrlInput.value = localStorage.getItem('synapse_admin_master_url') || 'https://generativelanguage.googleapis.com/';
+                if (masterModelInput) masterModelInput.value = localStorage.getItem('synapse_admin_master_model') || 'gemini-1.5-flash';
 
-            // Carrega e preenche o seletor de modelos da API Mestre
-            const currentType = masterTypeInput ? masterTypeInput.value : 'GEMINI';
-            const currentModel = masterModelInput ? masterModelInput.value : 'gemini-1.5-flash';
-            updateAdminMasterModelOptions(currentType, currentModel);
+                // Carrega e preenche o seletor de modelos da API Mestre
+                const currentType = masterTypeInput ? masterTypeInput.value : 'GEMINI';
+                const currentModel = masterModelInput ? masterModelInput.value : 'gemini-1.5-flash';
+                updateAdminMasterModelOptions(currentType, currentModel);
+
+                if (typeof takeAdminSettingsSnapshot === 'function') {
+                    takeAdminSettingsSnapshot();
+                }
+            }
 
             // Sincroniza widgets de seleção customizados para as definições de teste do administrador
             setupInteractiveCustomSelect('admin-master-active', 'Modo da Chave de Testes', [
@@ -21610,7 +21808,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             // Atualiza as opções do model-select com o default correspondente
             updateAdminMasterModelOptions(typeVal, defaultModel);
             
-            saveAdminMasterApiSettings();
+            checkAdminSettingsDirty();
         }
 
         // Atualiza a lista de opções para o seletor de modelos da API Mestre
@@ -21702,7 +21900,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             } else {
                 inputEl.style.display = 'none';
                 inputEl.value = selectEl.value;
-                saveAdminMasterApiSettings();
+                checkAdminSettingsDirty();
             }
         }
 
@@ -21781,6 +21979,263 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     addLog(`Erro de rede ao salvar API Mestre no Supabase: ${e.message}`, "error");
                 }
             }
+        }
+
+        // Variables and helpers for tracking unsaved changes, accordion, tooltips and search
+        window.adminSettingsSnapshot = {};
+        window.adminSettingsDirty = false;
+
+        function takeAdminSettingsSnapshot() {
+            const emailInput = document.getElementById('admin-settings-email');
+            const passInput = document.getElementById('admin-settings-pass');
+            const activeInput = document.getElementById('admin-master-active');
+            const keyInput = document.getElementById('admin-master-key');
+            const typeInput = document.getElementById('admin-master-type');
+            const urlInput = document.getElementById('admin-master-url');
+            const modelInput = document.getElementById('admin-master-model');
+
+            window.adminSettingsSnapshot = {
+                email: emailInput ? emailInput.value : '',
+                pass: passInput ? passInput.value : '',
+                active: activeInput ? activeInput.value : 'false',
+                key: keyInput ? keyInput.value : '',
+                type: typeInput ? typeInput.value : 'GEMINI',
+                url: urlInput ? urlInput.value : '',
+                model: modelInput ? modelInput.value : ''
+            };
+            window.adminSettingsDirty = false;
+            updateUnsavedChangesUI();
+        }
+
+        function checkAdminSettingsDirty() {
+            const emailInput = document.getElementById('admin-settings-email');
+            const passInput = document.getElementById('admin-settings-pass');
+            const activeInput = document.getElementById('admin-master-active');
+            const keyInput = document.getElementById('admin-master-key');
+            const typeInput = document.getElementById('admin-master-type');
+            const urlInput = document.getElementById('admin-master-url');
+            const modelInput = document.getElementById('admin-master-model');
+
+            const current = {
+                email: emailInput ? emailInput.value : '',
+                pass: passInput ? passInput.value : '',
+                active: activeInput ? activeInput.value : 'false',
+                key: keyInput ? keyInput.value : '',
+                type: typeInput ? typeInput.value : 'GEMINI',
+                url: urlInput ? urlInput.value : '',
+                model: modelInput ? modelInput.value : ''
+            };
+
+            let isDirty = false;
+            let dirtySections = {
+                safety: false, // Security Section
+                master: false  // Master API Section
+            };
+
+            if (current.email !== window.adminSettingsSnapshot.email || current.pass !== window.adminSettingsSnapshot.pass) {
+                isDirty = true;
+                dirtySections.safety = true;
+            }
+
+            if (current.active !== window.adminSettingsSnapshot.active ||
+                current.key !== window.adminSettingsSnapshot.key ||
+                current.type !== window.adminSettingsSnapshot.type ||
+                current.url !== window.adminSettingsSnapshot.url ||
+                current.model !== window.adminSettingsSnapshot.model) {
+                isDirty = true;
+                dirtySections.master = true;
+            }
+
+            window.adminSettingsDirty = isDirty;
+            updateUnsavedChangesUI(dirtySections);
+        }
+
+        function updateUnsavedChangesUI(dirtySections = { safety: false, master: false }) {
+            const stickyBar = document.getElementById('admin-sticky-bar');
+            const badge = document.getElementById('admin-unsaved-badge');
+            
+            // Dot indicators on headers
+            const dot1 = document.getElementById('dot-safety');
+            const dot2 = document.getElementById('dot-master');
+
+            if (window.adminSettingsDirty) {
+                if (stickyBar) {
+                    stickyBar.style.display = 'flex';
+                    // Trigger reflow for animation
+                    stickyBar.offsetHeight;
+                    stickyBar.style.bottom = '16px';
+                }
+                if (badge) badge.style.display = 'inline-flex';
+                
+                if (dot1) dot1.style.display = dirtySections.safety ? 'inline-block' : 'none';
+                if (dot2) dot2.style.display = dirtySections.master ? 'inline-block' : 'none';
+            } else {
+                if (stickyBar) {
+                    stickyBar.style.bottom = '-120px';
+                    setTimeout(() => {
+                        if (!window.adminSettingsDirty) {
+                            stickyBar.style.display = 'none';
+                        }
+                    }, 400);
+                }
+                if (badge) badge.style.display = 'none';
+                
+                if (dot1) dot1.style.display = 'none';
+                if (dot2) dot2.style.display = 'none';
+            }
+        }
+
+        async function saveAllAdminSettingsCombined() {
+            const emailInput = document.getElementById('admin-settings-email');
+            const passInput = document.getElementById('admin-settings-pass');
+
+            if (emailInput && passInput && (!emailInput.value.trim() || !passInput.value.trim())) {
+                showAppToast("Insira e-mail e nova senha válidos para as definições de dono.", "warning");
+                return;
+            }
+
+            try {
+                // Save Security credentials
+                saveAdminConfigSettings(false);
+
+                // Save Master API settings (which includes supabase upload)
+                await saveAdminMasterApiSettings();
+
+                // Re-snapshot
+                takeAdminSettingsSnapshot();
+                
+                showAppToast("Todas as configurações administrativas foram salvas com sucesso!", "success");
+            } catch (err) {
+                console.error("Erro ao salvar configurações combinadas:", err);
+                showAppToast("Ocorreu um erro ao salvar as configurações.", "error");
+            }
+        }
+
+        function discardAdminChanges() {
+            showAppConfirm("Deseja realmente descartar todas as alterações não salvas?", () => {
+                const emailInput = document.getElementById('admin-settings-email');
+                const passInput = document.getElementById('admin-settings-pass');
+                const activeInput = document.getElementById('admin-master-active');
+                const keyInput = document.getElementById('admin-master-key');
+                const typeInput = document.getElementById('admin-master-type');
+                const urlInput = document.getElementById('admin-master-url');
+                const modelInput = document.getElementById('admin-master-model');
+
+                if (emailInput) emailInput.value = window.adminSettingsSnapshot.email || '';
+                if (passInput) passInput.value = window.adminSettingsSnapshot.pass || '';
+                if (activeInput) activeInput.value = window.adminSettingsSnapshot.active || 'false';
+                if (keyInput) keyInput.value = window.adminSettingsSnapshot.key || '';
+                if (typeInput) typeInput.value = window.adminSettingsSnapshot.type || 'GEMINI';
+                if (urlInput) urlInput.value = window.adminSettingsSnapshot.url || '';
+                if (modelInput) modelInput.value = window.adminSettingsSnapshot.model || '';
+
+                // Sincroniza combos customizados
+                if (typeInput) {
+                    updateAdminMasterModelOptions(typeInput.value, modelInput ? modelInput.value : '');
+                }
+
+                setupInteractiveCustomSelect('admin-master-active', 'Modo da Chave de Testes', [
+                    { value: 'false', label: '🔴 Desativado (Pedir chave do usuário)', icon: '🔒' },
+                    { value: 'true', label: '🟢 Ativado (Usar Chave do Dono como Fallback)', icon: '🌍' }
+                ]);
+
+                setupInteractiveCustomSelect('admin-master-type', 'Moderação: Tipo da API Mestre', [
+                    { value: 'GEMINI', label: 'Google Gemini API', icon: '♊' },
+                    { value: 'OPENAI', label: 'OpenAI / Compatível', icon: '⚡' },
+                    { value: 'GROQ', label: 'Groq Cloud API', icon: '🔥' },
+                    { value: 'OPENROUTER', label: 'OpenRouter (Open-Routing)', icon: '🪐' },
+                    { value: 'CUSTOM', label: 'Provedor Customizado', icon: '🔧' }
+                ]);
+
+                window.adminSettingsDirty = false;
+                updateUnsavedChangesUI();
+                showAppToast("Alterações descartadas.", "info");
+            });
+        }
+
+        function toggleAdminAccordion(sectionId) {
+            const accordionItem = document.getElementById(sectionId);
+            if (!accordionItem) return;
+
+            const content = accordionItem.querySelector('.admin-accordion-content');
+            const arrow = accordionItem.querySelector('.admin-accordion-arrow');
+            if (!content) return;
+
+            const isCurrentlyOpen = accordionItem.classList.contains('active') || content.style.maxHeight;
+
+            // Close all accordions first to enforce accordion style (only one section open at a time)
+            document.querySelectorAll('.admin-accordion-item').forEach(item => {
+                item.classList.remove('active');
+                item.style.borderColor = 'var(--border-color)';
+                item.style.boxShadow = 'none';
+                const c = item.querySelector('.admin-accordion-content');
+                const arr = item.querySelector('.admin-accordion-arrow');
+                if (c) {
+                    c.style.maxHeight = null;
+                    c.style.padding = '0 20px';
+                    c.style.opacity = '0';
+                }
+                if (arr) {
+                    arr.style.transform = 'rotate(0deg)';
+                }
+            });
+
+            // If it was closed, open it now
+            if (!isCurrentlyOpen) {
+                accordionItem.classList.add('active');
+                
+                // Get accent color of the category from its icon box or attribute
+                const accentColor = sectionId === 'accordion-safety' ? '#a78bfa' : (sectionId === 'accordion-master' ? '#38bdf8' : '#fbbf24');
+                accordionItem.style.borderColor = accentColor;
+                accordionItem.style.boxShadow = `0 4px 20px rgba(0, 0, 0, 0.4), 0 0 10px ${accentColor}1a`;
+
+                content.style.padding = '16px 20px 20px';
+                content.style.maxHeight = '2000px'; // Safe maximum value for smooth CSS auto-expanding
+                content.style.opacity = '1';
+                if (arrow) {
+                    arrow.style.transform = 'rotate(180deg)';
+                }
+            }
+        }
+
+        function toggleHelpTip(tipId) {
+            const tipBox = document.getElementById(tipId);
+            if (!tipBox) return;
+
+            const isShown = tipBox.classList.contains('active');
+            
+            // Close other active tips first
+            document.querySelectorAll('.help-tip-box').forEach(box => {
+                box.classList.remove('active');
+                box.style.maxHeight = '0px';
+                box.style.opacity = '0';
+                box.style.padding = '0px';
+                box.style.margin = '0px';
+            });
+
+            if (!isShown) {
+                tipBox.classList.add('active');
+                tipBox.style.padding = '10px 12px';
+                tipBox.style.margin = '8px 0';
+                tipBox.style.opacity = '1';
+                tipBox.style.maxHeight = '200px';
+            }
+        }
+
+        function filterAdminConfigs(query) {
+            const lowerQuery = query.toLowerCase().trim();
+            const accordionItems = document.querySelectorAll('.admin-accordion-item');
+
+            accordionItems.forEach(item => {
+                const headerText = item.querySelector('.admin-accordion-header').textContent.toLowerCase();
+                const contentText = item.querySelector('.admin-accordion-content').textContent.toLowerCase();
+                
+                if (headerText.includes(lowerQuery) || contentText.includes(lowerQuery)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
         }
 
         // Resolve credenciais ativas da API com inteligência de Fallback do Dono
