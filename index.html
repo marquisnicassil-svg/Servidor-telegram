@@ -5481,7 +5481,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                     </div>
 
                     <!-- PERSONALIZADOR DE CORES COESAS (UPGRADED) -->
-                    <div class="supabase-card" style="margin-top: 10px; margin-bottom: 20px; text-align: left; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 14px;">
+                    <div class="supabase-card" style="margin-top: 10px; margin-bottom: 20px; text-align: left; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 18px; display: none !important; flex-direction: column; gap: 14px;">
                         <div style="display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px; margin-bottom: 6px;">
                             <span style="font-size: 1.3rem;">🎨</span>
                             <div>
@@ -8060,7 +8060,7 @@ WITH CHECK (true);</code>
 
         // --- 1C. Galeria de Temas e Customização Estética ---
         let isConfigLoading = false;
-        let selectedThemeId = 'cyan_blue_neon';
+        let selectedThemeId = 'milky_way';
         let selectedBorders = 'rounded';
         let selectedFinish = 'flat';
         let selectedSaturation = 100;
@@ -8083,9 +8083,30 @@ WITH CHECK (true);</code>
         let accessReadingMode = false;
 
         const availableThemes = {
+            milky_way: {
+                name: "🌌 Via Láctea (Padrão)",
+                desc: "Identidade visual principal do Synapse Console. Inspirado no universo, com fundo espacial profundo, tons de azul celestial, violeta estelar e glow nebuloso sofisticado.",
+                bg: "#02030d",
+                gradientBg: "none",
+                cardBg1: "#060817",
+                cardBg2: "#0d102e",
+                gradientCard1: "linear-gradient(135deg, rgba(8, 10, 29, 0.98) 0%, rgba(2, 3, 11, 0.99) 100%)",
+                gradientCard2: "linear-gradient(135deg, rgba(16, 21, 56, 0.98) 0%, rgba(7, 9, 26, 0.99) 100%)",
+                border: "rgba(129, 140, 248, 0.32)",
+                textMain: "#ffffff",
+                textMuted: "#a5b4fc",
+                primary: "#818cf8",
+                success: "#10b981",
+                error: "#ef4444",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: false,
+                neon: true,
+                neonGlowColor: "rgba(99, 102, 241, 0.45)",
+                btnGradient: "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)"
+            },
             cyan_blue_neon: {
-                name: "👑 Ouro Obsidian Imperial (Padrão)",
-                desc: "Tema padrão ultra-premium do sistema. Fundo AMOLED preto absoluto combinado com acentos luxuosos de ouro escovado e auras quentes.",
+                name: "👑 Ouro Obsidian Imperial",
+                desc: "Tema premium do sistema. Fundo AMOLED preto absoluto combinado com acentos luxuosos de ouro escovado e auras quentes.",
                 bg: "#000000",
                 gradientBg: "none",
                 cardBg1: "#0a0a0a",
@@ -8712,7 +8733,7 @@ WITH CHECK (true);</code>
                 localStorage.removeItem('ai_console_custom_themes');
                 
                 // Switch back to default
-                applyThemePreset('cyan_blue_neon', true);
+                applyThemePreset('milky_way', true);
                 renderThemesGrid();
                 saveConfiguration();
 
@@ -8727,7 +8748,7 @@ WITH CHECK (true);</code>
             container.innerHTML = '';
             
             Object.keys(availableThemes).forEach(key => {
-                if (key === 'custom_active' && selectedThemeId !== 'custom_active') return; // Skip temporary custom active theme unless selected
+                if (key.startsWith('custom_theme_') || key === 'custom_active') return; // Skip custom themes
                 const item = availableThemes[key];
                 const isActive = (selectedThemeId === key);
                 
@@ -8892,7 +8913,7 @@ WITH CHECK (true);</code>
 
         function applyThemePreset(themeId, userClicked = false) {
             if (userClicked) triggerPulse();
-            if (!availableThemes[themeId]) themeId = 'cyan_blue_neon';
+            if (!availableThemes[themeId]) themeId = 'milky_way';
             
             selectedThemeId = themeId;
             const theme = availableThemes[themeId];
@@ -9131,7 +9152,7 @@ WITH CHECK (true);</code>
                 sw.classList.remove('on');
                 document.documentElement.setAttribute('data-theme', 'dark');
                 // Adjust variables in active theme if matching amoled switch
-                const theme = availableThemes[selectedThemeId] || availableThemes['cyan_blue_neon'];
+                const theme = availableThemes[selectedThemeId] || availableThemes['milky_way'];
                 document.documentElement.style.setProperty('--bg-color', theme.bg !== '#000000' ? theme.bg : '#0f1115');
                 document.documentElement.style.setProperty('--bg-gradient', theme.gradientBg || 'none');
                 document.documentElement.style.setProperty('--card-bg-primary', theme.cardBg1);
@@ -9143,7 +9164,7 @@ WITH CHECK (true);</code>
             } else {
                 sw.classList.add('on');
                 document.documentElement.removeAttribute('data-theme');
-                const theme = availableThemes[selectedThemeId] || availableThemes['cyan_blue_neon'];
+                const theme = availableThemes[selectedThemeId] || availableThemes['milky_way'];
                 document.documentElement.style.setProperty('--bg-color', '#000000');
                 document.documentElement.style.setProperty('--bg-gradient', 'none');
                 document.documentElement.style.setProperty('--card-bg-primary', '#000000');
@@ -10627,7 +10648,7 @@ WITH CHECK (true);</code>
                     if (data.selectedThemeId) {
                         applyThemePreset(data.selectedThemeId);
                     } else {
-                        applyThemePreset('cyan_blue_neon');
+                        applyThemePreset('milky_way');
                     }
 
                     // 2. Aplica a cor de destaque personalizada, sobrescrevendo a padrão do tema apenas se estivesse ativada manualmente
@@ -10778,7 +10799,7 @@ WITH CHECK (true);</code>
                     applySettingsLayoutStyle(selectedSettingsLayoutStyle);
                     updateDynamicStyles();
                 } else {
-                    applyThemePreset('cyan_blue_neon');
+                    applyThemePreset('milky_way');
                     applyBordersStyle('rounded');
                     applyVisualFinish('flat');
                     applyColorSaturation(100);
@@ -11638,7 +11659,7 @@ WITH CHECK (true);</code>
             const currentAccessReadingMode = document.getElementById('access-reading-switch')?.classList.contains('on') || false;
 
             savedAppearance = {
-                selectedThemeId: selectedThemeId || 'cyan_blue_neon',
+                selectedThemeId: selectedThemeId || 'milky_way',
                 currentAccentColor: currentAccentColor || '#38bdf8',
                 accentGradientOn: currentAccentGradientOn || false,
                 accentGradientStart: currentAccentGradientStart || '#0000ff',
@@ -11682,7 +11703,7 @@ WITH CHECK (true);</code>
             const currentAccessReadingMode = document.getElementById('access-reading-switch')?.classList.contains('on') || false;
 
             const currentSettings = {
-                selectedThemeId: selectedThemeId || 'cyan_blue_neon',
+                selectedThemeId: selectedThemeId || 'milky_way',
                 currentAccentColor: currentAccentColor || '#38bdf8',
                 accentGradientOn: currentAccentGradientOn || false,
                 accentGradientStart: currentAccentGradientStart || '#0000ff',
