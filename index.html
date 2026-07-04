@@ -2710,6 +2710,9 @@
             100% { transform: translateY(15px); opacity: 0; }
         }
     </style>
+    <!-- Firebase SDK (Compat v10.8.0) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 </head>
 <body>
 
@@ -2807,6 +2810,22 @@
 
                 <button class="btn-supabase-action btn-auth-submit" onclick="executeSupabaseAuth()" id="auth-btn-submit">
                     🔌 Fazer Login
+                </button>
+
+                <div id="auth-divider" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin: 4px 0; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                    <span style="flex: 1; height: 1px; background: rgba(255,255,255,0.08);"></span>
+                    <span>ou</span>
+                    <span style="flex: 1; height: 1px; background: rgba(255,255,255,0.08);"></span>
+                </div>
+
+                <button id="auth-btn-google" onclick="signInWithGoogle()" class="btn-universal" style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 44px; padding: 10px 16px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; background: #ffffff; color: #1f2937; border: 1px solid #e5e7eb; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); outline: none; margin-top: 2px;" onmouseover="this.style.background='#f9fafb'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='#ffffff'; this.style.transform='translateY(0)';">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+                        <path d="M17.64 9.2c0-.65-.06-1.28-.16-1.88H9v3.56h4.84c-.21 1.12-.84 2.07-1.8 2.71v2.24h2.91c1.7-1.57 2.69-3.88 2.69-6.63z" fill="#4285F4"/>
+                        <path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.91-2.24c-.8.54-1.84.86-3.05.86-2.34 0-4.32-1.58-5.03-3.71H1.03v2.3C2.51 15.98 5.52 18 9 18z" fill="#34A853"/>
+                        <path d="M3.97 10.73c-.18-.54-.28-1.12-.28-1.73s.1-1.19.28-1.73V4.97H1.03C.37 6.29 0 7.77 0 9.3s.37 3.01 1.03 4.33l2.94-2.9z" fill="#FBBC05"/>
+                        <path d="M9 3.58c1.32 0 2.5.45 3.44 1.35L15 2.35C13.47.93 11.43 0 9 0 5.52 0 2.51 2.02 1.03 5.03l2.94 2.9c.71-2.13 2.69-3.71 5.03-3.71z" fill="#EA4335"/>
+                    </svg>
+                    <span>Entrar com o Google</span>
                 </button>
             </div>
 
@@ -19520,6 +19539,19 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     if (backToLoginBtn) backToLoginBtn.style.display = 'none';
                 }
 
+                // Control Google Button and Divider visibility based on view tab type
+                const googleBtn = document.getElementById('auth-btn-google');
+                const authDivider = document.getElementById('auth-divider');
+                if (googleBtn && authDivider) {
+                    if (type === 'signin' || type === 'signup') {
+                        googleBtn.style.display = 'flex';
+                        authDivider.style.display = 'flex';
+                    } else {
+                        googleBtn.style.display = 'none';
+                        authDivider.style.display = 'none';
+                    }
+                }
+
                 // Smoothly restore visibility
                 if (formContainer) {
                     formContainer.style.opacity = '1';
@@ -20406,6 +20438,145 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 
                 // Exibe o gate se não autenticado
                 showAuthGateScreen();
+            }
+        }
+
+        // ==========================================================================
+        // 8.1 Integração Firebase Auth + Supabase (Login com Google)
+        // ==========================================================================
+        let firebaseInitialized = false;
+
+        async function initFirebase() {
+            if (firebaseInitialized) return true;
+            try {
+                addLog("Carregando configurações do Firebase Auth...", "sys");
+                const response = await fetch('/firebase-applet-config.json');
+                if (!response.ok) {
+                    throw new Error("Arquivo 'firebase-applet-config.json' não encontrado no servidor.");
+                }
+                const firebaseConfig = await response.json();
+                
+                // Inicializa o SDK do Firebase
+                firebase.initializeApp(firebaseConfig);
+                firebaseInitialized = true;
+                addLog("Firebase Auth inicializado com sucesso para Google Login!", "success");
+                return true;
+            } catch (err) {
+                console.error("Erro ao inicializar Firebase Auth:", err);
+                addLog(`Erro de inicialização do Firebase: ${err.message}`, "error");
+                return false;
+            }
+        }
+
+        async function signInWithGoogle() {
+            triggerPulse();
+            
+            const url = document.getElementById('supabase-url').value.trim();
+            const key = document.getElementById('supabase-key').value.trim();
+
+            if (!url || !key) {
+                showAppToast("Configure a URL do Projeto e a Chave Pública (Anon Key) do Supabase antes de iniciar o login com o Google.", "warning");
+                return;
+            }
+
+            const cleanUrl = url.endsWith('/') ? url : url + '/';
+            const googleBtn = document.getElementById('auth-btn-google');
+            const originalBtnHtml = googleBtn.innerHTML;
+            
+            googleBtn.innerHTML = "<span>Autenticando no Google...</span>";
+            googleBtn.disabled = true;
+            addLog("Iniciando fluxo popup do Google Login via Firebase...", "sys");
+
+            try {
+                const initialized = await initFirebase();
+                if (!initialized) {
+                    throw new Error("Não foi possível carregar as credenciais do Firebase.");
+                }
+
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.addScope('email');
+                provider.addScope('profile');
+
+                const result = await firebase.auth().signInWithPopup(provider);
+                const user = result.user;
+                addLog(`Google autenticado com sucesso: ${user.email}. Obtendo token JWT...`, "success");
+
+                const idToken = await user.getIdToken();
+                addLog("ID Token obtido. Trocando por sessão segura do Supabase...", "sys");
+
+                await supabaseSignInWithIdToken(cleanUrl, key, idToken);
+            } catch (error) {
+                console.error("Erro Google Login:", error);
+                let userFriendlyMsg = error.message;
+                if (error.code === 'auth/popup-blocked') {
+                    userFriendlyMsg = "O popup de login do Google foi bloqueado pelo seu navegador. Por favor, libere popups e tente novamente.";
+                }
+                addLog(`Erro de login com Google: ${userFriendlyMsg}`, "error");
+                showAppToast(`Erro no Google Auth: ${userFriendlyMsg}`, "error");
+            } finally {
+                googleBtn.innerHTML = originalBtnHtml;
+                googleBtn.disabled = false;
+            }
+        }
+
+        async function supabaseSignInWithIdToken(baseUrl, key, idToken) {
+            addLog("Trocando Google ID Token por uma sessão ativa no Supabase...", "sys");
+            try {
+                const response = await fetch(`${baseUrl}auth/v1/token?grant_type=id_token`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': key,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        provider: 'google',
+                        id_token: idToken
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Salva a sessão localmente
+                    supabaseSession = data;
+                    localStorage.setItem('supabase_auth_session', JSON.stringify(supabaseSession));
+                    
+                    updateAuthUI();
+                    
+                    addLog(`Login efetuado com sucesso via Google! Usuário: ${supabaseSession.user.email}`, "success");
+                    
+                    const displayName = getDisplayName(supabaseSession);
+                    
+                    // Registra no painel do administrador
+                    if (typeof registerAdminUser === 'function') {
+                        registerAdminUser(supabaseSession.user.email, displayName || "Usuário Google", supabaseSession.user.id);
+                        logAdminActivity(supabaseSession.user.email, "Login via Google", "Sessão iniciada utilizando Google ID Token");
+                    }
+
+                    if (displayName) {
+                        greetUserAfterLogin(displayName);
+                    }
+                    
+                    // Executa um teste rápido de conexões passando as novas credenciais
+                    testSupabaseConnection();
+                    showAppToast("Login com o Google realizado com sucesso!", "success");
+                } else {
+                    const errText = await response.text();
+                    let parsedErr = { message: errText };
+                    try { parsedErr = JSON.parse(errText); } catch(e){}
+                    
+                    // Sugestões para erros comuns do Supabase na troca de ID Token
+                    let extraTip = "";
+                    if (errText.includes("provider is not enabled") || errText.includes("disabled")) {
+                        extraTip = " DICA: Garanta que o provedor 'Google' está ativo e configurado com os Client IDs no console do seu Supabase Auth.";
+                    }
+                    addLog(`Rejeitado pelo Supabase: ${parsedErr.message || errText}.${extraTip}`, "error");
+                    showAppToast(`Erro de Autenticação Supabase: ${parsedErr.message || errText}`, "error");
+                }
+            } catch (err) {
+                console.error(err);
+                addLog(`CORS ou Erro de rede ao trocar token: ${err.message}`, "error");
+                showAppToast(`Erro de conexão com Supabase: ${err.message}`, "error");
             }
         }
 
@@ -23699,6 +23870,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
         // Registrar inicialização da carteira
         document.addEventListener('DOMContentLoaded', () => {
+            initFirebase();
             setTimeout(() => {
                 getAppSubscriptionUsage();
                 updateSubscriptionUI();
