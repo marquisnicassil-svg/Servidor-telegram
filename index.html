@@ -86,6 +86,42 @@
         /* ==========================================================================
            Premium SaaS Minimalist Dashboard Styles
            ========================================================================== */
+        /* Acessibilidade: Alto Contraste & Reduzir Movimento */
+        body.high-contrast {
+            --border-color: #ffffff !important;
+            --text-muted: #f3f4f6 !important;
+            --text-main: #ffffff !important;
+            --bg-color: #000000 !important;
+            --card-bg-primary: #000000 !important;
+            --card-bg-secondary: #000000 !important;
+            --primary: #ffffff !important;
+            font-weight: bold !important;
+        }
+        body.high-contrast * {
+            text-shadow: none !important;
+            box-shadow: none !important;
+            border-color: #ffffff !important;
+            color: #ffffff !important;
+        }
+        body.high-contrast button {
+            border: 2.5px solid #ffffff !important;
+            background: #000000 !important;
+            color: #ffffff !important;
+            font-weight: 900 !important;
+        }
+        body.high-contrast .toggle-switch.on {
+            background: #ffffff !important;
+            border: 2px solid #ffffff !important;
+        }
+        body.high-contrast .toggle-switch.on::after {
+            background: #000000 !important;
+        }
+        body.reduce-motion * {
+            transition: none !important;
+            animation: none !important;
+            transform: none !important;
+        }
+
         @keyframes shimmer {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
@@ -7052,6 +7088,16 @@ WITH CHECK (true);</code>
                         <div class="toggle-switch on" id="haptic-switch"></div>
                     </div>
 
+                    <!-- Configuração: Intensidade de Vibração -->
+                    <div class="form-group" style="margin-top: 4px;">
+                        <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">📳 Intensidade da Resposta Vibratória</label>
+                        <select id="haptic-intensity" class="form-control" style="background: rgba(255,255,255,0.03); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="changeHapticIntensity(this.value); saveConfiguration();">
+                            <option value="weak">Fraca (8ms)</option>
+                            <option value="medium" selected>Média (15ms - Padrão)</option>
+                            <option value="strong">Forte (35ms)</option>
+                        </select>
+                    </div>
+
                     <!-- Configuração 5: Animações e Transições -->
                     <div class="theme-toggle" style="padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px dashed var(--border-color); display: flex; justify-content: space-between; align-items: center; margin-top: 4px; cursor: pointer;" onclick="toggleTransitions()">
                         <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
@@ -7059,6 +7105,33 @@ WITH CHECK (true);</code>
                             <span style="color: var(--text-muted); font-size: 0.7rem;">Suavizar alterações de telas e menus</span>
                         </div>
                         <div class="toggle-switch on" id="transitions-switch"></div>
+                    </div>
+
+                    <!-- Configuração: Reduzir Movimento -->
+                    <div class="theme-toggle" style="padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px dashed var(--border-color); display: flex; justify-content: space-between; align-items: center; margin-top: 4px; cursor: pointer;" onclick="toggleReduceMotion()">
+                        <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
+                            <span style="font-weight: 600; display: block; font-size: 0.85rem; color: #fff;">🌀 Reduzir Movimento (Passivo)</span>
+                            <span style="color: var(--text-muted); font-size: 0.7rem;">Desativa transições complexas e animações pulsantes</span>
+                        </div>
+                        <div class="toggle-switch" id="reduce-motion-switch"></div>
+                    </div>
+
+                    <!-- Configuração: Modo Alto Contraste -->
+                    <div class="theme-toggle" style="padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px dashed var(--border-color); display: flex; justify-content: space-between; align-items: center; margin-top: 4px; cursor: pointer;" onclick="toggleHighContrast()">
+                        <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
+                            <span style="font-weight: 600; display: block; font-size: 0.85rem; color: #fff;">👁️ Modo Alto Contraste</span>
+                            <span style="color: var(--text-muted); font-size: 0.7rem;">Cores sólidas, bordas marcadas e textos mais nítidos</span>
+                        </div>
+                        <div class="toggle-switch" id="high-contrast-switch"></div>
+                    </div>
+
+                    <!-- Configuração: Leitor de Tela Interno / Narração Assistida -->
+                    <div class="theme-toggle" style="padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px dashed var(--border-color); display: flex; justify-content: space-between; align-items: center; margin-top: 4px; cursor: pointer;" onclick="toggleReadHoverAssist()">
+                        <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
+                            <span style="font-weight: 600; display: block; font-size: 0.85rem; color: #fff;">🗣️ Narração ao Passar Mouse (TTS)</span>
+                            <span style="color: var(--text-muted); font-size: 0.7rem;">Lê em voz alta as opções e menus destacados</span>
+                        </div>
+                        <div class="toggle-switch" id="read-hover-switch"></div>
                     </div>
 
                     <!-- Configuração 6: Efeitos Sonoros -->
@@ -7437,11 +7510,65 @@ WITH CHECK (true);</code>
             }
         }
 
+        let hoverNarratorActive = false;
+        let hoverNarratorInitialized = false;
+
+        function speakText(text) {
+            try {
+                if (!window.speechSynthesis) return;
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                const rateInput = document.getElementById('speech-rate');
+                const pitchInput = document.getElementById('speech-pitch');
+                if (rateInput) utterance.rate = parseFloat(rateInput.value);
+                if (pitchInput) utterance.pitch = parseFloat(pitchInput.value);
+                
+                const selectedVoiceName = document.getElementById('speech-voice')?.value;
+                if (selectedVoiceName) {
+                    const voices = window.speechSynthesis.getVoices();
+                    const voice = voices.find(v => v.name === selectedVoiceName);
+                    if (voice) utterance.voice = voice;
+                }
+                window.speechSynthesis.speak(utterance);
+            } catch(e) {
+                console.error("Erro ao narrar:", e);
+            }
+        }
+
+        function initHoverNarrator() {
+            if (hoverNarratorInitialized) return;
+            hoverNarratorInitialized = true;
+            
+            document.body.addEventListener('mouseover', (e) => {
+                if (!hoverNarratorActive) return;
+                const target = e.target.closest('button, a, input, select, textarea, .tab-btn, .dashboard-action-card, .theme-toggle, [onclick]');
+                if (!target) return;
+                
+                if (window.lastNarratedElement === target) return;
+                window.lastNarratedElement = target;
+                
+                let textToSpeak = target.innerText || target.placeholder || target.title || target.getAttribute('aria-label') || "";
+                if (textToSpeak) {
+                    textToSpeak = textToSpeak.trim().replace(/\s+/g, ' ');
+                    speakText(textToSpeak);
+                }
+            });
+            
+            document.body.addEventListener('mouseout', (e) => {
+                if (!hoverNarratorActive) return;
+                window.lastNarratedElement = null;
+            });
+        }
+
         function triggerPulse() {
             try { 
                 const sw = document.getElementById('haptic-switch');
                 if (sw && sw.classList.contains('on')) {
-                    if (navigator.vibrate) navigator.vibrate(15); 
+                    const intensity = document.getElementById('haptic-intensity')?.value || 'medium';
+                    let duration = 15;
+                    if (intensity === 'weak') duration = 8;
+                    else if (intensity === 'strong') duration = 35;
+                    if (navigator.vibrate) navigator.vibrate(duration); 
                 }
             } catch(e){}
             try {
@@ -7457,6 +7584,70 @@ WITH CHECK (true);</code>
                 const isOn = sw.classList.contains('on');
                 triggerPulse();
                 addLog(`Resposta vibratória (háptica) ${isOn ? 'ativada' : 'desativada'}.`, "info");
+                if (!isConfigLoading) {
+                    saveConfiguration();
+                }
+            }
+        }
+
+        function changeHapticIntensity(val) {
+            triggerPulse();
+            addLog(`Intensidade da vibração alterada para: ${val}.`, "info");
+        }
+
+        function toggleHighContrast() {
+            const sw = document.getElementById('high-contrast-switch');
+            if (sw) {
+                sw.classList.toggle('on');
+                const isOn = sw.classList.contains('on');
+                triggerPulse();
+                if (isOn) {
+                    document.body.classList.add('high-contrast');
+                    addLog(`Modo alto contraste ativado.`, "info");
+                } else {
+                    document.body.classList.remove('high-contrast');
+                    addLog(`Modo alto contraste desativado.`, "info");
+                }
+                if (!isConfigLoading) {
+                    saveConfiguration();
+                }
+            }
+        }
+
+        function toggleReduceMotion() {
+            const sw = document.getElementById('reduce-motion-switch');
+            if (sw) {
+                sw.classList.toggle('on');
+                const isOn = sw.classList.contains('on');
+                triggerPulse();
+                if (isOn) {
+                    document.body.classList.add('reduce-motion');
+                    addLog(`Modo reduzir movimento ativado.`, "info");
+                } else {
+                    document.body.classList.remove('reduce-motion');
+                    addLog(`Modo reduzir movimento desativado.`, "info");
+                }
+                if (!isConfigLoading) {
+                    saveConfiguration();
+                }
+            }
+        }
+
+        function toggleReadHoverAssist() {
+            const sw = document.getElementById('read-hover-switch');
+            if (sw) {
+                sw.classList.toggle('on');
+                const isOn = sw.classList.contains('on');
+                triggerPulse();
+                hoverNarratorActive = isOn;
+                addLog(`Narração ao passar mouse ${isOn ? 'ativada' : 'desativada'}.`, "info");
+                if (isOn) {
+                    speakText("Narração ativada");
+                    initHoverNarrator();
+                }
+                if (!isConfigLoading) {
+                    saveConfiguration();
+                }
             }
         }
 
@@ -10930,6 +11121,40 @@ WITH CHECK (true);</code>
                         }
                     }
                     applyTransitionsState();
+                    
+                    // Restaura parâmetros de acessibilidade avançados
+                    if (data.hapticIntensity) {
+                        const hInt = document.getElementById('haptic-intensity');
+                        if (hInt) hInt.value = data.hapticIntensity;
+                    }
+                    if (data.highContrastOn === true) {
+                        const hcSw = document.getElementById('high-contrast-switch');
+                        if (hcSw && !hcSw.classList.contains('on')) hcSw.classList.add('on');
+                        document.body.classList.add('high-contrast');
+                    } else if (data.highContrastOn === false) {
+                        const hcSw = document.getElementById('high-contrast-switch');
+                        if (hcSw && hcSw.classList.contains('on')) hcSw.classList.remove('on');
+                        document.body.classList.remove('high-contrast');
+                    }
+                    if (data.reduceMotionOn === true) {
+                        const rmSw = document.getElementById('reduce-motion-switch');
+                        if (rmSw && !rmSw.classList.contains('on')) rmSw.classList.add('on');
+                        document.body.classList.add('reduce-motion');
+                    } else if (data.reduceMotionOn === false) {
+                        const rmSw = document.getElementById('reduce-motion-switch');
+                        if (rmSw && rmSw.classList.contains('on')) rmSw.classList.remove('on');
+                        document.body.classList.remove('reduce-motion');
+                    }
+                    if (data.readHoverOn === true) {
+                        const rhSw = document.getElementById('read-hover-switch');
+                        if (rhSw && !rhSw.classList.contains('on')) rhSw.classList.add('on');
+                        hoverNarratorActive = true;
+                        initHoverNarrator();
+                    } else if (data.readHoverOn === false) {
+                        const rhSw = document.getElementById('read-hover-switch');
+                        if (rhSw && rhSw.classList.contains('on')) rhSw.classList.remove('on');
+                        hoverNarratorActive = false;
+                    }
 
                     // Restaura parâmetros de Efeitos Sonoros (Padrão: desligado)
                     if (data.soundEffectsOn === true) {
@@ -11970,6 +12195,10 @@ WITH CHECK (true);</code>
                 speechPitch: parseFloat(document.getElementById('speech-pitch').value),
                 chatFontSize: document.getElementById('chat-font-size').value,
                 hapticsOn: document.getElementById('haptic-switch').classList.contains('on'),
+                hapticIntensity: document.getElementById('haptic-intensity')?.value || 'medium',
+                highContrastOn: document.getElementById('high-contrast-switch')?.classList.contains('on') ?? false,
+                reduceMotionOn: document.getElementById('reduce-motion-switch')?.classList.contains('on') ?? false,
+                readHoverOn: document.getElementById('read-hover-switch')?.classList.contains('on') ?? false,
                 transitionsOn: document.getElementById('transitions-switch').classList.contains('on'),
                 soundEffectsOn: document.getElementById('sound-effects-switch')?.classList.contains('on') ?? false,
                 currentLanguage: currentLanguage,

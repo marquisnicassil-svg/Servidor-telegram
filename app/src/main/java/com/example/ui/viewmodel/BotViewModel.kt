@@ -72,6 +72,43 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
     private val _soundEffectsOn = MutableStateFlow(sharedPrefs.getBoolean("sound_effects_on", false))
     val soundEffectsOn: StateFlow<Boolean> = _soundEffectsOn.asStateFlow()
 
+    private val _hapticsOn = MutableStateFlow(sharedPrefs.getBoolean("haptics_on", true))
+    val hapticsOn: StateFlow<Boolean> = _hapticsOn.asStateFlow()
+
+    private val _hapticIntensity = MutableStateFlow(sharedPrefs.getString("haptic_intensity", "medium") ?: "medium")
+    val hapticIntensity: StateFlow<String> = _hapticIntensity.asStateFlow()
+
+    private val _highContrastOn = MutableStateFlow(sharedPrefs.getBoolean("high_contrast_on", false))
+    val highContrastOn: StateFlow<Boolean> = _highContrastOn.asStateFlow()
+
+    private val _reduceMotionOn = MutableStateFlow(sharedPrefs.getBoolean("reduce_motion_on", false))
+    val reduceMotionOn: StateFlow<Boolean> = _reduceMotionOn.asStateFlow()
+
+    private val _readHoverOn = MutableStateFlow(sharedPrefs.getBoolean("read_hover_on", false))
+    val readHoverOn: StateFlow<Boolean> = _readHoverOn.asStateFlow()
+
+    fun updateAccessibilitySetting(key: String, value: Any) {
+        val editor = sharedPrefs.edit()
+        when (value) {
+            is Boolean -> {
+                editor.putBoolean(key, value)
+                when (key) {
+                    "haptics_on" -> _hapticsOn.value = value
+                    "high_contrast_on" -> _highContrastOn.value = value
+                    "reduce_motion_on" -> _reduceMotionOn.value = value
+                    "read_hover_on" -> _readHoverOn.value = value
+                }
+            }
+            is String -> {
+                editor.putString(key, value)
+                when (key) {
+                    "haptic_intensity" -> _hapticIntensity.value = value
+                }
+            }
+        }
+        editor.apply()
+    }
+
     fun updateNotificationSetting(key: String, value: Boolean) {
         sharedPrefs.edit().putBoolean(key, value).apply()
         when (key) {

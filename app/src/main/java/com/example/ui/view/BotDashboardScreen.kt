@@ -1276,6 +1276,12 @@ fun SettingsTab(
                         subtitle = "Dados do usuário conectado, chaves de acesso e gerenciamento de login",
                         onClick = { activeSettingsView = "account" }
                     )
+                    SettingsMenuItem(
+                        icon = "🔊",
+                        title = "Voz e Acessibilidade",
+                        subtitle = "Resposta háptica (vibrar), intensidade da vibração, alto contraste e leitor assistido",
+                        onClick = { activeSettingsView = "accessibility" }
+                    )
                 }
             }
         } else {
@@ -2862,6 +2868,140 @@ fun SettingsTab(
                                     description = "Sons sutis e futuristas ao clicar em botões, enviar mensagens, login, etc.",
                                     checked = viewModel.soundEffectsOn.collectAsStateWithLifecycle().value,
                                     onCheckedChange = { viewModel.updateNotificationSetting("sound_effects_on", it) }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                "accessibility" -> {
+                    item {
+                        Text(
+                            text = "🔊 VOZ E ACESSIBILIDADE",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = Color.White
+                        )
+                    }
+
+                    item {
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    text = "Resposta Háptica e Vibração",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                    color = Color.White
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                val hapticsOn by viewModel.hapticsOn.collectAsStateWithLifecycle()
+                                val hapticIntensity by viewModel.hapticIntensity.collectAsStateWithLifecycle()
+
+                                NotificationToggleRow(
+                                    title = "📳 Resposta Vibratória (Háptica)",
+                                    description = "Vibrar levemente ao tocar em botões e navegar",
+                                    checked = hapticsOn,
+                                    onCheckedChange = { viewModel.updateAccessibilitySetting("haptics_on", it) }
+                                )
+
+                                if (hapticsOn) {
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Box(Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF334155)))
+                                    Spacer(modifier = Modifier.height(12.dp))
+
+                                    Text(
+                                        text = "Intensidade da Vibração",
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 12.sp,
+                                        color = Color.White
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        listOf("weak" to "Fraca", "medium" to "Média", "strong" to "Forte").forEach { (key, label) ->
+                                            val isSelected = hapticIntensity == key
+                                            Button(
+                                                onClick = { viewModel.updateAccessibilitySetting("haptic_intensity", key) },
+                                                shape = RoundedCornerShape(8.dp),
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = if (isSelected) Color(0xFF38BDF8) else Color(0xFF0F172A)
+                                                ),
+                                                border = BorderStroke(1.dp, if (isSelected) Color(0xFF38BDF8) else Color(0xFF334155)),
+                                                modifier = Modifier.weight(1f),
+                                                contentPadding = PaddingValues(vertical = 4.dp)
+                                            ) {
+                                                Text(
+                                                    text = label,
+                                                    fontSize = 11.sp,
+                                                    color = if (isSelected) Color.Black else Color.White,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    item {
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    text = "Aprimoramentos de Leitura e Tela",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                    color = Color.White
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                val highContrastOn by viewModel.highContrastOn.collectAsStateWithLifecycle()
+                                val reduceMotionOn by viewModel.reduceMotionOn.collectAsStateWithLifecycle()
+                                val readHoverOn by viewModel.readHoverOn.collectAsStateWithLifecycle()
+
+                                NotificationToggleRow(
+                                    title = "👁️ Modo Alto Contraste",
+                                    description = "Cores mais sólidas, bordas marcadas e maior legibilidade de texto",
+                                    checked = highContrastOn,
+                                    onCheckedChange = { viewModel.updateAccessibilitySetting("high_contrast_on", it) }
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Box(Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF334155)))
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                NotificationToggleRow(
+                                    title = "🌀 Reduzir Movimento (Passivo)",
+                                    description = "Desativa efeitos de transição complexos e animações pulsantes",
+                                    checked = reduceMotionOn,
+                                    onCheckedChange = { viewModel.updateAccessibilitySetting("reduce_motion_on", it) }
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Box(Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF334155)))
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                NotificationToggleRow(
+                                    title = "🗣️ Narração de Elementos",
+                                    description = "Lê em voz alta as informações dos botões e menus focados na tela",
+                                    checked = readHoverOn,
+                                    onCheckedChange = { viewModel.updateAccessibilitySetting("read_hover_on", it) }
                                 )
                             }
                         }
