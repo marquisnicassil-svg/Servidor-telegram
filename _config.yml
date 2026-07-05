@@ -1,10 +1,11 @@
 exclude:
-  - app
-  - gradle
-  - .gradle
-  - build
-  - .idea
-  - .github
+  - app/
+  - gradle/
+  - .gradle/
+  - build/
+  - .idea/
+  - .github/
+  - .build-outputs/
   - build.gradle.kts
   - settings.gradle.kts
   - gradle.properties
