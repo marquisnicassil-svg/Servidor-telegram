@@ -2852,6 +2852,17 @@ fun SettingsTab(
                                     onCheckedChange = { viewModel.updateNotificationSetting("notif_silent_mode", it) },
                                     isSilentMode = true
                                 )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Box(Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF334155)))
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                NotificationToggleRow(
+                                    title = "🎵 Efeitos Sonoros",
+                                    description = "Sons sutis e futuristas ao clicar em botões, enviar mensagens, login, etc.",
+                                    checked = viewModel.soundEffectsOn.collectAsStateWithLifecycle().value,
+                                    onCheckedChange = { viewModel.updateNotificationSetting("sound_effects_on", it) }
+                                )
                             }
                         }
                     }

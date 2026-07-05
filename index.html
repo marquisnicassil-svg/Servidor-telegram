@@ -7061,6 +7061,15 @@ WITH CHECK (true);</code>
                         <div class="toggle-switch on" id="transitions-switch"></div>
                     </div>
 
+                    <!-- Configuração 6: Efeitos Sonoros -->
+                    <div class="theme-toggle" style="padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px dashed var(--border-color); display: flex; justify-content: space-between; align-items: center; margin-top: 4px; cursor: pointer;" onclick="toggleSoundEffects()">
+                        <div style="text-align: left; display: flex; flex-direction: column; gap: 2px;">
+                            <span style="font-weight: 600; display: block; font-size: 0.85rem; color: #fff;">Efeitos Sonoros</span>
+                            <span style="color: var(--text-muted); font-size: 0.7rem;">Sons discretos ao clicar, enviar mensagens, etc.</span>
+                        </div>
+                        <div class="toggle-switch" id="sound-effects-switch"></div>
+                    </div>
+
                 </div>
 
                 <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; font-size: 0.8rem; color: var(--text-muted); text-align: left; line-height: 1.4; margin-bottom: 24px;">
@@ -7261,14 +7270,182 @@ WITH CHECK (true);</code>
          Lógica do JavaScript
          ========================================================================== -->
     <script>
-        // --- Haptic Feedback Nativo ---
+        // --- Haptic Feedback e Efeitos Sonoros Nativos ---
+        let globalAudioCtx = null;
+
+        function playSynthSound(type) {
+            try {
+                const sw = document.getElementById('sound-effects-switch');
+                if (!sw || !sw.classList.contains('on')) {
+                    return; // Retorna silenciosamente se os efeitos sonoros estiverem desativados
+                }
+
+                // Inicializa o AudioContext de forma preguiçosa
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                
+                if (!globalAudioCtx) {
+                    globalAudioCtx = new AudioContext();
+                }
+                
+                // Retoma o contexto se o navegador o suspendeu (devido a políticas de interação do usuário)
+                if (globalAudioCtx.state === 'suspended') {
+                    globalAudioCtx.resume();
+                }
+
+                const ctx = globalAudioCtx;
+                const now = ctx.currentTime;
+                
+                // Volume global do efeito (baixo, agradável e premium)
+                const masterGain = ctx.createGain();
+                masterGain.gain.setValueAtTime(0.04, now); // Volume bem baixo e polido por padrão (4%)
+                masterGain.connect(ctx.destination);
+
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(masterGain);
+
+                switch (type) {
+                    case 'click':
+                        // Clique sutil: rampa rápida de 900Hz para 1300Hz em 0.04 segundos
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(900, now);
+                        osc.frequency.exponentialRampToValueAtTime(1300, now + 0.04);
+                        gain.gain.setValueAtTime(0.15, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+                        osc.start(now);
+                        osc.stop(now + 0.05);
+                        break;
+
+                    case 'send':
+                        // Envio de mensagem: rampa de subida suave com onda senoidal para um efeito futurista e limpo
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(350, now);
+                        osc.frequency.exponentialRampToValueAtTime(700, now + 0.12);
+                        gain.gain.setValueAtTime(0.25, now);
+                        gain.gain.linearRampToValueAtTime(0.001, now + 0.14);
+                        osc.start(now);
+                        osc.stop(now + 0.15);
+                        break;
+
+                    case 'login':
+                        // Login: acorde arpejado brilhante ficção científica (C5 -> E5 -> G5)
+                        const playNote = (freq, startOffset, duration) => {
+                            const noteOsc = ctx.createOscillator();
+                            const noteGain = ctx.createGain();
+                            noteOsc.type = 'sine';
+                            noteOsc.frequency.setValueAtTime(freq, now + startOffset);
+                            noteOsc.connect(noteGain);
+                            noteGain.connect(masterGain);
+                            noteGain.gain.setValueAtTime(0.2, now + startOffset);
+                            noteGain.gain.exponentialRampToValueAtTime(0.001, now + startOffset + duration);
+                            noteOsc.start(now + startOffset);
+                            noteOsc.stop(now + startOffset + duration);
+                        };
+                        playNote(523.25, 0, 0.15);      // C5
+                        playNote(659.25, 0.06, 0.15);   // E5
+                        playNote(783.99, 0.12, 0.35);   // G5
+                        break;
+
+                    case 'signup':
+                        // Cadastro: arpejo ascendente de 4 notas brilhantes (C5 -> E5 -> G5 -> C6)
+                        const playRegNote = (freq, startOffset, duration) => {
+                            const noteOsc = ctx.createOscillator();
+                            const noteGain = ctx.createGain();
+                            noteOsc.type = 'sine';
+                            noteOsc.frequency.setValueAtTime(freq, now + startOffset);
+                            noteOsc.connect(noteGain);
+                            noteGain.connect(masterGain);
+                            noteGain.gain.setValueAtTime(0.18, now + startOffset);
+                            noteGain.gain.exponentialRampToValueAtTime(0.001, now + startOffset + duration);
+                            noteOsc.start(now + startOffset);
+                            noteOsc.stop(now + startOffset + duration);
+                        };
+                        playRegNote(523.25, 0, 0.10);     // C5
+                        playRegNote(659.25, 0.05, 0.10);  // E5
+                        playRegNote(783.99, 0.10, 0.10);  // G5
+                        playRegNote(1046.50, 0.15, 0.35); // C6
+                        break;
+
+                    case 'success':
+                        // Sucesso ao salvar: harmonia acolhedora e agradável
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(587.33, now); // D5
+                        osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+                        gain.gain.setValueAtTime(0.15, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+                        osc.start(now);
+                        osc.stop(now + 0.2);
+
+                        const osc2 = ctx.createOscillator();
+                        const gain2 = ctx.createGain();
+                        osc2.type = 'sine';
+                        osc2.frequency.setValueAtTime(739.99, now); // F#5
+                        osc2.frequency.exponentialRampToValueAtTime(1109.73, now + 0.15);
+                        osc2.connect(gain2);
+                        gain2.connect(masterGain);
+                        gain2.gain.setValueAtTime(0.12, now);
+                        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+                        osc2.start(now);
+                        osc2.stop(now + 0.2);
+                        break;
+
+                    case 'warning':
+                    case 'error':
+                        // Erro/Aviso: Tom grave e discreto, com envelope suave
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(190, now);
+                        osc.frequency.linearRampToValueAtTime(130, now + 0.22);
+                        gain.gain.setValueAtTime(0.3, now);
+                        gain.gain.linearRampToValueAtTime(0.001, now + 0.24);
+                        osc.start(now);
+                        osc.stop(now + 0.25);
+                        break;
+
+                    case 'notification':
+                        // Notificação: som de "ding-ding" agudo e refinado
+                        const playDing = (freq, startOffset, vol) => {
+                            const noteOsc = ctx.createOscillator();
+                            const noteGain = ctx.createGain();
+                            noteOsc.type = 'sine';
+                            noteOsc.frequency.setValueAtTime(freq, now + startOffset);
+                            noteOsc.connect(noteGain);
+                            noteGain.connect(masterGain);
+                            noteGain.gain.setValueAtTime(vol, now + startOffset);
+                            noteGain.gain.exponentialRampToValueAtTime(0.001, now + startOffset + 0.4);
+                            noteOsc.start(now + startOffset);
+                            noteOsc.stop(now + startOffset + 0.45);
+                        };
+                        playDing(987.77, 0, 0.18);    // B5
+                        playDing(1318.51, 0.08, 0.14); // E6
+                        break;
+
+                    case 'menu':
+                        // Abertura de menu: rampa suave esticada
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(280, now);
+                        osc.frequency.exponentialRampToValueAtTime(560, now + 0.16);
+                        gain.gain.setValueAtTime(0.15, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+                        osc.start(now);
+                        osc.stop(now + 0.2);
+                        break;
+                }
+            } catch (e) {
+                console.error("Erro ao reproduzir efeito sonoro:", e);
+            }
+        }
+
         function triggerPulse() {
             try { 
                 const sw = document.getElementById('haptic-switch');
-                if (sw && !sw.classList.contains('on')) {
-                    return; // Retorna silenciosamente se o feedback háptico estiver desativado
+                if (sw && sw.classList.contains('on')) {
+                    if (navigator.vibrate) navigator.vibrate(15); 
                 }
-                if (navigator.vibrate) navigator.vibrate(15); 
+            } catch(e){}
+            try {
+                playSynthSound('click');
             } catch(e){}
         }
 
@@ -7280,6 +7457,24 @@ WITH CHECK (true);</code>
                 const isOn = sw.classList.contains('on');
                 triggerPulse();
                 addLog(`Resposta vibratória (háptica) ${isOn ? 'ativada' : 'desativada'}.`, "info");
+            }
+        }
+
+        function toggleSoundEffects() {
+            const sw = document.getElementById('sound-effects-switch');
+            if (sw) {
+                sw.classList.toggle('on');
+                const isOn = sw.classList.contains('on');
+                triggerPulse();
+                if (isOn) {
+                    addLog(`Efeitos sonoros ativados.`, "info");
+                    setTimeout(() => { playSynthSound('success'); }, 100);
+                } else {
+                    addLog(`Efeitos sonoros desativados.`, "info");
+                }
+                if (!isConfigLoading) {
+                    saveConfiguration();
+                }
             }
         }
 
@@ -7404,6 +7599,9 @@ WITH CHECK (true);</code>
         // --- 1. Navegação de Abas Fluida ---
         function switchTab(tabId) {
             triggerPulse();
+            try {
+                playSynthSound('menu');
+            } catch(e){}
             document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             
@@ -7464,6 +7662,9 @@ WITH CHECK (true);</code>
         // --- 1B. Navegação de Sub-Views de Configuração ---
         function openConfigSubView(viewId) {
             triggerPulse();
+            try {
+                playSynthSound('menu');
+            } catch(e){}
             document.getElementById('config-index-view').style.display = 'none';
             document.querySelectorAll('.config-subview').forEach(el => el.style.display = 'none');
             document.getElementById('config-subview-' + viewId).style.display = 'block';
@@ -10730,6 +10931,19 @@ WITH CHECK (true);</code>
                     }
                     applyTransitionsState();
 
+                    // Restaura parâmetros de Efeitos Sonoros (Padrão: desligado)
+                    if (data.soundEffectsOn === true) {
+                        const sSw = document.getElementById('sound-effects-switch');
+                        if (sSw && !sSw.classList.contains('on')) {
+                            sSw.classList.add('on');
+                        }
+                    } else if (data.soundEffectsOn === false) {
+                        const sSw = document.getElementById('sound-effects-switch');
+                        if (sSw && sSw.classList.contains('on')) {
+                            sSw.classList.remove('on');
+                        }
+                    }
+
                     // Restaura parâmetros de Notificações
                     const loadNotifSwitch = (elId, val) => {
                         const sw = document.getElementById(elId);
@@ -11757,6 +11971,7 @@ WITH CHECK (true);</code>
                 chatFontSize: document.getElementById('chat-font-size').value,
                 hapticsOn: document.getElementById('haptic-switch').classList.contains('on'),
                 transitionsOn: document.getElementById('transitions-switch').classList.contains('on'),
+                soundEffectsOn: document.getElementById('sound-effects-switch')?.classList.contains('on') ?? false,
                 currentLanguage: currentLanguage,
                 speechVoice: document.getElementById('speech-voice')?.value || '',
                 aiVoiceGender: document.getElementById('ai-voice-gender-select')?.value || 'female',
@@ -15134,6 +15349,10 @@ WITH CHECK (true);</code>
             }
             if (!txt || !dotFreeTxt) return;
 
+            try {
+                playSynthSound('send');
+            } catch(e){}
+
             // Verificar limite de mensagens do plano Freemium
             if (typeof checkSubscriptionLimit === 'function' && !checkSubscriptionLimit('chat')) {
                 return;
@@ -18251,6 +18470,16 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
         }
 
         function showAppToast(message, type = "info") {
+            try {
+                if (type === 'success') {
+                    playSynthSound('success');
+                } else if (type === 'error' || type === 'danger' || type === 'warning') {
+                    playSynthSound('error');
+                } else {
+                    playSynthSound('notification');
+                }
+            } catch(e){}
+
             let container = document.getElementById('toast-container');
             if (!container) {
                 container = document.createElement('div');
@@ -19936,6 +20165,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
                 if (response.ok) {
                     const data = await response.json();
+                    try {
+                        playSynthSound('signup');
+                    } catch(e){}
                     
                     if (data.session) {
                         supabaseSession = data.session;
@@ -20005,6 +20237,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
                 if (response.ok) {
                     const data = await response.json();
+                    try {
+                        playSynthSound('login');
+                    } catch(e){}
                     
                     // Salva a sessão localmente
                     supabaseSession = data;
@@ -20694,6 +20929,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
                 if (response.ok) {
                     const data = await response.json();
+                    try {
+                        playSynthSound('login');
+                    } catch(e){}
                     
                     // Salva a sessão localmente
                     supabaseSession = data;

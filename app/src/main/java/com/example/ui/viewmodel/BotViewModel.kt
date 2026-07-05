@@ -69,6 +69,9 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
     private val _notifSilentMode = MutableStateFlow(sharedPrefs.getBoolean("notif_silent_mode", false))
     val notifSilentMode: StateFlow<Boolean> = _notifSilentMode.asStateFlow()
 
+    private val _soundEffectsOn = MutableStateFlow(sharedPrefs.getBoolean("sound_effects_on", false))
+    val soundEffectsOn: StateFlow<Boolean> = _soundEffectsOn.asStateFlow()
+
     fun updateNotificationSetting(key: String, value: Boolean) {
         sharedPrefs.edit().putBoolean(key, value).apply()
         when (key) {
@@ -78,6 +81,7 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
             "notif_integrations_on" -> _notifIntegrationsOn.value = value
             "notif_security_on" -> _notifSecurityOn.value = value
             "notif_silent_mode" -> _notifSilentMode.value = value
+            "sound_effects_on" -> _soundEffectsOn.value = value
         }
     }
     
