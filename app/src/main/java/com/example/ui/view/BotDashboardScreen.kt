@@ -43,6 +43,7 @@ import com.example.ui.viewmodel.ConsoleLogItem
 import com.example.ui.viewmodel.LogType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 data class NewsResource(val name: String, val url: String, val category: String)
 data class SimulatedNews(val title: String, val desc: String, val url: String)
@@ -2931,7 +2932,10 @@ fun SettingsTab(
                                         listOf("weak" to "Fraca", "medium" to "Média", "strong" to "Forte").forEach { (key, label) ->
                                             val isSelected = hapticIntensity == key
                                             Button(
-                                                onClick = { viewModel.updateAccessibilitySetting("haptic_intensity", key) },
+                                                onClick = { 
+                                                    viewModel.updateAccessibilitySetting("haptic_intensity", key)
+                                                    viewModel.playSound("click")
+                                                },
                                                 shape = RoundedCornerShape(8.dp),
                                                 colors = ButtonDefaults.buttonColors(
                                                     containerColor = if (isSelected) Color(0xFF38BDF8) else Color(0xFF0F172A)
@@ -3003,6 +3007,159 @@ fun SettingsTab(
                                     checked = readHoverOn,
                                     onCheckedChange = { viewModel.updateAccessibilitySetting("read_hover_on", it) }
                                 )
+                            }
+                        }
+                    }
+
+                    item {
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp))
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    text = "🗣️ CONFIGURAÇÕES DE VOZ NARRADORA (TTS)",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                    color = Color.White
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                val speechRate by viewModel.speechRate.collectAsStateWithLifecycle()
+                                val speechPitch by viewModel.speechPitch.collectAsStateWithLifecycle()
+                                val speechVoiceGender by viewModel.speechVoiceGender.collectAsStateWithLifecycle()
+
+                                // 1. Gender / Profile Selector
+                                Text(
+                                    text = "Perfil de Voz da IA",
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 12.sp,
+                                    color = Color.White
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    listOf("female" to "♀️ Feminina", "male" to "♂️ Masculina", "neutral" to "⚧️ Neutra").forEach { (key, label) ->
+                                        val isSelected = speechVoiceGender == key
+                                        Button(
+                                            onClick = { 
+                                                viewModel.updateAccessibilitySetting("speech_voice_gender", key)
+                                                viewModel.playSound("click")
+                                            },
+                                            shape = RoundedCornerShape(8.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = if (isSelected) Color(0xFF38BDF8) else Color(0xFF0F172A)
+                                            ),
+                                            border = BorderStroke(1.dp, if (isSelected) Color(0xFF38BDF8) else Color(0xFF334155)),
+                                            modifier = Modifier.weight(1f),
+                                            contentPadding = PaddingValues(vertical = 4.dp)
+                                        ) {
+                                            Text(
+                                                text = label,
+                                                fontSize = 11.sp,
+                                                color = if (isSelected) Color.Black else Color.White,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Box(Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF334155)))
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                // 2. Reading Speed Slider
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = "Velocidade de Leitura",
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 12.sp,
+                                        color = Color.White
+                                    )
+                                    Text(
+                                        text = String.format(Locale.US, "%.1fx", speechRate),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp,
+                                        color = Color(0xFF38BDF8)
+                                    )
+                                }
+                                Slider(
+                                    value = speechRate,
+                                    onValueChange = { viewModel.updateAccessibilitySetting("speech_rate", it) },
+                                    valueRange = 0.5f..2.0f,
+                                    steps = 14,
+                                    colors = SliderDefaults.colors(
+                                        thumbColor = Color(0xFF38BDF8),
+                                        activeTrackColor = Color(0xFF38BDF8),
+                                        inactiveTrackColor = Color(0xFF334155)
+                                    ),
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                // 3. Pitch Slider
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = "Tom de Voz (Pitch)",
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 12.sp,
+                                        color = Color.White
+                                    )
+                                    Text(
+                                        text = String.format(Locale.US, "%.1f", speechPitch),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp,
+                                        color = Color(0xFF38BDF8)
+                                    )
+                                }
+                                Slider(
+                                    value = speechPitch,
+                                    onValueChange = { viewModel.updateAccessibilitySetting("speech_pitch", it) },
+                                    valueRange = 0.5f..1.5f,
+                                    steps = 10,
+                                    colors = SliderDefaults.colors(
+                                        thumbColor = Color(0xFF38BDF8),
+                                        activeTrackColor = Color(0xFF38BDF8),
+                                        inactiveTrackColor = Color(0xFF334155)
+                                    ),
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Box(Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF334155)))
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                // 4. Test voice button
+                                Button(
+                                    onClick = { 
+                                        viewModel.speakText("Olá! Este é um teste da minha nova voz de narração no Android. O tom e a velocidade estão adequados?")
+                                    },
+                                    shape = RoundedCornerShape(10.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF38BDF8).copy(alpha = 0.15f)
+                                    ),
+                                    border = BorderStroke(1.dp, Color(0xFF38BDF8)),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = "🔊 Testar Tom e Velocidade da Voz",
+                                        color = Color(0xFF38BDF8),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp
+                                    )
+                                }
                             }
                         }
                     }

@@ -2,6 +2,10 @@ package com.example.ui.viewmodel
 
 import android.app.Application
 import android.util.Log
+import android.speech.tts.TextToSpeech
+import android.speech.tts.Voice
+import android.media.AudioManager
+import android.media.ToneGenerator
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.database.BotDatabase
@@ -87,6 +91,21 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
     private val _readHoverOn = MutableStateFlow(sharedPrefs.getBoolean("read_hover_on", false))
     val readHoverOn: StateFlow<Boolean> = _readHoverOn.asStateFlow()
 
+    private val _speechRate = MutableStateFlow(sharedPrefs.getFloat("speech_rate", 1.0f))
+    val speechRate: StateFlow<Float> = _speechRate.asStateFlow()
+
+    private val _speechPitch = MutableStateFlow(sharedPrefs.getFloat("speech_pitch", 1.0f))
+    val speechPitch: StateFlow<Float> = _speechPitch.asStateFlow()
+
+    private val _speechVoiceGender = MutableStateFlow(sharedPrefs.getString("speech_voice_gender", "female") ?: "female")
+    val speechVoiceGender: StateFlow<String> = _speechVoiceGender.asStateFlow()
+
+    private var textToSpeech: TextToSpeech? = null
+    private val _isTtsReady = MutableStateFlow(false)
+    val isTtsReady: StateFlow<Boolean> = _isTtsReady.asStateFlow()
+
+    private var toneGenerator: ToneGenerator? = null
+
     fun updateAccessibilitySetting(key: String, value: Any) {
         val editor = sharedPrefs.edit()
         when (value) {
@@ -103,6 +122,14 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
                 editor.putString(key, value)
                 when (key) {
                     "haptic_intensity" -> _hapticIntensity.value = value
+                    "speech_voice_gender" -> _speechVoiceGender.value = value
+                }
+            }
+            is Float -> {
+                editor.putFloat(key, value)
+                when (key) {
+                    "speech_rate" -> _speechRate.value = value
+                    "speech_pitch" -> _speechPitch.value = value
                 }
             }
         }
@@ -119,6 +146,84 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
             "notif_security_on" -> _notifSecurityOn.value = value
             "notif_silent_mode" -> _notifSilentMode.value = value
             "sound_effects_on" -> _soundEffectsOn.value = value
+        }
+    }
+
+    fun playSound(type: String) {
+        if (!_soundEffectsOn.value) return
+        viewModelScope.launch(Dispatchers.Default) {
+            try {
+                if (toneGenerator == null) {
+                    toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 70)
+                }
+                when (type) {
+                    "click" -> {
+                        toneGenerator?.startTone(ToneGenerator.TONE_PROP_BEEP, 50)
+                    }
+                    "send" -> {
+                        toneGenerator?.startTone(ToneGenerator.TONE_DTMF_1, 80)
+                    }
+                    "success", "login", "signup" -> {
+                        toneGenerator?.startTone(ToneGenerator.TONE_PROP_BEEP2, 150)
+                    }
+                    "error", "warning" -> {
+                        toneGenerator?.startTone(ToneGenerator.TONE_SUP_ERROR, 200)
+                    }
+                    "notification" -> {
+                        toneGenerator?.startTone(ToneGenerator.TONE_PROP_ACK, 100)
+                    }
+                    "menu" -> {
+                        toneGenerator?.startTone(ToneGenerator.TONE_PROP_BEEP, 80)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("BotViewModel", "Error playing sound effect: ${e.message}")
+            }
+        }
+    }
+
+    fun speakText(text: String) {
+        val tts = textToSpeech ?: return
+        if (!_isTtsReady.value) {
+            Log.e("BotViewModel", "TTS not ready")
+            return
+        }
+        viewModelScope.launch(Dispatchers.Main) {
+            try {
+                tts.setSpeechRate(_speechRate.value)
+                tts.setPitch(_speechPitch.value)
+                
+                val voices = tts.voices
+                if (!voices.isNullOrEmpty()) {
+                    val currentLocale = Locale.getDefault()
+                    val targetLocale = Locale("pt", "BR")
+                    val langVoices = voices.filter {
+                        it.locale.language == targetLocale.language || it.locale.language == currentLocale.language
+                    }
+                    
+                    if (langVoices.isNotEmpty()) {
+                        val genderPreferred = _speechVoiceGender.value
+                        var selectedVoice: Voice? = null
+                        if (genderPreferred != "neutral") {
+                            selectedVoice = langVoices.find { voice ->
+                                val nameLower = voice.name.lowercase()
+                                val matchesMale = nameLower.contains("male") || nameLower.contains("masc") || nameLower.contains("felipe") || nameLower.contains("daniel")
+                                val matchesFemale = nameLower.contains("female") || nameLower.contains("fem") || nameLower.contains("maria") || nameLower.contains("luciana")
+                                if (genderPreferred == "male") matchesMale else matchesFemale
+                            }
+                        }
+                        if (selectedVoice == null) {
+                            selectedVoice = langVoices.firstOrNull()
+                        }
+                        if (selectedVoice != null) {
+                            tts.voice = selectedVoice
+                        }
+                    }
+                }
+                tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "synth_test_id")
+            } catch (e: Exception) {
+                Log.e("BotViewModel", "Error in speakText: ${e.message}")
+            }
         }
     }
     
@@ -161,6 +266,25 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
     init {
         val database = BotDatabase.getDatabase(application)
         repository = BotRepository(database.botDao())
+
+        try {
+            toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 70)
+        } catch (e: Exception) {
+            Log.e("BotViewModel", "Error initializing ToneGenerator", e)
+        }
+
+        try {
+            textToSpeech = TextToSpeech(application) { status ->
+                if (status == TextToSpeech.SUCCESS) {
+                    _isTtsReady.value = true
+                    textToSpeech?.language = Locale("pt", "BR")
+                } else {
+                    Log.e("BotViewModel", "TTS initialization failed")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("BotViewModel", "Failed to construct TextToSpeech", e)
+        }
 
         // Setup db observations
         configState = repository.configFlow.stateIn(
@@ -1432,6 +1556,17 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
 
     override fun onCleared() {
         super.onCleared()
+        try {
+            textToSpeech?.stop()
+            textToSpeech?.shutdown()
+        } catch (e: Exception) {
+            Log.e("BotViewModel", "Error shutting down TTS: ${e.message}")
+        }
+        try {
+            toneGenerator?.release()
+        } catch (e: Exception) {
+            Log.e("BotViewModel", "Error releasing ToneGenerator: ${e.message}")
+        }
     }
 }
 

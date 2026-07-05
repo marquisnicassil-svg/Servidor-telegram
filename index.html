@@ -7065,7 +7065,10 @@ WITH CHECK (true);</code>
                         <select id="speech-voice" class="form-control" style="background: rgba(255,255,255,0.03); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="handleVoiceChange(this.value); saveConfiguration();">
                             <option value="">Carregando vozes do sistema...</option>
                         </select>
-                        <span style="color: var(--text-muted); font-size: 0.68rem; margin-top: 4px; display: block;" data-i18n="tts_voice_desc">Selecione um dos modelos de voz instalados no seu dispositivo/navegador.</span>
+                        <span style="color: var(--text-muted); font-size: 0.68rem; margin-top: 4px; display: block; margin-bottom: 8px;" data-i18n="tts_voice_desc">Selecione um dos modelos de voz instalados no seu dispositivo/navegador.</span>
+                        <button type="button" class="btn-universal" id="btn-test-voice" onclick="testSelectedVoice(); playSynthSound('click');" style="background: rgba(56, 189, 248, 0.1); border: 1px solid var(--primary); color: var(--primary); font-weight: bold; font-size: 0.8rem; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; width: 100%; margin-top: 4px;">
+                            🔊 <span data-i18n="test_voice_btn">Testar Tom e Velocidade da Voz</span>
+                        </button>
                     </div>
 
                     <!-- Configuração 3: Tamanho de Texto do Chat -->
@@ -7371,7 +7374,7 @@ WITH CHECK (true);</code>
                 
                 // Volume global do efeito (baixo, agradável e premium)
                 const masterGain = ctx.createGain();
-                masterGain.gain.setValueAtTime(0.04, now); // Volume bem baixo e polido por padrão (4%)
+                masterGain.gain.setValueAtTime(0.3, now); // Volume de 30% para ser perfeitamente audível e confortável
                 masterGain.connect(ctx.destination);
 
                 const osc = ctx.createOscillator();
@@ -7931,6 +7934,7 @@ WITH CHECK (true);</code>
                 "speech_pitch_lbl": "🎼 Tom de Voz da Narração",
                 "tts_voice_lbl": "🗣️ Modelo de Voz Narradora (Web Speech TTS)",
                 "tts_voice_desc": "Selecione um dos modelos de voz instalados no seu dispositivo/navegador.",
+                "test_voice_btn": "Testar Tom e Velocidade da Voz",
                 "chat_font_size_lbl": "🔎 Tamanho do Texto das Conversas",
                 "chat_font_size_small": "Pequeno (Compacto)",
                 "chat_font_size_normal": "Normal (Padrão)",
@@ -8024,6 +8028,7 @@ WITH CHECK (true);</code>
                 "speech_pitch_lbl": "🎼 Narration Pitch Tone",
                 "tts_voice_lbl": "🗣️ System Narration Speaker (Web TTS)",
                 "tts_voice_desc": "Select from available native speech synthesizer models detected by your device.",
+                "test_voice_btn": "Test Voice Pitch & Speed Rate",
                 "chat_font_size_lbl": "🔎 Conversation Typography Font Size",
                 "chat_font_size_small": "Compact Space (Small)",
                 "chat_font_size_normal": "Standard Space (Regular)",
@@ -8115,6 +8120,7 @@ WITH CHECK (true);</code>
                 "speech_pitch_lbl": "🎼 Modulación de Tono Hablado",
                 "tts_voice_lbl": "🗣️ Altavoz del Sintetizador local (TTS)",
                 "tts_voice_desc": "Escoja uno de los locutores interactivos preinstalados en su sistema.",
+                "test_voice_btn": "Probar Modulación y Agilidad de Voz",
                 "chat_font_size_lbl": "🔎 Tamaño tipográfico de las Conversaciones",
                 "chat_font_size_small": "Compacto (Pequeño)",
                 "chat_font_size_normal": "Estándar (Regular)",
@@ -8436,6 +8442,46 @@ WITH CHECK (true);</code>
 
             const toastMsg = lang === 'pt' ? 'Idioma atualizado com sucesso!' : lang === 'en' ? 'System language updated!' : '¡Idioma actualizado correctamente!';
             showAppToast(toastMsg, 'success');
+        }
+
+        function getVoiceGender(voiceName) {
+            if (!voiceName) return 'neutral';
+            const name = voiceName.toLowerCase();
+            
+            // Explicit gender indicators in standard TTS names
+            if (name.includes('female') || name.includes('feminina') || name.includes('feminino')) return 'female';
+            if (name.includes('male') || name.includes('masculina') || name.includes('masculino')) return 'male';
+            
+            // Heuristic lists for common male/female voice name keywords
+            const malePatterns = [
+                'felipe', 'daniel', 'david', 'richard', 'george', 'carlos', 'ravi', 'thomas', 
+                'oliver', 'james', 'william', 'krzysztof', 'stefan', 'leonardo', 'ricardo', 
+                'mateo', 'alex', 'diego', 'jorge', 'antonio', 'francisco', 'manuel', 'joao', 
+                'pedro', 'lucas', 'gabriel', 'matheus', 'thiago', 'bruno', 'gustavo', 'marcos', 
+                'andre', 'filipe', 'vinicius', 'rafael', 'rodrigo', 'guy', 'boy', 'man', 'mr.',
+                'henry', 'charles', 'robert', 'john', 'michael', 'joseph', 'arthur', 'microsoft daniel',
+                'microsoft david', 'google felipe', 'google daniel', 'google david'
+            ];
+            
+            const femalePatterns = [
+                'maria', 'luciana', 'francisca', 'hazel', 'zira', 'helena', 'daniela', 'samantha', 
+                'karen', 'victoria', 'moira', 'tessa', 'fiona', 'veena', 'ting-ting', 'yalda', 
+                'milena', 'kanya', 'linh', 'sonia', 'joana', 'catarina', 'katarina', 'amelie', 
+                'meera', 'monica', 'paulina', 'ana', 'beatriz', 'carla', 'camila', 'gabriela', 
+                'julia', 'larissa', 'leticia', 'luana', 'mariana', 'patricia', 'renata', 'sara', 
+                'tatiane', 'vanessa', 'girl', 'lady', 'woman', 'mrs.', 'ms.', 'siri', 'clara',
+                'isabela', 'alice', 'sophia', 'laura', 'helen', 'mary', 'susan', 'elizabeth', 'linda',
+                'google maria', 'google luciana', 'google francisca', 'microsoft maria', 'microsoft zira'
+            ];
+            
+            for (const pattern of malePatterns) {
+                if (name.includes(pattern)) return 'male';
+            }
+            for (const pattern of femalePatterns) {
+                if (name.includes(pattern)) return 'female';
+            }
+            
+            return 'neutral';
         }
 
         function populateVoices() {
@@ -15960,6 +16006,18 @@ WITH CHECK (true);</code>
                 addLog("API de voz não suportada neste navegador.", "error");
                 showAppToast("Seu navegador não suporta leitura de voz embutida.", "error");
             }
+        }
+
+        function testSelectedVoice() {
+            let testMsg = "Olá! Este é um teste da minha nova voz de narração. O tom e a velocidade estão adequados?";
+            if (typeof currentLanguage !== 'undefined') {
+                if (currentLanguage === 'en') {
+                    testMsg = "Hello! This is a test of my new narration voice. Are the pitch and speed suitable?";
+                } else if (currentLanguage === 'es') {
+                    testMsg = "¡Hola! Esta es una prueba de mi nueva voz de narración. ¿El tono y la velocidad son adecuados?";
+                }
+            }
+            speakText(testMsg);
         }
 
         let recognition = null;
