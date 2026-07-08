@@ -21253,8 +21253,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     
                     // Sugestões para erros comuns do Supabase na troca de ID Token
                     let extraTip = "";
-                    if (errText.includes("provider is not enabled") || errText.includes("disabled")) {
+                    if (errText.includes("provider is not enabled") || errText.includes("disabled") || errText.includes("provider_disabled")) {
                         extraTip = " DICA: Garanta que o provedor 'Google' está ativo e configurado com os Client IDs no console do seu Supabase Auth.";
+                        showSupabaseGoogleProviderModal();
                     }
                     addLog(`Rejeitado pelo Supabase: ${parsedErr.message || errText}.${extraTip}`, "error");
                     showAppToast(`Erro de Autenticação Supabase: ${parsedErr.message || errText}`, "error");
@@ -21264,6 +21265,94 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 addLog(`CORS ou Erro de rede ao trocar token: ${err.message}`, "error");
                 showAppToast(`Erro de conexão com Supabase: ${err.message}`, "error");
             }
+        }
+
+        function showSupabaseGoogleProviderModal() {
+            const existing = document.getElementById('supabase-provider-modal');
+            if (existing) existing.remove();
+
+            const modal = document.createElement('div');
+            modal.id = 'supabase-provider-modal';
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100vw';
+            modal.style.height = '100vh';
+            modal.style.backgroundColor = 'rgba(3, 4, 6, 0.85)';
+            modal.style.backdropFilter = 'blur(12px)';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.style.zIndex = '100000';
+            modal.style.opacity = '0';
+            modal.style.transition = 'opacity 0.25s ease';
+            modal.style.padding = '20px';
+
+            const card = document.createElement('div');
+            card.style.background = 'linear-gradient(135deg, rgba(21, 23, 30, 0.98), rgba(15, 17, 23, 0.99))';
+            card.style.border = '1px solid rgba(139, 92, 246, 0.3)';
+            card.style.borderRadius = '24px';
+            card.style.width = '100%';
+            card.style.maxWidth = '460px';
+            card.style.padding = '28px';
+            card.style.boxShadow = '0 20px 50px rgba(0, 0, 0, 0.75), 0 0 40px rgba(139, 92, 246, 0.08)';
+            card.style.position = 'relative';
+            card.style.transform = 'scale(0.95)';
+            card.style.transition = 'transform 0.25s cubic-bezier(0.34, 1.45, 0.64, 1)';
+            card.style.color = '#f3f4f6';
+            card.style.fontFamily = 'system-ui, -apple-system, sans-serif';
+
+            card.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 1.5rem;">⚙️</span>
+                        <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; background: linear-gradient(to right, #a78bfa, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Ative o Google no Supabase</h3>
+                    </div>
+                    <button id="supabase-modal-close-icon" style="background: none; border: none; color: #9ca3af; font-size: 1.25rem; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; transition: color 0.2s;">✕</button>
+                </div>
+                
+                <p style="font-size: 0.88rem; line-height: 1.5; color: #d1d5db; margin-bottom: 18px;">
+                    O login do Google no app utiliza autenticação segura unificada. Para que funcione, você precisa <strong>ativar</strong> o provedor Google no painel do seu Supabase:
+                </p>
+
+                <div style="background: rgba(255, 255, 255, 0.02); border-radius: 14px; padding: 16px; border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 20px; font-size: 0.82rem; line-height: 1.6; color: #e5e7eb;">
+                    <ol style="margin: 0; padding-left: 20px;">
+                        <li style="margin-bottom: 8px;">Acesse o <a href="https://supabase.com/dashboard" target="_blank" style="color: #a78bfa; text-decoration: underline; font-weight: bold;">Painel do Supabase</a> e abra seu projeto.</li>
+                        <li style="margin-bottom: 8px;">No menu lateral, clique em <strong>Authentication</strong> (ícone de chave).</li>
+                        <li style="margin-bottom: 8px;">Acesse a aba <strong>Providers</strong> na lista de configurações.</li>
+                        <li style="margin-bottom: 8px;">Clique em <strong>Google</strong> para abrir suas opções.</li>
+                        <li style="margin-bottom: 8px;">Marque a opção para **Ativar** (<strong>"Enable Google provider"</strong>).</li>
+                        <li style="margin-bottom: 0;">Clique em <strong>Save</strong> (Salvar) no card do provedor.</li>
+                    </ol>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 10px;">
+                    <a href="https://supabase.com/dashboard" target="_blank" style="flex: 1.2; text-align: center; background: linear-gradient(135deg, #7c3aed, #db2777); border: none; color: white; padding: 12px; border-radius: 12px; font-size: 0.82rem; font-weight: bold; cursor: pointer; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35); transition: opacity 0.2s;">
+                        <span>Painel Supabase</span> ➔
+                    </a>
+                    <button id="supabase-modal-close-btn" style="flex: 0.8; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #d1d5db; padding: 12px; border-radius: 12px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                        Entendi
+                    </button>
+                </div>
+            `;
+
+            modal.appendChild(card);
+            document.body.appendChild(modal);
+
+            // Animate In
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                card.style.transform = 'scale(1)';
+            }, 10);
+
+            function closeModal() {
+                modal.style.opacity = '0';
+                card.style.transform = 'scale(0.95)';
+                setTimeout(() => modal.remove(), 250);
+            }
+
+            document.getElementById('supabase-modal-close-icon').onclick = closeModal;
+            document.getElementById('supabase-modal-close-btn').onclick = closeModal;
         }
 
         // ==========================================================================
