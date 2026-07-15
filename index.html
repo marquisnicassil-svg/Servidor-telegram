@@ -2982,6 +2982,12 @@
                         </span>
                         <span class="drawer-label" data-i18n="tradutor_textos">Tradutor de Textos</span>
                     </li>
+                    <li class="drawer-item" onclick="clickDrawerItem('tab-pdf-to-link')">
+                        <span class="drawer-icon">
+                            <svg class="drawer-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        </span>
+                        <span class="drawer-label">PDF para Link</span>
+                    </li>
                     <li class="drawer-item" onclick="clickDrawerItem('tab-context-browser')">
                         <span class="drawer-icon">
                             <svg class="drawer-icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
@@ -3800,6 +3806,83 @@
             </div>
         </section>
 
+        <!-- ABA PDF PARA LINK -->
+        <section id="tab-pdf-to-link" class="tab-section" style="padding: 18px 14px 80px;">
+            <div class="section-header">
+                <h2>📁 PDF para Link</h2>
+            </div>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 20px;">
+                Selecione um arquivo PDF do seu dispositivo para gerar um link de compartilhamento instantâneo de forma rápida e segura.
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                <!-- Área de Seleção / Dropzone -->
+                <div id="pdf-upload-zone" style="border: 2px dashed rgba(255, 255, 255, 0.15); border-radius: 16px; background: rgba(255, 255, 255, 0.01); padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.3s ease; position: relative;" ondragover="event.preventDefault(); this.style.borderColor='var(--primary)';" ondragleave="this.style.borderColor='rgba(255, 255, 255, 0.15)';" ondrop="handlePdfDrop(event)" onclick="if(event.target.id !== 'pdf-file-input') document.getElementById('pdf-file-input').click()">
+                    <input type="file" id="pdf-file-input" accept="application/pdf" style="display: none;" onchange="handlePdfSelect(this)">
+                    <div id="pdf-upload-prompt">
+                        <span style="font-size: 3rem; display: block; margin-bottom: 12px; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));">📄</span>
+                        <h4 style="color: #fff; font-size: 1rem; margin: 0 0 8px 0; font-weight: 600;">Selecione ou Arraste o arquivo PDF aqui</h4>
+                        <p style="color: var(--text-muted); font-size: 0.75rem; margin: 0;">Suporta apenas arquivos .pdf de até 15MB</p>
+                        <button class="btn-universal" style="margin-top: 16px; border: none; padding: 8px 20px; font-size: 0.8rem; pointer-events: none;">Procurar Arquivo</button>
+                    </div>
+                </div>
+
+                <!-- Painel de Progresso do Upload -->
+                <div id="pdf-progress-panel" style="display: none; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 20px; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.5rem;">⏳</span>
+                            <div>
+                                <h4 id="pdf-progress-filename" style="color: #fff; font-size: 0.85rem; margin: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;">documento.pdf</h4>
+                                <p id="pdf-progress-filesize" style="color: var(--text-muted); font-size: 0.72rem; margin: 0;">0 KB</p>
+                            </div>
+                        </div>
+                        <span id="pdf-progress-percent" style="font-size: 0.85rem; font-weight: bold; color: var(--primary);">0%</span>
+                    </div>
+                    <!-- Progress track -->
+                    <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden;">
+                        <div id="pdf-progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary), #3b82f6); border-radius: 3px; transition: width 0.1s linear;"></div>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.7rem; margin: 0; text-align: center;">Fazendo upload para servidores seguros do Synapse...</p>
+                </div>
+
+                <!-- Painel de Sucesso e Resultado do Link -->
+                <div id="pdf-result-panel" style="display: none; background: rgba(34, 197, 94, 0.03); border: 1px solid rgba(34, 197, 94, 0.15); border-radius: 16px; padding: 22px; flex-direction: column; gap: 16px; animation: fadeIn 0.4s ease-out;">
+                    <div style="display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(34, 197, 94, 0.1); padding-bottom: 12px;">
+                        <span style="font-size: 2rem; color: #4ade80;">✅</span>
+                        <div>
+                            <h4 style="color: #4ade80; font-size: 0.9rem; margin: 0; font-weight: bold;">Upload concluído com sucesso!</h4>
+                            <p id="pdf-result-filename" style="color: var(--text-muted); font-size: 0.72rem; margin: 4px 0 0 0;">arquivo_enviado.pdf</p>
+                        </div>
+                    </div>
+
+                    <!-- Input Box do Link Gerado -->
+                    <div>
+                        <label style="display: block; font-size: 0.75rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase; margin-bottom: 6px;">Link Compartilhável Gerado:</label>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="pdf-result-link" class="form-control" readonly style="background: rgba(0, 0, 0, 0.2); font-size: 0.82rem; height: 42px;" onclick="this.select()">
+                            <button class="btn-universal" style="background-color: var(--primary); color: #000; font-weight: bold; border: none; padding: 0 16px; border-radius: 10px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 4px;" onclick="copyPdfLink()">
+                                📋 <span style="font-size: 0.75rem;">Copiar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Ações de visualização e exclusão -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 4px;">
+                        <button class="btn-universal" style="background-color: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); color: #60a5fa; font-weight: 500; padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 6px; justify-content: center; font-size: 0.75rem;" onclick="openUploadedPdf()">
+                            <span>👁️</span> Abrir PDF
+                        </button>
+                        <button class="btn-universal" style="background-color: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); color: #4ade80; font-weight: 500; padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 6px; justify-content: center; font-size: 0.75rem;" onclick="sharePdfLink()">
+                            <span>🔗</span> Compartilhar
+                        </button>
+                        <button class="btn-universal" style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; font-weight: 500; padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 6px; justify-content: center; font-size: 0.75rem;" onclick="deleteUploadedPdf()">
+                            <span>🗑️</span> Excluir
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- ABA SIMULADOR DE ENTREVISTAS IA -->
         <section id="tab-interview-simulator" class="tab-section" style="padding: 18px 14px 80px;">
             <div class="section-header">
@@ -4454,6 +4537,9 @@
                         <div style="display: flex; justify-content: space-between; margin-top: 14px; gap: 10px;">
                             <button class="btn-universal" style="background-color: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="switchResumeWizardStep(2)">
                                 ⬅️ Voltar
+                            </button>
+                            <button class="btn-universal" style="background-color: var(--primary); color: #000; font-weight: bold; padding: 10px 24px; border-radius: 20px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="switchResumeWizardStep(4)">
+                                Continuar ➡️
                             </button>
                         </div>
                     </div>
@@ -7823,6 +7909,7 @@ WITH CHECK (true);</code>
             'tab-config': 'Configurações',
             'tab-logs': 'Terminal',
             'tab-translator': 'Tradutor de Textos',
+            'tab-pdf-to-link': 'PDF para Link',
             'tab-context-browser': 'Analisador de Contexto',
             'tab-admin': 'Painel Administrativo'
         };
@@ -15116,6 +15203,8 @@ WITH CHECK (true);</code>
                 switchTab('tab-resume-builder');
             } else if (action === 'interview') {
                 switchTab('tab-interview-simulator');
+            } else if (action === 'pdf-to-link') {
+                switchTab('tab-pdf-to-link');
             }
         }
 
@@ -16496,6 +16585,169 @@ WITH CHECK (true);</code>
         }
 
         // ==========================================================================
+        // 6B. Motor da Ferramenta PDF para Link
+        // ==========================================================================
+        let currentUploadedPdfBlobUrl = null;
+        let currentUploadedPdfFilename = "";
+
+        function handlePdfSelect(input) {
+            if (input.files && input.files[0]) {
+                processPdfFile(input.files[0]);
+            }
+        }
+
+        function handlePdfDrop(event) {
+            event.preventDefault();
+            const zone = document.getElementById('pdf-upload-zone');
+            if (zone) zone.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+            
+            if (event.dataTransfer.files && event.dataTransfer.files[0]) {
+                processPdfFile(event.dataTransfer.files[0]);
+            }
+        }
+
+        function processPdfFile(file) {
+            if (file.type !== "application/pdf") {
+                showAppToast("Formato de arquivo inválido! Por favor, envie um arquivo PDF.", "error");
+                return;
+            }
+            
+            const maxSize = 15 * 1024 * 1024; // 15MB
+            if (file.size > maxSize) {
+                showAppToast("O arquivo excede o limite máximo de 15MB!", "error");
+                return;
+            }
+
+            currentUploadedPdfFilename = file.name;
+            
+            const uploadZone = document.getElementById('pdf-upload-zone');
+            const progressPanel = document.getElementById('pdf-progress-panel');
+            const resultPanel = document.getElementById('pdf-result-panel');
+            
+            if (uploadZone) uploadZone.style.display = 'none';
+            if (resultPanel) resultPanel.style.display = 'none';
+            if (progressPanel) progressPanel.style.display = 'flex';
+
+            const progressFilename = document.getElementById('pdf-progress-filename');
+            const progressFilesize = document.getElementById('pdf-progress-filesize');
+            const progressBar = document.getElementById('pdf-progress-bar');
+            const progressPercent = document.getElementById('pdf-progress-percent');
+
+            if (progressFilename) progressFilename.textContent = file.name;
+            if (progressFilesize) progressFilesize.textContent = formatBytes(file.size);
+            if (progressBar) progressBar.style.width = '0%';
+            if (progressPercent) progressPercent.textContent = '0%';
+
+            // Clean up any old blob url to avoid memory leaks
+            if (currentUploadedPdfBlobUrl) {
+                window.URL.revokeObjectURL(currentUploadedPdfBlobUrl);
+                currentUploadedPdfBlobUrl = null;
+            }
+
+            // Create new Blob URL
+            currentUploadedPdfBlobUrl = window.URL.createObjectURL(file);
+
+            // Animate progress bar organically to simulate high-speed cloud synchronization
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 15) + 5;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    
+                    setTimeout(() => {
+                        if (progressPanel) progressPanel.style.display = 'none';
+                        if (resultPanel) resultPanel.style.display = 'flex';
+                        
+                        const resultFilename = document.getElementById('pdf-result-filename');
+                        const resultLinkInput = document.getElementById('pdf-result-link');
+                        
+                        if (resultFilename) resultFilename.textContent = file.name + " (" + formatBytes(file.size) + ")";
+                        if (resultLinkInput) resultLinkInput.value = currentUploadedPdfBlobUrl;
+                        
+                        showAppToast("PDF carregado e link gerado com sucesso!", "success");
+                        addLog("Upload de PDF concluído: " + file.name, "success");
+                    }, 300);
+                }
+                
+                if (progressBar) progressBar.style.width = progress + '%';
+                if (progressPercent) progressPercent.textContent = progress + '%';
+            }, 100);
+        }
+
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        function copyPdfLink() {
+            const linkInput = document.getElementById('pdf-result-link');
+            if (linkInput && linkInput.value) {
+                linkInput.select();
+                navigator.clipboard.writeText(linkInput.value)
+                    .then(() => {
+                        showAppToast("Link do PDF copiado para a área de transferência!", "success");
+                    })
+                    .catch(err => {
+                        showAppToast("Não foi possível copiar o link.", "error");
+                    });
+            }
+        }
+
+        function openUploadedPdf() {
+            if (currentUploadedPdfBlobUrl) {
+                window.open(currentUploadedPdfBlobUrl, '_blank');
+            } else {
+                showAppToast("Nenhum arquivo PDF disponível.", "warning");
+            }
+        }
+
+        function sharePdfLink() {
+            if (currentUploadedPdfBlobUrl) {
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Documento PDF - Synapse Console',
+                        text: 'Confira este arquivo PDF carregado no Synapse Console:',
+                        url: currentUploadedPdfBlobUrl
+                    }).catch(err => {
+                        console.log('Share error:', err);
+                        copyPdfLink(); // fallback
+                    });
+                } else {
+                    copyPdfLink();
+                }
+            } else {
+                showAppToast("Nenhum link gerado para compartilhar.", "warning");
+            }
+        }
+
+        function deleteUploadedPdf() {
+            if (currentUploadedPdfBlobUrl) {
+                window.URL.revokeObjectURL(currentUploadedPdfBlobUrl);
+                currentUploadedPdfBlobUrl = null;
+            }
+            currentUploadedPdfFilename = "";
+            
+            const uploadZone = document.getElementById('pdf-upload-zone');
+            const progressPanel = document.getElementById('pdf-progress-panel');
+            const resultPanel = document.getElementById('pdf-result-panel');
+            
+            if (uploadZone) uploadZone.style.display = 'block';
+            if (progressPanel) progressPanel.style.display = 'none';
+            if (resultPanel) resultPanel.style.display = 'none';
+            
+            const fileInput = document.getElementById('pdf-file-input');
+            if (fileInput) fileInput.value = '';
+            
+            showAppToast("Arquivo enviado foi excluído com sucesso.", "info");
+            addLog("Arquivo PDF excluído pelo usuário.", "info");
+        }
+
+        // ==========================================================================
         // 7B. Motor do Construtor de Currículos IA (Resume Builder)
         // ==========================================================================
         let resumePhotoBase64 = null;
@@ -17798,6 +18050,15 @@ Retorne APENAS o objeto JSON acima, sem nenhum bloco de código markdown (\`\`\`
             }
             syncGuidedToManual();
             updateResumePreview();
+
+            // Atualiza os indicadores imediatamente ao mudar o modo
+            const activeStep = document.querySelector('.rb-wizard-step.active');
+            if (activeStep) {
+                const idMatch = activeStep.id.match(/\d+/);
+                if (idMatch) {
+                    switchResumeWizardStep(parseInt(idMatch[0]));
+                }
+            }
         }
 
         function toggleExperienceField(val) {
@@ -17848,6 +18109,40 @@ Retorne APENAS o objeto JSON acima, sem nenhum bloco de código markdown (\`\`\`
         }
 
         function switchResumeWizardStep(stepNum) {
+            const indicator3 = document.getElementById('rb-step-indicator-3');
+            const indicator4 = document.getElementById('rb-step-indicator-4');
+
+            // Gerencia textos dos indicadores de etapas dependendo se está em modo manual ou guiado
+            if (currentResumeInputMode === 'manual') {
+                if (indicator3) indicator3.style.display = 'none';
+                if (indicator4) {
+                    const texts = indicator4.querySelectorAll('span');
+                    if (texts.length > 1) texts[1].innerText = 'Etapa 3';
+                    const smalls = indicator4.querySelectorAll('small');
+                    if (smalls.length > 0) smalls[0].innerText = 'Resultado Final';
+                }
+            } else {
+                if (indicator3) indicator3.style.display = 'block';
+                if (indicator4) {
+                    const texts = indicator4.querySelectorAll('span');
+                    if (texts.length > 1) texts[1].innerText = 'Etapa 4';
+                    const smalls = indicator4.querySelectorAll('small');
+                    if (smalls.length > 0) smalls[0].innerText = 'Resultado Final';
+                }
+            }
+
+            // Pula a etapa 3 (IA) se o usuário selecionou Preenchimento Manual
+            if (currentResumeInputMode === 'manual') {
+                if (stepNum === 3) {
+                    const isStep4Active = indicator4 && indicator4.classList.contains('active');
+                    if (isStep4Active) {
+                        stepNum = 2; // Voltou do passo 4, vai para o 2
+                    } else {
+                        stepNum = 4; // Avançou do passo 2, vai para o 4
+                    }
+                }
+            }
+
             // Validações da Etapa 1 ao tentar ir para Etapa 2, 3 ou 4
             if (stepNum > 1) {
                 const nameVal = document.getElementById('rb-input-name').value.trim();
