@@ -11675,17 +11675,61 @@ WITH CHECK (true);</code>
             const mMain = document.getElementById('model-name');
             const mTelegram = document.getElementById('tg-model-name');
             
+            // SINALIZAÇÃO DO SISTEMA DE ORQUESTRAÇÃO DE MODELOS:
+            // Este método gerencia dinamicamente as opções de LLM disponíveis para o sistema,
+            // garantindo que múltiplos provedores (incluindo OpenRouter, Gemini local, OpenAI, Groq e outros)
+            // se comuniquem perfeitamente através de uma única interface abstrata e unificada.
             let options = [];
             if (type === "GEMINI") {
-                options = ["gemini-1.5-flash", "gemini-2.5-flash", "gemini-1.5-pro", "gemini-1.0-pro"];
+                options = [
+                    "gemini-2.5-flash", 
+                    "gemini-2.5-pro", 
+                    "gemini-2.0-flash", 
+                    "gemini-2.0-flash-thinking-exp",
+                    "gemini-1.5-flash", 
+                    "gemini-1.5-pro"
+                ];
             } else if (type === "GROQ") {
-                options = ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "mixtral-8x7b-32768", "gemma2-9b-it"];
+                options = [
+                    "deepseek-r1-distill-llama-70b",
+                    "llama-3.3-70b-versatile", 
+                    "llama-3.1-8b-instant", 
+                    "gemma2-9b-it", 
+                    "mixtral-8x7b-32768"
+                ];
             } else if (type === "OPENROUTER") {
-                options = ["google/gemini-flash-1.5", "google/gemini-pro-1.5", "google/gemini-2.0-flash-exp", "anthropic/claude-3.5-sonnet", "meta-llama/llama-3.3-70b-instruct", "deepseek/deepseek-chat"];
+                options = [
+                    "deepseek/deepseek-r1",
+                    "deepseek/deepseek-chat",
+                    "google/gemini-2.5-flash",
+                    "google/gemini-2.5-pro",
+                    "google/gemini-2.0-flash-thinking-exp",
+                    "google/gemini-2.0-flash",
+                    "google/gemini-flash-1.5",
+                    "anthropic/claude-3.7-sonnet",
+                    "anthropic/claude-3.5-sonnet",
+                    "meta-llama/llama-3.3-70b-instruct",
+                    "openai/gpt-4o",
+                    "openai/gpt-4o-mini",
+                    "openai/o3-mini"
+                ];
             } else if (type === "CUSTOM") {
-                options = ["google/gemini-2.5-flash", "deepseek/deepseek-chat", "meta-llama/llama-3.3-70b-instruct", "qwen/qwen-2.5-72b-instruct"];
+                options = [
+                    "deepseek-r1",
+                    "deepseek-chat",
+                    "google/gemini-2.5-flash", 
+                    "meta-llama/llama-3.3-70b-instruct", 
+                    "qwen/qwen-2.5-72b-instruct"
+                ];
             } else {
-                options = ["gpt-4o", "gpt-4o-mini", "gpt-4", "gpt-3.5-turbo"];
+                options = [
+                    "gpt-4o-mini", 
+                    "gpt-4o", 
+                    "o3-mini", 
+                    "o1", 
+                    "o1-mini", 
+                    "gpt-4-turbo"
+                ];
             }
             
             const fillSelect = (el) => {
@@ -23946,39 +23990,50 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             // Limpa as opções
             selectEl.innerHTML = '';
 
+            // COMENTÁRIO DO SISTEMA:
+            // Sincroniza dinamicamente as opções para o modelo de moderação geral/mestre do sistema.
+            // Permite alternar perfeitamente entre canais de inferência do OpenRouter, OpenAI, Gemini local, Groq e outros.
             let optionsList = [];
             if (typeVal === "GEMINI") {
                 optionsList = [
-                    { value: "gemini-1.5-flash", label: "gemini-1.5-flash (Ideal p/ Chat)" },
-                    { value: "gemini-1.5-pro", label: "gemini-1.5-pro (Raciocínio Avançado)" },
-                    { value: "gemini-2.0-flash-exp", label: "gemini-2.0-flash (Mais Rápido)" },
-                    { value: "gemini-1.0-pro", label: "gemini-1.0-pro" }
+                    { value: "gemini-2.5-flash", label: "gemini-2.5-flash (Mais Recente e Recomendado)" },
+                    { value: "gemini-2.5-pro", label: "gemini-2.5-pro (Raciocínio Ultra-Avançado)" },
+                    { value: "gemini-2.0-flash", label: "gemini-2.0-flash (Super Rápido)" },
+                    { value: "gemini-1.5-flash", label: "gemini-1.5-flash (Clássico)" },
+                    { value: "gemini-1.5-pro", label: "gemini-1.5-pro" }
                 ];
             } else if (typeVal === "GROQ") {
                 optionsList = [
-                    { value: "llama-3.1-8b-instant", label: "llama-3.1-8b-instant" },
+                    { value: "deepseek-r1-distill-llama-70b", label: "deepseek-r1-distill-llama-70b" },
                     { value: "llama-3.3-70b-versatile", label: "llama-3.3-70b-versatile" },
-                    { value: "mixtral-8x7b-32768", label: "mixtral-8x7b-32768" },
+                    { value: "llama-3.1-8b-instant", label: "llama-3.1-8b-instant" },
                     { value: "gemma2-9b-it", label: "gemma2-9b-it" }
                 ];
             } else if (typeVal === "OPENROUTER") {
                 optionsList = [
-                    { value: "google/gemini-flash-1.5", label: "google/gemini-flash-1.5" },
-                    { value: "google/gemini-pro-1.5", label: "google/gemini-pro-1.5" },
-                    { value: "google/gemini-2.0-flash-exp", label: "google/gemini-2.0-flash-exp" },
+                    { value: "deepseek/deepseek-r1", label: "deepseek/deepseek-r1 (Raciocínio R1)" },
+                    { value: "deepseek/deepseek-chat", label: "deepseek/deepseek-chat" },
+                    { value: "google/gemini-2.5-flash", label: "google/gemini-2.5-flash" },
+                    { value: "google/gemini-2.5-pro", label: "google/gemini-2.5-pro" },
+                    { value: "anthropic/claude-3.7-sonnet", label: "anthropic/claude-3.7-sonnet" },
                     { value: "anthropic/claude-3.5-sonnet", label: "anthropic/claude-3.5-sonnet" },
                     { value: "meta-llama/llama-3.3-70b-instruct", label: "meta-llama/llama-3.3-70b-instruct" },
-                    { value: "deepseek/deepseek-chat", label: "deepseek/deepseek-chat" }
+                    { value: "openai/gpt-4o", label: "openai/gpt-4o" },
+                    { value: "openai/gpt-4o-mini", label: "openai/gpt-4o-mini" },
+                    { value: "openai/o3-mini", label: "openai/o3-mini" }
                 ];
             } else if (typeVal === "OPENAI") {
                 optionsList = [
-                    { value: "gpt-4o-mini", label: "gpt-4o-mini" },
-                    { value: "gpt-4o", label: "gpt-4o" },
-                    { value: "gpt-4", label: "gpt-4" },
-                    { value: "gpt-3.5-turbo", label: "gpt-3.5-turbo" }
+                    { value: "gpt-4o-mini", label: "gpt-4o-mini (Leve e Eficiente)" },
+                    { value: "gpt-4o", label: "gpt-4o (Geral Robusto)" },
+                    { value: "o3-mini", label: "o3-mini (Raciocínio Rápido)" },
+                    { value: "o1", label: "o1 (Raciocínio Profundo)" },
+                    { value: "gpt-4-turbo", label: "gpt-4-turbo" }
                 ];
             } else {
                 optionsList = [
+                    { value: "deepseek-r1", label: "deepseek-r1" },
+                    { value: "deepseek-chat", label: "deepseek-chat" },
                     { value: "custom-model", label: "Modelo Customizado" }
                 ];
             }
