@@ -11745,6 +11745,10 @@ WITH CHECK (true);</code>
             
             fillSelect(mMain);
             fillSelect(mTelegram);
+            
+            if (typeof autoEnhanceAllSelects === 'function') {
+                autoEnhanceAllSelects();
+            }
         }
 
         function quickSelectModel(providerType, baseUrl, modelName) {
@@ -19590,106 +19594,338 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             return false;
         };
 
-        // Modal de Seleção Customizado Premium para substituir o select nativo e evitar wheels no Android/iOS
+        // Modal de Seleção Customizado Premium de Nova Geração (Modern Glass & Category Chips UI)
         function showCustomSelect(title, options, currentValue, onSelect) {
-            // Helper local para buscar placeholders dinâmicos contextualizados
-            const getSearchPlaceholder = (selectTitle) => {
-                const titleLower = String(selectTitle).toLowerCase();
-                const lang = currentLanguage || 'pt';
+            const titleLower = String(title).toLowerCase();
+            const lang = currentLanguage || 'pt';
+
+            // Helper para identificar provedores / categorias inteligentes e metadados visuais
+            const getOptionMetadata = (opt) => {
+                const val = String(opt.value || '').toLowerCase();
+                const lbl = String(opt.label || '').toLowerCase();
                 
-                if (lang === 'pt') {
-                    if (titleLower.includes('idioma') || titleLower.includes('language')) return 'Pesquisar idiomas disponíveis...';
-                    if (titleLower.includes('traduzir') || titleLower.includes('translate')) return 'Pesquisar idioma de destino...';
-                    if (titleLower.includes('área') || titleLower.includes('area')) return 'Pesquisar áreas profissionais...';
-                    if (titleLower.includes('senioridade') || titleLower.includes('seniority')) return 'Pesquisar níveis de senioridade...';
-                    if (titleLower.includes('modelo') || titleLower.includes('model')) return 'Pesquisar modelos de inteligência artificial...';
-                    if (titleLower.includes('voz') || titleLower.includes('voice')) return 'Pesquisar vozes de narração...';
-                    if (titleLower.includes('currículo') || titleLower.includes('style') || titleLower.includes('estilo')) return 'Pesquisar estilos e formatos...';
-                    if (titleLower.includes('fonte') || titleLower.includes('font')) return 'Pesquisar fontes tipográficas...';
-                    return 'Pesquisar opções...';
+                let category = 'all';
+                let categoryLabel = 'Geral';
+                let brandColor = '#38bdf8';
+                let subtitle = opt.subtitle || '';
+                let badge = opt.badge || '';
+                let icon = opt.icon || '✦';
+
+                // Categorização para Modelos de IA
+                if (titleLower.includes('modelo') || titleLower.includes('model') || val.includes('gemini') || val.includes('gpt') || val.includes('deepseek') || val.includes('claude') || val.includes('llama')) {
+                    if (val.includes('deepseek') || lbl.includes('deepseek')) {
+                        category = 'deepseek';
+                        categoryLabel = 'DeepSeek';
+                        brandColor = '#0284c7';
+                        icon = '🪐';
+                        if (val.includes('r1')) {
+                            subtitle = 'Raciocínio Profundo & Lógica Matemática';
+                            badge = '🧠 R1';
+                        } else {
+                            subtitle = 'Modelo Conversacional V3 Ultrarrápido';
+                            badge = '⚡ V3';
+                        }
+                    } else if (val.includes('gemini') || lbl.includes('gemini') || val.includes('google')) {
+                        category = 'google';
+                        categoryLabel = 'Google Gemini';
+                        brandColor = '#818cf8';
+                        icon = '♊';
+                        if (val.includes('2.5-flash')) {
+                            subtitle = 'Google DeepMind • Última Geração & Alta Velocidade';
+                            badge = '🌟 2.5 Flash';
+                        } else if (val.includes('2.5-pro')) {
+                            subtitle = 'Google DeepMind • Raciocínio Complexo & Contexto Massivo';
+                            badge = '👑 2.5 Pro';
+                        } else if (val.includes('thinking')) {
+                            subtitle = 'Raciocínio Explícito Passo a Passo';
+                            badge = '🧠 Thinking';
+                        } else if (val.includes('2.0-flash')) {
+                            subtitle = 'Geração Multimodal em Tempo Real';
+                            badge = '⚡ 2.0 Flash';
+                        } else {
+                            subtitle = 'Google DeepMind • Versão Estável de Alta Eficiência';
+                            badge = 'Google';
+                        }
+                    } else if (val.includes('gpt') || val.includes('openai') || val.includes('o1') || val.includes('o3')) {
+                        category = 'openai';
+                        categoryLabel = 'OpenAI';
+                        brandColor = '#10b981';
+                        icon = '🤖';
+                        if (val.includes('o3-mini')) {
+                            subtitle = 'OpenAI • Raciocínio Acelerado para Código e Lógica';
+                            badge = '🔬 o3-mini';
+                        } else if (val.includes('o1')) {
+                            subtitle = 'OpenAI • Pensamento Lógico Profundo';
+                            badge = '👑 o1';
+                        } else if (val.includes('4o-mini')) {
+                            subtitle = 'OpenAI • Super Leve, Ágil e de Baixo Custo';
+                            badge = '⚡ 4o-mini';
+                        } else if (val.includes('4o')) {
+                            subtitle = 'OpenAI • Modelo Flagship Multimodal Omni';
+                            badge = '🌐 GPT-4o';
+                        } else {
+                            subtitle = 'OpenAI • Modelo Avançado de Linguagem';
+                            badge = 'OpenAI';
+                        }
+                    } else if (val.includes('claude') || val.includes('anthropic')) {
+                        category = 'anthropic';
+                        categoryLabel = 'Anthropic';
+                        brandColor = '#f59e0b';
+                        icon = '🧠';
+                        if (val.includes('3.7')) {
+                            subtitle = 'Anthropic • Raciocínio Híbrido & Engenharia de Código';
+                            badge = '🚀 3.7 Sonnet';
+                        } else {
+                            subtitle = 'Anthropic • Raciocínio Fluido & Precisão de Escrita';
+                            badge = '⭐ 3.5 Sonnet';
+                        }
+                    } else if (val.includes('llama') || val.includes('meta')) {
+                        category = 'meta';
+                        categoryLabel = 'Meta Llama';
+                        brandColor = '#3b82f6';
+                        icon = '🦙';
+                        subtitle = 'Meta AI • Modelo Aberto de Alta Performance (70B)';
+                        badge = '🦙 Llama 3.3';
+                    } else {
+                        category = 'others';
+                        categoryLabel = 'Outros Modelos';
+                        brandColor = '#a855f7';
+                        icon = '⚡';
+                        subtitle = 'Modelo de Inferência de Alta Performance';
+                        badge = 'LLM';
+                    }
                 }
-                
-                if (lang === 'es') {
-                    if (titleLower.includes('idioma') || titleLower.includes('language')) return 'Buscar idiomas disponibles...';
-                    if (titleLower.includes('traduzir') || titleLower.includes('translate')) return 'Buscar idioma de destino...';
-                    if (titleLower.includes('área') || titleLower.includes('area')) return 'Buscar áreas profesionales...';
-                    if (titleLower.includes('senioridade') || titleLower.includes('seniority')) return 'Buscar niveles de experiencia...';
-                    if (titleLower.includes('modelo') || titleLower.includes('model')) return 'Buscar modelos de IA disponibles...';
-                    if (titleLower.includes('voz') || titleLower.includes('voice')) return 'Buscar voces de narración...';
-                    if (titleLower.includes('currículo') || titleLower.includes('style') || titleLower.includes('estilo')) return 'Buscar estilos y diseños...';
-                    return 'Buscar opciones...';
+                // Categorização para Idiomas
+                else if (titleLower.includes('idioma') || titleLower.includes('language') || titleLower.includes('traduz') || titleLower.includes('translate')) {
+                    if (['pt', 'en', 'es'].includes(val)) {
+                        category = 'popular';
+                        categoryLabel = 'Mais Usados';
+                        brandColor = '#38bdf8';
+                        if (val === 'pt') { subtitle = 'Português (Brasil) • Idioma Oficial do Console'; badge = 'Oficial'; }
+                        if (val === 'en') { subtitle = 'English (US) • Global Standard'; badge = 'Global'; }
+                        if (val === 'es') { subtitle = 'Español • Lengua Internacional'; badge = 'Popular'; }
+                    } else if (['fr', 'de', 'it', 'nl', 'pl', 'sv', 'ru'].includes(val)) {
+                        category = 'europe';
+                        categoryLabel = 'Europa';
+                        brandColor = '#6366f1';
+                        badge = 'Europeu';
+                        subtitle = 'Tradução e Interface Internacional';
+                    } else {
+                        category = 'asia_world';
+                        categoryLabel = 'Ásia & Global';
+                        brandColor = '#ec4899';
+                        badge = 'Global';
+                        subtitle = 'Suporte Multilíngue Global';
+                    }
+                }
+                // Categorização para Vozes
+                else if (titleLower.includes('voz') || titleLower.includes('voice') || titleLower.includes('tts')) {
+                    if (val.includes('pt') || lbl.includes('português') || lbl.includes('brasil')) {
+                        category = 'pt';
+                        categoryLabel = 'Português';
+                        brandColor = '#22c55e';
+                        badge = 'BR';
+                        subtitle = 'Voz Natural Sintetizada em Português';
+                    } else if (val.includes('en') || lbl.includes('english')) {
+                        category = 'en';
+                        categoryLabel = 'Inglês';
+                        brandColor = '#3b82f6';
+                        badge = 'US';
+                        subtitle = 'Voz Natural em Inglês';
+                    } else {
+                        category = 'others';
+                        categoryLabel = 'Outros';
+                        brandColor = '#f59e0b';
+                        badge = 'Voz';
+                        subtitle = 'Síntese Neural de Áudio';
+                    }
+                }
+                // Outras Opções (Geral)
+                else {
+                    category = 'all';
+                    categoryLabel = 'Geral';
+                    if (!subtitle) subtitle = 'Opção de configuração do sistema';
+                    if (!badge) badge = 'Ajuste';
                 }
 
-                if (titleLower.includes('idioma') || titleLower.includes('language')) return 'Search available languages...';
-                if (titleLower.includes('traduzir') || titleLower.includes('translate')) return 'Search target languages...';
-                if (titleLower.includes('área') || titleLower.includes('area')) return 'Search professional areas...';
-                if (titleLower.includes('senioridade') || titleLower.includes('seniority')) return 'Search seniority levels...';
-                if (titleLower.includes('modelo') || titleLower.includes('model')) return 'Search available models...';
-                if (titleLower.includes('voz') || titleLower.includes('voice')) return 'Search narration voices...';
-                if (titleLower.includes('currículo') || titleLower.includes('style') || titleLower.includes('estilo')) return 'Search styles and layouts...';
-                if (titleLower.includes('fonte') || titleLower.includes('font')) return 'Search typography fonts...';
+                return {
+                    category,
+                    categoryLabel,
+                    brandColor,
+                    subtitle: opt.subtitle || subtitle,
+                    badge: opt.badge || badge,
+                    icon
+                };
+            };
+
+            // Gera as Categorias disponíveis para a barra de chips superior
+            const buildCategories = () => {
+                const catMap = new Map();
+                options.forEach(opt => {
+                    const meta = getOptionMetadata(opt);
+                    if (meta.category !== 'all') {
+                        if (!catMap.has(meta.category)) {
+                            catMap.set(meta.category, { id: meta.category, label: meta.categoryLabel, count: 0, color: meta.brandColor });
+                        }
+                        catMap.get(meta.category).count++;
+                    }
+                });
+
+                const list = [{ id: 'all', label: `Todos (${options.length})`, count: options.length, icon: '⚡' }];
+                catMap.forEach(cat => list.push(cat));
+                return list;
+            };
+
+            const categories = buildCategories();
+            let activeCategory = 'all';
+
+            // Placeholder contextual
+            const getSearchPlaceholder = () => {
+                if (lang === 'pt') {
+                    if (titleLower.includes('idioma') || titleLower.includes('language')) return 'Pesquisar idiomas (ex: Português, English, Español)...';
+                    if (titleLower.includes('traduzir') || titleLower.includes('translate')) return 'Pesquisar idioma de destino...';
+                    if (titleLower.includes('modelo') || titleLower.includes('model')) return 'Pesquisar modelo (ex: DeepSeek, Gemini, GPT, Claude)...';
+                    if (titleLower.includes('área') || titleLower.includes('area')) return 'Pesquisar áreas de atuação...';
+                    if (titleLower.includes('senioridade') || titleLower.includes('seniority')) return 'Pesquisar nível de experiência...';
+                    if (titleLower.includes('voz') || titleLower.includes('voice')) return 'Pesquisar vozes de narração...';
+                    return 'Filtrar opções em tempo real...';
+                }
+                if (lang === 'es') {
+                    if (titleLower.includes('modelo') || titleLower.includes('model')) return 'Buscar modelos de IA (DeepSeek, Gemini, GPT)...';
+                    return 'Buscar opciones...';
+                }
+                if (titleLower.includes('modelo') || titleLower.includes('model')) return 'Search AI models (DeepSeek, Gemini, GPT, Claude)...';
                 return 'Search options...';
             };
 
-            // Injeta os estilos dinâmicos se ainda não existirem
-            if (!document.getElementById('synapse-custom-select-styles')) {
+            // Injeta os estilos dinâmicos de nova geração se ainda não existirem
+            if (!document.getElementById('synapse-custom-select-styles-v2')) {
                 const styleSheet = document.createElement('style');
-                styleSheet.id = 'synapse-custom-select-styles';
+                styleSheet.id = 'synapse-custom-select-styles-v2';
                 styleSheet.innerText = `
                     .app-custom-select-modal {
                         position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-                        background-color: rgba(3, 4, 6, 0.76); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-                        display: flex; z-index: 120000; opacity: 0; transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+                        background: radial-gradient(circle at center, rgba(15, 23, 42, 0.75) 0%, rgba(3, 7, 18, 0.88) 100%);
+                        backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+                        display: flex; z-index: 120000; opacity: 0; transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
                         box-sizing: border-box;
                     }
                     @media (min-width: 768px) {
                         .app-custom-select-modal { align-items: center; justify-content: center; padding: 24px; }
                         .app-custom-select-card {
-                            background: rgba(10, 10, 12, 0.96); border: 1px solid rgba(255, 255, 255, 0.09);
-                            border-radius: 24px; max-width: 440px; width: 100%; transform: translateY(20px) scale(0.96);
-                            box-shadow: 0 40px 90px rgba(0,0,0,0.95), inset 0 1px 0 rgba(255,255,255,0.05);
+                            background: rgba(11, 15, 25, 0.95);
+                            border: 1px solid rgba(56, 189, 248, 0.2);
+                            border-radius: 28px; max-width: 500px; width: 100%; transform: translateY(24px) scale(0.96);
+                            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.9), 0 0 40px rgba(56, 189, 248, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.15);
                         }
                     }
                     @media (max-width: 767px) {
                         .app-custom-select-modal { align-items: flex-end; justify-content: center; padding: 0; }
                         .app-custom-select-card {
-                            background: rgba(10, 10, 12, 0.99); border-top: 1px solid rgba(255, 255, 255, 0.14);
-                            border-top-left-radius: 28px; border-top-right-radius: 28px; width: 100%;
-                            transform: translateY(100%); box-shadow: 0 -20px 50px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.05);
+                            background: rgba(11, 15, 25, 0.98);
+                            border-top: 1px solid rgba(56, 189, 248, 0.25);
+                            border-top-left-radius: 30px; border-top-right-radius: 30px; width: 100%;
+                            transform: translateY(100%);
+                            box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.95), 0 0 30px rgba(56, 189, 248, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.15);
                         }
                     }
                     .app-custom-select-card {
-                        padding: 24px; box-sizing: border-box; transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+                        padding: 24px 20px 28px; box-sizing: border-box; transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
                         color: #ffffff; font-family: system-ui, -apple-system, sans-serif; display: flex;
-                        flex-direction: column; max-height: 80vh;
+                        flex-direction: column; max-height: 84vh; position: relative; overflow: hidden;
                     }
-                    .bottom-sheet-handle { display: none; width: 36px; height: 5px; background: rgba(255, 255, 255, 0.18); border-radius: 3px; margin: -8px auto 16px auto; }
+                    .bottom-sheet-handle { display: none; width: 44px; height: 5px; background: rgba(255, 255, 255, 0.25); border-radius: 4px; margin: -10px auto 16px auto; }
                     @media (max-width: 767px) { .bottom-sheet-handle { display: block; } }
-                    .custom-select-search-box { position: relative; margin-bottom: 16px; display: flex; align-items: center; }
+
+                    /* Barra de Categorias e Chips */
+                    .custom-select-chips-bar {
+                        display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px;
+                        scrollbar-width: none; -ms-overflow-style: none;
+                    }
+                    .custom-select-chips-bar::-webkit-scrollbar { display: none; }
+                    .custom-select-chip {
+                        padding: 6px 14px; border-radius: 20px; font-size: 0.76rem; font-weight: 600; cursor: pointer;
+                        white-space: nowrap; transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+                        border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(255, 255, 255, 0.03);
+                        color: #94a3b8; display: flex; align-items: center; gap: 6px; user-select: none;
+                    }
+                    .custom-select-chip:hover {
+                        border-color: rgba(255, 255, 255, 0.2); color: #ffffff; background: rgba(255, 255, 255, 0.06); transform: translateY(-1px);
+                    }
+                    .custom-select-chip.active {
+                        background: linear-gradient(135deg, rgba(56, 189, 248, 0.22) 0%, rgba(56, 189, 248, 0.08) 100%) !important;
+                        border-color: var(--primary, #38bdf8) !important;
+                        color: #ffffff !important; font-weight: 700;
+                        box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+                    }
+
+                    /* Search Box */
+                    .custom-select-search-box { position: relative; margin-bottom: 12px; display: flex; align-items: center; }
                     .custom-select-search-input {
-                        width: 100%; height: 46px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
-                        border-radius: 14px; padding: 0 16px 0 42px; color: #fff; font-size: 0.9rem; outline: none; transition: all 0.2s ease; box-sizing: border-box;
+                        width: 100%; height: 46px; background: rgba(255, 255, 255, 0.035);
+                        border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px;
+                        padding: 0 40px 0 42px; color: #fff; font-size: 0.88rem; outline: none;
+                        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); box-sizing: border-box;
                     }
-                    .custom-select-search-input:focus { border-color: var(--primary, #38bdf8); background: rgba(255, 255, 255, 0.06); box-shadow: 0 0 12px rgba(56, 189, 248, 0.15); }
-                    .custom-select-search-icon { position: absolute; left: 15px; color: #64748b; font-size: 1.1rem; pointer-events: none; }
-                    .custom-select-options-container { overflow-y: auto; flex-grow: 1; padding-right: 2px; margin-bottom: 4px; }
-                    .custom-select-options-container::-webkit-scrollbar { width: 4px; }
+                    .custom-select-search-input:focus {
+                        border-color: var(--primary, #38bdf8); background: rgba(56, 189, 248, 0.04);
+                        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18), 0 8px 20px rgba(0,0,0,0.5);
+                    }
+                    .custom-select-search-icon { position: absolute; left: 14px; color: #64748b; font-size: 1.05rem; pointer-events: none; }
+                    .custom-select-clear-btn {
+                        position: absolute; right: 12px; width: 22px; height: 22px; border-radius: 50%;
+                        background: rgba(255, 255, 255, 0.1); border: none; color: #cbd5e1;
+                        display: flex; align-items: center; justify-content: center; font-size: 0.72rem;
+                        cursor: pointer; transition: background 0.2s;
+                    }
+                    .custom-select-clear-btn:hover { background: rgba(255, 255, 255, 0.22); color: #fff; }
+
+                    /* Container de Opções */
+                    .custom-select-options-container {
+                        overflow-y: auto; flex-grow: 1; padding-right: 4px; margin-bottom: 4px;
+                        display: flex; flex-direction: column; gap: 8px;
+                    }
+                    .custom-select-options-container::-webkit-scrollbar { width: 5px; }
+                    .custom-select-options-container::-webkit-scrollbar-track { background: transparent; }
                     .custom-select-options-container::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 10px; }
-                    .custom-select-option {
-                        display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;
-                        border-radius: 14px; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); margin-bottom: 8px;
-                        box-sizing: border-box;
+                    .custom-select-options-container::-webkit-scrollbar-thumb:hover { background: rgba(56, 189, 248, 0.35); }
+
+                    /* Cartão de Opção */
+                    .custom-select-card-item {
+                        display: flex; align-items: center; justify-content: space-between; padding: 12px 14px;
+                        border-radius: 16px; cursor: pointer; transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+                        background: rgba(255, 255, 255, 0.025); border: 1px solid rgba(255, 255, 255, 0.06);
+                        box-sizing: border-box; text-align: left; position: relative; overflow: hidden;
                     }
-                    .custom-select-option:active { transform: scale(0.985); }
-                    .custom-select-option.selected {
-                        background: linear-gradient(135deg, rgba(56, 189, 248, 0.12) 0%, rgba(56, 189, 248, 0.04) 100%) !important;
+                    .custom-select-card-item:hover {
+                        background: rgba(56, 189, 248, 0.08) !important;
+                        border-color: rgba(56, 189, 248, 0.3) !important;
+                        transform: translateY(-1.5px);
+                        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4), 0 0 20px rgba(56, 189, 248, 0.08);
+                    }
+                    .custom-select-card-item:active { transform: scale(0.985); }
+                    .custom-select-card-item.selected {
+                        background: linear-gradient(135deg, rgba(56, 189, 248, 0.14) 0%, rgba(56, 189, 248, 0.04) 100%) !important;
                         border: 1.5px solid var(--primary, #38bdf8) !important;
-                        color: #ffffff !important; font-weight: 600;
-                        box-shadow: 0 4px 12px rgba(56, 189, 248, 0.12);
+                        box-shadow: 0 4px 20px rgba(56, 189, 248, 0.2), inset 0 0 15px rgba(56, 189, 248, 0.08);
                     }
-                    .custom-select-option.unselected { background: rgba(255, 255, 255, 0.015); border: 1px solid rgba(255, 255, 255, 0.04); color: #d1d5db; }
-                    .custom-select-option:hover { background: rgba(56, 189, 248, 0.08) !important; border-color: rgba(56, 189, 248, 0.25) !important; color: #ffffff !important; transform: translateY(-1px); }
-                    .section-divider-title { font-size: 0.72rem; color: var(--primary, #38bdf8); font-weight: 700; letter-spacing: 1.4px; margin: 20px 0 10px 4px; text-transform: uppercase; opacity: 0.85; }
+                    .custom-select-avatar {
+                        width: 42px; height: 42px; min-width: 42px; border-radius: 12px;
+                        display: flex; align-items: center; justify-content: center;
+                        font-size: 1.35rem; margin-right: 14px; background: rgba(255, 255, 255, 0.05);
+                        border: 1px solid rgba(255, 255, 255, 0.1); transition: transform 0.2s;
+                    }
+                    .custom-select-card-item:hover .custom-select-avatar { transform: scale(1.08); }
+                    .custom-select-badge {
+                        font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 6px;
+                        background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1);
+                        letter-spacing: 0.3px; text-transform: uppercase;
+                    }
+                    .section-divider-title {
+                        font-size: 0.72rem; color: var(--primary, #38bdf8); font-weight: 700;
+                        letter-spacing: 1.2px; margin: 12px 0 6px 4px; text-transform: uppercase; opacity: 0.9;
+                        display: flex; align-items: center; gap: 6px;
+                    }
                 `;
                 document.head.appendChild(styleSheet);
             }
@@ -19704,53 +19940,96 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             const card = document.createElement('div');
             card.className = 'app-custom-select-card';
 
-            const renderOptions = (filterText = '') => {
+            const renderOptionsList = (filterText = '', categoryFilter = 'all') => {
                 const normFilter = filterText.toLowerCase().trim();
                 const filtered = options.filter(opt => {
-                    const labelStr = String(opt.label).toLowerCase();
-                    const valStr = String(opt.value).toLowerCase();
-                    return labelStr.includes(normFilter) || valStr.includes(normFilter);
+                    const meta = getOptionMetadata(opt);
+                    const labelStr = String(opt.label || '').toLowerCase();
+                    const valStr = String(opt.value || '').toLowerCase();
+                    const subStr = String(meta.subtitle || '').toLowerCase();
+                    const badgeStr = String(meta.badge || '').toLowerCase();
+
+                    const matchesText = !normFilter || labelStr.includes(normFilter) || valStr.includes(normFilter) || subStr.includes(normFilter) || badgeStr.includes(normFilter);
+                    const matchesCategory = (categoryFilter === 'all') || (meta.category === categoryFilter);
+
+                    return matchesText && matchesCategory;
                 });
 
                 let html = '';
                 
-                // Exibe a Seleção Atual no topo se não houver filtro ativo
-                if (!filterText) {
+                // Exibe a Seleção Atual no topo se não houver filtro de busca e a categoria for 'all'
+                if (!filterText && categoryFilter === 'all') {
                     const currentOpt = options.find(opt => String(opt.value) === String(currentValue));
                     if (currentOpt) {
-                        html += `<div class="section-divider-title" data-i18n="current_selection_title">${i18n('current_selection_title')}</div>`;
+                        const curMeta = getOptionMetadata(currentOpt);
                         html += `
-                            <div class="custom-select-option selected" data-value="${currentOpt.value}">
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <span style="font-size: 1.3rem; line-height:1;">${currentOpt.icon || '✦'}</span>
-                                    <span style="font-size: 0.92rem;">${currentOpt.label}</span>
-                                </div>
-                                <span style="color: var(--primary, #38bdf8); font-size: 1.1rem; font-weight:bold;">✓</span>
+                            <div class="section-divider-title">
+                                <span>⭐</span> <span>${i18n('current_selection_title') || 'Opção Atualmente Selecionada'}</span>
                             </div>
-                            <div class="section-divider-title" data-i18n="all_options_title">${i18n('all_options_title')}</div>
+                            <div class="custom-select-card-item selected" data-value="${currentOpt.value}">
+                                <div style="display: flex; align-items: center; flex-grow: 1; overflow: hidden;">
+                                    <div class="custom-select-avatar" style="background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.4);">
+                                        ${curMeta.icon}
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; overflow: hidden; padding-right: 8px;">
+                                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                            <span style="font-size: 0.94rem; font-weight: 700; color: #ffffff;">${currentOpt.label || currentOpt.value}</span>
+                                            <span class="custom-select-badge" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);">${curMeta.badge}</span>
+                                        </div>
+                                        <span style="font-size: 0.76rem; color: #cbd5e1; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                            ${curMeta.subtitle}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div style="width: 26px; height: 26px; min-width: 26px; border-radius: 50%; background: var(--primary, #38bdf8); color: #000; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);">
+                                    ✓
+                                </div>
+                            </div>
+                            <div class="section-divider-title" style="margin-top: 16px;">
+                                <span>📋</span> <span>${i18n('all_options_title') || 'Todas as Opções'} (${filtered.length})</span>
+                            </div>
                         `;
                     }
                 }
 
                 if (filtered.length === 0) {
                     html += `
-                        <div style="text-align: center; padding: 24px 10px; color: #64748b; font-size: 0.88rem;" data-i18n="search_no_results">
-                            ${i18n('search_no_results')}
+                        <div style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 0.9rem; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                            <span style="font-size: 2.2rem; opacity: 0.6;">🔍</span>
+                            <span style="color: #94a3b8; font-weight: 500;">${i18n('search_no_results') || 'Nenhuma opção encontrada para este filtro.'}</span>
+                            <small style="color: #64748b; font-size: 0.76rem;">Tente pesquisar com outros termos ou selecione a categoria "Todos".</small>
                         </div>
                     `;
                 } else {
                     filtered.forEach(opt => {
-                        // Não duplica a seleção atual no corpo se ela já estiver no topo destacada
-                        if (!filterText && String(opt.value) === String(currentValue)) return;
+                        // Não duplica a seleção atual no corpo se ela já estiver em destaque no topo
+                        if (!filterText && categoryFilter === 'all' && String(opt.value) === String(currentValue)) return;
                         
+                        const meta = getOptionMetadata(opt);
                         const isActive = String(opt.value) === String(currentValue);
+
                         html += `
-                            <div class="custom-select-option ${isActive ? 'selected' : 'unselected'}" data-value="${opt.value}">
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <span style="font-size: 1.3rem; line-height:1;">${opt.icon || '✦'}</span>
-                                    <span style="font-size: 0.92rem;">${opt.label}</span>
+                            <div class="custom-select-card-item ${isActive ? 'selected' : ''}" data-value="${opt.value}">
+                                <div style="display: flex; align-items: center; flex-grow: 1; overflow: hidden;">
+                                    <div class="custom-select-avatar" style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.1);">
+                                        ${meta.icon}
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; overflow: hidden; padding-right: 8px;">
+                                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                            <span style="font-size: 0.92rem; font-weight: 600; color: #f8fafc;">${opt.label || opt.value}</span>
+                                            ${meta.badge ? `<span class="custom-select-badge" style="color: ${meta.brandColor}; border-color: rgba(255,255,255,0.08);">${meta.badge}</span>` : ''}
+                                        </div>
+                                        <span style="font-size: 0.75rem; color: #94a3b8; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                            ${meta.subtitle}
+                                        </span>
+                                    </div>
                                 </div>
-                                ${isActive ? '<span style="color: var(--primary, #38bdf8); font-size: 1.1rem; font-weight:bold;">✓</span>' : ''}
+                                <div style="min-width: 24px; display: flex; align-items: center; justify-content: center;">
+                                    ${isActive 
+                                        ? `<div style="width: 24px; height: 24px; border-radius: 50%; background: var(--primary, #38bdf8); color: #000; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);">✓</div>`
+                                        : `<div style="width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.18);"></div>`
+                                    }
+                                </div>
                             </div>
                         `;
                     });
@@ -19758,29 +20037,55 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 return html;
             };
 
-            const searchPlaceholderText = getSearchPlaceholder(title);
+            const searchPlaceholderText = getSearchPlaceholder();
+
+            // Renderiza os Chips de Categorias se houver mais de uma categoria disponível
+            let chipsHtml = '';
+            if (categories.length > 1) {
+                chipsHtml = `
+                    <div class="custom-select-chips-bar" id="custom-select-chips-container">
+                        ${categories.map(cat => `
+                            <div class="custom-select-chip ${cat.id === activeCategory ? 'active' : ''}" data-cat="${cat.id}">
+                                <span>${cat.icon || '🏷️'}</span>
+                                <span>${cat.label}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
 
             card.innerHTML = `
                 <div class="bottom-sheet-handle"></div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; padding: 0 4px;">
-                    <h4 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: #f3f4f6;">${title}</h4>
-                    <button id="custom-select-close" style="background: rgba(255,255,255,0.06); border: none; width: 32px; height: 32px; border-radius: 50%; color: #9ca3af; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; transition: background 0.2s;">✕</button>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 0 4px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 32px; height: 32px; border-radius: 10px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); display: flex; align-items: center; justify-content: center; font-size: 1rem; color: var(--primary, #38bdf8);">
+                            ✦
+                        </div>
+                        <div>
+                            <h4 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #f8fafc; letter-spacing: -0.2px;">${title}</h4>
+                            <span style="font-size: 0.72rem; color: #94a3b8;">${options.length} ${options.length === 1 ? 'opção disponível' : 'opções disponíveis'}</span>
+                        </div>
+                    </div>
+                    <button id="custom-select-close" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); width: 34px; height: 34px; border-radius: 50%; color: #cbd5e1; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; transition: all 0.2s;">✕</button>
                 </div>
                 
                 <div class="custom-select-search-box">
                     <span class="custom-select-search-icon">🔍</span>
                     <input type="text" id="custom-select-search" class="custom-select-search-input" placeholder="${searchPlaceholderText}" autocomplete="off">
+                    <button id="custom-select-clear" class="custom-select-clear-btn" style="display: none;">✕</button>
                 </div>
 
+                ${chipsHtml}
+
                 <div id="custom-select-list-container" class="custom-select-options-container">
-                    ${renderOptions()}
+                    ${renderOptionsList('', 'all')}
                 </div>
             `;
 
             modal.appendChild(card);
             document.body.appendChild(modal);
 
-            // Animação de Entrada
+            // Animação de Entrada fluida
             setTimeout(() => {
                 modal.style.opacity = '1';
                 card.style.transform = 'translateY(0) scale(1)';
@@ -19795,23 +20100,53 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
             const closeBtn = document.getElementById('custom-select-close');
             closeBtn.onclick = closeSelectModal;
-            closeBtn.onmouseenter = () => closeBtn.style.background = 'rgba(255,255,255,0.12)';
-            closeBtn.onmouseleave = () => closeBtn.style.background = 'rgba(255,255,255,0.06)';
+            closeBtn.onmouseenter = () => { closeBtn.style.background = 'rgba(255,255,255,0.15)'; closeBtn.style.color = '#fff'; };
+            closeBtn.onmouseleave = () => { closeBtn.style.background = 'rgba(255,255,255,0.06)'; closeBtn.style.color = '#cbd5e1'; };
 
             modal.onclick = (e) => {
                 if (e.target === modal) closeSelectModal();
             };
 
             const searchInput = document.getElementById('custom-select-search');
-            searchInput.focus();
-            searchInput.oninput = (e) => {
+            const clearBtn = document.getElementById('custom-select-clear');
+
+            const refreshList = () => {
                 const list = document.getElementById('custom-select-list-container');
-                list.innerHTML = renderOptions(e.target.value);
-                registerClicks();
+                if (list) {
+                    list.innerHTML = renderOptionsList(searchInput.value, activeCategory);
+                    registerClicks();
+                }
             };
 
+            searchInput.focus();
+            searchInput.oninput = (e) => {
+                const val = e.target.value;
+                if (clearBtn) clearBtn.style.display = val ? 'flex' : 'none';
+                refreshList();
+            };
+
+            if (clearBtn) {
+                clearBtn.onclick = () => {
+                    searchInput.value = '';
+                    clearBtn.style.display = 'none';
+                    searchInput.focus();
+                    refreshList();
+                };
+            }
+
+            // Gerencia cliques nos chips de categoria
+            const chipElements = card.querySelectorAll('.custom-select-chip');
+            chipElements.forEach(chip => {
+                chip.onclick = () => {
+                    chipElements.forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    activeCategory = chip.getAttribute('data-cat') || 'all';
+                    refreshList();
+                };
+            });
+
             const registerClicks = () => {
-                const optionElements = card.querySelectorAll('.custom-select-option');
+                const optionElements = card.querySelectorAll('.custom-select-card-item');
                 optionElements.forEach(el => {
                     el.onclick = () => {
                         const val = el.getAttribute('data-value');
@@ -19842,14 +20177,14 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             // Oculta completamente o elemento nativo (porém mantém seu estado e compatibilidade com o JS legado)
             rawSelect.style.display = 'none';
 
-            // Cria o botão fake com design moderno, combinando com o design de bordas e inputs do Synapse Console
+            // Cria o botão com design moderno, combinando com o design de bordas e inputs do Synapse Console
             const btn = document.createElement('div');
             btn.id = wrapperId;
             btn.className = 'custom-select-trigger';
-            btn.style.background = 'rgba(255, 255, 255, 0.02)';
-            btn.style.border = '1px solid var(--border-color, rgba(255,255,255,0.08))';
-            btn.style.borderRadius = 'var(--input-border-radius, 12px)';
-            btn.style.padding = '12px 16px';
+            btn.style.background = 'rgba(255, 255, 255, 0.025)';
+            btn.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+            btn.style.borderRadius = 'var(--input-border-radius, 14px)';
+            btn.style.padding = '10px 16px';
             btn.style.display = 'flex';
             btn.style.alignItems = 'center';
             btn.style.justifyContent = 'space-between';
@@ -19863,8 +20198,16 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             btn.style.transition = 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
 
             btn.innerHTML = `
-                <span id="${selectId}-custom-value" style="font-weight: 500; display: flex; align-items: center; gap: 8px;">Selecione...</span>
-                <span style="color: var(--text-muted); font-size: 0.72rem; margin-left: 8px; transition: transform 0.2s;">▼</span>
+                <div style="display: flex; align-items: center; gap: 10px; overflow: hidden;">
+                    <div id="${selectId}-custom-icon-box" style="width: 28px; height: 28px; border-radius: 8px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.25); display: flex; align-items: center; justify-content: center; font-size: 0.95rem;">
+                        ✦
+                    </div>
+                    <span id="${selectId}-custom-value" style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Selecione...</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px; margin-left: 8px;">
+                    <span style="color: var(--primary, #38bdf8); font-size: 0.72rem; font-weight: bold; opacity: 0.85;">Alterar</span>
+                    <span style="color: var(--text-muted); font-size: 0.72rem; transition: transform 0.2s;">▼</span>
+                </div>
             `;
 
             // Insere o trigger simulado no DOM logo à frente do elemento oculto
@@ -19873,9 +20216,13 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             const updateDisplayText = () => {
                 const val = rawSelect.value;
                 const opt = options.find(o => String(o.value) === String(val));
-                const displayLabel = opt ? `${opt.icon || '✦'} ${opt.label}` : val;
+                const displayLabel = opt ? opt.label : val;
+                const icon = opt ? (opt.icon || '✦') : '✦';
+                
                 const txtNode = btn.querySelector(`#${selectId}-custom-value`);
-                if (txtNode) txtNode.innerHTML = displayLabel;
+                const iconBox = btn.querySelector(`#${selectId}-custom-icon-box`);
+                if (txtNode) txtNode.textContent = displayLabel;
+                if (iconBox) iconBox.textContent = icon;
             };
 
             // Propaga alteração quando o select ocultado muda de valor (programaticamente ou por sincronização de presets)
