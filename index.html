@@ -7043,11 +7043,56 @@ CREATE TRIGGER on_synapse_user_signed_up
                     </div>
                     <div style="width: 35%;">
                         <label>Modelo</label>
-                        <select id="model-name" class="form-control">
+                        <select id="model-name" class="form-control" onchange="if(typeof updateModelDetailsDisplay==='function') updateModelDetailsDisplay();">
                             <option value="gemini-1.5-flash">gemini-1.5-flash</option>
                             <option value="gemini-1.5-pro">gemini-1.5-pro</option>
                             <option value="gemini-1.0-pro">gemini-1.0-pro</option>
                         </select>
+                    </div>
+                </div>
+
+                <!-- Painel de Sincronização & Informações do OpenRouter e Modelos de IA -->
+                <div id="openrouter-sync-container" style="margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Card de Sincronização em Tempo Real do OpenRouter -->
+                    <div id="openrouter-sync-card" style="background: rgba(56, 189, 248, 0.04); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 32px; height: 32px; border-radius: 10px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #38bdf8;">
+                                    🌀
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.88rem; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 6px;">
+                                        <span>Catálogo Oficial OpenRouter</span>
+                                        <span id="openrouter-sync-badge" style="font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 6px; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">🟢 Sincronizado</span>
+                                    </div>
+                                    <span id="openrouter-sync-status-desc" style="font-size: 0.73rem; color: var(--text-muted);">Sincronização em tempo real com variantes gratuitas</span>
+                                </div>
+                            </div>
+                            <button type="button" id="btn-sync-openrouter" onclick="syncOpenRouterModels(false)" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.18) 0%, rgba(56, 189, 248, 0.06) 100%); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; padding: 7px 13px; border-radius: 10px; font-size: 0.78rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                                <span id="sync-icon-spin">🔄</span> <span>Sincronizar Modelos</span>
+                            </button>
+                        </div>
+
+                        <!-- Botões de Ação Rápida para Modelos Gratuitos em Destaque -->
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button type="button" onclick="activateAutoFreeModel()" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); color: #34d399; padding: 6px 12px; border-radius: 8px; font-size: 0.76rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s;">
+                                <span>⚡</span> <span>Ativar Modelo Automático (openrouter/free)</span>
+                            </button>
+                            <button type="button" onclick="quickSelectModel('OPENROUTER', 'https://openrouter.ai/api/v1/chat/completions', 'ox-alpha')" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.25); color: #fbbf24; padding: 6px 12px; border-radius: 8px; font-size: 0.76rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                <span>🐂</span> <span>Ox Alpha (Stealth)</span>
+                            </button>
+                            <button type="button" onclick="quickSelectModel('OPENROUTER', 'https://openrouter.ai/api/v1/chat/completions', 'dots/dots3-note-preview:free')" style="background: rgba(236, 72, 153, 0.1); border: 1px solid rgba(236, 72, 153, 0.25); color: #f472b6; padding: 6px 12px; border-radius: 8px; font-size: 0.76rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                <span>🎯</span> <span>Dots3-Note 280B</span>
+                            </button>
+                            <button type="button" onclick="quickSelectModel('OPENROUTER', 'https://openrouter.ai/api/v1/chat/completions', 'deepseek/deepseek-v4-flash-vision-exp:free')" style="background: rgba(2, 132, 199, 0.1); border: 1px solid rgba(2, 132, 199, 0.25); color: #38bdf8; padding: 6px 12px; border-radius: 8px; font-size: 0.76rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                <span>🪐</span> <span>DeepSeek V4 Flash Vision</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Card Informativo Detalhado do Modelo Atualmente Selecionado -->
+                    <div id="synapse-model-details-card" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px;">
+                        <!-- Preenchido dinamicamente por updateModelDetailsDisplay() -->
                     </div>
                 </div>
 
@@ -11671,14 +11716,905 @@ WITH CHECK (true);</code>
             }
         }
 
+        // =========================================================================
+        // SYNAPSE AI CONSOLE - CATÁLOGO OFICIAL DINÂMICO OPENROUTER & MODEL ENGINE
+        // =========================================================================
+
+        const SYNAPSE_DEFAULT_OPENROUTER_CATALOG = [
+            {
+                id: "openrouter/free",
+                name: "Modelo Automático (OpenRouter Free)",
+                developer: "OpenRouter",
+                status: "Gratuito",
+                isFree: true,
+                isAuto: true,
+                contextLength: "Dinâmico (Auto)",
+                contextTokens: 128000,
+                capabilities: ["Texto 📝", "Visão 👁️", "Código 💻", "Raciocínio 🧠", "Tools 🛠️"],
+                hasVision: true,
+                hasTools: true,
+                hasCode: true,
+                hasReasoning: true,
+                categories: ["recommended", "free", "fast", "reasoning"],
+                badge: "🆓 Auto Free",
+                icon: "🌀",
+                color: "#38bdf8",
+                description: "Roteamento dinâmico inteligente: O OpenRouter escolhe e redireciona automaticamente para o melhor modelo gratuito disponível no momento.",
+                updatedAt: "Oficial 2025/2026"
+            },
+            {
+                id: "ox-alpha",
+                name: "Ox Alpha (Stealth Reasoning)",
+                developer: "Stealth (Desenvolvedor não divulgado publicamente pelo OpenRouter)",
+                status: "Experimental • Gratuito",
+                isFree: true,
+                isExperimental: true,
+                contextLength: "128.000 tokens (128k)",
+                contextTokens: 128000,
+                capabilities: ["Texto 📝", "Código Avançado 💻", "Raciocínio Lógico 🧠", "Agentes de Longa Duração 🛠️"],
+                hasVision: false,
+                hasTools: true,
+                hasCode: true,
+                hasReasoning: true,
+                categories: ["reasoning", "coding", "free", "experimental", "recommended"],
+                badge: "🧪 Stealth Raciocínio",
+                icon: "🐂",
+                color: "#f59e0b",
+                description: "Modelo experimental stealth voltado para programação avançada, raciocínio lógico complexo e tarefas agentic de longa duração. Desenvolvedor não divulgado publicamente pelo OpenRouter.",
+                updatedAt: "Recente"
+            },
+            {
+                id: "dots/dots3-note-preview:free",
+                name: "Dots3-Note Preview (Free)",
+                developer: "Dots AI",
+                status: "Preview • Gratuito",
+                isFree: true,
+                isPreview: true,
+                contextLength: "128.000 tokens (128k)",
+                contextTokens: 128000,
+                capabilities: ["Texto 📝", "Imagem 👁️", "Código 💻", "Raciocínio 🧠", "Agentes 🛠️"],
+                hasVision: true,
+                hasTools: true,
+                hasCode: true,
+                hasReasoning: true,
+                categories: ["reasoning", "coding", "vision", "free", "experimental", "recommended"],
+                badge: "🆓 280B MoE Preview",
+                icon: "🎯",
+                color: "#ec4899",
+                description: "Modelo gratuito de 280B parâmetros totais (16B ativos) MoE. Excelente para raciocínio analítico, programação, visão multimodal, contexto longo e agentes autônomos.",
+                updatedAt: "Recente"
+            },
+            {
+                id: "deepseek/deepseek-v4-flash-vision-exp:free",
+                name: "DeepSeek V4 Flash Vision Exp (Free)",
+                developer: "DeepSeek",
+                status: "Experimental • Gratuito",
+                isFree: true,
+                isExperimental: true,
+                contextLength: "128.000 tokens (128k)",
+                contextTokens: 128000,
+                capabilities: ["Texto 📝", "Visão Computacional 👁️", "Documentos & Gráficos 📊", "Raciocínio 🧠"],
+                hasVision: true,
+                hasTools: true,
+                hasCode: false,
+                hasReasoning: true,
+                categories: ["vision", "fast", "reasoning", "free", "experimental", "recommended", "deepseek"],
+                badge: "👁️ Visão & Flash",
+                icon: "🪐",
+                color: "#0284c7",
+                description: "Variante experimental de altíssima velocidade voltada para visão computacional, leitura de documentos, imagens e raciocínio multimodal.",
+                updatedAt: "Recente"
+            },
+            {
+                id: "deepseek/deepseek-r1:free",
+                name: "DeepSeek R1 (Free)",
+                developer: "DeepSeek",
+                status: "Gratuito",
+                isFree: true,
+                contextLength: "64.000 tokens (64k)",
+                contextTokens: 64000,
+                capabilities: ["Texto 📝", "Raciocínio Profundo 🧠", "Código 💻", "Lógica Matemática 🔬"],
+                hasVision: false,
+                hasTools: false,
+                hasCode: true,
+                hasReasoning: true,
+                categories: ["reasoning", "coding", "free", "recommended", "deepseek"],
+                badge: "🧠 R1 Raciocínio",
+                icon: "🪐",
+                color: "#0284c7",
+                description: "Raciocínio profundo de nível PhD com pensamento reflexivo passo a passo e resolução de problemas matemáticos e computacionais complexos.",
+                updatedAt: "Estável"
+            },
+            {
+                id: "meta-llama/llama-3.3-70b-instruct:free",
+                name: "Meta Llama 3.3 70B Instruct (Free)",
+                developer: "Meta AI",
+                status: "Gratuito",
+                isFree: true,
+                contextLength: "128.000 tokens (128k)",
+                contextTokens: 128000,
+                capabilities: ["Texto 📝", "Código 💻", "Raciocínio Geral 🧠", "Ferramentas 🛠️"],
+                hasVision: false,
+                hasTools: true,
+                hasCode: true,
+                hasReasoning: true,
+                categories: ["free", "recommended", "coding", "fast", "meta"],
+                badge: "🆓 Meta 70B",
+                icon: "🦙",
+                color: "#3b82f6",
+                description: "Modelo aberto de 70B parâmetros líder de benchmark para conversação natural, redação de alto nível e raciocínio técnico.",
+                updatedAt: "Estável"
+            },
+            {
+                id: "google/gemini-2.0-flash-exp:free",
+                name: "Gemini 2.0 Flash Exp (Free)",
+                developer: "Google DeepMind",
+                status: "Gratuito • Experimental",
+                isFree: true,
+                isExperimental: true,
+                contextLength: "1.000.000 tokens (1M)",
+                contextTokens: 1000000,
+                capabilities: ["Texto 📝", "Visão Multimodal 👁️", "Áudio & Imagem ⚡", "Ferramentas 🛠️"],
+                hasVision: true,
+                hasTools: true,
+                hasCode: true,
+                hasReasoning: true,
+                categories: ["vision", "fast", "free", "recommended", "experimental", "google"],
+                badge: "⚡ 2.0 Flash Free",
+                icon: "♊",
+                color: "#818cf8",
+                description: "Modelo multimodal de ultra velocidade do Google DeepMind com janela de contexto massiva de 1M tokens e suporte nativo a visão e ferramentas.",
+                updatedAt: "Recente"
+            },
+            {
+                id: "qwen/qwen-2.5-coder-32b-instruct:free",
+                name: "Qwen 2.5 Coder 32B (Free)",
+                developer: "Alibaba Qwen",
+                status: "Gratuito",
+                isFree: true,
+                contextLength: "32.768 tokens (32k)",
+                contextTokens: 32768,
+                capabilities: ["Código Avançado 💻", "Refatoração 🛠️", "Debugging 🐞", "Texto 📝"],
+                hasVision: false,
+                hasTools: true,
+                hasCode: true,
+                hasReasoning: true,
+                categories: ["coding", "free", "reasoning"],
+                badge: "💻 Coder 32B",
+                icon: "💻",
+                color: "#10b981",
+                description: "Especialista em desenvolvimento de software, arquitetura de sistemas, geração e depuração de código em mais de 90 linguagens de programação.",
+                updatedAt: "Estável"
+            },
+            {
+                id: "mistralai/mistral-small-3:free",
+                name: "Mistral Small 3 (Free)",
+                developer: "Mistral AI",
+                status: "Gratuito",
+                isFree: true,
+                contextLength: "32.768 tokens (32k)",
+                contextTokens: 32768,
+                capabilities: ["Texto 📝", "Visão Multimodal 👁️", "Function Calling 🛠️"],
+                hasVision: true,
+                hasTools: true,
+                hasCode: true,
+                hasReasoning: false,
+                categories: ["fast", "free", "vision", "coding"],
+                badge: "⚡ Mistral 3",
+                icon: "🌪️",
+                color: "#f97316",
+                description: "Modelo compacto e veloz de última geração da Mistral AI com capacidade de visão multimodal e raciocínio eficiente.",
+                updatedAt: "Estável"
+            },
+            {
+                id: "deepseek/deepseek-r1",
+                name: "DeepSeek R1",
+                developer: "DeepSeek",
+                status: "Raciocínio PhD",
+                isFree: false,
+                contextLength: "64.000 tokens (64k)",
+                contextTokens: 64000,
+                capabilities: ["Texto 📝", "Raciocínio Profundo 🧠", "Código 💻"],
+                hasVision: false,
+                hasTools: false,
+                hasCode: true,
+                hasReasoning: true,
+                categories: ["reasoning", "coding", "recommended", "deepseek"],
+                badge: "🧠 DeepSeek R1",
+                icon: "🪐",
+                color: "#0284c7",
+                description: "Modelo flagship de raciocínio passo a passo aberto da DeepSeek.",
+                updatedAt: "Estável"
+            },
+            {
+                id: "deepseek/deepseek-chat",
+                name: "DeepSeek V3 (Chat)",
+                developer: "DeepSeek",
+                status: "Alta Performance",
+                isFree: false,
+                contextLength: "64.000 tokens (64k)",
+                contextTokens: 64000,
+                capabilities: ["Texto 📝", "Conversação Fluida 💬", "Código 💻"],
+                hasVision: false,
+                hasTools: true,
+                hasCode: true,
+                hasReasoning: false,
+                categories: ["fast", "coding", "recommended", "deepseek"],
+                badge: "⚡ DeepSeek V3",
+                icon: "🪐",
+                color: "#0284c7",
+                description: "Modelo MoE de 671B da DeepSeek com velocidade extrema e capacidades conversacionais de topo.",
+                updatedAt: "Estável"
+            },
+            {
+                id: "google/gemini-2.5-flash",
+                name: "Google Gemini 2.5 Flash",
+                developer: "Google DeepMind",
+                status: "Flagship",
+                isFree: false,
+                contextLength: "1.000.000 tokens (1M)",
+                contextTokens: 1000000,
+                capabilities: ["Texto 📝", "Visão 👁️", "Raciocínio 🧠", "Ferramentas 🛠️"],
+                hasVision: true,
+                hasTools: true,
+                hasCode: true,
+                hasReasoning: true,
+                categories: ["recommended", "fast", "vision", "reasoning", "google"],
+                badge: "🌟 2.5 Flash",
+                icon: "♊",
+                color: "#818cf8",
+                description: "Nova geração topo de linha do Google DeepMind unindo raciocínio ágil, multimodalidade e extrema velocidade.",
+                updatedAt: "2025/2026"
+            },
+            {
+                id: "google/gemini-2.5-pro",
+                name: "Google Gemini 2.5 Pro",
+                developer: "Google DeepMind",
+                status: "Pro / Flagship",
+                isFree: false,
+                contextLength: "2.000.000 tokens (2M)",
+                contextTokens: 2000000,
+                capabilities: ["Texto 📝", "Visão Profunda 👁️", "Raciocínio Complexo 🧠", "Código 💻"],
+                hasVision: true,
+                hasTools: true,
+                hasCode: true,
+                hasReasoning: true,
+                categories: ["recommended", "reasoning", "coding", "vision", "google"],
+                badge: "👑 2.5 Pro",
+                icon: "♊",
+                color: "#818cf8",
+                description: "Modelo de máxima capacidade analítica e raciocínio profundo para problemas de alta complexidade com janela de 2M de tokens.",
+                updatedAt: "2025/2026"
+            },
+            {
+                id: "anthropic/claude-3.7-sonnet",
+                name: "Claude 3.7 Sonnet",
+                developer: "Anthropic",
+                status: "Flagship",
+                isFree: false,
+                contextLength: "200.000 tokens (200k)",
+                contextTokens: 200000,
+                capabilities: ["Texto 📝", "Raciocínio Híbrido 🧠", "Engenharia de Software 💻", "Visão 👁️"],
+                hasVision: true,
+                hasTools: true,
+                hasCode: true,
+                hasReasoning: true,
+                categories: ["recommended", "coding", "reasoning", "vision", "anthropic"],
+                badge: "🚀 3.7 Sonnet",
+                icon: "🧠",
+                color: "#f59e0b",
+                description: "Primeiro modelo com raciocínio híbrido inteligente e capacidade líder de engenharia de software.",
+                updatedAt: "Recente"
+            },
+            {
+                id: "anthropic/claude-3.5-sonnet",
+                name: "Claude 3.5 Sonnet",
+                developer: "Anthropic",
+                status: "Flagship",
+                isFree: false,
+                contextLength: "200.000 tokens (200k)",
+                contextTokens: 200000,
+                capabilities: ["Texto 📝", "Visão 👁️", "Código 💻", "Escrita Natural 🖋️"],
+                hasVision: true,
+                hasTools: true,
+                hasCode: true,
+                hasReasoning: true,
+                categories: ["recommended", "coding", "vision", "anthropic"],
+                badge: "⭐ 3.5 Sonnet",
+                icon: "🧠",
+                color: "#f59e0b",
+                description: "Benchmark líder da Anthropic para escrita elegante, síntese de ideias complexas e análise de imagens/documentos.",
+                updatedAt: "Estável"
+            },
+            {
+                id: "openai/gpt-4o",
+                name: "OpenAI GPT-4o",
+                developer: "OpenAI",
+                status: "Flagship",
+                isFree: false,
+                contextLength: "128.000 tokens (128k)",
+                contextTokens: 128000,
+                capabilities: ["Texto 📝", "Visão Multimodal 👁️", "Código 💻", "Ferramentas 🛠️"],
+                hasVision: true,
+                hasTools: true,
+                hasCode: true,
+                hasReasoning: true,
+                categories: ["recommended", "vision", "fast", "coding", "openai"],
+                badge: "🌐 GPT-4o",
+                icon: "🤖",
+                color: "#10b981",
+                description: "Modelo multimodal omni líder da OpenAI integrando raciocínio, visão e velocidade instantânea.",
+                updatedAt: "Estável"
+            },
+            {
+                id: "openai/gpt-4o-mini",
+                name: "OpenAI GPT-4o-mini",
+                developer: "OpenAI",
+                status: "Econômico",
+                isFree: false,
+                contextLength: "128.000 tokens (128k)",
+                contextTokens: 128000,
+                capabilities: ["Texto 📝", "Visão 👁️", "Velocidade ⚡"],
+                hasVision: true,
+                hasTools: true,
+                hasCode: true,
+                hasReasoning: false,
+                categories: ["fast", "vision", "recommended", "openai"],
+                badge: "⚡ 4o-mini",
+                icon: "🤖",
+                color: "#10b981",
+                description: "Modelo ultra ágil e econômico da OpenAI para tarefas diárias de alta performance.",
+                updatedAt: "Estável"
+            },
+            {
+                id: "openai/o3-mini",
+                name: "OpenAI o3-mini",
+                developer: "OpenAI",
+                status: "Raciocínio",
+                isFree: false,
+                contextLength: "200.000 tokens (200k)",
+                contextTokens: 200000,
+                capabilities: ["Raciocínio Matemático 🧠", "Código 💻", "Ciência & STEM 🔬"],
+                hasVision: false,
+                hasTools: true,
+                hasCode: true,
+                hasReasoning: true,
+                categories: ["reasoning", "coding", "openai"],
+                badge: "🔬 o3-mini",
+                icon: "🤖",
+                color: "#10b981",
+                description: "Modelo de raciocínio de última geração da OpenAI projetado especificamente para matemática, programação e ciência.",
+                updatedAt: "Recente"
+            }
+        ];
+
+        // Obtém o catálogo de modelos OpenRouter atual (mesclando cache local com padrões)
+        function getSynapseOpenRouterCatalog() {
+            try {
+                const cached = localStorage.getItem('synapse_openrouter_catalog_cache');
+                if (cached) {
+                    const parsed = JSON.parse(cached);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        // Mescla garantindo que modelos novos ou essenciais padrão não se percam
+                        const map = new Map();
+                        SYNAPSE_DEFAULT_OPENROUTER_CATALOG.forEach(m => map.set(m.id, { ...m }));
+                        parsed.forEach(m => {
+                            if (map.has(m.id)) {
+                                map.set(m.id, { ...map.get(m.id), ...m });
+                            } else {
+                                map.set(m.id, m);
+                            }
+                        });
+                        return Array.from(map.values());
+                    }
+                }
+            } catch (err) {
+                console.warn("[Synapse Catalog] Erro ao ler cache de modelos:", err);
+            }
+            return SYNAPSE_DEFAULT_OPENROUTER_CATALOG;
+        }
+
+        // Obtém metadados completos de qualquer modelo (OpenRouter, Gemini, Groq, OpenAI, etc.)
+        function getSynapseModelInfo(modelId, providerType) {
+            const rawId = String(modelId || '').trim();
+            const idLower = rawId.toLowerCase();
+            const catalog = getSynapseOpenRouterCatalog();
+
+            // Busca exata no catálogo
+            const found = catalog.find(m => m.id.toLowerCase() === idLower || m.id.toLowerCase() === rawId.toLowerCase());
+            if (found) {
+                return { ...found };
+            }
+
+            // Busca por terminação ou inclusão
+            const partial = catalog.find(m => m.id.toLowerCase().endsWith(idLower) || idLower.endsWith(m.id.toLowerCase()));
+            if (partial) {
+                return { ...partial, id: rawId };
+            }
+
+            // Metadados inteligentes inferidos quando fora do catálogo padrão
+            let developer = "Provedor IA";
+            let status = "Padrão";
+            let contextLength = "128.000 tokens";
+            let capabilities = ["Texto 📝"];
+            let hasVision = false;
+            let hasTools = true;
+            let hasCode = false;
+            let hasReasoning = false;
+            let isFree = false;
+            let isExperimental = false;
+            let badge = "IA";
+            let icon = "✦";
+            let color = "#38bdf8";
+            let description = "Modelo de Inteligência Artificial para inferência e automação.";
+            let categories = ["all"];
+
+            // Regra estrita: Ox Alpha é stealth
+            if (idLower === 'ox-alpha' || idLower.includes('ox-alpha')) {
+                developer = "Stealth (Desenvolvedor não divulgado publicamente pelo OpenRouter)";
+                status = "Experimental • Gratuito";
+                isFree = true;
+                isExperimental = true;
+                badge = "🧪 Stealth";
+                icon = "🐂";
+                color = "#f59e0b";
+                categories = ["reasoning", "coding", "free", "experimental", "recommended"];
+                capabilities = ["Texto 📝", "Código 💻", "Raciocínio 🧠", "Agentes 🛠️"];
+                description = "Modelo experimental stealth voltado para programação e raciocínio de alta complexidade.";
+            } else if (idLower.includes('free') || idLower === 'openrouter/free') {
+                isFree = true;
+                status = "Gratuito";
+                badge = "🆓 Free";
+                categories.push("free");
+            }
+
+            if (idLower.startsWith('deepseek/') || idLower.includes('deepseek')) {
+                developer = "DeepSeek";
+                icon = "🪐";
+                color = "#0284c7";
+                categories.push("deepseek");
+                if (idLower.includes('r1')) {
+                    status = isFree ? "Gratuito • Raciocínio" : "Raciocínio PhD";
+                    badge = "🧠 R1";
+                    capabilities = ["Texto 📝", "Raciocínio Profundo 🧠", "Código 💻"];
+                    hasReasoning = true;
+                    categories.push("reasoning", "coding");
+                    description = "Raciocínio avançado passo a passo de nível PhD com foco em STEM.";
+                } else if (idLower.includes('vision')) {
+                    status = isFree ? "Gratuito • Visão" : "Visão Multimodal";
+                    badge = "👁️ Vision";
+                    capabilities = ["Texto 📝", "Visão 👁️", "Documentos 📊"];
+                    hasVision = true;
+                    categories.push("vision", "fast");
+                    description = "Processamento visual acelerado e análise de imagens/documentos.";
+                }
+            } else if (idLower.startsWith('google/') || idLower.includes('gemini')) {
+                developer = "Google DeepMind";
+                icon = "♊";
+                color = "#818cf8";
+                categories.push("google");
+                contextLength = "1.000.000 tokens (1M)";
+                capabilities = ["Texto 📝", "Visão Multimodal 👁️", "Ferramentas 🛠️"];
+                hasVision = true;
+                if (idLower.includes('2.5-pro')) {
+                    status = "Flagship Pro";
+                    badge = "👑 2.5 Pro";
+                    contextLength = "2.000.000 tokens (2M)";
+                    categories.push("recommended", "reasoning");
+                } else if (idLower.includes('2.5-flash') || idLower.includes('2.0-flash')) {
+                    status = isFree ? "Gratuito • Flash" : "Flagship Flash";
+                    badge = "⚡ Flash";
+                    categories.push("fast", "vision", "recommended");
+                }
+            } else if (idLower.startsWith('openai/') || idLower.includes('gpt') || idLower.startsWith('o1') || idLower.startsWith('o3')) {
+                developer = "OpenAI";
+                icon = "🤖";
+                color = "#10b981";
+                categories.push("openai");
+                if (idLower.includes('o3') || idLower.includes('o1')) {
+                    status = "Raciocínio";
+                    badge = "🔬 Reasoning";
+                    capabilities = ["Texto 📝", "Raciocínio Matemático 🧠", "Código 💻"];
+                    hasReasoning = true;
+                    categories.push("reasoning", "coding");
+                } else {
+                    capabilities = ["Texto 📝", "Visão 👁️", "Ferramentas 🛠️"];
+                    hasVision = true;
+                }
+            } else if (idLower.startsWith('anthropic/') || idLower.includes('claude')) {
+                developer = "Anthropic";
+                icon = "🧠";
+                color = "#f59e0b";
+                categories.push("anthropic", "coding", "recommended");
+                capabilities = ["Texto 📝", "Visão 👁️", "Engenharia 💻", "Raciocínio 🧠"];
+                hasVision = true;
+                hasCode = true;
+            } else if (idLower.startsWith('meta-llama/') || idLower.includes('llama')) {
+                developer = "Meta AI";
+                icon = "🦙";
+                color = "#3b82f6";
+                categories.push("meta", "coding");
+                capabilities = ["Texto 📝", "Código 💻", "Ferramentas 🛠️"];
+            } else if (idLower.startsWith('dots/')) {
+                developer = "Dots AI";
+                icon = "🎯";
+                color = "#ec4899";
+                categories.push("reasoning", "coding", "vision", "experimental");
+                capabilities = ["Texto 📝", "Visão 👁️", "Código 💻", "Raciocínio 🧠"];
+                hasVision = true;
+            } else if (idLower.startsWith('mistralai/') || idLower.includes('mistral') || idLower.includes('mixtral')) {
+                developer = "Mistral AI";
+                icon = "🌪️";
+                color = "#f97316";
+                categories.push("fast", "coding");
+            } else if (idLower.startsWith('qwen/')) {
+                developer = "Alibaba Qwen";
+                icon = "💻";
+                color = "#10b981";
+                categories.push("coding", "reasoning");
+                capabilities = ["Código 💻", "Refatoração 🛠️", "Texto 📝"];
+            }
+
+            return {
+                id: rawId,
+                name: rawId.split('/').pop() || rawId,
+                developer: developer,
+                status: status,
+                isFree: isFree,
+                isExperimental: isExperimental,
+                contextLength: contextLength,
+                capabilities: capabilities,
+                hasVision: hasVision,
+                hasTools: hasTools,
+                hasCode: hasCode,
+                hasReasoning: hasReasoning,
+                badge: badge,
+                icon: icon,
+                color: color,
+                description: description,
+                categories: categories,
+                updatedAt: "Auto Sincronizado"
+            };
+        }
+
+        // Sincronização Dinâmica em Tempo Real com o Catálogo Oficial do OpenRouter
+        async function syncOpenRouterModels(silent = false) {
+            const btn = document.getElementById('btn-sync-openrouter');
+            const iconSpin = document.getElementById('sync-icon-spin');
+            const statusDesc = document.getElementById('openrouter-sync-status-desc');
+            const syncBadge = document.getElementById('openrouter-sync-badge');
+
+            if (btn) btn.disabled = true;
+            if (iconSpin) iconSpin.style.display = 'inline-block', iconSpin.classList.add('animate-spin');
+            if (statusDesc) statusDesc.innerText = "Consultando catálogo oficial do OpenRouter...";
+
+            try {
+                if (!silent) addLog("Consultando API oficial do OpenRouter (https://openrouter.ai/api/v1/models)...", "info");
+
+                // Utiliza a chave salva do usuário se houver, caso contrário realiza a consulta pública de catálogo
+                const savedOpenRouterKey = localStorage.getItem('apiKey_OPENROUTER') || '';
+                const headers = {
+                    'HTTP-Referer': window.location.origin || 'https://synapse.local',
+                    'X-Title': 'Synapse Console'
+                };
+                if (savedOpenRouterKey) {
+                    headers['Authorization'] = `Bearer ${savedOpenRouterKey}`;
+                }
+
+                const response = await fetch('https://openrouter.ai/api/v1/models', {
+                    method: 'GET',
+                    headers: headers
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Falha HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const remoteList = Array.isArray(data.data) ? data.data : (Array.isArray(data) ? data : []);
+
+                if (remoteList.length === 0) {
+                    throw new Error("Catálogo retornado pelo OpenRouter está vazio.");
+                }
+
+                // Processa e normaliza os modelos retornados pela API oficial
+                const processedCatalog = [];
+                const modelIdMap = new Map();
+
+                // Garante a inserção do Modelo Automático primeiro
+                const autoModel = SYNAPSE_DEFAULT_OPENROUTER_CATALOG[0];
+                processedCatalog.push(autoModel);
+                modelIdMap.set(autoModel.id, true);
+
+                let freeCount = 1;
+
+                remoteList.forEach(m => {
+                    if (!m || !m.id) return;
+                    const id = String(m.id).trim();
+                    const idLower = id.toLowerCase();
+                    const name = m.name || id.split('/').pop() || id;
+
+                    // Identifica se é modelo gratuito
+                    let isFree = false;
+                    if (idLower.includes(':free') || idLower.endsWith(':free') || idLower === 'openrouter/free') {
+                        isFree = true;
+                    } else if (m.pricing) {
+                        const pPrompt = parseFloat(m.pricing.prompt || 0);
+                        const pCompletion = parseFloat(m.pricing.completion || 0);
+                        if (pPrompt === 0 && pCompletion === 0) {
+                            isFree = true;
+                        }
+                    }
+
+                    if (isFree) freeCount++;
+
+                    // Identifica o desenvolvedor/provedor oficial (sem inventar marcas para modelos stealth)
+                    let developer = "Provedor OpenRouter";
+                    if (idLower === 'ox-alpha' || idLower.includes('ox-alpha')) {
+                        developer = "Stealth (Desenvolvedor não divulgado publicamente pelo OpenRouter)";
+                    } else if (idLower.startsWith('deepseek/')) {
+                        developer = "DeepSeek";
+                    } else if (idLower.startsWith('google/')) {
+                        developer = "Google DeepMind";
+                    } else if (idLower.startsWith('meta-llama/')) {
+                        developer = "Meta AI";
+                    } else if (idLower.startsWith('anthropic/')) {
+                        developer = "Anthropic";
+                    } else if (idLower.startsWith('openai/')) {
+                        developer = "OpenAI";
+                    } else if (idLower.startsWith('mistralai/')) {
+                        developer = "Mistral AI";
+                    } else if (idLower.startsWith('qwen/')) {
+                        developer = "Alibaba Qwen";
+                    } else if (idLower.startsWith('dots/')) {
+                        developer = "Dots AI";
+                    } else if (idLower.startsWith('microsoft/')) {
+                        developer = "Microsoft";
+                    } else if (idLower.startsWith('cohere/')) {
+                        developer = "Cohere";
+                    } else if (id.includes('/')) {
+                        const rawPrefix = id.split('/')[0];
+                        developer = rawPrefix.charAt(0).toUpperCase() + rawPrefix.slice(1);
+                    }
+
+                    // Formata o contexto
+                    const ctxNum = m.context_length || 128000;
+                    let contextStr = `${ctxNum.toLocaleString('pt-BR')} tokens`;
+                    if (ctxNum >= 1000000) contextStr = `${(ctxNum / 1000000).toFixed(0)}M tokens`;
+                    else if (ctxNum >= 1000) contextStr = `${(ctxNum / 1000).toFixed(0)}k tokens`;
+
+                    // Capacidades
+                    const capabilities = ["Texto 📝"];
+                    let hasVision = false;
+                    let hasTools = false;
+                    let hasCode = false;
+                    let hasReasoning = false;
+
+                    const modalities = (m.architecture && m.architecture.modality) ? String(m.architecture.modality).toLowerCase() : '';
+                    if (modalities.includes('image') || idLower.includes('vision') || idLower.includes('vl') || idLower.includes('flash-exp') || idLower.includes('gpt-4o')) {
+                        hasVision = true;
+                        capabilities.push("Visão / Imagem 👁️");
+                    }
+
+                    if (idLower.includes('r1') || idLower.includes('reason') || idLower.includes('thinking') || idLower.includes('o1') || idLower.includes('o3') || idLower.includes('ox-alpha') || idLower.includes('dots3')) {
+                        hasReasoning = true;
+                        capabilities.push("Raciocínio Lógico 🧠");
+                    }
+
+                    if (idLower.includes('code') || idLower.includes('coder') || idLower.includes('ox-alpha') || idLower.includes('sonnet') || idLower.includes('deepseek')) {
+                        hasCode = true;
+                        capabilities.push("Programação 💻");
+                    }
+
+                    if (m.supported_parameters && Array.isArray(m.supported_parameters) && m.supported_parameters.includes('tools')) {
+                        hasTools = true;
+                        capabilities.push("Ferramentas (Tools) 🛠️");
+                    } else {
+                        hasTools = true;
+                    }
+
+                    // Categorias para filtragem
+                    const categories = ["all"];
+                    if (isFree) categories.push("free");
+                    if (hasReasoning) categories.push("reasoning");
+                    if (hasCode) categories.push("coding");
+                    if (hasVision) categories.push("vision");
+                    if (idLower.includes('flash') || idLower.includes('mini') || idLower.includes('instant') || idLower.includes('small') || idLower.includes('8b')) categories.push("fast");
+                    if (idLower.includes('exp') || idLower.includes('preview') || idLower.includes('alpha') || idLower.includes('beta') || idLower.includes('stealth')) categories.push("experimental");
+                    if (idLower.startsWith('deepseek/')) categories.push("deepseek");
+                    if (idLower.startsWith('google/')) categories.push("google");
+                    if (idLower.startsWith('openai/')) categories.push("openai");
+                    if (idLower.startsWith('anthropic/')) categories.push("anthropic");
+                    if (idLower.startsWith('meta-llama/')) categories.push("meta");
+
+                    // Status
+                    let status = isFree ? "Gratuito" : "Disponível";
+                    if (idLower.includes('exp') || idLower.includes('alpha')) status = isFree ? "Experimental • Gratuito" : "Experimental";
+                    else if (idLower.includes('preview')) status = isFree ? "Preview • Gratuito" : "Preview";
+
+                    // Ícone e Cor
+                    let icon = "✦";
+                    let color = "#38bdf8";
+                    if (idLower.includes('ox-alpha')) { icon = "🐂"; color = "#f59e0b"; }
+                    else if (idLower.includes('dots')) { icon = "🎯"; color = "#ec4899"; }
+                    else if (idLower.startsWith('deepseek/')) { icon = "🪐"; color = "#0284c7"; }
+                    else if (idLower.startsWith('google/')) { icon = "♊"; color = "#818cf8"; }
+                    else if (idLower.startsWith('openai/')) { icon = "🤖"; color = "#10b981"; }
+                    else if (idLower.startsWith('anthropic/')) { icon = "🧠"; color = "#f59e0b"; }
+                    else if (idLower.startsWith('meta-llama/')) { icon = "🦙"; color = "#3b82f6"; }
+                    else if (idLower.startsWith('mistralai/')) { icon = "🌪️"; color = "#f97316"; }
+
+                    // Badge
+                    let badge = isFree ? "🆓 Free" : "IA";
+                    if (idLower.includes('ox-alpha')) badge = "🧪 Stealth";
+                    else if (idLower.includes('dots3')) badge = "🎯 280B MoE";
+                    else if (idLower.includes('v4-flash')) badge = "👁️ Vision Flash";
+                    else if (idLower.includes('r1')) badge = "🧠 R1";
+                    else if (idLower.includes('2.5-flash')) badge = "🌟 2.5 Flash";
+
+                    // Descrição
+                    let description = m.description || `Modelo ${name} fornecido via OpenRouter.`;
+                    if (idLower === 'ox-alpha') {
+                        description = "Modelo experimental stealth voltado para programação avançada, raciocínio complexo e tarefas agentic de longa duração. Desenvolvedor não divulgado publicamente pelo OpenRouter.";
+                    }
+
+                    const item = {
+                        id: id,
+                        name: name,
+                        developer: developer,
+                        status: status,
+                        isFree: isFree,
+                        isExperimental: idLower.includes('exp') || idLower.includes('alpha'),
+                        isPreview: idLower.includes('preview'),
+                        contextLength: contextStr,
+                        contextTokens: ctxNum,
+                        capabilities: capabilities,
+                        hasVision: hasVision,
+                        hasTools: hasTools,
+                        hasCode: hasCode,
+                        hasReasoning: hasReasoning,
+                        categories: categories,
+                        badge: badge,
+                        icon: icon,
+                        color: color,
+                        description: description,
+                        updatedAt: m.created ? new Date(m.created * 1000).toLocaleDateString('pt-BR') : "Ativo"
+                    };
+
+                    processedCatalog.push(item);
+                    modelIdMap.set(id, true);
+                });
+
+                // Garante que os modelos em destaque solicitados estejam todos presentes mesmo se a busca retornar parcial
+                SYNAPSE_DEFAULT_OPENROUTER_CATALOG.forEach(defModel => {
+                    if (!modelIdMap.has(defModel.id)) {
+                        processedCatalog.push(defModel);
+                        modelIdMap.set(defModel.id, true);
+                    }
+                });
+
+                // Salva no cache local com timestamp
+                localStorage.setItem('synapse_openrouter_catalog_cache', JSON.stringify(processedCatalog));
+                localStorage.setItem('synapse_openrouter_last_sync', new Date().toISOString());
+
+                // Atualiza os dropdowns e componentes interativos
+                const activeType = typeof apiType !== 'undefined' ? apiType : 'OPENROUTER';
+                updateAllModelDropdowns(activeType);
+                updateModelDetailsDisplay();
+
+                const nowStr = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                if (statusDesc) statusDesc.innerText = `Sincronizado às ${nowStr} • ${freeCount} modelos gratuitos disponíveis`;
+                if (syncBadge) syncBadge.innerText = `🟢 ${processedCatalog.length} Modelos`;
+
+                if (!silent) {
+                    addLog(`Catálogo OpenRouter sincronizado com sucesso: ${processedCatalog.length} modelos (${freeCount} gratuitos).`, "success");
+                    showAppToast(`Catálogo Atualizado: ${processedCatalog.length} modelos (${freeCount} gratuitos)`, "success");
+                }
+
+                return processedCatalog;
+            } catch (err) {
+                console.error("[Synapse OpenRouter Sync] Erro:", err);
+                if (statusDesc) statusDesc.innerText = `Catálogo em cache local (${SYNAPSE_DEFAULT_OPENROUTER_CATALOG.length} modelos verificados)`;
+                if (!silent) {
+                    addLog(`Aviso na sincronização online: ${err.message}. Usando catálogo local otimizado.`, "warning");
+                    showAppToast(`Catálogo carregado do cache local (${SYNAPSE_DEFAULT_OPENROUTER_CATALOG.length} modelos)`, "info");
+                }
+                return getSynapseOpenRouterCatalog();
+            } finally {
+                if (btn) btn.disabled = false;
+                if (iconSpin) iconSpin.classList.remove('animate-spin');
+            }
+        }
+
+        // Ativa o Modelo Automático inteligente (openrouter/free)
+        function activateAutoFreeModel() {
+            triggerPulse();
+            quickSelectModel('OPENROUTER', 'https://openrouter.ai/api/v1/chat/completions', 'openrouter/free');
+            addLog("Modelo Automático Gratuito ativado (openrouter/free). O OpenRouter roteará as solicitações para os melhores modelos gratuitos disponíveis.", "success");
+            showAppToast("⚡ Modelo Automático Ativado (openrouter/free)!", "success");
+        }
+
+        // Renderiza o card detalhado do modelo atualmente selecionado
+        function updateModelDetailsDisplay() {
+            const container = document.getElementById('synapse-model-details-card');
+            const modelSelect = document.getElementById('model-name');
+            const currentType = typeof apiType !== 'undefined' ? apiType : 'OPENROUTER';
+            
+            if (!container || !modelSelect) return;
+
+            const selectedModelId = modelSelect.value || 'openrouter/free';
+            const info = getSynapseModelInfo(selectedModelId, currentType);
+
+            let statusBadgeHtml = '';
+            if (info.isFree || info.status.toLowerCase().includes('gratuito')) {
+                statusBadgeHtml = `<span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 6px;">🆓 100% Gratuito</span>`;
+            } else if (info.isExperimental) {
+                statusBadgeHtml = `<span style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 6px;">🧪 Experimental</span>`;
+            } else {
+                statusBadgeHtml = `<span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 6px;">✨ ${info.status || 'Ativo'}</span>`;
+            }
+
+            const capsHtml = (info.capabilities || []).map(cap => `
+                <span style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #e2e8f0; font-size: 0.7rem; font-weight: 500; padding: 3px 8px; border-radius: 6px;">
+                    ${cap}
+                </span>
+            `).join('');
+
+            container.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid ${info.color || 'rgba(56, 189, 248, 0.3)'}; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                            ${info.icon || '✦'}
+                        </div>
+                        <div>
+                            <div style="font-size: 0.92rem; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                <span>${info.name || selectedModelId}</span>
+                                ${statusBadgeHtml}
+                            </div>
+                            <div style="font-size: 0.74rem; color: #94a3b8; margin-top: 1px;">
+                                <strong style="color: #cbd5e1;">Provedor:</strong> ${info.developer || 'Oficial'}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 4px 8px; font-size: 0.72rem; color: #cbd5e1; font-family: monospace;">
+                        ID: <span style="color: var(--primary, #38bdf8);">${info.id || selectedModelId}</span>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-top: 4px;">
+                    <div style="background: rgba(0, 0, 0, 0.2); border-radius: 8px; padding: 6px 10px; border: 1px solid rgba(255, 255, 255, 0.04);">
+                        <div style="font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Janela de Contexto</div>
+                        <div style="font-size: 0.8rem; font-weight: 700; color: #ffffff; margin-top: 2px;">${info.contextLength || '128k'}</div>
+                    </div>
+                    <div style="background: rgba(0, 0, 0, 0.2); border-radius: 8px; padding: 6px 10px; border: 1px solid rgba(255, 255, 255, 0.04);">
+                        <div style="font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Custo / Tarifação</div>
+                        <div style="font-size: 0.8rem; font-weight: 700; color: ${info.isFree ? '#34d399' : '#38bdf8'}; margin-top: 2px;">
+                            ${info.isFree ? 'Gratuito (R$ 0,00)' : 'Tarifação Provedor'}
+                        </div>
+                    </div>
+                    <div style="background: rgba(0, 0, 0, 0.2); border-radius: 8px; padding: 6px 10px; border: 1px solid rgba(255, 255, 255, 0.04);">
+                        <div style="font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Atualização</div>
+                        <div style="font-size: 0.8rem; font-weight: 700; color: #ffffff; margin-top: 2px;">${info.updatedAt || 'Ativo'}</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px;">
+                    ${capsHtml}
+                </div>
+
+                <div style="font-size: 0.76rem; color: #94a3b8; line-height: 1.4; background: rgba(0, 0, 0, 0.15); padding: 8px 10px; border-radius: 8px; border-left: 3px solid ${info.color || '#38bdf8'}; margin-top: 2px;">
+                    ${info.description || 'Modelo pronto para processamento e respostas de alta qualidade no Synapse Console.'}
+                </div>
+            `;
+        }
+
         function updateAllModelDropdowns(type) {
             const mMain = document.getElementById('model-name');
             const mTelegram = document.getElementById('tg-model-name');
             
             // SINALIZAÇÃO DO SISTEMA DE ORQUESTRAÇÃO DE MODELOS:
             // Este método gerencia dinamicamente as opções de LLM disponíveis para o sistema,
-            // garantindo que múltiplos provedores (incluindo OpenRouter, Gemini local, OpenAI, Groq e outros)
-            // se comuniquem perfeitamente através de uma única interface abstrata e unificada.
+            // integrando o catálogo dinâmico oficial do OpenRouter com as opções nativas do Gemini, Groq, OpenAI e Customizados.
             let options = [];
             if (type === "GEMINI") {
                 options = [
@@ -11698,29 +12634,21 @@ WITH CHECK (true);</code>
                     "mixtral-8x7b-32768"
                 ];
             } else if (type === "OPENROUTER") {
-                options = [
-                    "deepseek/deepseek-r1",
-                    "deepseek/deepseek-chat",
-                    "google/gemini-2.5-flash",
-                    "google/gemini-2.5-pro",
-                    "google/gemini-2.0-flash-thinking-exp",
-                    "google/gemini-2.0-flash",
-                    "google/gemini-flash-1.5",
-                    "anthropic/claude-3.7-sonnet",
-                    "anthropic/claude-3.5-sonnet",
-                    "meta-llama/llama-3.3-70b-instruct",
-                    "openai/gpt-4o",
-                    "openai/gpt-4o-mini",
-                    "openai/o3-mini"
-                ];
+                const openRouterCatalog = getSynapseOpenRouterCatalog();
+                options = openRouterCatalog.map(m => m.id);
             } else if (type === "CUSTOM") {
+                const openRouterCatalog = getSynapseOpenRouterCatalog();
+                const orFreeIds = openRouterCatalog.filter(m => m.isFree).map(m => m.id);
                 options = [
+                    ...orFreeIds,
                     "deepseek-r1",
                     "deepseek-chat",
                     "google/gemini-2.5-flash", 
                     "meta-llama/llama-3.3-70b-instruct", 
                     "qwen/qwen-2.5-72b-instruct"
                 ];
+                // Remove duplicatas mantendo ordem
+                options = Array.from(new Set(options));
             } else {
                 options = [
                     "gpt-4o-mini", 
@@ -11734,13 +12662,20 @@ WITH CHECK (true);</code>
             
             const fillSelect = (el) => {
                 if (!el) return;
+                const prevVal = el.value;
                 el.innerHTML = '';
                 options.forEach(opt => {
                     const optionEl = document.createElement('option');
                     optionEl.value = opt;
-                    optionEl.innerText = opt;
+                    const info = getSynapseModelInfo(opt, type);
+                    optionEl.innerText = info.badge ? `[${info.badge}] ${info.name || opt}` : opt;
                     el.appendChild(optionEl);
                 });
+                if (prevVal && options.includes(prevVal)) {
+                    el.value = prevVal;
+                } else if (options.length > 0) {
+                    el.value = options[0];
+                }
             }
             
             fillSelect(mMain);
@@ -11748,6 +12683,10 @@ WITH CHECK (true);</code>
             
             if (typeof autoEnhanceAllSelects === 'function') {
                 autoEnhanceAllSelects();
+            }
+
+            if (typeof updateModelDetailsDisplay === 'function') {
+                updateModelDetailsDisplay();
             }
         }
 
@@ -11788,6 +12727,7 @@ WITH CHECK (true);</code>
             
             addLog(`Modelo rápido selecionado: ${modelName} (${providerType})`, "success");
             showAppToast(`Modelo ${modelName} Ativado!`, "success");
+            updateModelDetailsDisplay();
             saveConfiguration();
         }
 
@@ -11850,7 +12790,7 @@ WITH CHECK (true);</code>
                     model.value = "llama-3.1-8b-instant";
                 } else if (type === "OPENROUTER") {
                     baseUrl.value = "https://openrouter.ai/api/v1/chat/completions";
-                    model.value = "google/gemini-flash-1.5";
+                    model.value = "openrouter/free";
                 } else if (type === "CUSTOM") {
                     baseUrl.value = "https://openrouter.ai/api/v1/";
                     model.value = "google/gemini-2.5-flash";
@@ -11859,6 +12799,10 @@ WITH CHECK (true);</code>
                     model.value = "gpt-4o";
                 }
                 addLog(`Troca de motor para: ${type}`, "info");
+            }
+            
+            if (typeof updateModelDetailsDisplay === 'function') {
+                updateModelDetailsDisplay();
             }
         }
 
@@ -19612,8 +20556,41 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 let icon = opt.icon || '✦';
 
                 // Categorização para Modelos de IA
-                if (titleLower.includes('modelo') || titleLower.includes('model') || val.includes('gemini') || val.includes('gpt') || val.includes('deepseek') || val.includes('claude') || val.includes('llama')) {
-                    if (val.includes('deepseek') || lbl.includes('deepseek')) {
+                if (titleLower.includes('modelo') || titleLower.includes('model') || val.includes('gemini') || val.includes('gpt') || val.includes('deepseek') || val.includes('claude') || val.includes('llama') || val.includes('ox-alpha') || val.includes('dots3') || val.includes('openrouter')) {
+                    const modelInfo = (typeof getSynapseModelInfo === 'function') ? getSynapseModelInfo(opt.value) : null;
+                    
+                    if (modelInfo) {
+                        icon = modelInfo.icon || '✦';
+                        brandColor = modelInfo.color || '#38bdf8';
+                        badge = modelInfo.badge || (modelInfo.isFree ? '🆓 Free' : 'IA');
+                        subtitle = `${modelInfo.developer} • ${modelInfo.contextLength || '128k'} • ${modelInfo.description || ''}`;
+                        
+                        if (val.includes('openrouter/free')) {
+                            category = 'free';
+                            categoryLabel = '🆓 Gratuitos';
+                        } else if (val.includes('ox-alpha') || val.includes('dots3') || val.includes('v4-flash') || val.includes(':free')) {
+                            category = 'free';
+                            categoryLabel = '🆓 Gratuitos';
+                        } else if (val.includes('deepseek') || lbl.includes('deepseek')) {
+                            category = 'deepseek';
+                            categoryLabel = '🪐 DeepSeek';
+                        } else if (val.includes('gemini') || lbl.includes('gemini') || val.includes('google')) {
+                            category = 'google';
+                            categoryLabel = '♊ Google';
+                        } else if (val.includes('gpt') || val.includes('openai') || val.includes('o1') || val.includes('o3')) {
+                            category = 'openai';
+                            categoryLabel = '🤖 OpenAI';
+                        } else if (val.includes('claude') || val.includes('anthropic')) {
+                            category = 'anthropic';
+                            categoryLabel = '🧠 Anthropic';
+                        } else if (val.includes('llama') || val.includes('meta')) {
+                            category = 'meta';
+                            categoryLabel = '🦙 Meta';
+                        } else {
+                            category = 'others';
+                            categoryLabel = '⚡ Outros';
+                        }
+                    } else if (val.includes('deepseek') || lbl.includes('deepseek')) {
                         category = 'deepseek';
                         categoryLabel = 'DeepSeek';
                         brandColor = '#0284c7';
@@ -24357,18 +25334,11 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     { value: "gemma2-9b-it", label: "gemma2-9b-it" }
                 ];
             } else if (typeVal === "OPENROUTER") {
-                optionsList = [
-                    { value: "deepseek/deepseek-r1", label: "deepseek/deepseek-r1 (Raciocínio R1)" },
-                    { value: "deepseek/deepseek-chat", label: "deepseek/deepseek-chat" },
-                    { value: "google/gemini-2.5-flash", label: "google/gemini-2.5-flash" },
-                    { value: "google/gemini-2.5-pro", label: "google/gemini-2.5-pro" },
-                    { value: "anthropic/claude-3.7-sonnet", label: "anthropic/claude-3.7-sonnet" },
-                    { value: "anthropic/claude-3.5-sonnet", label: "anthropic/claude-3.5-sonnet" },
-                    { value: "meta-llama/llama-3.3-70b-instruct", label: "meta-llama/llama-3.3-70b-instruct" },
-                    { value: "openai/gpt-4o", label: "openai/gpt-4o" },
-                    { value: "openai/gpt-4o-mini", label: "openai/gpt-4o-mini" },
-                    { value: "openai/o3-mini", label: "openai/o3-mini" }
-                ];
+                const orCat = (typeof getSynapseOpenRouterCatalog === 'function') ? getSynapseOpenRouterCatalog() : [];
+                optionsList = orCat.map(m => ({
+                    value: m.id,
+                    label: m.badge ? `[${m.badge}] ${m.name || m.id}` : (m.name || m.id)
+                }));
             } else if (typeVal === "OPENAI") {
                 optionsList = [
                     { value: "gpt-4o-mini", label: "gpt-4o-mini (Leve e Eficiente)" },
