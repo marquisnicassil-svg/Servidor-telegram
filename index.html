@@ -2748,6 +2748,548 @@
             0% { transform: translateY(0); opacity: 1; }
             100% { transform: translateY(15px); opacity: 0; }
         }
+
+        /* =========================================================================
+           SYNAPSE EMBEDDED CODE RUNNER & SANDBOX CONSOLE
+           ========================================================================= */
+        .synapse-code-container {
+            background: #0d1117;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            margin: 12px 0;
+            overflow: hidden;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            position: relative;
+            max-width: 100%;
+        }
+
+        .synapse-code-header {
+            background: #161b22;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .synapse-code-header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .synapse-code-lang-icon {
+            font-size: 1rem;
+        }
+
+        .synapse-code-lang-name {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #e6edf3;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .synapse-code-lines {
+            font-size: 0.7rem;
+            color: #8b949e;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .synapse-code-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .synapse-code-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #e6edf3;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .synapse-code-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+        }
+
+        .synapse-code-btn:active {
+            transform: scale(0.96);
+        }
+
+        .synapse-code-btn-run {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+            border-color: #34d399 !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
+        }
+
+        .synapse-code-btn-run:hover {
+            background: linear-gradient(135deg, #059669, #047857) !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.5);
+        }
+
+        .synapse-code-tabs {
+            background: #0d1117;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            gap: 2px;
+            padding: 0 8px;
+            overflow-x: auto;
+        }
+
+        .synapse-tab-btn {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: #8b949e;
+            font-size: 0.76rem;
+            font-weight: 600;
+            padding: 8px 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .synapse-tab-btn:hover {
+            color: #e6edf3;
+        }
+
+        .synapse-tab-btn.active {
+            color: var(--primary, #38bdf8);
+            border-bottom-color: var(--primary, #38bdf8);
+        }
+
+        .synapse-console-badge {
+            background: #ef4444;
+            color: #ffffff;
+            font-size: 0.65rem;
+            font-weight: bold;
+            padding: 1px 5px;
+            border-radius: 10px;
+            line-height: 1;
+        }
+
+        .synapse-preview-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #10b981;
+            display: inline-block;
+        }
+
+        .synapse-code-view {
+            position: relative;
+        }
+
+        .synapse-code-pre {
+            margin: 0 !important;
+            padding: 12px 14px !important;
+            background: #0d1117 !important;
+            color: #e6edf3 !important;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace !important;
+            font-size: 0.82rem !important;
+            line-height: 1.5 !important;
+            overflow-x: auto !important;
+            white-space: pre !important;
+            border: none !important;
+            border-radius: 0 !important;
+        }
+
+        .synapse-editor-wrapper {
+            background: #0d1117;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .synapse-code-textarea {
+            width: 100%;
+            min-height: 180px;
+            max-height: 420px;
+            background: #090d13;
+            color: #7dd3fc;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px 14px;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            resize: vertical;
+            outline: none;
+            tab-size: 4;
+            box-sizing: border-box;
+        }
+
+        .synapse-editor-footer {
+            background: #161b22;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .synapse-code-mini-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #cbd5e1;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .synapse-code-mini-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+        }
+
+        .synapse-code-mini-btn-primary {
+            background: #10b981 !important;
+            color: #ffffff !important;
+            border-color: #34d399 !important;
+        }
+
+        .synapse-preview-toolbar {
+            background: #161b22;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .synapse-preview-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .synapse-status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #94a3b8;
+        }
+
+        .synapse-status-indicator.online {
+            background: #10b981;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        .synapse-status-indicator.stopped {
+            background: #ef4444;
+        }
+
+        .synapse-status-text {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        .synapse-preview-controls {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .synapse-ctrl-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .synapse-ctrl-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+        }
+
+        .synapse-btn-badge {
+            background: #ef4444;
+            color: #ffffff;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 1px 4px;
+            border-radius: 8px;
+        }
+
+        .synapse-iframe-container {
+            width: 100%;
+            height: 340px;
+            background: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .synapse-sandbox-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+            background: #ffffff;
+        }
+
+        .synapse-inline-console {
+            background: #090d13;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .synapse-console-header {
+            background: #111827;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .synapse-console-header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .synapse-console-chip {
+            font-size: 0.68rem;
+            background: rgba(255, 255, 255, 0.08);
+            color: #94a3b8;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .synapse-console-btn-mini {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 0.72rem;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .synapse-console-btn-mini:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .synapse-console-logs {
+            max-height: 180px;
+            min-height: 60px;
+            overflow-y: auto;
+            padding: 8px 12px;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+            font-size: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .synapse-log-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            line-height: 1.4;
+            word-break: break-word;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            padding-bottom: 2px;
+        }
+
+        .synapse-log-time {
+            color: #64748b;
+            font-size: 0.68rem;
+            flex-shrink: 0;
+        }
+
+        .synapse-log-tag {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 1px 4px;
+            border-radius: 3px;
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+
+        .synapse-log-tag.log { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+        .synapse-log-tag.info { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+        .synapse-log-tag.warn { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .synapse-log-tag.error { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+        .synapse-log-tag.result { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+
+        .synapse-log-text {
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            flex: 1;
+        }
+
+        .synapse-log-item.error .synapse-log-text {
+            color: #fca5a5;
+        }
+
+        .synapse-log-item.warn .synapse-log-text {
+            color: #fde68a;
+        }
+
+        .synapse-log-empty {
+            color: #64748b;
+            font-style: italic;
+            font-size: 0.72rem;
+            padding: 8px 0;
+        }
+
+        .synapse-console-input-bar {
+            background: #090d13;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 6px 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .synapse-console-eval-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #f8fafc;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+            font-size: 0.75rem;
+        }
+
+        .synapse-console-eval-btn {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #38bdf8;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .synapse-console-eval-btn:hover {
+            background: var(--primary, #38bdf8);
+            color: #000;
+        }
+
+        /* Fullscreen Code Preview Modal */
+        .synapse-code-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 15, 26, 0.96);
+            backdrop-filter: blur(10px);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .synapse-modal-topbar {
+            background: #111827;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .synapse-modal-viewports {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 2px;
+            gap: 2px;
+        }
+
+        .synapse-viewport-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .synapse-viewport-btn.active {
+            background: var(--primary, #38bdf8);
+            color: #000;
+            font-weight: 700;
+        }
+
+        .synapse-modal-body {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0b0f19;
+            padding: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .synapse-modal-frame-holder {
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .synapse-modal-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
     </style>
     <!-- Firebase SDK (Compat v10.8.0) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -15068,18 +15610,806 @@ WITH CHECK (true);</code>
             }
         }
 
+        // --- 4. Motor de Requisição de Chat e Executor de Código Integrado ---
+        window.SYNAPSE_CODE_REGISTRY = window.SYNAPSE_CODE_REGISTRY || {};
+        let activeFullscreenBlockId = null;
+
+        function synapseEscapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function getLanguageMeta(langStr, code) {
+            const l = (langStr || '').trim().toLowerCase();
+            if (l === 'html' || l === 'htm' || l === 'svg' || l === 'web') {
+                return { name: 'HTML5', icon: '🌐', isExecutable: true, type: 'html' };
+            } else if (l === 'javascript' || l === 'js' || l === 'mjs' || l === 'cjs') {
+                return { name: 'JavaScript', icon: '⚡', isExecutable: true, type: 'js' };
+            } else if (l === 'typescript' || l === 'ts') {
+                return { name: 'TypeScript', icon: '🔷', isExecutable: true, type: 'js' };
+            } else if (l === 'css' || l === 'scss' || l === 'less') {
+                return { name: 'CSS3', icon: '🎨', isExecutable: true, type: 'css' };
+            } else if (l === 'python' || l === 'py') {
+                return { name: 'Python', icon: '🐍', isExecutable: false, type: 'python' };
+            } else if (l === 'json') {
+                return { name: 'JSON', icon: '📋', isExecutable: false, type: 'json' };
+            } else if (l === 'sql') {
+                return { name: 'SQL', icon: '🗄️', isExecutable: false, type: 'sql' };
+            } else if (l === 'bash' || l === 'sh' || l === 'shell') {
+                return { name: 'Shell', icon: '💻', isExecutable: false, type: 'sh' };
+            } else if (l === 'kotlin' || l === 'kt') {
+                return { name: 'Kotlin', icon: '☕', isExecutable: false, type: 'kotlin' };
+            }
+
+            // Heurística para blocos sem tag explícita
+            const trimmed = (code || '').trim();
+            if (trimmed.startsWith('<!DOCTYPE') || trimmed.includes('<html') || trimmed.includes('<div') || trimmed.includes('<body') || trimmed.includes('<script') || trimmed.includes('<style') || trimmed.includes('<button') || trimmed.includes('<canvas')) {
+                return { name: 'HTML5 / Web', icon: '🌐', isExecutable: true, type: 'html' };
+            }
+            if (trimmed.includes('console.log(') || trimmed.includes('document.getElementById') || trimmed.includes('addEventListener') || trimmed.includes('function ') || trimmed.includes('const ') || trimmed.includes('let ')) {
+                return { name: 'JavaScript', icon: '⚡', isExecutable: true, type: 'js' };
+            }
+
+            return { name: l ? l.toUpperCase() : 'Código', icon: '💻', isExecutable: false, type: 'generic' };
+        }
+
+        function synapseBuildSandboxHarness(blockId, meta, rawCode) {
+            const commScript = `
+<script>
+(function() {
+    const BLOCK_ID = "${blockId}";
+    function sendParent(type, payload) {
+        try {
+            window.parent.postMessage({
+                source: 'SYNAPSE_SANDBOX',
+                blockId: BLOCK_ID,
+                type: type,
+                payload: payload,
+                timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+            }, '*');
+        } catch (e) {}
+    }
+
+    function serializeArg(arg) {
+        if (arg === null) return 'null';
+        if (arg === undefined) return 'undefined';
+        if (typeof arg === 'function') return '[Função: ' + (arg.name || 'anônima') + ']';
+        if (arg instanceof Error) return arg.name + ': ' + arg.message + (arg.stack ? ('\\n' + arg.stack) : '');
+        if (typeof arg === 'object') {
+            try { return JSON.stringify(arg, null, 2); } catch (e) { return String(arg); }
+        }
+        return String(arg);
+    }
+
+    function formatArgs(args) {
+        return Array.from(args).map(serializeArg).join(' ');
+    }
+
+    const origLog = console.log;
+    const origWarn = console.warn;
+    const origError = console.error;
+    const origInfo = console.info;
+
+    console.log = function() {
+        sendParent('log', { level: 'log', message: formatArgs(arguments) });
+        origLog.apply(console, arguments);
+    };
+    console.warn = function() {
+        sendParent('log', { level: 'warn', message: formatArgs(arguments) });
+        origWarn.apply(console, arguments);
+    };
+    console.error = function() {
+        sendParent('log', { level: 'error', message: formatArgs(arguments) });
+        origError.apply(console, arguments);
+    };
+    console.info = function() {
+        sendParent('log', { level: 'info', message: formatArgs(arguments) });
+        origInfo.apply(console, arguments);
+    };
+
+    window.onerror = function(message, source, lineno, colno, error) {
+        const msg = (error && error.message) ? error.message : message;
+        const loc = lineno ? (' (Linha ' + lineno + (colno ? (':' + colno) : '') + ')') : '';
+        sendParent('log', { level: 'error', message: 'Erro: ' + msg + loc });
+        return false;
+    };
+
+    window.onunhandledrejection = function(event) {
+        const r = event.reason;
+        sendParent('log', { level: 'error', message: 'Promise Rejeitada: ' + (r && r.message ? r.message : String(r)) });
+    };
+
+    window.addEventListener('message', function(e) {
+        if (!e.data || e.data.target !== 'SYNAPSE_SANDBOX_EVAL' || e.data.blockId !== BLOCK_ID) return;
+        try {
+            const res = window.eval(e.data.code);
+            sendParent('log', { level: 'result', message: '<= ' + serializeArg(res) });
+        } catch (err) {
+            sendParent('log', { level: 'error', message: 'Erro ao executar no Sandbox: ' + err.message });
+        }
+    });
+
+    sendParent('ready', { status: 'running' });
+})();
+<\/script>`;
+
+            const codeLower = rawCode.toLowerCase();
+            if (codeLower.includes('<!doctype') || codeLower.includes('<html') || codeLower.includes('<body') || codeLower.includes('<head>')) {
+                if (rawCode.includes('<head>')) {
+                    return rawCode.replace('<head>', '<head>' + commScript);
+                } else if (rawCode.includes('<html>')) {
+                    return rawCode.replace('<html>', '<html><head>' + commScript + '</head>');
+                } else {
+                    return commScript + rawCode;
+                }
+            }
+
+            if (meta.type === 'js') {
+                return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Execução JavaScript - Synapse</title>
+    ${commScript}
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0f172a;
+            color: #f8fafc;
+            line-height: 1.5;
+        }
+        #app-runner-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            font-size: 0.82rem;
+            color: #38bdf8;
+            font-weight: 700;
+        }
+        #app-runner-container {
+            min-height: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app-runner-header">
+        <span>⚡ Script JavaScript em Execução</span>
+        <span style="font-size: 0.72rem; color: #10b981;">● Ativo</span>
+    </div>
+    <div id="app-runner-container"></div>
+    <script>
+        try {
+            ${rawCode}
+        } catch (err) {
+            console.error(err);
+        }
+    <\/script>
+</body>
+</html>`;
+            }
+
+            if (meta.type === 'css') {
+                return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estilos CSS - Synapse</title>
+    ${commScript}
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+        }
+        ${rawCode}
+    </style>
+</head>
+<body>
+    <div style="margin-bottom: 16px;">
+        <h2>Prévia de Estilos CSS</h2>
+        <p>Abaixo estão elementos de exemplo estilizados com as regras CSS informadas:</p>
+        <button class="btn btn-primary">Botão Primário</button>
+        <div class="card" style="margin-top: 12px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
+            <h3>Cartão de Exemplo</h3>
+            <p>Texto demonstrativo aplicando classes e seletores definidos.</p>
+        </div>
+    </div>
+</body>
+</html>`;
+            }
+
+            // HTML fragment
+            return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pré-visualização Web - Synapse</title>
+    ${commScript}
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #0f172a;
+            background-color: #ffffff;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    ${rawCode}
+</body>
+</html>`;
+        }
+
+        function synapseBuildCodeBlockHtml(blockId, lang, rawCode) {
+            const meta = getLanguageMeta(lang, rawCode);
+            const lines = rawCode.split('\n').length;
+            const escapedCode = synapseEscapeHtml(rawCode);
+
+            // Armazena no registro de memória
+            window.SYNAPSE_CODE_REGISTRY[blockId] = {
+                originalCode: rawCode,
+                currentCode: rawCode,
+                meta: meta,
+                logs: []
+            };
+
+            return `
+            <div class="synapse-code-container" id="${blockId}" data-lang="${synapseEscapeHtml(meta.type)}" data-executable="${meta.isExecutable ? 'true' : 'false'}">
+                <!-- Header -->
+                <div class="synapse-code-header">
+                    <div class="synapse-code-header-left">
+                        <span class="synapse-code-lang-icon">${meta.icon}</span>
+                        <span class="synapse-code-lang-name">${synapseEscapeHtml(meta.name)}</span>
+                        <span class="synapse-code-lines">${lines} ${lines === 1 ? 'linha' : 'linhas'}</span>
+                    </div>
+                    <div class="synapse-code-header-actions">
+                        ${meta.isExecutable ? `
+                            <button type="button" class="synapse-code-btn synapse-code-btn-run" onclick="synapseRunCodeBlock('${blockId}')" title="Executar código em tempo real no aplicativo">
+                                <span>▶</span>
+                                <span>Executar</span>
+                            </button>
+                        ` : ''}
+                        <button type="button" class="synapse-code-btn" onclick="synapseCopyCodeBlock('${blockId}', this)" title="Copiar código para a área de transferência">
+                            <span>📋</span>
+                            <span>Copiar</span>
+                        </button>
+                        <button type="button" class="synapse-code-btn" onclick="synapseToggleCodeEditor('${blockId}')" title="Editar código diretamente">
+                            <span>✏️</span>
+                            <span>Editar</span>
+                        </button>
+                        ${meta.isExecutable ? `
+                            <button type="button" class="synapse-code-btn" onclick="synapseOpenFullscreenPreview('${blockId}')" title="Abrir em Tela Cheia">
+                                <span>⛶</span>
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <!-- Tabs de Navegação -->
+                <div class="synapse-code-tabs" id="${blockId}-tabs">
+                    <button type="button" class="synapse-tab-btn active" id="${blockId}-tab-code" onclick="synapseSwitchCodeTab('${blockId}', 'code')">
+                        💻 Código
+                    </button>
+                    ${meta.isExecutable ? `
+                        <button type="button" class="synapse-tab-btn" id="${blockId}-tab-preview" onclick="synapseSwitchCodeTab('${blockId}', 'preview')">
+                            👁️ Pré-visualização <span class="synapse-preview-dot"></span>
+                        </button>
+                        <button type="button" class="synapse-tab-btn" id="${blockId}-tab-console" onclick="synapseSwitchCodeTab('${blockId}', 'console')">
+                            🖥️ Console <span class="synapse-console-badge" id="${blockId}-console-count" style="display:none;">0</span>
+                        </button>
+                    ` : ''}
+                </div>
+
+                <!-- View: Código / Editor -->
+                <div class="synapse-code-view" id="${blockId}-view-code">
+                    <pre class="synapse-code-pre" id="${blockId}-pre"><code>${escapedCode}</code></pre>
+                    
+                    <div class="synapse-editor-wrapper" id="${blockId}-editor-wrap" style="display: none;">
+                        <textarea class="synapse-code-textarea" id="${blockId}-textarea" spellcheck="false" placeholder="Edite o código aqui...">${escapedCode}</textarea>
+                        <div class="synapse-editor-footer">
+                            <span style="font-size: 0.72rem; color: #94a3b8;">Tab para indentar • Renderização direta em Sandbox</span>
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" class="synapse-code-mini-btn" onclick="synapseResetCodeBlock('${blockId}')">↺ Restaurar Original</button>
+                                ${meta.isExecutable ? `<button type="button" class="synapse-code-mini-btn synapse-code-mini-btn-primary" onclick="synapseRunCodeBlock('${blockId}')">▶ Executar Alterações</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View: Pré-visualização Inline Sandbox -->
+                ${meta.isExecutable ? `
+                <div class="synapse-code-view" id="${blockId}-view-preview" style="display: none;">
+                    <div class="synapse-preview-toolbar">
+                        <div class="synapse-preview-status">
+                            <span class="synapse-status-indicator online" id="${blockId}-indicator"></span>
+                            <span class="synapse-status-text" id="${blockId}-status-text">Ambiente Sandbox Seguro</span>
+                        </div>
+                        <div class="synapse-preview-controls">
+                            <button type="button" class="synapse-ctrl-btn" onclick="synapseReloadSandbox('${blockId}')" title="Recarregar Pré-visualização">
+                                🔄 Recarregar
+                            </button>
+                            <button type="button" class="synapse-ctrl-btn" onclick="synapseStopSandbox('${blockId}')" title="Parar Execução">
+                                ⏹️ Parar
+                            </button>
+                            <button type="button" class="synapse-ctrl-btn" onclick="synapseToggleConsoleDrawer('${blockId}')" title="Abrir Console">
+                                🖥️ Console <span id="${blockId}-btn-log-count" class="synapse-btn-badge" style="display:none;">0</span>
+                            </button>
+                            <button type="button" class="synapse-ctrl-btn" onclick="synapseOpenFullscreenPreview('${blockId}')" title="Tela Cheia">
+                                ⛶ Tela Cheia
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="synapse-iframe-container" id="${blockId}-iframe-wrap">
+                        <iframe id="${blockId}-iframe" class="synapse-sandbox-iframe" sandbox="allow-scripts allow-modals allow-forms" title="Pré-visualização Segura Synapse"></iframe>
+                    </div>
+
+                    <!-- Mini Console Drawer -->
+                    <div class="synapse-inline-console" id="${blockId}-inline-console" style="display: none;">
+                        <div class="synapse-console-header">
+                            <div class="synapse-console-header-left">
+                                <span style="font-weight: 700; color: #f8fafc; font-size: 0.78rem;">🖥️ Console JavaScript</span>
+                                <span class="synapse-console-chip" id="${blockId}-inline-chip">0 logs</span>
+                            </div>
+                            <div style="display: flex; gap: 6px;">
+                                <button type="button" class="synapse-console-btn-mini" onclick="synapseClearConsoleLogs('${blockId}')">🗑️ Limpar</button>
+                                <button type="button" class="synapse-console-btn-mini" onclick="synapseToggleConsoleDrawer('${blockId}')">✕</button>
+                            </div>
+                        </div>
+                        <div class="synapse-console-logs" id="${blockId}-console-logs">
+                            <div class="synapse-log-empty">Nenhum log registrado. Execuções de console.log, avisos e erros aparecerão aqui em tempo real.</div>
+                        </div>
+                        <div class="synapse-console-input-bar">
+                            <span style="color: var(--primary, #38bdf8); font-weight: bold; font-family: monospace; font-size: 0.8rem;">&gt;</span>
+                            <input type="text" class="synapse-console-eval-input" id="${blockId}-eval-input" placeholder="Comando JS para testar no sandbox..." onkeydown="if(event.key==='Enter')synapseEvalInSandbox('${blockId}')" />
+                            <button type="button" class="synapse-console-eval-btn" onclick="synapseEvalInSandbox('${blockId}')">Executar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View: Console Tab Dedicada -->
+                <div class="synapse-code-view" id="${blockId}-view-console" style="display: none;">
+                    <div class="synapse-inline-console" style="border-top: none;">
+                        <div class="synapse-console-header">
+                            <div class="synapse-console-header-left">
+                                <span style="font-weight: 700; color: #f8fafc; font-size: 0.78rem;">🖥️ Console de Execução do Sandbox</span>
+                                <span class="synapse-console-chip" id="${blockId}-full-chip">0 logs</span>
+                            </div>
+                            <div style="display: flex; gap: 6px;">
+                                <button type="button" class="synapse-console-btn-mini" onclick="synapseClearConsoleLogs('${blockId}')">🗑️ Limpar</button>
+                            </div>
+                        </div>
+                        <div class="synapse-console-logs" id="${blockId}-full-console-logs" style="max-height: 300px; min-height: 120px;">
+                            <div class="synapse-log-empty">Nenhum log registrado. Execuções de console.log, avisos e erros aparecerão aqui em tempo real.</div>
+                        </div>
+                        <div class="synapse-console-input-bar">
+                            <span style="color: var(--primary, #38bdf8); font-weight: bold; font-family: monospace; font-size: 0.8rem;">&gt;</span>
+                            <input type="text" class="synapse-console-eval-input" id="${blockId}-full-eval-input" placeholder="Comando JS para testar no sandbox..." onkeydown="if(event.key==='Enter')synapseEvalInSandbox('${blockId}', true)" />
+                            <button type="button" class="synapse-console-eval-btn" onclick="synapseEvalInSandbox('${blockId}', true)">Executar</button>
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
+
+                <!-- Armazenamento Oculto Seguro do Código -->
+                <textarea style="display: none;" id="${blockId}-raw-code">${escapedCode}</textarea>
+            </div>
+            `;
+        }
+
+        function synapseRunCodeBlock(blockId) {
+            const container = document.getElementById(blockId);
+            if (!container) return;
+
+            // Coleta o código atualizado (se o editor estiver ativo)
+            const textarea = document.getElementById(`${blockId}-textarea`);
+            const rawStorage = document.getElementById(`${blockId}-raw-code`);
+            let code = (textarea && textarea.value) ? textarea.value : (rawStorage ? rawStorage.value : '');
+
+            const reg = window.SYNAPSE_CODE_REGISTRY[blockId] || { meta: getLanguageMeta(container.getAttribute('data-lang'), code) };
+            reg.currentCode = code;
+            window.SYNAPSE_CODE_REGISTRY[blockId] = reg;
+
+            // Atualiza <pre><code> com o código atualizado
+            const preEl = document.querySelector(`#${blockId}-pre code`);
+            if (preEl) preEl.innerHTML = synapseEscapeHtml(code);
+
+            // Alterna para a visualização Preview
+            synapseSwitchCodeTab(blockId, 'preview');
+
+            // Constrói o harness e atualiza o iframe
+            const iframe = document.getElementById(`${blockId}-iframe`);
+            if (iframe) {
+                const bundleHtml = synapseBuildSandboxHarness(blockId, reg.meta, code);
+                iframe.srcdoc = bundleHtml;
+            }
+
+            // Atualiza status do indicador
+            const indicator = document.getElementById(`${blockId}-indicator`);
+            const statusText = document.getElementById(`${blockId}-status-text`);
+            if (indicator) {
+                indicator.className = 'synapse-status-indicator online';
+            }
+            if (statusText) {
+                statusText.innerText = 'Ambiente Sandbox Seguro (Executando)';
+            }
+
+            // Log de inicialização
+            synapseAppendConsoleLog(blockId, 'info', 'Execução iniciada no Sandbox em tempo real.', new Date().toLocaleTimeString());
+        }
+
+        function synapseSwitchCodeTab(blockId, targetTab) {
+            const tabs = ['code', 'preview', 'console'];
+            tabs.forEach(tab => {
+                const btn = document.getElementById(`${blockId}-tab-${tab}`);
+                const view = document.getElementById(`${blockId}-view-${tab}`);
+                if (btn) {
+                    if (tab === targetTab) btn.classList.add('active');
+                    else btn.classList.remove('active');
+                }
+                if (view) {
+                    view.style.display = (tab === targetTab) ? 'block' : 'none';
+                }
+            });
+
+            // Se mudou para preview e o iframe estiver vazio, executa
+            if (targetTab === 'preview') {
+                const iframe = document.getElementById(`${blockId}-iframe`);
+                if (iframe && (!iframe.srcdoc || iframe.srcdoc === 'about:blank')) {
+                    const reg = window.SYNAPSE_CODE_REGISTRY[blockId];
+                    if (reg) {
+                        const code = reg.currentCode || reg.originalCode;
+                        iframe.srcdoc = synapseBuildSandboxHarness(blockId, reg.meta, code);
+                    }
+                }
+            }
+        }
+
+        function synapseToggleCodeEditor(blockId) {
+            const pre = document.getElementById(`${blockId}-pre`);
+            const wrap = document.getElementById(`${blockId}-editor-wrap`);
+            const textarea = document.getElementById(`${blockId}-textarea`);
+
+            synapseSwitchCodeTab(blockId, 'code');
+
+            if (wrap && wrap.style.display === 'none') {
+                if (pre) pre.style.display = 'none';
+                wrap.style.display = 'flex';
+                if (textarea) {
+                    textarea.focus();
+                    // Intercepta Tab para indentação
+                    if (!textarea.dataset.tabBound) {
+                        textarea.dataset.tabBound = 'true';
+                        textarea.addEventListener('keydown', function(e) {
+                            if (e.key === 'Tab') {
+                                e.preventDefault();
+                                const start = this.selectionStart;
+                                const end = this.selectionEnd;
+                                this.value = this.value.substring(0, start) + '  ' + this.value.substring(end);
+                                this.selectionStart = this.selectionEnd = start + 2;
+                            }
+                        });
+                    }
+                }
+            } else if (wrap) {
+                wrap.style.display = 'none';
+                if (pre) pre.style.display = 'block';
+            }
+        }
+
+        function synapseResetCodeBlock(blockId) {
+            const reg = window.SYNAPSE_CODE_REGISTRY[blockId];
+            if (!reg) return;
+            const orig = reg.originalCode || '';
+            reg.currentCode = orig;
+
+            const textarea = document.getElementById(`${blockId}-textarea`);
+            if (textarea) textarea.value = orig;
+
+            const preEl = document.querySelector(`#${blockId}-pre code`);
+            if (preEl) preEl.innerHTML = synapseEscapeHtml(orig);
+
+            const rawStorage = document.getElementById(`${blockId}-raw-code`);
+            if (rawStorage) rawStorage.value = orig;
+
+            synapseAppendConsoleLog(blockId, 'info', 'Código restaurado para a versão original.', new Date().toLocaleTimeString());
+        }
+
+        function synapseCopyCodeBlock(blockId, btnEl) {
+            const reg = window.SYNAPSE_CODE_REGISTRY[blockId];
+            const textarea = document.getElementById(`${blockId}-textarea`);
+            const rawStorage = document.getElementById(`${blockId}-raw-code`);
+            const codeToCopy = (textarea && textarea.value) ? textarea.value : (reg ? reg.currentCode : (rawStorage ? rawStorage.value : ''));
+
+            if (!codeToCopy) return;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(codeToCopy).then(() => {
+                    showCopiedFeedback(btnEl);
+                }).catch(() => {
+                    fallbackCopy(codeToCopy, btnEl);
+                });
+            } else {
+                fallbackCopy(codeToCopy, btnEl);
+            }
+        }
+
+        function fallbackCopy(text, btnEl) {
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            temp.style.position = 'fixed';
+            temp.style.opacity = '0';
+            document.body.appendChild(temp);
+            temp.select();
+            try {
+                document.execCommand('copy');
+                showCopiedFeedback(btnEl);
+            } catch (e) {}
+            document.body.removeChild(temp);
+        }
+
+        function showCopiedFeedback(btnEl) {
+            if (!btnEl) return;
+            const orig = btnEl.innerHTML;
+            btnEl.innerHTML = '<span>✓</span> <span>Copiado!</span>';
+            btnEl.style.borderColor = '#10b981';
+            btnEl.style.color = '#10b981';
+            setTimeout(() => {
+                btnEl.innerHTML = orig;
+                btnEl.style.borderColor = '';
+                btnEl.style.color = '';
+            }, 2000);
+        }
+
+        function synapseReloadSandbox(blockId) {
+            const reg = window.SYNAPSE_CODE_REGISTRY[blockId];
+            const textarea = document.getElementById(`${blockId}-textarea`);
+            const rawStorage = document.getElementById(`${blockId}-raw-code`);
+            const code = (textarea && textarea.value) ? textarea.value : (reg ? reg.currentCode : (rawStorage ? rawStorage.value : ''));
+
+            const iframe = document.getElementById(`${blockId}-iframe`);
+            if (iframe && reg) {
+                iframe.srcdoc = synapseBuildSandboxHarness(blockId, reg.meta, code);
+                synapseAppendConsoleLog(blockId, 'info', 'Pré-visualização recarregada.', new Date().toLocaleTimeString());
+            }
+        }
+
+        function synapseStopSandbox(blockId) {
+            const iframe = document.getElementById(`${blockId}-iframe`);
+            if (iframe) {
+                iframe.srcdoc = `<!DOCTYPE html><html><body style="font-family:sans-serif;color:#94a3b8;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#0f172a;"><div style="text-align:center;">⏹️ Execução interrompida.<br><small style="color:#64748b;margin-top:6px;display:block;">Toque em <b>Recarregar</b> ou <b>Executar</b> para reiniciar.</small></div></body></html>`;
+            }
+
+            const indicator = document.getElementById(`${blockId}-indicator`);
+            const statusText = document.getElementById(`${blockId}-status-text`);
+            if (indicator) indicator.className = 'synapse-status-indicator stopped';
+            if (statusText) statusText.innerText = 'Execução Parada';
+
+            synapseAppendConsoleLog(blockId, 'warn', 'Execução parada pelo usuário.', new Date().toLocaleTimeString());
+        }
+
+        function synapseToggleConsoleDrawer(blockId) {
+            const drawer = document.getElementById(`${blockId}-inline-console`);
+            if (drawer) {
+                drawer.style.display = (drawer.style.display === 'none' || !drawer.style.display) ? 'flex' : 'none';
+            }
+        }
+
+        function synapseClearConsoleLogs(blockId) {
+            const inlineLogs = document.getElementById(`${blockId}-console-logs`);
+            const fullLogs = document.getElementById(`${blockId}-full-console-logs`);
+            const emptyHtml = '<div class="synapse-log-empty">Logs limpos.</div>';
+
+            if (inlineLogs) inlineLogs.innerHTML = emptyHtml;
+            if (fullLogs) fullLogs.innerHTML = emptyHtml;
+
+            const countBadge = document.getElementById(`${blockId}-console-count`);
+            const btnBadge = document.getElementById(`${blockId}-btn-log-count`);
+            const inlineChip = document.getElementById(`${blockId}-inline-chip`);
+            const fullChip = document.getElementById(`${blockId}-full-chip`);
+
+            if (countBadge) { countBadge.innerText = '0'; countBadge.style.display = 'none'; }
+            if (btnBadge) { btnBadge.innerText = '0'; btnBadge.style.display = 'none'; }
+            if (inlineChip) inlineChip.innerText = '0 logs';
+            if (fullChip) fullChip.innerText = '0 logs';
+
+            const reg = window.SYNAPSE_CODE_REGISTRY[blockId];
+            if (reg) reg.logs = [];
+        }
+
+        function synapseAppendConsoleLog(blockId, level, message, timestamp) {
+            const reg = window.SYNAPSE_CODE_REGISTRY[blockId];
+            const time = timestamp || new Date().toLocaleTimeString();
+            if (reg) {
+                reg.logs = reg.logs || [];
+                reg.logs.push({ level, message, time });
+            }
+
+            const logHtml = `
+            <div class="synapse-log-item ${level}">
+                <span class="synapse-log-time">${time}</span>
+                <span class="synapse-log-tag ${level}">${level}</span>
+                <span class="synapse-log-text">${synapseEscapeHtml(message)}</span>
+            </div>`;
+
+            const inlineLogs = document.getElementById(`${blockId}-console-logs`);
+            const fullLogs = document.getElementById(`${blockId}-full-console-logs`);
+            const modalLogs = document.getElementById('synapse-modal-console-logs');
+
+            [inlineLogs, fullLogs].forEach(el => {
+                if (el) {
+                    const empty = el.querySelector('.synapse-log-empty');
+                    if (empty) empty.remove();
+                    el.insertAdjacentHTML('beforeend', logHtml);
+                    el.scrollTop = el.scrollHeight;
+                }
+            });
+
+            if (activeFullscreenBlockId === blockId && modalLogs) {
+                const empty = modalLogs.querySelector('.synapse-log-empty');
+                if (empty) empty.remove();
+                modalLogs.insertAdjacentHTML('beforeend', logHtml);
+                modalLogs.scrollTop = modalLogs.scrollHeight;
+            }
+
+            // Atualiza contadores
+            const total = reg ? reg.logs.length : 1;
+            const countBadge = document.getElementById(`${blockId}-console-count`);
+            const btnBadge = document.getElementById(`${blockId}-btn-log-count`);
+            const inlineChip = document.getElementById(`${blockId}-inline-chip`);
+            const fullChip = document.getElementById(`${blockId}-full-chip`);
+
+            if (countBadge) { countBadge.innerText = String(total); countBadge.style.display = 'inline-block'; }
+            if (btnBadge) { btnBadge.innerText = String(total); btnBadge.style.display = 'inline-block'; }
+            if (inlineChip) inlineChip.innerText = `${total} ${total === 1 ? 'log' : 'logs'}`;
+            if (fullChip) fullChip.innerText = `${total} ${total === 1 ? 'log' : 'logs'}`;
+        }
+
+        function synapseEvalInSandbox(blockId, isFull) {
+            const input = document.getElementById(isFull ? `${blockId}-full-eval-input` : `${blockId}-eval-input`);
+            if (!input || !input.value.trim()) return;
+
+            const code = input.value.trim();
+            input.value = '';
+
+            synapseAppendConsoleLog(blockId, 'log', `> ${code}`, new Date().toLocaleTimeString());
+
+            const iframe = document.getElementById(`${blockId}-iframe`);
+            if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.postMessage({
+                    target: 'SYNAPSE_SANDBOX_EVAL',
+                    blockId: blockId,
+                    code: code
+                }, '*');
+            }
+        }
+
+        // Fullscreen Modal Controls
+        function synapseOpenFullscreenPreview(blockId) {
+            activeFullscreenBlockId = blockId;
+            const modal = document.getElementById('synapse-fullscreen-code-modal');
+            const iframe = document.getElementById('synapse-modal-iframe');
+            if (!modal || !iframe) return;
+
+            const reg = window.SYNAPSE_CODE_REGISTRY[blockId];
+            const textarea = document.getElementById(`${blockId}-textarea`);
+            const rawStorage = document.getElementById(`${blockId}-raw-code`);
+            const code = (textarea && textarea.value) ? textarea.value : (reg ? reg.currentCode : (rawStorage ? rawStorage.value : ''));
+
+            const meta = reg ? reg.meta : getLanguageMeta('', code);
+            iframe.srcdoc = synapseBuildSandboxHarness(blockId, meta, code);
+
+            const titleEl = document.getElementById('synapse-modal-title');
+            const iconEl = document.getElementById('synapse-modal-icon');
+            if (titleEl) titleEl.innerText = `Pré-visualização: ${meta.name}`;
+            if (iconEl) iconEl.innerText = meta.icon || '🌐';
+
+            modal.style.display = 'flex';
+        }
+
+        function synapseCloseFullscreenPreview() {
+            const modal = document.getElementById('synapse-fullscreen-code-modal');
+            const iframe = document.getElementById('synapse-modal-iframe');
+            if (modal) modal.style.display = 'none';
+            if (iframe) iframe.srcdoc = 'about:blank';
+            activeFullscreenBlockId = null;
+        }
+
+        function synapseSetFullscreenViewport(width, btnEl) {
+            const holder = document.getElementById('synapse-modal-frame-holder');
+            if (holder) {
+                holder.style.width = width;
+            }
+            const btns = document.querySelectorAll('.synapse-viewport-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
+        }
+
+        function synapseReloadFullscreenModal() {
+            if (activeFullscreenBlockId) {
+                synapseOpenFullscreenPreview(activeFullscreenBlockId);
+            }
+        }
+
+        function synapseToggleModalConsole() {
+            const drawer = document.getElementById('synapse-modal-console-drawer');
+            if (drawer) {
+                drawer.style.display = (drawer.style.display === 'none' || !drawer.style.display) ? 'flex' : 'none';
+            }
+        }
+
+        function synapseClearModalLogs() {
+            const logs = document.getElementById('synapse-modal-console-logs');
+            if (logs) logs.innerHTML = '<div class="synapse-log-empty">Logs limpos.</div>';
+            if (activeFullscreenBlockId) {
+                synapseClearConsoleLogs(activeFullscreenBlockId);
+            }
+        }
+
+        // Listener global de mensagens Sandbox
+        window.addEventListener('message', function(event) {
+            if (!event.data || event.data.source !== 'SYNAPSE_SANDBOX') return;
+            const { blockId, type, payload, timestamp } = event.data;
+            if (type === 'log' && blockId && payload) {
+                synapseAppendConsoleLog(blockId, payload.level || 'log', payload.message || '', timestamp);
+            }
+        });
+
         // --- 4. Motor de Requisição de Chat ---
         function formatAIResponse(text) {
-            // Escapar HTML básico
-            let html = String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            
-            // Format Blocks
-            html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-            html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-            html = html.replace(/\n/g, '<br>');
-            
-            return html;
+            if (!text) return '';
+            let rawStr = String(text);
+
+            // 1. Extrai blocos de código markdown delimitados por ```
+            const codeBlocks = [];
+            const codeBlockRegex = /```([a-zA-Z0-9_\-\+\#]*)\s*\n?([\s\S]*?)```/g;
+
+            rawStr = rawStr.replace(codeBlockRegex, (match, lang, code) => {
+                const blockId = 'synapse-code-' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
+                codeBlocks.push({ blockId, lang: (lang || '').trim(), code: code || '' });
+                return `%%%SYNAPSE_CODE_BLOCK_${codeBlocks.length - 1}%%%`;
+            });
+
+            // 2. Escapa e formata o restante do markdown (texto não-código)
+            let formatted = rawStr
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+
+            formatted = formatted.replace(/`([^`]+)`/g, '<code style="font-family: monospace; background: rgba(255,255,255,0.08); padding: 2px 5px; border-radius: 4px; color: var(--primary, #38bdf8); font-size: 0.86em;">$1</code>');
+            formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            formatted = formatted.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+            formatted = formatted.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: var(--primary, #38bdf8); text-decoration: underline;">$1</a>');
+            formatted = formatted.replace(/\n/g, '<br>');
+
+            // 3. Reinsere os blocos de código com o container interativo Synapse
+            codeBlocks.forEach((item, index) => {
+                const placeholder = `%%%SYNAPSE_CODE_BLOCK_${index}%%%`;
+                const blockHtml = synapseBuildCodeBlockHtml(item.blockId, item.lang, item.code);
+                formatted = formatted.replace(placeholder, blockHtml);
+            });
+
+            return formatted;
         }
 
         let chatHistoryObjects = [];
@@ -26838,6 +28168,42 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 </button>
             </div>
 
+        </div>
+    </div>
+
+    <!-- MODAL DE PRÉ-VISUALIZAÇÃO DE CÓDIGO EM TELA CHEIA (SANDBOX SEGURO) -->
+    <div id="synapse-fullscreen-code-modal" class="synapse-code-modal" style="display: none;">
+        <div class="synapse-modal-topbar">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.1rem;" id="synapse-modal-icon">🌐</span>
+                <div>
+                    <div style="font-weight: 700; color: #fff; font-size: 0.88rem;" id="synapse-modal-title">Pré-visualização do Aplicativo</div>
+                    <div style="font-size: 0.7rem; color: #94a3b8;" id="synapse-modal-subtitle">Ambiente Sandbox Seguro Synapse</div>
+                </div>
+            </div>
+            <div class="synapse-modal-viewports">
+                <button type="button" class="synapse-viewport-btn" onclick="synapseSetFullscreenViewport('375px', this)" title="Visualização Smartphone">📱 Mobile</button>
+                <button type="button" class="synapse-viewport-btn" onclick="synapseSetFullscreenViewport('768px', this)" title="Visualização Tablet">📱 Tablet</button>
+                <button type="button" class="synapse-viewport-btn active" onclick="synapseSetFullscreenViewport('100%', this)" title="Visualização Completa">💻 100%</button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <button type="button" class="synapse-ctrl-btn" onclick="synapseReloadFullscreenModal()" title="Recarregar">🔄 Recarregar</button>
+                <button type="button" class="synapse-ctrl-btn" onclick="synapseToggleModalConsole()" title="Console JavaScript">🖥️ Console</button>
+                <button type="button" class="btn-universal" style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; border-radius: 8px; padding: 4px 10px; font-size: 0.75rem; font-weight: bold; cursor: pointer;" onclick="synapseCloseFullscreenPreview()">✕ Fechar</button>
+            </div>
+        </div>
+        <div class="synapse-modal-body">
+            <div class="synapse-modal-frame-holder" id="synapse-modal-frame-holder">
+                <iframe id="synapse-modal-iframe" class="synapse-modal-iframe" sandbox="allow-scripts allow-modals allow-forms" title="Pré-visualização em Tela Cheia"></iframe>
+            </div>
+        </div>
+        <!-- Modal Console Drawer -->
+        <div id="synapse-modal-console-drawer" class="synapse-inline-console" style="display: none; max-height: 220px;">
+            <div class="synapse-console-header">
+                <span style="font-weight: 700; color: #f8fafc; font-size: 0.78rem;">🖥️ Console de Logs do Sandbox</span>
+                <button type="button" class="synapse-console-btn-mini" onclick="synapseClearModalLogs()">🗑️ Limpar</button>
+            </div>
+            <div class="synapse-console-logs" id="synapse-modal-console-logs"></div>
         </div>
     </div>
 </body>
