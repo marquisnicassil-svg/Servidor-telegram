@@ -3211,158 +3211,78 @@
             color: #000;
         }
 
-        /* Fullscreen Code Preview Modal */
-        .synapse-code-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(10, 15, 26, 0.96);
-            backdrop-filter: blur(10px);
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            animation: fadeIn 0.2s ease;
-        }
-
-        .synapse-modal-topbar {
-            background: #111827;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 8px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .synapse-modal-viewports {
-            display: flex;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 2px;
-            gap: 2px;
-        }
-
-        .synapse-viewport-btn {
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            font-size: 0.72rem;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .synapse-viewport-btn.active {
-            background: var(--primary, #38bdf8);
-            color: #000;
-            font-weight: 700;
-        }
-
-        .synapse-modal-body {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #0b0f19;
-            padding: 12px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .synapse-modal-frame-holder {
-            width: 100%;
-            height: 100%;
-            background: #ffffff;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-            transition: width 0.3s ease;
-            position: relative;
-        }
-
-        .synapse-modal-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
         /* =========================================================================
-           SYNAPSE DEV STUDIO / MODO PROGRAMAÇÃO STYLES
+           SYNAPSE DEV STUDIO / MODO PROGRAMAÇÃO (REFINED & STANDALONE)
            ========================================================================= */
         .prog-studio-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 14px;
-            padding: 12px 14px 80px;
-            max-width: 1300px;
+            gap: 12px;
+            padding: 8px 10px 80px;
+            max-width: 1400px;
             margin: 0 auto;
-            min-height: calc(100vh - 120px);
+            min-height: calc(100vh - 100px);
             box-sizing: border-box;
         }
 
         /* Top Toolbar */
         .prog-toolbar-card {
-            background: rgba(15, 23, 42, 0.75);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 18px;
-            padding: 12px 16px;
+            background: #0d121c;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 10px 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
             flex-wrap: wrap;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
         }
 
         .prog-project-meta {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             min-width: 0;
         }
 
         .prog-project-icon-badge {
-            width: 38px;
-            height: 38px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(16, 185, 129, 0.2));
-            border: 1px solid rgba(56, 189, 248, 0.3);
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.25);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             flex-shrink: 0;
+            color: #38bdf8;
         }
 
         .prog-project-name {
-            font-size: 0.95rem;
-            font-weight: 800;
+            font-size: 0.92rem;
+            font-weight: 700;
             color: #ffffff;
             margin: 0;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             cursor: pointer;
+            transition: color 0.15s ease;
         }
 
         .prog-project-name:hover {
-            color: var(--primary, #38bdf8);
+            color: #38bdf8;
         }
 
         .prog-status-badge {
-            font-size: 0.68rem;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 12px;
             background: rgba(16, 185, 129, 0.12);
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            border: 1px solid rgba(16, 185, 129, 0.25);
             color: #34d399;
             display: inline-flex;
             align-items: center;
@@ -3372,7 +3292,7 @@
         .prog-toolbar-actions {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
@@ -3382,58 +3302,56 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            padding: 8px 14px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            background: rgba(255, 255, 255, 0.06);
-            color: #e2e8f0;
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 7px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            color: #cbd5e1;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.15s ease;
             user-select: none;
-            min-height: 38px;
+            min-height: 36px;
         }
 
         .prog-btn:hover {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(255, 255, 255, 0.2);
             color: #ffffff;
-            transform: translateY(-1px);
         }
 
         .prog-btn:active {
             transform: scale(0.97);
         }
 
-        .prog-btn-primary {
-            background: linear-gradient(135deg, #10b981, #059669) !important;
-            border-color: #34d399 !important;
+        /* Highlighted Executive Run Button */
+        .prog-btn-run-primary {
+            background: #10b981 !important;
+            border: 1px solid #34d399 !important;
             color: #ffffff !important;
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+            font-weight: 700 !important;
+            padding: 8px 16px !important;
+            border-radius: 9px !important;
+            box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3) !important;
         }
 
-        .prog-btn-primary:hover {
-            background: linear-gradient(135deg, #059669, #047857) !important;
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
-        }
-
-        .prog-btn-accent {
-            background: linear-gradient(135deg, #0284c7, #0369a1) !important;
-            border-color: #38bdf8 !important;
-            color: #ffffff !important;
+        .prog-btn-run-primary:hover {
+            background: #059669 !important;
+            border-color: #6ee7b7 !important;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45) !important;
+            transform: translateY(-1px);
         }
 
         /* Segmented Navigation Tab Bar */
         .prog-nav-tabs {
             display: flex;
-            background: rgba(15, 23, 42, 0.65);
+            background: #0c1017;
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
+            border-radius: 12px;
             padding: 4px;
             gap: 4px;
             overflow-x: auto;
-            backdrop-filter: blur(10px);
             scrollbar-width: none;
         }
 
@@ -3443,11 +3361,11 @@
 
         .prog-nav-tab-btn {
             flex: 1;
-            min-width: 90px;
+            min-width: 85px;
             padding: 8px 12px;
             font-size: 0.78rem;
-            font-weight: 700;
-            border-radius: 10px;
+            font-weight: 600;
+            border-radius: 8px;
             border: none;
             background: transparent;
             color: #94a3b8;
@@ -3456,7 +3374,7 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
             white-space: nowrap;
         }
 
@@ -3466,10 +3384,10 @@
         }
 
         .prog-nav-tab-btn.active {
-            background: rgba(56, 189, 248, 0.15);
+            background: rgba(56, 189, 248, 0.12);
             color: #38bdf8;
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            box-shadow: 0 2px 10px rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            font-weight: 700;
         }
 
         .prog-nav-badge {
@@ -3479,64 +3397,57 @@
             border-radius: 10px;
             background: rgba(239, 68, 68, 0.2);
             color: #f87171;
-            border: 1px solid rgba(239, 68, 68, 0.4);
+            border: 1px solid rgba(239, 68, 68, 0.35);
         }
 
-        /* Layout Grid */
+        /* Workspace Panels */
         .prog-workspace-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 14px;
+            display: flex;
+            flex-direction: column;
             flex: 1;
+            min-height: 0;
         }
 
-        @media (min-width: 1024px) {
-            .prog-workspace-grid.split-mode {
-                grid-template-columns: 1.1fr 1fr;
-            }
-        }
-
-        /* Glassmorphic Panel Cards */
         .prog-panel-card {
-            background: rgba(15, 23, 42, 0.55);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 18px;
+            background: #090d16;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            min-height: 480px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            min-height: 520px;
+            flex: 1;
         }
 
         .prog-panel-header {
-            background: rgba(15, 23, 42, 0.85);
+            background: #0d121c;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 10px 14px;
+            padding: 8px 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         .prog-panel-title {
-            font-size: 0.85rem;
-            font-weight: 800;
+            font-size: 0.82rem;
+            font-weight: 700;
             color: #ffffff;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         /* Code Editor Tabs */
         .prog-editor-tabs {
             display: flex;
-            gap: 4px;
-            background: rgba(0, 0, 0, 0.25);
+            gap: 3px;
+            background: rgba(0, 0, 0, 0.35);
             border-radius: 8px;
-            padding: 3px;
+            padding: 2px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .prog-editor-tab-btn {
@@ -3544,11 +3455,11 @@
             border: none;
             color: #94a3b8;
             font-size: 0.72rem;
-            font-weight: 700;
-            padding: 4px 10px;
+            font-weight: 600;
+            padding: 5px 11px;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
         }
 
         .prog-editor-tab-btn:hover {
@@ -3556,17 +3467,18 @@
         }
 
         .prog-editor-tab-btn.active {
-            background: rgba(255, 255, 255, 0.12);
-            color: #ffffff;
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            font-weight: 700;
         }
 
-        /* Quick Touch Snippets Toolbar */
+        /* Mobile Touch Snippets Toolbar */
         .prog-touch-snippets {
             display: flex;
             align-items: center;
-            gap: 5px;
-            padding: 8px 12px;
-            background: rgba(0, 0, 0, 0.35);
+            gap: 4px;
+            padding: 6px 10px;
+            background: #070a10;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
             overflow-x: auto;
             scrollbar-width: none;
@@ -3577,13 +3489,13 @@
         }
 
         .prog-snippet-btn {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             color: #cbd5e1;
             font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-            font-size: 0.72rem;
-            font-weight: 600;
-            padding: 4px 8px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            padding: 3px 8px;
             border-radius: 6px;
             cursor: pointer;
             white-space: nowrap;
@@ -3592,8 +3504,8 @@
         }
 
         .prog-snippet-btn:hover {
-            background: rgba(56, 189, 248, 0.15);
-            border-color: rgba(56, 189, 248, 0.3);
+            background: rgba(56, 189, 248, 0.12);
+            border-color: rgba(56, 189, 248, 0.25);
             color: #38bdf8;
         }
 
@@ -3601,36 +3513,37 @@
             transform: scale(0.95);
         }
 
-        /* Code Textarea */
+        /* Code Textarea Workspace */
         .prog-code-editor-body {
             flex: 1;
             display: flex;
             flex-direction: column;
             position: relative;
-            background: #090d13;
+            background: #05080e;
+            min-height: 420px;
         }
 
         .prog-code-textarea {
             width: 100%;
             height: 100%;
-            min-height: 380px;
-            background: #090d13;
-            color: #7dd3fc;
+            min-height: 440px;
+            background: #05080e;
+            color: #93c5fd;
             border: none;
             outline: none;
             padding: 14px 16px;
             font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-            font-size: 0.84rem;
-            line-height: 1.55;
+            font-size: 0.85rem;
+            line-height: 1.6;
             resize: none;
             box-sizing: border-box;
             tab-size: 2;
         }
 
         .prog-editor-footer {
-            background: rgba(15, 23, 42, 0.85);
+            background: #0d121c;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 8px 14px;
+            padding: 6px 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -3640,30 +3553,13 @@
             flex-wrap: wrap;
         }
 
-        /* Preview Screen */
-        .prog-preview-body {
-            flex: 1;
-            background: #ffffff;
-            position: relative;
-            min-height: 420px;
-            display: flex;
-        }
-
-        .prog-preview-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: #ffffff;
-            display: block;
-        }
-
         /* Console Area */
         .prog-console-body {
-            background: #090d13;
+            background: #05080e;
             display: flex;
             flex-direction: column;
             flex: 1;
-            min-height: 380px;
+            min-height: 440px;
         }
 
         .prog-console-logs-list {
@@ -3675,7 +3571,7 @@
             gap: 6px;
             font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
             font-size: 0.76rem;
-            max-height: 450px;
+            max-height: 520px;
         }
 
         .prog-console-item {
@@ -3693,7 +3589,7 @@
         .prog-console-item.info { border-left-color: #818cf8; }
         .prog-console-item.warn { border-left-color: #fbbf24; background: rgba(245, 158, 11, 0.06); }
         .prog-console-item.error { border-left-color: #f87171; background: rgba(239, 68, 68, 0.08); }
-        .prog-console-item.result { border-left-color: #34d399; }
+        .prog-console-item.sys { border-left-color: #10b981; }
 
         .prog-console-time {
             color: #64748b;
@@ -3714,7 +3610,7 @@
         .prog-console-item.info .prog-console-tag { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
         .prog-console-item.warn .prog-console-tag { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
         .prog-console-item.error .prog-console-tag { background: rgba(239, 68, 68, 0.15); color: #f87171; }
-        .prog-console-item.result .prog-console-tag { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .prog-console-item.sys .prog-console-tag { background: rgba(16, 185, 129, 0.15); color: #34d399; }
 
         .prog-console-text {
             color: #e2e8f0;
@@ -3726,7 +3622,7 @@
         .prog-console-item.warn .prog-console-text { color: #fde68a; }
 
         .prog-console-input-row {
-            background: #0f172a;
+            background: #0d121c;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             padding: 8px 12px;
             display: flex;
@@ -3747,16 +3643,16 @@
         }
 
         .prog-console-input:focus {
-            border-color: var(--primary, #38bdf8);
+            border-color: #38bdf8;
         }
 
-        /* AI Programming Chat */
+        /* AI Programming Chat (Clean & Uncluttered) */
         .prog-chat-body {
             display: flex;
             flex-direction: column;
             flex: 1;
             min-height: 480px;
-            background: rgba(10, 15, 26, 0.4);
+            background: #05080e;
         }
 
         .prog-chat-messages {
@@ -3766,13 +3662,13 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            max-height: 420px;
+            max-height: 480px;
         }
 
         .prog-chat-msg {
-            max-width: 88%;
-            padding: 12px 14px;
-            border-radius: 14px;
+            max-width: 90%;
+            padding: 10px 14px;
+            border-radius: 12px;
             font-size: 0.84rem;
             line-height: 1.5;
             animation: fadeIn 0.2s ease;
@@ -3780,31 +3676,70 @@
 
         .prog-chat-msg.user {
             align-self: flex-end;
-            background: linear-gradient(135deg, #0284c7, #0369a1);
+            background: #0284c7;
             color: #ffffff;
-            border-bottom-right-radius: 4px;
-            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.25);
+            border-bottom-right-radius: 2px;
         }
 
         .prog-chat-msg.assistant {
             align-self: flex-start;
-            background: rgba(30, 41, 59, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #0d1320;
+            border: 1px solid rgba(255, 255, 255, 0.08);
             color: #f1f5f9;
-            border-bottom-left-radius: 4px;
+            border-bottom-left-radius: 2px;
         }
 
-        .prog-apply-code-banner {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(56, 189, 248, 0.15));
-            border: 1px solid rgba(16, 185, 129, 0.35);
-            border-radius: 10px;
-            padding: 10px 12px;
-            margin-top: 10px;
+        .prog-chat-code-card {
+            background: #05080e;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 8px 0 4px;
+        }
+
+        .prog-chat-code-header {
+            background: #0b1019;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 6px 10px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .prog-chat-code-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .prog-chat-code-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+        }
+
+        .prog-chat-code-btn-primary {
+            background: #10b981 !important;
+            border-color: #34d399 !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+        }
+
+        .prog-chat-code-pre {
+            margin: 0;
+            padding: 10px 12px;
+            overflow-x: auto;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+            font-size: 0.78rem;
+            line-height: 1.45;
+            color: #93c5fd;
+            max-height: 220px;
         }
 
         .prog-quick-chips {
@@ -3813,7 +3748,7 @@
             gap: 6px;
             padding: 8px 12px;
             overflow-x: auto;
-            background: rgba(15, 23, 42, 0.4);
+            background: #090d16;
             border-top: 1px solid rgba(255, 255, 255, 0.06);
             scrollbar-width: none;
         }
@@ -3823,13 +3758,13 @@
         }
 
         .prog-chip-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #cbd5e1;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #94a3b8;
             font-size: 0.72rem;
-            font-weight: 600;
-            padding: 5px 10px;
-            border-radius: 20px;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 16px;
             cursor: pointer;
             white-space: nowrap;
             flex-shrink: 0;
@@ -3837,14 +3772,14 @@
         }
 
         .prog-chip-btn:hover {
-            background: rgba(56, 189, 248, 0.15);
-            border-color: rgba(56, 189, 248, 0.3);
+            background: rgba(56, 189, 248, 0.12);
+            border-color: rgba(56, 189, 248, 0.25);
             color: #38bdf8;
         }
 
         .prog-chat-input-bar {
-            padding: 10px 12px;
-            background: rgba(15, 23, 42, 0.95);
+            padding: 8px 12px;
+            background: #0d121c;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             align-items: center;
@@ -3853,43 +3788,158 @@
 
         .prog-chat-input {
             flex: 1;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 12px;
-            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 8px 12px;
             color: #ffffff;
             font-size: 0.84rem;
             outline: none;
         }
 
         .prog-chat-input:focus {
-            border-color: var(--primary, #38bdf8);
-            background: rgba(255, 255, 255, 0.08);
+            border-color: #38bdf8;
         }
 
         /* Projects List Card */
         .prog-project-card {
-            background: rgba(15, 23, 42, 0.65);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 14px;
-            padding: 14px;
+            background: #0d121c;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 12px 14px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            transition: all 0.2s ease;
+            gap: 6px;
+            transition: all 0.15s ease;
             cursor: pointer;
         }
 
         .prog-project-card:hover {
-            background: rgba(15, 23, 42, 0.85);
-            border-color: var(--primary, #38bdf8);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.15);
+            background: #111724;
+            border-color: #38bdf8;
         }
 
         .prog-project-card.active {
             border-color: #10b981;
-            background: rgba(16, 185, 129, 0.08);
+            background: rgba(16, 185, 129, 0.06);
+        }
+
+        /* =========================================================================
+           DEDICATED FULL-SCREEN INTERNAL LIVE PREVIEW SCREEN
+           ========================================================================= */
+        .prog-fullscreen-preview-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #07090e;
+            z-index: 100000;
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.18s ease-out;
+        }
+
+        .prog-preview-topbar {
+            background: #0d121c;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            min-height: 48px;
+            box-sizing: border-box;
+        }
+
+        .prog-preview-btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            min-height: 34px;
+        }
+
+        .prog-preview-btn-back:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+
+        .prog-preview-viewport-controls {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 2px;
+            gap: 2px;
+        }
+
+        .prog-preview-vp-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .prog-preview-vp-btn.active {
+            background: #38bdf8;
+            color: #000;
+            font-weight: 700;
+        }
+
+        .prog-preview-body-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #03060a;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        .prog-preview-frame-wrapper {
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            transition: max-width 0.25s ease;
+            display: flex;
+        }
+
+        .prog-preview-live-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #ffffff;
+            display: block;
+        }
+
+        /* Slide-up Console Drawer in Preview Screen */
+        .prog-preview-console-drawer {
+            background: #090d16;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            max-height: 240px;
+            min-height: 160px;
+            box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.5);
         }
     </style>
     <!-- Firebase SDK (Compat v10.8.0) -->
@@ -4965,11 +5015,11 @@
                         <div>
                             <div class="prog-project-name" onclick="switchProgNavTab('projects')" title="Gerenciar Projetos">
                                 <span id="prog-current-project-title">Meu Projeto Web</span>
-                                <span style="font-size: 0.75rem; opacity: 0.7;">▾</span>
+                                <span style="font-size: 0.72rem; opacity: 0.6;">▾</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
                                 <span class="prog-status-badge" id="prog-live-status-indicator">
-                                    <span class="pulse-indicator" style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981; display: inline-block;"></span>
+                                    <span class="pulse-indicator" style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
                                     Pronto
                                 </span>
                                 <span style="font-size: 0.68rem; color: var(--text-muted);" id="prog-last-saved-time">Salvo localmente</span>
@@ -4978,17 +5028,9 @@
                     </div>
 
                     <div class="prog-toolbar-actions">
-                        <!-- Botão Executar Principal -->
-                        <button class="prog-btn prog-btn-primary" id="btn-prog-run" onclick="runProgrammingCode()" title="Executar Código em Tempo Real">
+                        <!-- Botão Executar Principal em Destaque Limpo -->
+                        <button class="prog-btn prog-btn-run-primary" id="btn-prog-run" onclick="runProgrammingCode()" title="Executar Código em Tela Interna de Pré-visualização">
                             <span>▶</span> <span>Executar</span>
-                        </button>
-                        <!-- Recarregar -->
-                        <button class="prog-btn" onclick="reloadProgrammingPreview()" title="Recarregar Pré-visualização">
-                            <span>↻</span> <span>Recarregar</span>
-                        </button>
-                        <!-- Tela Cheia -->
-                        <button class="prog-btn" onclick="openProgFullscreenPreview()" title="Expandir Pré-visualização em Tela Cheia">
-                            <span>⛶</span> <span>Tela Cheia</span>
                         </button>
                         <!-- Salvar Projeto -->
                         <button class="prog-btn" onclick="saveCurrentProgProject(true)" title="Salvar Projeto Atual">
@@ -5007,15 +5049,12 @@
 
                 <!-- SUB-NAV / SEGMENTED CONTROL TABS (MOBILE & DESKTOP) -->
                 <div class="prog-nav-tabs">
-                    <button class="prog-nav-tab-btn active" id="btn-prog-nav-chat" onclick="switchProgNavTab('chat')">
-                        <span>💬</span> <span>Chat com IA</span>
-                        <span class="prog-nav-badge" id="prog-chat-count-badge" style="display:none;">0</span>
-                    </button>
-                    <button class="prog-nav-tab-btn" id="btn-prog-nav-editor" onclick="switchProgNavTab('editor')">
+                    <button class="prog-nav-tab-btn active" id="btn-prog-nav-editor" onclick="switchProgNavTab('editor')">
                         <span>💻</span> <span>Editor de Código</span>
                     </button>
-                    <button class="prog-nav-tab-btn" id="btn-prog-nav-preview" onclick="switchProgNavTab('preview')">
-                        <span>👁️</span> <span>Pré-visualização</span>
+                    <button class="prog-nav-tab-btn" id="btn-prog-nav-chat" onclick="switchProgNavTab('chat')">
+                        <span>💬</span> <span>Assistente IA</span>
+                        <span class="prog-nav-badge" id="prog-chat-count-badge" style="display:none;">0</span>
                     </button>
                     <button class="prog-nav-tab-btn" id="btn-prog-nav-console" onclick="switchProgNavTab('console')">
                         <span>🖥️</span> <span>Console</span>
@@ -5029,53 +5068,8 @@
                 <!-- WORKSPACE PANELS CONTAINER -->
                 <div class="prog-workspace-grid" id="prog-workspace-container">
                     
-                    <!-- 1. PAINEL DE CHAT COM IA -->
-                    <div class="prog-panel-card prog-subview" id="prog-view-chat" style="display: flex;">
-                        <div class="prog-panel-header">
-                            <div class="prog-panel-title">
-                                <span>🤖</span> <span>Assistente de Programação IA</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <button class="prog-btn" style="padding: 4px 8px; min-height: 28px; font-size: 0.72rem;" onclick="clearProgChat()">
-                                    <span>🗑️</span> <span>Limpar Chat</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="prog-chat-body">
-                            <div class="prog-chat-messages" id="prog-chat-messages-container">
-                                <!-- Mensagem de boas-vindas inicial -->
-                                <div class="prog-chat-msg assistant">
-                                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
-                                        <span style="font-size: 1rem;">💻</span>
-                                        <b style="color: #38bdf8;">Synapse Code Assistant</b>
-                                    </div>
-                                    <p style="margin: 0 0 8px 0;">Olá! Sou seu assistente de desenvolvimento em tempo real. Converse comigo para criar, editar, estilizar e refinar aplicações web, jogos, calculadoras e animações.</p>
-                                    <p style="margin: 0; font-size: 0.78rem; color: #94a3b8;">💡 <i>Você pode pedir alterações como: "Adicione um botão vermelho com animação", "Crie um jogo arcade em Canvas" ou "Deixe o visual moderno".</i></p>
-                                </div>
-                            </div>
-
-                            <!-- Sugestões de Prompts Rápidos -->
-                            <div class="prog-quick-chips">
-                                <button class="prog-chip-btn" onclick="sendProgQuickPrompt('Adicione um botão vermelho com uma animação vibrante de pulso e brilho')">✨ Botão Vermelho Animado</button>
-                                <button class="prog-chip-btn" onclick="sendProgQuickPrompt('Torne o design 100% responsivo para celulares e adicione espaçamentos modernos')">📱 Otimizar Mobile</button>
-                                <button class="prog-chip-btn" onclick="sendProgQuickPrompt('Adicione um alternador de modo escuro e claro com transição fluída')">🌓 Modo Escuro/Claro</button>
-                                <button class="prog-chip-btn" onclick="sendProgQuickPrompt('Adicione efeitos sonoros e feedback tátil/visual nas interações')">🔊 Efeitos Visuais & Áudio</button>
-                                <button class="prog-chip-btn" onclick="sendProgQuickPrompt('Analise o código atual, resolva possíveis erros e otimize a renderização')">🐞 Corrigir & Otimizar</button>
-                            </div>
-
-                            <!-- Input de Envio do Chat -->
-                            <div class="prog-chat-input-bar">
-                                <input type="text" class="prog-chat-input" id="prog-chat-input-field" placeholder="Peça à IA para criar ou alterar o código..." onkeydown="if(event.key==='Enter') sendProgChatMessage();">
-                                <button class="prog-btn prog-btn-primary" style="padding: 10px 16px; border-radius: 12px;" onclick="sendProgChatMessage()" id="btn-prog-chat-send">
-                                    <span>➤</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 2. PAINEL DE EDITOR DE CÓDIGO -->
-                    <div class="prog-panel-card prog-subview" id="prog-view-editor" style="display: none;">
+                    <!-- 1. PAINEL DE EDITOR DE CÓDIGO (PRINCIPAL / PADRÃO) -->
+                    <div class="prog-panel-card prog-subview" id="prog-view-editor" style="display: flex;">
                         <div class="prog-panel-header">
                             <div class="prog-editor-tabs">
                                 <button class="prog-editor-tab-btn active" id="btn-prog-tab-html" onclick="switchProgEditorTab('html')">HTML</button>
@@ -5090,7 +5084,7 @@
                                 <button class="prog-btn" style="padding: 4px 8px; min-height: 28px; font-size: 0.72rem;" onclick="copyProgActiveCode()" title="Copiar Código">
                                     <span>📋 Copiar</span>
                                 </button>
-                                <button class="prog-btn prog-btn-primary" style="padding: 4px 10px; min-height: 28px; font-size: 0.72rem;" onclick="runProgrammingCode()">
+                                <button class="prog-btn prog-btn-run-primary" style="padding: 4px 12px; min-height: 28px; font-size: 0.74rem;" onclick="runProgrammingCode()" title="Executar e abrir pré-visualização em tela interna">
                                     <span>▶ Executar</span>
                                 </button>
                             </div>
@@ -5124,52 +5118,66 @@
                                 <span id="prog-code-chars-stat">Caracteres: 0</span> • 
                                 <span id="prog-code-size-stat">Tamanho: 0 KB</span>
                             </div>
-                            <div>
-                                <span style="color: var(--primary);">Modo: <b id="prog-current-editor-lang">HTML</b></span>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="color: #38bdf8;">Linguagem: <b id="prog-current-editor-lang">HTML</b></span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 3. PAINEL DE PRÉ-VISUALIZAÇÃO (SANDBOX) -->
-                    <div class="prog-panel-card prog-subview" id="prog-view-preview" style="display: none;">
+                    <!-- 2. PAINEL DE CHAT COM IA (SEPARADO & LIMPO) -->
+                    <div class="prog-panel-card prog-subview" id="prog-view-chat" style="display: none;">
                         <div class="prog-panel-header">
                             <div class="prog-panel-title">
-                                <span class="pulse-indicator" style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; display: inline-block;"></span>
-                                <span>Área de Pré-visualização</span>
+                                <span>🤖</span> <span>Assistente de Programação IA</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 6px;">
-                                <button class="prog-btn" style="padding: 4px 8px; min-height: 28px; font-size: 0.72rem;" onclick="reloadProgrammingPreview()" title="Recarregar">
-                                    <span>↻</span> <span>Recarregar</span>
-                                </button>
-                                <button class="prog-btn" style="padding: 4px 8px; min-height: 28px; font-size: 0.72rem;" onclick="openProgFullscreenPreview()" title="Tela Cheia">
-                                    <span>⛶</span> <span>Tela Cheia</span>
+                                <button class="prog-btn" style="padding: 4px 8px; min-height: 28px; font-size: 0.72rem;" onclick="clearProgChat()">
+                                    <span>🗑️ Limpar</span>
                                 </button>
                             </div>
                         </div>
 
-                        <div class="prog-preview-body">
-                            <iframe id="prog-preview-iframe" class="prog-preview-iframe" sandbox="allow-scripts allow-modals allow-forms" title="Synapse Live Code Sandbox"></iframe>
-                        </div>
-
-                        <div class="prog-editor-footer">
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <span style="font-size: 0.75rem;">🔒 Sandbox Seguro (Ambiente Isolado e Protegido)</span>
+                        <div class="prog-chat-body">
+                            <div class="prog-chat-messages" id="prog-chat-messages-container">
+                                <!-- Mensagem de boas-vindas inicial -->
+                                <div class="prog-chat-msg assistant">
+                                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                                        <span style="font-size: 1rem;">💻</span>
+                                        <b style="color: #38bdf8;">Synapse Code Assistant</b>
+                                    </div>
+                                    <p style="margin: 0 0 6px 0;">Olá! Sou seu assistente de programação. Converse comigo para gerar códigos, criar novas funcionalidades, jogos, componentes ou corrigir problemas.</p>
+                                    <p style="margin: 0; font-size: 0.76rem; color: #94a3b8;">💡 <i>Ao gerar códigos, você pode copiá-los ou aplicá-los com 1 toque no Editor para executar imediatamente na tela interna!</i></p>
+                                </div>
                             </div>
-                            <div>
-                                <span id="prog-exec-time-stat" style="color: #34d399;">Executando</span>
+
+                            <!-- Sugestões de Prompts Rápidos -->
+                            <div class="prog-quick-chips">
+                                <button class="prog-chip-btn" onclick="sendProgQuickPrompt('Adicione um botão com efeito de gradiente e animação de clique')">✨ Botão Animado</button>
+                                <button class="prog-chip-btn" onclick="sendProgQuickPrompt('Torne o design 100% responsivo para celulares com layout moderno')">📱 Otimizar Mobile</button>
+                                <button class="prog-chip-btn" onclick="sendProgQuickPrompt('Adicione um alternador de modo escuro e claro')">🌓 Tema Claro/Escuro</button>
+                                <button class="prog-chip-btn" onclick="sendProgQuickPrompt('Adicione sons e feedback visual nas interações')">🔊 Efeitos Visuais</button>
+                                <button class="prog-chip-btn" onclick="sendProgQuickPrompt('Analise o código atual e resolva possíveis erros')">🐞 Otimizar Código</button>
+                            </div>
+
+                            <!-- Input de Envio do Chat -->
+                            <div class="prog-chat-input-bar">
+                                <input type="text" class="prog-chat-input" id="prog-chat-input-field" placeholder="Peça alterações no código para a IA..." onkeydown="if(event.key==='Enter') sendProgChatMessage();">
+                                <button class="prog-btn prog-btn-run-primary" style="padding: 8px 14px; min-height: 36px; border-radius: 10px;" onclick="sendProgChatMessage()" id="btn-prog-chat-send">
+                                    <span>➤</span>
+                                </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 4. PAINEL DO CONSOLE DE ERROS & LOGS -->
+                    <!-- 3. PAINEL DO CONSOLE DE ERROS & LOGS -->
                     <div class="prog-panel-card prog-subview" id="prog-view-console" style="display: none;">
                         <div class="prog-panel-header">
                             <div class="prog-panel-title">
-                                <span>🖥️</span> <span>Console de Erros & Execução</span>
+                                <span>🖥️</span> <span>Console de Execução & Erros</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 6px;">
                                 <button class="prog-btn" style="padding: 4px 8px; min-height: 28px; font-size: 0.72rem;" onclick="clearProgConsoleLogs()">
-                                    <span>🗑️</span> <span>Limpar</span>
+                                    <span>🗑️ Limpar</span>
                                 </button>
                             </div>
                         </div>
@@ -5185,32 +5193,32 @@
 
                             <!-- Input interativo de avaliação JS -->
                             <div class="prog-console-input-row">
-                                <span style="color: var(--primary); font-weight: 800; font-family: monospace;">&gt;</span>
+                                <span style="color: #38bdf8; font-weight: 800; font-family: monospace;">&gt;</span>
                                 <input type="text" class="prog-console-input" id="prog-console-eval-input" placeholder="Comando JS para testar na sandbox (ex: document.title, 2+2)..." onkeydown="if(event.key==='Enter') executeProgConsoleEval();">
-                                <button class="prog-btn prog-btn-accent" style="padding: 6px 12px; min-height: 32px; font-size: 0.75rem;" onclick="executeProgConsoleEval()">
+                                <button class="prog-btn prog-btn-run-primary" style="padding: 6px 12px; min-height: 32px; font-size: 0.75rem;" onclick="executeProgConsoleEval()">
                                     <span>Executar</span>
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 5. PAINEL DE PROJETOS -->
+                    <!-- 4. PAINEL DE PROJETOS -->
                     <div class="prog-panel-card prog-subview" id="prog-view-projects" style="display: none;">
                         <div class="prog-panel-header">
                             <div class="prog-panel-title">
                                 <span>🗂️</span> <span>Meus Projetos</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 6px;">
-                                <button class="prog-btn prog-btn-primary" style="padding: 4px 10px; min-height: 28px; font-size: 0.72rem;" onclick="createNewProgProject()">
+                                <button class="prog-btn prog-btn-run-primary" style="padding: 4px 10px; min-height: 28px; font-size: 0.72rem;" onclick="createNewProgProject()">
                                     <span>+</span> <span>Novo Projeto</span>
                                 </button>
                             </div>
                         </div>
 
-                        <div style="padding: 16px; display: flex; flex-direction: column; gap: 14px; flex: 1; overflow-y: auto;">
+                        <div style="padding: 14px; display: flex; flex-direction: column; gap: 12px; flex: 1; overflow-y: auto;">
                             <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
-                                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">
-                                    Projetos salvos com código, histórico de conversa da IA e versões de execução.
+                                <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0;">
+                                    Projetos salvos localmente com código, histórico de conversa e configurações.
                                 </p>
                                 <button class="prog-btn" style="font-size: 0.72rem; padding: 4px 8px; min-height: 28px;" onclick="exportCurrentProjectAsHtml()">
                                     <span>⬇️ Baixar HTML</span>
@@ -13579,17 +13587,43 @@ WITH CHECK (true);</code>
             const rawId = String(modelId || '').trim();
             const idLower = rawId.toLowerCase();
             const catalog = getSynapseOpenRouterCatalog();
+            const pType = String(providerType || (typeof currentApiType !== 'undefined' ? currentApiType : (typeof apiType !== 'undefined' ? apiType : ''))).toUpperCase();
 
             // Busca exata no catálogo
             const found = catalog.find(m => m.id.toLowerCase() === idLower || m.id.toLowerCase() === rawId.toLowerCase());
             if (found) {
-                return { ...found };
+                let isFree = found.isFree;
+                if (pType === 'GEMINI') {
+                    isFree = !idLower.includes('pro') && !idLower.includes('ultra');
+                } else if (pType === 'GROQ') {
+                    isFree = true;
+                } else if (pType === 'OPENAI') {
+                    isFree = false;
+                }
+                return { 
+                    ...found,
+                    isFree: isFree,
+                    status: isFree ? (found.status && found.status.includes('Experimental') ? 'Experimental • Gratuito' : 'Gratuito') : (found.status ? found.status.replace('Gratuito', 'Pago') : 'Pago')
+                };
             }
 
             // Busca por terminação ou inclusão
             const partial = catalog.find(m => m.id.toLowerCase().endsWith(idLower) || idLower.endsWith(m.id.toLowerCase()));
             if (partial) {
-                return { ...partial, id: rawId };
+                let isFree = partial.isFree;
+                if (pType === 'GEMINI') {
+                    isFree = !idLower.includes('pro') && !idLower.includes('ultra');
+                } else if (pType === 'GROQ') {
+                    isFree = true;
+                } else if (pType === 'OPENAI') {
+                    isFree = false;
+                }
+                return { 
+                    ...partial, 
+                    id: rawId,
+                    isFree: isFree,
+                    status: isFree ? (partial.status && partial.status.includes('Experimental') ? 'Experimental • Gratuito' : 'Gratuito') : (partial.status ? partial.status.replace('Gratuito', 'Pago') : 'Pago')
+                };
             }
 
             // Metadados inteligentes inferidos quando fora do catálogo padrão
@@ -13609,7 +13643,7 @@ WITH CHECK (true);</code>
             let description = "Modelo de Inteligência Artificial para inferência e automação.";
             let categories = ["all"];
 
-            // Regra estrita: Ox Alpha é stealth
+            // Regra estrita: Ox Alpha é stealth e gratuito
             if (idLower === 'ox-alpha' || idLower.includes('ox-alpha')) {
                 developer = "Stealth (Desenvolvedor não divulgado publicamente pelo OpenRouter)";
                 status = "Experimental • Gratuito";
@@ -13656,11 +13690,18 @@ WITH CHECK (true);</code>
                 contextLength = "1.000.000 tokens (1M)";
                 capabilities = ["Texto 📝", "Visão Multimodal 👁️", "Ferramentas 🛠️"];
                 hasVision = true;
+                
+                // Determinação de cota gratuita para Google Gemini
+                if (pType === 'GEMINI' || !idLower.startsWith('google/')) {
+                    isFree = !idLower.includes('pro') && !idLower.includes('ultra');
+                }
+
                 if (idLower.includes('2.5-pro')) {
                     status = "Flagship Pro";
                     badge = "👑 2.5 Pro";
                     contextLength = "2.000.000 tokens (2M)";
                     categories.push("recommended", "reasoning");
+                    isFree = false;
                 } else if (idLower.includes('2.5-flash') || idLower.includes('2.0-flash')) {
                     status = isFree ? "Gratuito • Flash" : "Flagship Flash";
                     badge = "⚡ Flash";
@@ -13671,6 +13712,7 @@ WITH CHECK (true);</code>
                 icon = "🤖";
                 color = "#10b981";
                 categories.push("openai");
+                isFree = false; // OpenAI API é tarifada
                 if (idLower.includes('o3') || idLower.includes('o1')) {
                     status = "Raciocínio";
                     badge = "🔬 Reasoning";
@@ -13689,12 +13731,14 @@ WITH CHECK (true);</code>
                 capabilities = ["Texto 📝", "Visão 👁️", "Engenharia 💻", "Raciocínio 🧠"];
                 hasVision = true;
                 hasCode = true;
+                isFree = false;
             } else if (idLower.startsWith('meta-llama/') || idLower.includes('llama')) {
                 developer = "Meta AI";
                 icon = "🦙";
                 color = "#3b82f6";
                 categories.push("meta", "coding");
                 capabilities = ["Texto 📝", "Código 💻", "Ferramentas 🛠️"];
+                if (pType === 'GROQ') isFree = true;
             } else if (idLower.startsWith('dots/')) {
                 developer = "Dots AI";
                 icon = "🎯";
@@ -13707,6 +13751,7 @@ WITH CHECK (true);</code>
                 icon = "🌪️";
                 color = "#f97316";
                 categories.push("fast", "coding");
+                if (pType === 'GROQ') isFree = true;
             } else if (idLower.startsWith('qwen/')) {
                 developer = "Alibaba Qwen";
                 icon = "💻";
@@ -13715,11 +13760,16 @@ WITH CHECK (true);</code>
                 capabilities = ["Código 💻", "Refatoração 🛠️", "Texto 📝"];
             }
 
+            // Para Groq Cloud API, toda a inferência de catálogo oferecida no app está no Free Tier
+            if (pType === 'GROQ') {
+                isFree = true;
+            }
+
             return {
                 id: rawId,
                 name: rawId.split('/').pop() || rawId,
                 developer: developer,
-                status: status,
+                status: isFree ? "Gratuito" : (status === "Gratuito" ? "Pago" : status),
                 isFree: isFree,
                 isExperimental: isExperimental,
                 contextLength: contextLength,
@@ -14006,12 +14056,13 @@ WITH CHECK (true);</code>
             const info = getSynapseModelInfo(selectedModelId, currentType);
 
             let statusBadgeHtml = '';
-            if (info.isFree || info.status.toLowerCase().includes('gratuito')) {
-                statusBadgeHtml = `<span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 6px;">🆓 100% Gratuito</span>`;
-            } else if (info.isExperimental) {
-                statusBadgeHtml = `<span style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 6px;">🧪 Experimental</span>`;
+            if (info.isFree) {
+                statusBadgeHtml = `<span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">🟢 Grátis</span>`;
             } else {
-                statusBadgeHtml = `<span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 6px;">✨ ${info.status || 'Ativo'}</span>`;
+                statusBadgeHtml = `<span style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">🔴 Pago</span>`;
+            }
+            if (info.isExperimental) {
+                statusBadgeHtml += ` <span style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 6px;">🧪 Experimental</span>`;
             }
 
             const capsHtml = (info.capabilities || []).map(cap => `
@@ -14048,8 +14099,8 @@ WITH CHECK (true);</code>
                     </div>
                     <div style="background: rgba(0, 0, 0, 0.2); border-radius: 8px; padding: 6px 10px; border: 1px solid rgba(255, 255, 255, 0.04);">
                         <div style="font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Custo / Tarifação</div>
-                        <div style="font-size: 0.8rem; font-weight: 700; color: ${info.isFree ? '#34d399' : '#38bdf8'}; margin-top: 2px;">
-                            ${info.isFree ? 'Gratuito (R$ 0,00)' : 'Tarifação Provedor'}
+                        <div style="font-size: 0.8rem; font-weight: 700; color: ${info.isFree ? '#34d399' : '#f87171'}; margin-top: 2px;">
+                            ${info.isFree ? '🟢 Gratuito (R$ 0,00)' : '🔴 Pago (Tarifação Provedor)'}
                         </div>
                     </div>
                     <div style="background: rgba(0, 0, 0, 0.2); border-radius: 8px; padding: 6px 10px; border: 1px solid rgba(255, 255, 255, 0.04);">
@@ -14128,7 +14179,9 @@ WITH CHECK (true);</code>
                     const optionEl = document.createElement('option');
                     optionEl.value = opt;
                     const info = getSynapseModelInfo(opt, type);
-                    optionEl.innerText = info.badge ? `[${info.badge}] ${info.name || opt}` : opt;
+                    const priceTag = info.isFree ? '🟢 Grátis' : '🔴 Pago';
+                    const modelName = info.name || opt;
+                    optionEl.innerText = `${modelName} • ${priceTag}`;
                     el.appendChild(optionEl);
                 });
                 if (prevVal && options.includes(prevVal)) {
@@ -22794,7 +22847,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             // Helper para identificar provedores / categorias inteligentes e metadados visuais
             const getOptionMetadata = (opt) => {
                 const val = String(opt.value || '').toLowerCase();
-                const lbl = String(opt.label || '').toLowerCase();
+                const rawLabel = String(opt.label || '');
+                const lbl = rawLabel.toLowerCase();
                 
                 let category = 'all';
                 let categoryLabel = 'Geral';
@@ -22802,21 +22856,25 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 let subtitle = opt.subtitle || '';
                 let badge = opt.badge || '';
                 let icon = opt.icon || '✦';
+                let isModel = false;
+                let isFree = false;
+                let cleanLabel = rawLabel.replace(/\s*•\s*(🟢\s*Grátis|🔴\s*Pago)/gi, '').trim();
 
                 // Categorização para Modelos de IA
                 if (titleLower.includes('modelo') || titleLower.includes('model') || val.includes('gemini') || val.includes('gpt') || val.includes('deepseek') || val.includes('claude') || val.includes('llama') || val.includes('ox-alpha') || val.includes('dots3') || val.includes('openrouter')) {
-                    const modelInfo = (typeof getSynapseModelInfo === 'function') ? getSynapseModelInfo(opt.value) : null;
+                    isModel = true;
+                    const currentApi = typeof apiType !== 'undefined' ? apiType : '';
+                    const modelInfo = (typeof getSynapseModelInfo === 'function') ? getSynapseModelInfo(opt.value, currentApi) : null;
                     
                     if (modelInfo) {
                         icon = modelInfo.icon || '✦';
                         brandColor = modelInfo.color || '#38bdf8';
-                        badge = modelInfo.badge || (modelInfo.isFree ? '🆓 Free' : 'IA');
+                        isFree = !!modelInfo.isFree;
+                        badge = modelInfo.badge || '';
                         subtitle = `${modelInfo.developer} • ${modelInfo.contextLength || '128k'} • ${modelInfo.description || ''}`;
+                        if (modelInfo.name && !cleanLabel) cleanLabel = modelInfo.name;
                         
-                        if (val.includes('openrouter/free')) {
-                            category = 'free';
-                            categoryLabel = '🆓 Gratuitos';
-                        } else if (val.includes('ox-alpha') || val.includes('dots3') || val.includes('v4-flash') || val.includes(':free')) {
+                        if (val.includes('openrouter/free') || val.includes('ox-alpha') || val.includes('dots3') || val.includes('v4-flash') || val.includes(':free')) {
                             category = 'free';
                             categoryLabel = '🆓 Gratuitos';
                         } else if (val.includes('deepseek') || lbl.includes('deepseek')) {
@@ -22843,6 +22901,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         categoryLabel = 'DeepSeek';
                         brandColor = '#0284c7';
                         icon = '🪐';
+                        isFree = val.includes(':free');
                         if (val.includes('r1')) {
                             subtitle = 'Raciocínio Profundo & Lógica Matemática';
                             badge = '🧠 R1';
@@ -22855,6 +22914,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         categoryLabel = 'Google Gemini';
                         brandColor = '#818cf8';
                         icon = '♊';
+                        isFree = !val.includes('pro') && !val.includes('ultra');
                         if (val.includes('2.5-flash')) {
                             subtitle = 'Google DeepMind • Última Geração & Alta Velocidade';
                             badge = '🌟 2.5 Flash';
@@ -22876,6 +22936,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         categoryLabel = 'OpenAI';
                         brandColor = '#10b981';
                         icon = '🤖';
+                        isFree = false;
                         if (val.includes('o3-mini')) {
                             subtitle = 'OpenAI • Raciocínio Acelerado para Código e Lógica';
                             badge = '🔬 o3-mini';
@@ -22897,6 +22958,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         categoryLabel = 'Anthropic';
                         brandColor = '#f59e0b';
                         icon = '🧠';
+                        isFree = false;
                         if (val.includes('3.7')) {
                             subtitle = 'Anthropic • Raciocínio Híbrido & Engenharia de Código';
                             badge = '🚀 3.7 Sonnet';
@@ -22909,6 +22971,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         categoryLabel = 'Meta Llama';
                         brandColor = '#3b82f6';
                         icon = '🦙';
+                        isFree = val.includes(':free') || val.includes('groq');
                         subtitle = 'Meta AI • Modelo Aberto de Alta Performance (70B)';
                         badge = '🦙 Llama 3.3';
                     } else {
@@ -22916,6 +22979,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         categoryLabel = 'Outros Modelos';
                         brandColor = '#a855f7';
                         icon = '⚡';
+                        isFree = val.includes(':free') || val.includes('free');
                         subtitle = 'Modelo de Inferência de Alta Performance';
                         badge = 'LLM';
                     }
@@ -22979,7 +23043,10 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     brandColor,
                     subtitle: opt.subtitle || subtitle,
                     badge: opt.badge || badge,
-                    icon
+                    icon,
+                    isModel,
+                    isFree,
+                    cleanLabel: cleanLabel || opt.label || opt.value
                 };
             };
 
@@ -23187,6 +23254,12 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     const currentOpt = options.find(opt => String(opt.value) === String(currentValue));
                     if (currentOpt) {
                         const curMeta = getOptionMetadata(currentOpt);
+                        let curPriceBadge = '';
+                        if (curMeta.isModel) {
+                            curPriceBadge = curMeta.isFree 
+                                ? `<span class="custom-select-badge" style="background: rgba(16, 185, 129, 0.16); color: #34d399; border-color: rgba(16, 185, 129, 0.35); font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 6px;">🟢 Grátis</span>`
+                                : `<span class="custom-select-badge" style="background: rgba(239, 68, 68, 0.16); color: #f87171; border-color: rgba(239, 68, 68, 0.35); font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 6px;">🔴 Pago</span>`;
+                        }
                         html += `
                             <div class="section-divider-title">
                                 <span>⭐</span> <span>${i18n('current_selection_title') || 'Opção Atualmente Selecionada'}</span>
@@ -23197,9 +23270,10 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                                         ${curMeta.icon}
                                     </div>
                                     <div style="display: flex; flex-direction: column; overflow: hidden; padding-right: 8px;">
-                                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                                            <span style="font-size: 0.94rem; font-weight: 700; color: #ffffff;">${currentOpt.label || currentOpt.value}</span>
-                                            <span class="custom-select-badge" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);">${curMeta.badge}</span>
+                                        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                            <span style="font-size: 0.94rem; font-weight: 700; color: #ffffff;">${curMeta.cleanLabel}</span>
+                                            ${curPriceBadge}
+                                            ${curMeta.badge ? `<span class="custom-select-badge" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);">${curMeta.badge}</span>` : ''}
                                         </div>
                                         <span style="font-size: 0.76rem; color: #cbd5e1; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                             ${curMeta.subtitle}
@@ -23233,6 +23307,13 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         const meta = getOptionMetadata(opt);
                         const isActive = String(opt.value) === String(currentValue);
 
+                        let priceBadge = '';
+                        if (meta.isModel) {
+                            priceBadge = meta.isFree 
+                                ? `<span class="custom-select-badge" style="background: rgba(16, 185, 129, 0.14); color: #34d399; border-color: rgba(16, 185, 129, 0.35); font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 6px;">🟢 Grátis</span>`
+                                : `<span class="custom-select-badge" style="background: rgba(239, 68, 68, 0.14); color: #f87171; border-color: rgba(239, 68, 68, 0.35); font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 6px;">🔴 Pago</span>`;
+                        }
+
                         html += `
                             <div class="custom-select-card-item ${isActive ? 'selected' : ''}" data-value="${opt.value}">
                                 <div style="display: flex; align-items: center; flex-grow: 1; overflow: hidden;">
@@ -23240,8 +23321,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                                         ${meta.icon}
                                     </div>
                                     <div style="display: flex; flex-direction: column; overflow: hidden; padding-right: 8px;">
-                                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                                            <span style="font-size: 0.92rem; font-weight: 600; color: #f8fafc;">${opt.label || opt.value}</span>
+                                        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                            <span style="font-size: 0.92rem; font-weight: 600; color: #f8fafc;">${meta.cleanLabel}</span>
+                                            ${priceBadge}
                                             ${meta.badge ? `<span class="custom-select-badge" style="color: ${meta.brandColor}; border-color: rgba(255,255,255,0.08);">${meta.badge}</span>` : ''}
                                         </div>
                                         <span style="font-size: 0.75rem; color: #94a3b8; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
@@ -27568,37 +27650,38 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             let optionsList = [];
             if (typeVal === "GEMINI") {
                 optionsList = [
-                    { value: "gemini-2.5-flash", label: "gemini-2.5-flash (Mais Recente e Recomendado)" },
-                    { value: "gemini-2.5-pro", label: "gemini-2.5-pro (Raciocínio Ultra-Avançado)" },
-                    { value: "gemini-2.0-flash", label: "gemini-2.0-flash (Super Rápido)" },
-                    { value: "gemini-1.5-flash", label: "gemini-1.5-flash (Clássico)" },
-                    { value: "gemini-1.5-pro", label: "gemini-1.5-pro" }
+                    { value: "gemini-2.5-flash", label: "gemini-2.5-flash • 🟢 Grátis (Mais Recente e Recomendado)" },
+                    { value: "gemini-2.5-pro", label: "gemini-2.5-pro • 🔴 Pago (Raciocínio Ultra-Avançado)" },
+                    { value: "gemini-2.0-flash", label: "gemini-2.0-flash • 🟢 Grátis (Super Rápido)" },
+                    { value: "gemini-1.5-flash", label: "gemini-1.5-flash • 🟢 Grátis (Clássico)" },
+                    { value: "gemini-1.5-pro", label: "gemini-1.5-pro • 🔴 Pago" }
                 ];
             } else if (typeVal === "GROQ") {
                 optionsList = [
-                    { value: "deepseek-r1-distill-llama-70b", label: "deepseek-r1-distill-llama-70b" },
-                    { value: "llama-3.3-70b-versatile", label: "llama-3.3-70b-versatile" },
-                    { value: "llama-3.1-8b-instant", label: "llama-3.1-8b-instant" },
-                    { value: "gemma2-9b-it", label: "gemma2-9b-it" }
+                    { value: "deepseek-r1-distill-llama-70b", label: "deepseek-r1-distill-llama-70b • 🟢 Grátis" },
+                    { value: "llama-3.3-70b-versatile", label: "llama-3.3-70b-versatile • 🟢 Grátis" },
+                    { value: "llama-3.1-8b-instant", label: "llama-3.1-8b-instant • 🟢 Grátis" },
+                    { value: "gemma2-9b-it", label: "gemma2-9b-it • 🟢 Grátis" },
+                    { value: "mixtral-8x7b-32768", label: "mixtral-8x7b-32768 • 🟢 Grátis" }
                 ];
             } else if (typeVal === "OPENROUTER") {
                 const orCat = (typeof getSynapseOpenRouterCatalog === 'function') ? getSynapseOpenRouterCatalog() : [];
                 optionsList = orCat.map(m => ({
                     value: m.id,
-                    label: m.badge ? `[${m.badge}] ${m.name || m.id}` : (m.name || m.id)
+                    label: `${m.name || m.id} • ${m.isFree ? '🟢 Grátis' : '🔴 Pago'}`
                 }));
             } else if (typeVal === "OPENAI") {
                 optionsList = [
-                    { value: "gpt-4o-mini", label: "gpt-4o-mini (Leve e Eficiente)" },
-                    { value: "gpt-4o", label: "gpt-4o (Geral Robusto)" },
-                    { value: "o3-mini", label: "o3-mini (Raciocínio Rápido)" },
-                    { value: "o1", label: "o1 (Raciocínio Profundo)" },
-                    { value: "gpt-4-turbo", label: "gpt-4-turbo" }
+                    { value: "gpt-4o-mini", label: "gpt-4o-mini • 🔴 Pago (Leve e Eficiente)" },
+                    { value: "gpt-4o", label: "gpt-4o • 🔴 Pago (Geral Robusto)" },
+                    { value: "o3-mini", label: "o3-mini • 🔴 Pago (Raciocínio Rápido)" },
+                    { value: "o1", label: "o1 • 🔴 Pago (Raciocínio Profundo)" },
+                    { value: "gpt-4-turbo", label: "gpt-4-turbo • 🔴 Pago" }
                 ];
             } else {
                 optionsList = [
-                    { value: "deepseek-r1", label: "deepseek-r1" },
-                    { value: "deepseek-chat", label: "deepseek-chat" },
+                    { value: "deepseek-r1", label: "deepseek-r1 • 🔴 Pago" },
+                    { value: "deepseek-chat", label: "deepseek-chat • 🔴 Pago" },
                     { value: "custom-model", label: "Modelo Customizado" }
                 ];
             }
@@ -29489,35 +29572,33 @@ function delCalc() {
         }
 
         function initProgrammingStudio() {
-            if (progStudioInitialized) {
-                runProgrammingCode();
-                return;
-            }
-            progStudioInitialized = true;
+            if (!progStudioInitialized) {
+                progStudioInitialized = true;
 
-            // Ouvinte de mensagens das sandboxes (Logs do console e erros)
-            window.addEventListener('message', (e) => {
-                if (e.data && e.data.type === 'prog-console-log') {
-                    addProgConsoleLog(e.data.level, e.data.text, e.data.time);
-                }
-            });
+                // Ouvinte de mensagens das sandboxes (Logs do console e erros)
+                window.addEventListener('message', (e) => {
+                    if (e.data && e.data.type === 'prog-console-log') {
+                        addProgConsoleLog(e.data.level, e.data.text, e.data.time);
+                    }
+                });
+            }
 
             const proj = getCurrentProgProject();
             updateProgProjectHeader(proj);
             renderProgChatHistory(proj);
             loadProgCodeToEditor();
             renderProgProjectsList();
-            
-            // Execução inicial
-            setTimeout(() => {
-                runProgrammingCode();
-            }, 100);
+
+            // Garantir que a aba ativa seja o Editor de Código por padrão
+            switchProgNavTab('editor');
         }
 
         function updateProgProjectHeader(proj) {
             const titleEl = document.getElementById('prog-current-project-title');
+            const previewTitleEl = document.getElementById('prog-preview-modal-title');
             const timeEl = document.getElementById('prog-last-saved-time');
             if (titleEl) titleEl.textContent = proj.title || 'Meu Projeto Web';
+            if (previewTitleEl) previewTitleEl.textContent = proj.title || 'Meu Projeto Web';
             if (timeEl) {
                 const d = proj.updatedAt ? new Date(proj.updatedAt) : new Date();
                 timeEl.textContent = `Salvo às ${d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
@@ -29538,8 +29619,6 @@ function delCalc() {
 
             if (tabId === 'editor') {
                 loadProgCodeToEditor();
-            } else if (tabId === 'preview') {
-                runProgrammingCode();
             } else if (tabId === 'projects') {
                 renderProgProjectsList();
             } else if (tabId === 'chat') {
@@ -29805,29 +29884,38 @@ ${js}
 </html>`;
         }
 
-        function runProgrammingCode() {
+        function runProgrammingCode(shouldOpenFullscreen = true) {
             triggerPulse();
             saveProgEditorStateToProject();
             const proj = getCurrentProgProject();
 
             const fullHtml = buildSandboxedExecutionDoc(proj.html, proj.css, proj.js);
 
-            const iframe = document.getElementById('prog-preview-iframe');
-            if (iframe) {
-                iframe.srcdoc = fullHtml;
+            // Atualizar o iframe da tela cheia dedicada
+            const fullscreenIframe = document.getElementById('prog-fullscreen-preview-iframe');
+            if (fullscreenIframe) {
+                fullscreenIframe.srcdoc = fullHtml;
             }
 
-            const modalIframe = document.getElementById('synapse-modal-iframe');
-            if (modalIframe && document.getElementById('synapse-fullscreen-code-modal')?.style.display !== 'none') {
-                modalIframe.srcdoc = fullHtml;
+            // Atualizar iframe de compatibilidade
+            const legacyIframe = document.getElementById('synapse-modal-iframe');
+            if (legacyIframe) {
+                legacyIframe.srcdoc = fullHtml;
             }
 
+            // Atualizar título e badge do projeto na barra de pré-visualização
+            const previewTitleEl = document.getElementById('prog-preview-modal-title');
+            if (previewTitleEl) {
+                previewTitleEl.textContent = proj.title || 'Meu Projeto Web';
+            }
+
+            // Atualizar indicador de status visual na toolbar do editor
             const statusIndicator = document.getElementById('prog-live-status-indicator');
             if (statusIndicator) {
-                statusIndicator.innerHTML = `<span class="pulse-indicator" style="width: 6px; height: 6px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 6px #38bdf8; display: inline-block;"></span> Executado`;
+                statusIndicator.innerHTML = `<span class="pulse-indicator" style="width: 6px; height: 6px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 6px #38bdf8; display: inline-block;"></span> Executando`;
                 setTimeout(() => {
                     if (statusIndicator) {
-                        statusIndicator.innerHTML = `<span class="pulse-indicator" style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981; display: inline-block;"></span> Pronto`;
+                        statusIndicator.innerHTML = `<span class="pulse-indicator" style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; display: inline-block;"></span> Pronto`;
                     }
                 }, 1200);
             }
@@ -29838,11 +29926,16 @@ ${js}
             }
 
             addProgConsoleLog('sys', `Código executado no sandbox seguro às ${new Date().toLocaleTimeString('pt-BR')}.`, new Date().toLocaleTimeString('pt-BR'));
+
+            // Se solicitado (padrão ao clicar em Executar), abre a Nova Tela Interna de Pré-visualização
+            if (shouldOpenFullscreen) {
+                openProgFullscreenPreview();
+            }
         }
 
         function reloadProgrammingPreview() {
             triggerPulse();
-            runProgrammingCode();
+            runProgrammingCode(false);
             showAppToast("Pré-visualização recarregada!", "success");
         }
 
@@ -29851,36 +29944,59 @@ ${js}
             const modal = document.getElementById('synapse-fullscreen-code-modal');
             if (!modal) return;
             modal.style.display = 'flex';
-            runProgrammingCode();
         }
 
-        function synapseCloseFullscreenPreview() {
+        function closeProgFullscreenPreview() {
             triggerPulse();
             const modal = document.getElementById('synapse-fullscreen-code-modal');
             if (modal) modal.style.display = 'none';
+
+            // Retorna o usuário diretamente para o editor de código
+            switchProgNavTab('editor');
         }
 
-        function synapseSetFullscreenViewport(width, btn) {
+        function synapseCloseFullscreenPreview() {
+            closeProgFullscreenPreview();
+        }
+
+        function setProgPreviewViewport(width, btn) {
             triggerPulse();
-            const holder = document.getElementById('synapse-modal-frame-holder');
+            const holder = document.getElementById('prog-preview-frame-holder');
             if (holder) {
                 holder.style.maxWidth = width;
             }
-            document.querySelectorAll('.synapse-viewport-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.prog-preview-viewport-btn, .synapse-viewport-btn').forEach(b => b.classList.remove('active'));
             if (btn) btn.classList.add('active');
         }
 
-        function synapseReloadFullscreenModal() {
+        function synapseSetFullscreenViewport(width, btn) {
+            setProgPreviewViewport(width, btn);
+        }
+
+        function toggleProgPreviewConsoleDrawer() {
             triggerPulse();
-            runProgrammingCode();
-            showAppToast("Pré-visualização em tela cheia recarregada!", "success");
+            const drawer = document.getElementById('prog-preview-console-drawer');
+            if (!drawer) return;
+            drawer.style.display = (drawer.style.display === 'none' || !drawer.style.display) ? 'flex' : 'none';
         }
 
         function synapseToggleModalConsole() {
+            toggleProgPreviewConsoleDrawer();
+        }
+
+        function toggleBrowserFullscreen() {
             triggerPulse();
-            const drawer = document.getElementById('synapse-modal-console-drawer');
-            if (!drawer) return;
-            drawer.style.display = (drawer.style.display === 'none' || !drawer.style.display) ? 'flex' : 'none';
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(() => {});
+                }
+            }
+        }
+
+        function synapseReloadFullscreenModal() {
+            reloadProgrammingPreview();
         }
 
         function synapseClearModalLogs() {
@@ -29946,7 +30062,7 @@ ${js}
             if (!code) return;
 
             input.value = "";
-            const iframe = document.getElementById('prog-preview-iframe');
+            const iframe = document.getElementById('prog-fullscreen-preview-iframe') || document.getElementById('synapse-modal-iframe');
             if (iframe && iframe.contentWindow) {
                 iframe.contentWindow.postMessage({ type: 'prog-eval', code: code }, '*');
             } else {
@@ -30524,7 +30640,7 @@ DIRETRIZES DE RESPOSTA:
             const modal = document.getElementById('prog-templates-modal');
             if (modal) modal.remove();
 
-            switchProgNavTab('preview');
+            switchProgNavTab('editor');
             showAppToast(`Modelo "${tmpl.title}" aplicado com sucesso!`, "success");
         }
 
@@ -30789,39 +30905,73 @@ DIRETRIZES DE RESPOSTA:
         </div>
     </div>
 
-    <!-- MODAL DE PRÉ-VISUALIZAÇÃO DE CÓDIGO EM TELA CHEIA (SANDBOX SEGURO) -->
-    <div id="synapse-fullscreen-code-modal" class="synapse-code-modal" style="display: none;">
-        <div class="synapse-modal-topbar">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span style="font-size: 1.1rem;" id="synapse-modal-icon">🌐</span>
-                <div>
-                    <div style="font-weight: 700; color: #fff; font-size: 0.88rem;" id="synapse-modal-title">Pré-visualização do Aplicativo</div>
-                    <div style="font-size: 0.7rem; color: #94a3b8;" id="synapse-modal-subtitle">Ambiente Sandbox Seguro Synapse</div>
+    <!-- NOVA TELA INTERNA DE PRÉ-VISUALIZAÇÃO EM TELA CHEIA (SANDBOX SEGURO) -->
+    <div id="synapse-fullscreen-code-modal" class="prog-fullscreen-preview-screen" style="display: none;">
+        <!-- BARRA SUPERIOR DE CONTROLE E NAVEGAÇÃO -->
+        <div class="prog-preview-topbar">
+            <!-- Botão Voltar ao Editor -->
+            <button type="button" class="prog-preview-back-btn" onclick="closeProgFullscreenPreview()" title="Voltar para o Editor de Código">
+                <span>←</span> <span>Voltar ao Editor</span>
+            </button>
+
+            <!-- Título do Projeto & Status -->
+            <div class="prog-preview-info">
+                <div class="prog-preview-title" id="prog-preview-modal-title">Meu Projeto Web</div>
+                <div class="prog-preview-badge">
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+                    Sandbox Ativo
                 </div>
             </div>
-            <div class="synapse-modal-viewports">
-                <button type="button" class="synapse-viewport-btn" onclick="synapseSetFullscreenViewport('375px', this)" title="Visualização Smartphone">📱 Mobile</button>
-                <button type="button" class="synapse-viewport-btn" onclick="synapseSetFullscreenViewport('768px', this)" title="Visualização Tablet">📱 Tablet</button>
-                <button type="button" class="synapse-viewport-btn active" onclick="synapseSetFullscreenViewport('100%', this)" title="Visualização Completa">💻 100%</button>
+
+            <!-- Alternador de Tamanhos de Tela / Viewport -->
+            <div class="prog-preview-viewports">
+                <button type="button" class="prog-preview-viewport-btn" onclick="setProgPreviewViewport('375px', this)" title="Visualização Celular (375px)">📱 Mobile</button>
+                <button type="button" class="prog-preview-viewport-btn" onclick="setProgPreviewViewport('768px', this)" title="Visualização Tablet (768px)">📱 Tablet</button>
+                <button type="button" class="prog-preview-viewport-btn active" onclick="setProgPreviewViewport('100%', this)" title="Visualização Tela Cheia (100%)">💻 100%</button>
             </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <button type="button" class="synapse-ctrl-btn" onclick="synapseReloadFullscreenModal()" title="Recarregar">🔄 Recarregar</button>
-                <button type="button" class="synapse-ctrl-btn" onclick="synapseToggleModalConsole()" title="Console JavaScript">🖥️ Console</button>
-                <button type="button" class="btn-universal" style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; border-radius: 8px; padding: 4px 10px; font-size: 0.75rem; font-weight: bold; cursor: pointer;" onclick="synapseCloseFullscreenPreview()">✕ Fechar</button>
+
+            <!-- Ações: Recarregar, Console, Tela Cheia do Navegador -->
+            <div class="prog-preview-actions">
+                <button type="button" class="prog-btn" onclick="reloadProgrammingPreview()" title="Recarregar Execução">
+                    <span>↻</span> <span>Recarregar</span>
+                </button>
+                <button type="button" class="prog-btn" onclick="toggleProgPreviewConsoleDrawer()" title="Abrir/Fechar Console de Erros">
+                    <span>🖥️</span> <span>Console</span>
+                </button>
+                <button type="button" class="prog-btn" onclick="toggleBrowserFullscreen()" title="Alternar Modo Tela Cheia do Navegador">
+                    <span>⛶</span> <span>Tela Cheia</span>
+                </button>
             </div>
         </div>
-        <div class="synapse-modal-body">
-            <div class="synapse-modal-frame-holder" id="synapse-modal-frame-holder">
-                <iframe id="synapse-modal-iframe" class="synapse-modal-iframe" sandbox="allow-scripts allow-modals allow-forms" title="Pré-visualização em Tela Cheia"></iframe>
+
+        <!-- ÁREA CENTRAL DO IFRAME (SANDBOX) -->
+        <div class="prog-preview-canvas-container">
+            <div class="prog-preview-frame-holder" id="prog-preview-frame-holder">
+                <iframe id="prog-fullscreen-preview-iframe" class="prog-preview-live-iframe" sandbox="allow-scripts allow-modals allow-forms" title="Pré-visualização do Aplicativo em Tempo Real"></iframe>
+                <!-- Elemento de compatibilidade adicional -->
+                <iframe id="synapse-modal-iframe" style="display:none;" sandbox="allow-scripts allow-modals allow-forms" title="Compatibilidade"></iframe>
             </div>
         </div>
-        <!-- Modal Console Drawer -->
-        <div id="synapse-modal-console-drawer" class="synapse-inline-console" style="display: none; max-height: 220px;">
-            <div class="synapse-console-header">
-                <span style="font-weight: 700; color: #f8fafc; font-size: 0.78rem;">🖥️ Console de Logs do Sandbox</span>
-                <button type="button" class="synapse-console-btn-mini" onclick="synapseClearModalLogs()">🗑️ Limpar</button>
+
+        <!-- GAVETA INFERIOR DO CONSOLE DE ERROS / LOGS DO SANDBOX -->
+        <div id="prog-preview-console-drawer" class="prog-preview-console-drawer" style="display: none;">
+            <div class="prog-preview-console-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 0.9rem;">🖥️</span>
+                    <span style="font-weight: 700; color: #f8fafc; font-size: 0.82rem;">Console do Sandbox em Tempo Real</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <button type="button" class="prog-btn" style="padding: 2px 8px; min-height: 24px; font-size: 0.7rem;" onclick="clearProgConsoleLogs()">🗑️ Limpar</button>
+                    <button type="button" class="prog-btn" style="padding: 2px 8px; min-height: 24px; font-size: 0.7rem;" onclick="toggleProgPreviewConsoleDrawer()">✕ Fechar</button>
+                </div>
             </div>
-            <div class="synapse-console-logs" id="synapse-modal-console-logs"></div>
+            <div class="prog-preview-console-logs" id="synapse-modal-console-logs">
+                <div class="prog-console-item info">
+                    <span class="prog-console-time">[00:00:00]</span>
+                    <span class="prog-console-tag">INFO</span>
+                    <span class="prog-console-text">Console pronto. Todos os logs e exceções JavaScript aparecem aqui.</span>
+                </div>
+            </div>
         </div>
     </div>
 </body>
