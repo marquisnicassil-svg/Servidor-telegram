@@ -1,8 +1,15 @@
+include:
+  - ".nojekyll"
+  - "index.html"
+  - "manifest.json"
+  - "sw.js"
+  - "app"
+
 exclude:
-  - app/
   - gradle/
   - .gradle/
   - build/
+  - app/build/
   - .idea/
   - .github/
   - .build-outputs/
@@ -12,3 +19,4 @@ exclude:
   - firebase-applet-config.json
   - metadata.json
   - .env.example
+
