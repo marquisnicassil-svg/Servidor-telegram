@@ -1797,6 +1797,44 @@
             outline: none;
             transition: color 0.25s ease;
         }
+        .auth-copy-btn {
+            position: absolute;
+            right: 44px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.35);
+            cursor: pointer;
+            font-size: 1.05rem;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            outline: none;
+            transition: color 0.25s ease;
+        }
+        .auth-copy-btn:hover {
+            color: rgba(255, 255, 255, 0.85);
+        }
+        .input-copy-btn {
+            position: absolute;
+            right: 40px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.05rem;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            outline: none;
+            transition: opacity 0.2s;
+        }
+        .input-copy-btn:hover {
+            color: #38bdf8;
+        }
         .auth-password-toggle:hover {
             color: rgba(255, 255, 255, 0.85);
         }
@@ -4020,7 +4058,8 @@
                     <label id="auth-password-label" class="auth-input-label">Senha de Acesso</label>
                     <div class="auth-input-wrapper">
                         <span class="auth-input-icon">🔑</span>
-                        <input type="text" id="auth-password" class="form-control password-masked" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" placeholder="Mínimo 6 caracteres" value="" autocomplete="off">
+                        <input type="text" id="auth-password" class="form-control password-masked" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" placeholder="Mínimo 6 caracteres" value="" autocomplete="off" style="padding-right: 76px;">
+                        <button type="button" class="auth-copy-btn" onclick="copyInputField('auth-password', this)" title="Copiar Senha">📋</button>
                         <button type="button" class="auth-password-toggle" onclick="togglePasswordVisibility('auth-password', this)" title="Exibir/Ocultar Senha">👁️</button>
                     </div>
                     <div id="auth-password-error" class="auth-error-text" style="display: none;"></div>
@@ -4030,7 +4069,8 @@
                     <label class="auth-input-label">Confirmar Nova Senha</label>
                     <div class="auth-input-wrapper">
                         <span class="auth-input-icon">🔐</span>
-                        <input type="text" id="auth-confirm-password" class="form-control password-masked" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" placeholder="Confirme sua nova senha" value="" autocomplete="off">
+                        <input type="text" id="auth-confirm-password" class="form-control password-masked" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" placeholder="Confirme sua nova senha" value="" autocomplete="off" style="padding-right: 76px;">
+                        <button type="button" class="auth-copy-btn" onclick="copyInputField('auth-confirm-password', this)" title="Copiar Senha">📋</button>
                         <button type="button" class="auth-password-toggle" onclick="togglePasswordVisibility('auth-confirm-password', this)" title="Exibir/Ocultar Senha">👁️</button>
                     </div>
                     <div id="auth-confirm-password-error" class="auth-error-text" style="display: none;"></div>
@@ -6255,7 +6295,11 @@
                 </p>
                 <div style="text-align: left; margin-bottom: 15px;">
                     <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 6px;">Senha / PIN de Administrador</label>
-                    <input type="text" id="admin-pin-input" class="form-control password-masked" style="border-radius: 10px; padding: 12px; font-size: 0.95rem; text-align: center; letter-spacing: 4px;" placeholder="••••••" onkeydown="if(event.key === 'Enter') tryUnlockAdminPanel()" autocomplete="off">
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <input type="text" id="admin-pin-input" class="form-control password-masked" style="border-radius: 10px; padding: 12px 76px 12px 12px; font-size: 0.95rem; text-align: center; letter-spacing: 4px; width: 100%; box-sizing: border-box;" placeholder="••••••" onkeydown="if(event.key === 'Enter') tryUnlockAdminPanel()" autocomplete="off">
+                        <button type="button" class="input-copy-btn" onclick="copyInputField('admin-pin-input', this)" title="Copiar Senha / PIN">📋</button>
+                        <button type="button" onclick="togglePasswordVisibility('admin-pin-input', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Senha">👁️</button>
+                    </div>
                 </div>
                 <button class="btn-universal" onclick="tryUnlockAdminPanel()" style="background-color: var(--primary); color: var(--bg-color); border: none; font-weight: bold; border-radius: 12px; height: 48px; width: 100%; cursor: pointer;">
                     🔓 Desbloquear Painel
@@ -6445,7 +6489,11 @@
                                     <div class="help-tip-box" id="tip-admin-pass">
                                         A senha ou PIN secundário necessário para liberar o acesso ao painel de moderação administrativa caso o usuário ativo não esteja logado em uma conta contida na whitelist de e-mail.
                                     </div>
-                                    <input type="text" id="admin-settings-pass" class="form-control password-masked" placeholder="Senha de segurança" oninput="checkAdminSettingsDirty()" autocomplete="off" style="border-radius: 10px; padding: 10px; font-size: 0.85rem;">
+                                    <div style="position: relative; display: flex; align-items: center;">
+                                        <input type="text" id="admin-settings-pass" class="form-control password-masked" placeholder="Senha de segurança" oninput="checkAdminSettingsDirty()" autocomplete="off" style="border-radius: 10px; padding: 10px 76px 10px 10px; font-size: 0.85rem; width: 100%; box-sizing: border-box;">
+                                        <button type="button" class="input-copy-btn" onclick="copyInputField('admin-settings-pass', this)" title="Copiar Senha / PIN">📋</button>
+                                        <button type="button" onclick="togglePasswordVisibility('admin-settings-pass', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Senha">👁️</button>
+                                    </div>
                                 </div>
                                 <div style="display: flex; gap: 12px; margin-top: 8px;">
                                     <button class="btn-universal" onclick="saveAllAdminSettingsCombined()" style="background-color: var(--primary); color: var(--bg-color); height: 40px; font-size: 0.8rem; border-radius: 10px; font-weight: bold;">Salvar Ajustes 💾</button>
@@ -6497,7 +6545,11 @@
                                     <div class="help-tip-box" id="tip-master-key">
                                         A chave secreta da API (Gemini, OpenAI, Groq, etc.) usada para cobrir os testes coletivos. Mantenha essa chave protegida e configurada adequadamente.
                                     </div>
-                                    <input type="text" id="admin-master-key" class="form-control password-masked" placeholder="Insira a chave mestre para teste" oninput="checkAdminSettingsDirty()" style="border-radius: 10px; padding: 10px; font-size: 0.85rem;" autocomplete="off">
+                                    <div style="position: relative; display: flex; align-items: center;">
+                                        <input type="text" id="admin-master-key" class="form-control password-masked" placeholder="Insira a chave mestre para teste" oninput="checkAdminSettingsDirty()" style="border-radius: 10px; padding: 10px 76px 10px 10px; font-size: 0.85rem; width: 100%; box-sizing: border-box;" autocomplete="off">
+                                        <button type="button" class="input-copy-btn" onclick="copyInputField('admin-master-key', this)" title="Copiar Chave Mestre">📋</button>
+                                        <button type="button" onclick="togglePasswordVisibility('admin-master-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
+                                    </div>
                                 </div>
 
                                 <div>
@@ -7715,7 +7767,8 @@ CREATE TRIGGER on_synapse_user_signed_up
                             <div class="form-group">
                                 <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Token do Bot (Telegram)</label>
                                 <div style="position: relative; display: flex; align-items: center;">
-                                    <input type="text" id="telegram-token" class="form-control password-masked" style="padding-right: 40px; border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" placeholder="Insira o token gerado pelo @BotFather..." autocomplete="off" oninput="saveConfiguration(); updateIntegrationHubStatusBadges();">
+                                    <input type="text" id="telegram-token" class="form-control password-masked" style="padding-right: 76px; border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" placeholder="Insira o token gerado pelo @BotFather..." autocomplete="off" oninput="saveConfiguration(); updateIntegrationHubStatusBadges();">
+                                    <button type="button" class="input-copy-btn" onclick="copyInputField('telegram-token', this)" title="Copiar Token">📋</button>
                                     <button type="button" onclick="togglePasswordVisibility('telegram-token', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Token">👁️</button>
                                 </div>
                             </div>
@@ -7778,7 +7831,8 @@ CREATE TRIGGER on_synapse_user_signed_up
                             <div class="form-group">
                                 <label id="tg-api-key-label" style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Chave de API / Token do Provedor</label>
                                 <div style="position: relative; display: flex; align-items: center;">
-                                    <input type="text" id="tg-api-key" class="form-control password-masked" style="padding-right: 40px; border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff;" placeholder="Cole sua API Key aqui..." oninput="syncTelegramApiKeysFromInput(this.value)" autocomplete="off">
+                                    <input type="text" id="tg-api-key" class="form-control password-masked" style="padding-right: 76px; border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff;" placeholder="Cole sua API Key aqui..." oninput="syncTelegramApiKeysFromInput(this.value)" autocomplete="off">
+                                    <button type="button" class="input-copy-btn" onclick="copyInputField('tg-api-key', this)" title="Copiar Chave">📋</button>
                                     <button type="button" onclick="togglePasswordVisibility('tg-api-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
                                 </div>
                             </div>
@@ -7791,10 +7845,10 @@ CREATE TRIGGER on_synapse_user_signed_up
                                 <div style="width: 35%;">
                                     <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Modelo</label>
                                     <select id="tg-model-name" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff; height: 38px;" onchange="syncTelegramModelFromInput(this.value)">
-                                        <option value="gemini-1.5-flash">gemini-1.5-flash</option>
-                                        <option value="gemini-2.5-flash">gemini-2.5-flash</option>
-                                        <option value="gemini-1.5-pro">gemini-1.5-pro</option>
-                                        <option value="gemini-1.0-pro">gemini-1.0-pro</option>
+                                        <option value="gemini-1.5-flash">gemini-1.5-flash • 🟢 Grátis</option>
+                                        <option value="gemini-2.5-flash">gemini-2.5-flash • 🟢 Grátis</option>
+                                        <option value="gemini-1.5-pro">gemini-1.5-pro • 🔴 Pago</option>
+                                        <option value="gemini-1.0-pro">gemini-1.0-pro • 🔴 Pago</option>
                                     </select>
                                 </div>
                             </div>
@@ -8495,7 +8549,8 @@ CREATE TRIGGER on_synapse_user_signed_up
                 <div class="form-group">
                     <label id="api-key-label">Chave de API da IA Selecionada</label>
                     <div style="position: relative; display: flex; align-items: center;">
-                        <input type="text" id="api-key" class="form-control password-masked" style="padding-right: 40px;" placeholder="Cole sua API Key para a IA selecionada..." autocomplete="off" oninput="if(typeof apiType !== 'undefined' && apiType) { localStorage.setItem('apiKey_' + apiType, this.value.trim()); }">
+                        <input type="text" id="api-key" class="form-control password-masked" style="padding-right: 76px;" placeholder="Cole sua API Key para a IA selecionada..." autocomplete="off" oninput="if(typeof apiType !== 'undefined' && apiType) { localStorage.setItem('apiKey_' + apiType, this.value.trim()); }">
+                        <button type="button" class="input-copy-btn" onclick="copyInputField('api-key', this)" title="Copiar Chave">📋</button>
                         <button type="button" onclick="togglePasswordVisibility('api-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
                     </div>
                 </div>
@@ -8508,9 +8563,9 @@ CREATE TRIGGER on_synapse_user_signed_up
                     <div style="width: 35%;">
                         <label>Modelo</label>
                         <select id="model-name" class="form-control" onchange="if(typeof updateModelDetailsDisplay==='function') updateModelDetailsDisplay();">
-                            <option value="gemini-1.5-flash">gemini-1.5-flash</option>
-                            <option value="gemini-1.5-pro">gemini-1.5-pro</option>
-                            <option value="gemini-1.0-pro">gemini-1.0-pro</option>
+                            <option value="gemini-1.5-flash">gemini-1.5-flash • 🟢 Grátis</option>
+                            <option value="gemini-1.5-pro">gemini-1.5-pro • 🔴 Pago</option>
+                            <option value="gemini-1.0-pro">gemini-1.0-pro • 🔴 Pago</option>
                         </select>
                     </div>
                 </div>
@@ -8603,7 +8658,8 @@ CREATE TRIGGER on_synapse_user_signed_up
                         <div>
                             <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Chave Pública (Anon Key)</label>
                             <div style="position: relative; display: flex; align-items: center;">
-                                <input type="text" id="supabase-key" class="form-control password-masked" style="border-radius: 10px; padding: 8px 40px 8px 12px; font-size: 0.85rem;" placeholder="Chave anônima" value="sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa" autocomplete="off">
+                                <input type="text" id="supabase-key" class="form-control password-masked" style="border-radius: 10px; padding: 8px 76px 8px 12px; font-size: 0.85rem;" placeholder="Chave anônima" value="sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa" autocomplete="off">
+                                <button type="button" class="input-copy-btn" onclick="copyInputField('supabase-key', this)" title="Copiar Chave">📋</button>
                                 <button type="button" onclick="togglePasswordVisibility('supabase-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
                             </div>
                         </div>
@@ -8831,7 +8887,8 @@ WITH CHECK (true);</code>
                             <label style="font-size: 0.72rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 8px;">Alterar Senha de Acesso</label>
                             <div style="display: flex; flex-direction: column; gap: 8px;">
                                 <div style="position: relative; display: flex; align-items: center;">
-                                    <input type="text" id="new-account-password" class="form-control password-masked" style="border-radius: 10px; padding: 10px 42px 10px 12px; font-size: 0.85rem; width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color);" placeholder="Insira a nova senha (mín. 6 caracteres)" autocomplete="off">
+                                    <input type="text" id="new-account-password" class="form-control password-masked" style="border-radius: 10px; padding: 10px 76px 10px 12px; font-size: 0.85rem; width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color);" placeholder="Insira a nova senha (mín. 6 caracteres)" autocomplete="off">
+                                    <button type="button" class="input-copy-btn" onclick="copyInputField('new-account-password', this)" title="Copiar Senha">📋</button>
                                     <button type="button" onclick="togglePasswordVisibility('new-account-password', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10; outline: none;" title="Exibir/Ocultar Senha">👁️</button>
                                 </div>
                                 <button id="btn-save-new-password" class="btn-supabase-action" onclick="accountChangePassword()" style="border-color: var(--primary); background: rgba(124, 58, 237, 0.08); font-size: 0.8rem; padding: 8px 12px; border-radius: 10px; font-weight: bold; width: 100%; transition: 0.2s; cursor: pointer;">
@@ -24208,6 +24265,59 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 input.type = 'password';
                 btn.innerText = '👁️';
                 addLog(`Ocultando caracteres do campo.`, "info");
+            }
+        }
+
+        async function copyInputField(id, btn) {
+            triggerPulse();
+            const input = document.getElementById(id);
+            if (!input) return;
+            const textToCopy = input.value || '';
+            if (!textToCopy) {
+                if (typeof showAppToast === 'function') {
+                    showAppToast("O campo está vazio para copiar.", "warning");
+                }
+                return;
+            }
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(textToCopy);
+                } else {
+                    input.select();
+                    document.execCommand('copy');
+                }
+                if (btn) {
+                    const originalContent = btn.innerHTML;
+                    btn.innerHTML = '✅';
+                    setTimeout(() => {
+                        btn.innerHTML = originalContent;
+                    }, 1800);
+                }
+                if (typeof showAppToast === 'function') {
+                    showAppToast("Texto copiado para a área de transferência!", "success");
+                }
+                if (typeof addLog === 'function') {
+                    addLog(`Conteúdo do campo [${id}] copiado com sucesso.`, "success");
+                }
+            } catch (err) {
+                try {
+                    input.select();
+                    document.execCommand('copy');
+                    if (btn) {
+                        const originalContent = btn.innerHTML;
+                        btn.innerHTML = '✅';
+                        setTimeout(() => {
+                            btn.innerHTML = originalContent;
+                        }, 1800);
+                    }
+                    if (typeof showAppToast === 'function') {
+                        showAppToast("Texto copiado para a área de transferência!", "success");
+                    }
+                } catch (fallbackErr) {
+                    if (typeof showAppToast === 'function') {
+                        showAppToast("Não foi possível copiar automaticamente.", "error");
+                    }
+                }
             }
         }
 
