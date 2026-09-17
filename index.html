@@ -1096,6 +1096,151 @@
             animation: spin 1s linear infinite;
         }
 
+        /* ==========================================================================
+           Estilos do Sincronizador de Modelos Multi-Provedor (Ultra Premium)
+           ========================================================================== */
+        .provider-sync-card {
+            --sync-accent-rgb: 56, 189, 248;
+            --sync-accent-color: #38bdf8;
+            background: linear-gradient(135deg, rgba(var(--sync-accent-rgb), 0.06) 0%, rgba(var(--sync-accent-rgb), 0.015) 100%), rgba(15, 23, 42, 0.45);
+            border: 1px solid rgba(var(--sync-accent-rgb), 0.28);
+            border-radius: 16px;
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .provider-sync-icon-box {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: rgba(var(--sync-accent-rgb), 0.15);
+            border: 1px solid rgba(var(--sync-accent-rgb), 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: var(--sync-accent-color);
+            box-shadow: 0 0 15px rgba(var(--sync-accent-rgb), 0.2);
+            transition: all 0.3s ease;
+        }
+        .provider-sync-badge {
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-sync-model-premium {
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 9px 18px;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            color: #ffffff;
+            border: 1px solid rgba(var(--sync-accent-rgb), 0.45);
+            background: linear-gradient(135deg, rgba(var(--sync-accent-rgb), 0.28) 0%, rgba(var(--sync-accent-rgb), 0.10) 100%);
+            box-shadow: 0 4px 18px rgba(var(--sync-accent-rgb), 0.28), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            user-select: none;
+            outline: none;
+        }
+        .btn-sync-model-premium:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, rgba(var(--sync-accent-rgb), 0.38) 0%, rgba(var(--sync-accent-rgb), 0.16) 100%);
+            border-color: rgba(var(--sync-accent-rgb), 0.7);
+            box-shadow: 0 8px 25px rgba(var(--sync-accent-rgb), 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+        }
+        .btn-sync-model-premium:active {
+            transform: translateY(0) scale(0.98);
+        }
+        .btn-sync-model-premium.is-syncing {
+            pointer-events: none;
+            opacity: 0.85;
+            filter: brightness(1.15);
+        }
+        .btn-sync-model-premium .sync-shimmer {
+            position: absolute;
+            top: 0;
+            left: -120%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+            transform: skewX(-20deg);
+            transition: 0.6s;
+        }
+        .btn-sync-model-premium:hover .sync-shimmer {
+            left: 160%;
+            transition: 0.8s;
+        }
+        .btn-quick-sync-inline {
+            background: rgba(var(--sync-accent-rgb, 56, 189, 248), 0.12);
+            border: 1px solid rgba(var(--sync-accent-rgb, 56, 189, 248), 0.35);
+            color: var(--sync-accent-color, #38bdf8);
+            border-radius: 8px;
+            padding: 3px 8px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-quick-sync-inline:hover {
+            background: rgba(var(--sync-accent-rgb, 56, 189, 248), 0.25);
+            transform: scale(1.04);
+            color: #ffffff;
+        }
+        .provider-stat-pill {
+            font-size: 0.70rem;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            padding: 3px 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .provider-chip-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #e2e8f0;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.76rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .provider-chip-btn:hover {
+            background: rgba(var(--sync-accent-rgb), 0.16);
+            border-color: rgba(var(--sync-accent-rgb), 0.45);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
         /* Botão de Instalação PWA */
         .btn-install {
             background-color: var(--success);
@@ -7842,8 +7987,13 @@ CREATE TRIGGER on_synapse_user_signed_up
                                     <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Endpoint URL</label>
                                     <input type="text" id="tg-base-url" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff;" value="https://generativelanguage.googleapis.com/" oninput="syncTelegramBaseUrlFromInput(this.value)">
                                 </div>
-                                <div style="width: 35%;">
-                                    <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Modelo</label>
+                                <div style="width: 38%; min-width: 150px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                        <label style="font-size: 0.85rem; font-weight: bold; margin-bottom: 0; text-align: left; color: #fff;">Modelo</label>
+                                        <button type="button" class="btn-quick-sync-inline" onclick="syncProviderModels(telegramApiType || apiType, false)" title="Sincronizar modelos agora">
+                                            <span>🔄 Sincronizar</span>
+                                        </button>
+                                    </div>
                                     <select id="tg-model-name" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff; height: 38px;" onchange="syncTelegramModelFromInput(this.value)">
                                         <option value="gemini-1.5-flash">gemini-1.5-flash • 🟢 Grátis</option>
                                         <option value="gemini-2.5-flash">gemini-2.5-flash • 🟢 Grátis</option>
@@ -8560,8 +8710,13 @@ CREATE TRIGGER on_synapse_user_signed_up
                         <label>Endpoint URL</label>
                         <input type="text" id="base-url" class="form-control" value="https://generativelanguage.googleapis.com/">
                     </div>
-                    <div style="width: 35%;">
-                        <label>Modelo</label>
+                    <div style="width: 38%; min-width: 150px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <label style="margin-bottom: 0;">Modelo</label>
+                            <button type="button" class="btn-quick-sync-inline" onclick="syncProviderModels(apiType, false)" title="Sincronizar modelos do provedor ativo agora">
+                                <span>🔄 Sincronizar</span>
+                            </button>
+                        </div>
                         <select id="model-name" class="form-control" onchange="if(typeof updateModelDetailsDisplay==='function') updateModelDetailsDisplay();">
                             <option value="gemini-1.5-flash">gemini-1.5-flash • 🟢 Grátis</option>
                             <option value="gemini-1.5-pro">gemini-1.5-pro • 🔴 Pago</option>
@@ -8570,42 +8725,40 @@ CREATE TRIGGER on_synapse_user_signed_up
                     </div>
                 </div>
 
-                <!-- Painel de Sincronização & Informações do OpenRouter e Modelos de IA -->
-                <div id="openrouter-sync-container" style="margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px;">
-                    <!-- Card de Sincronização em Tempo Real do OpenRouter -->
-                    <div id="openrouter-sync-card" style="background: rgba(56, 189, 248, 0.04); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <div style="width: 32px; height: 32px; border-radius: 10px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #38bdf8;">
-                                    🌀
+                <!-- Painel Unificado de Sincronização Dinâmica para TODOS os Provedores -->
+                <div id="provider-sync-container" style="margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Card Dinâmico de Sincronização em Tempo Real -->
+                    <div id="provider-sync-card" class="provider-sync-card">
+                        <!-- Header com Provedor, Status e Botão Super Premium -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div id="provider-sync-icon-box" class="provider-sync-icon-box">
+                                    <span id="provider-sync-icon">⚡</span>
                                 </div>
                                 <div>
-                                    <div style="font-size: 0.88rem; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 6px;">
-                                        <span>Catálogo Oficial OpenRouter</span>
-                                        <span id="openrouter-sync-badge" style="font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 6px; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">🟢 Sincronizado</span>
+                                    <div style="font-size: 0.92rem; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                        <span id="provider-sync-title">Catálogo Oficial Groq Cloud</span>
+                                        <span id="provider-sync-badge" class="provider-sync-badge">🟢 Sincronizado</span>
                                     </div>
-                                    <span id="openrouter-sync-status-desc" style="font-size: 0.73rem; color: var(--text-muted);">Sincronização em tempo real com variantes gratuitas</span>
+                                    <span id="provider-sync-status-desc" style="font-size: 0.74rem; color: var(--text-muted);">Inferência ultrarrápida em tempo real com LPUs</span>
                                 </div>
                             </div>
-                            <button type="button" id="btn-sync-openrouter" onclick="syncOpenRouterModels(false)" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.18) 0%, rgba(56, 189, 248, 0.06) 100%); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; padding: 7px 13px; border-radius: 10px; font-size: 0.78rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
-                                <span id="sync-icon-spin">🔄</span> <span>Sincronizar Modelos</span>
+                            
+                            <button type="button" id="btn-sync-provider-models" class="btn-sync-model-premium" onclick="syncProviderModels(apiType, false)" title="Sincronizar modelos com o provedor ativo">
+                                <div class="sync-shimmer"></div>
+                                <span id="sync-provider-icon-spin" class="sync-icon-graphic">🔄</span>
+                                <span id="sync-provider-btn-text">Sincronizar Modelos</span>
                             </button>
                         </div>
 
-                        <!-- Botões de Ação Rápida para Modelos Gratuitos em Destaque -->
-                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <button type="button" onclick="activateAutoFreeModel()" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); color: #34d399; padding: 6px 12px; border-radius: 8px; font-size: 0.76rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s;">
-                                <span>⚡</span> <span>Ativar Modelo Automático (openrouter/free)</span>
-                            </button>
-                            <button type="button" onclick="quickSelectModel('OPENROUTER', 'https://openrouter.ai/api/v1/chat/completions', 'ox-alpha')" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.25); color: #fbbf24; padding: 6px 12px; border-radius: 8px; font-size: 0.76rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                                <span>🐂</span> <span>Ox Alpha (Stealth)</span>
-                            </button>
-                            <button type="button" onclick="quickSelectModel('OPENROUTER', 'https://openrouter.ai/api/v1/chat/completions', 'dots/dots3-note-preview:free')" style="background: rgba(236, 72, 153, 0.1); border: 1px solid rgba(236, 72, 153, 0.25); color: #f472b6; padding: 6px 12px; border-radius: 8px; font-size: 0.76rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                                <span>🎯</span> <span>Dots3-Note 280B</span>
-                            </button>
-                            <button type="button" onclick="quickSelectModel('OPENROUTER', 'https://openrouter.ai/api/v1/chat/completions', 'deepseek/deepseek-v4-flash-vision-exp:free')" style="background: rgba(2, 132, 199, 0.1); border: 1px solid rgba(2, 132, 199, 0.25); color: #38bdf8; padding: 6px 12px; border-radius: 8px; font-size: 0.76rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                                <span>🪐</span> <span>DeepSeek V4 Flash Vision</span>
-                            </button>
+                        <!-- Barra de Status / Mini Métricas do Catálogo -->
+                        <div id="provider-sync-stats-bar" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding-top: 4px; border-top: 1px solid rgba(255, 255, 255, 0.06);">
+                            <!-- Preenchido dinamicamente por updateProviderSyncPanel() -->
+                        </div>
+
+                        <!-- Botões de Ação Rápida e Presets Específicos do Provedor Ativo -->
+                        <div id="provider-sync-quick-chips" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <!-- Preenchido dinamicamente por updateProviderSyncPanel() -->
                         </div>
                     </div>
 
@@ -13844,253 +13997,583 @@ WITH CHECK (true);</code>
             };
         }
 
-        // Sincronização Dinâmica em Tempo Real com o Catálogo Oficial do OpenRouter
-        async function syncOpenRouterModels(silent = false) {
-            const btn = document.getElementById('btn-sync-openrouter');
-            const iconSpin = document.getElementById('sync-icon-spin');
-            const statusDesc = document.getElementById('openrouter-sync-status-desc');
-            const syncBadge = document.getElementById('openrouter-sync-badge');
+        // Sistema Unificado e Inteligente de Sincronização de Modelos para TODOS os Provedores
+        function getSyncedModelsForProvider(providerType) {
+            const p = String(providerType || '').toUpperCase();
+            try {
+                const cacheKey = 'synapse_' + p.toLowerCase() + '_catalog_cache';
+                const raw = localStorage.getItem(cacheKey);
+                if (raw) {
+                    const list = JSON.parse(raw);
+                    if (Array.isArray(list) && list.length > 0) {
+                        return list.map(item => typeof item === 'string' ? item : (item.id || item.name)).filter(Boolean);
+                    }
+                }
+            } catch (e) {
+                console.warn(`[Synapse] Erro ao carregar cache de modelos para ${p}:`, e);
+            }
+            return null;
+        }
 
-            if (btn) btn.disabled = true;
-            if (iconSpin) iconSpin.style.display = 'inline-block', iconSpin.classList.add('animate-spin');
-            if (statusDesc) statusDesc.innerText = "Consultando catálogo oficial do OpenRouter...";
+        // Renderiza e atualiza o card dinâmico de sincronização em tempo real de acordo com o provedor ativo
+        function updateProviderSyncPanel(providerType) {
+            const p = String(providerType || (typeof apiType !== 'undefined' ? apiType : 'OPENROUTER')).toUpperCase();
+            const card = document.getElementById('provider-sync-card');
+            const iconEl = document.getElementById('provider-sync-icon');
+            const titleEl = document.getElementById('provider-sync-title');
+            const badgeEl = document.getElementById('provider-sync-badge');
+            const statusDesc = document.getElementById('provider-sync-status-desc');
+            const statsBar = document.getElementById('provider-sync-stats-bar');
+            const chipsContainer = document.getElementById('provider-sync-quick-chips');
+            const btnText = document.getElementById('sync-provider-btn-text');
+
+            if (!card) return;
+
+            const configMap = {
+                'GROQ': {
+                    name: 'Groq Cloud LPU',
+                    icon: '⚡',
+                    accentRgb: '249, 115, 22',
+                    accentColor: '#f97316',
+                    desc: 'Inferência ultrarrápida em tempo real com hardware Groq LPU',
+                    statLatency: '⚡ LPU Ultra-Low Latency',
+                    defaultModels: [
+                        { id: 'llama-3.3-70b-versatile', label: '🦙 Llama 3.3 70B (Versatile)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'llama-3.1-8b-instant', label: '⚡ Llama 3.1 8B (Instant)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'deepseek-r1-distill-llama-70b', label: '🧠 DeepSeek R1 70B', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'qwen-qwq-32b', label: '💻 Qwen QwQ 32B', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'gemma2-9b-it', label: '💎 Gemma 2 9B', isFree: true, url: 'https://api.groq.com/openai/v1/' }
+                    ]
+                },
+                'GEMINI': {
+                    name: 'Google Gemini API',
+                    icon: '♊',
+                    accentRgb: '129, 140, 248',
+                    accentColor: '#818cf8',
+                    desc: 'Modelos multimodais Google DeepMind de alta velocidade e raciocínio',
+                    statLatency: '♊ Janela 2M Tokens',
+                    defaultModels: [
+                        { id: 'gemini-2.5-flash', label: '⚡ Gemini 2.5 Flash', isFree: true, url: 'https://generativelanguage.googleapis.com/' },
+                        { id: 'gemini-2.0-flash', label: '🚀 Gemini 2.0 Flash', isFree: true, url: 'https://generativelanguage.googleapis.com/' },
+                        { id: 'gemini-2.5-pro', label: '👑 Gemini 2.5 Pro', isFree: false, url: 'https://generativelanguage.googleapis.com/' },
+                        { id: 'gemini-1.5-flash', label: '💎 Gemini 1.5 Flash', isFree: true, url: 'https://generativelanguage.googleapis.com/' }
+                    ]
+                },
+                'OPENAI': {
+                    name: 'OpenAI Oficial',
+                    icon: '🌐',
+                    accentRgb: '16, 185, 129',
+                    accentColor: '#10b981',
+                    desc: 'Modelos de referência global GPT-4o, o1 e o3-mini',
+                    statLatency: '🌐 Flagship Intelligence',
+                    defaultModels: [
+                        { id: 'gpt-4o-mini', label: '⚡ GPT-4o Mini', isFree: false, url: 'https://api.openai.com/v1/' },
+                        { id: 'gpt-4o', label: '👑 GPT-4o Flagship', isFree: false, url: 'https://api.openai.com/v1/' },
+                        { id: 'o3-mini', label: '🔬 o3-Mini Raciocínio', isFree: false, url: 'https://api.openai.com/v1/' },
+                        { id: 'o1', label: '🧠 o1 PhD STEM', isFree: false, url: 'https://api.openai.com/v1/' }
+                    ]
+                },
+                'OPENROUTER': {
+                    name: 'OpenRouter Hub',
+                    icon: '🌀',
+                    accentRgb: '56, 189, 248',
+                    accentColor: '#38bdf8',
+                    desc: 'Roteamento inteligente multi-provedor com mais de 300 modelos',
+                    statLatency: '🌀 300+ Modelos Unificados',
+                    defaultModels: [
+                        { id: 'openrouter/free', label: '⚡ Modelo Automático (openrouter/free)', isFree: true, url: 'https://openrouter.ai/api/v1/chat/completions', isAuto: true },
+                        { id: 'ox-alpha', label: '🐂 Ox Alpha (Stealth)', isFree: true, url: 'https://openrouter.ai/api/v1/chat/completions' },
+                        { id: 'dots/dots3-note-preview:free', label: '🎯 Dots3-Note 280B', isFree: true, url: 'https://openrouter.ai/api/v1/chat/completions' },
+                        { id: 'deepseek/deepseek-v4-flash-vision-exp:free', label: '🪐 DeepSeek V4 Flash', isFree: true, url: 'https://openrouter.ai/api/v1/chat/completions' }
+                    ]
+                },
+                'CUSTOM': {
+                    name: 'Provedor Universal Compatível',
+                    icon: '⚙️',
+                    accentRgb: '168, 85, 247',
+                    accentColor: '#a855f7',
+                    desc: 'Conexão flexível para Ollama, LM Studio, vLLM ou proxies OpenAI',
+                    statLatency: '⚙️ Endpoint Universal',
+                    defaultModels: [
+                        { id: 'google/gemini-2.5-flash', label: '♊ Gemini 2.5 Flash', isFree: true, url: 'https://openrouter.ai/api/v1/' },
+                        { id: 'deepseek-r1', label: '🧠 DeepSeek R1', isFree: true, url: 'https://openrouter.ai/api/v1/' },
+                        { id: 'meta-llama/llama-3.3-70b-instruct', label: '🦙 Llama 3.3 70B', isFree: false, url: 'https://openrouter.ai/api/v1/' }
+                    ]
+                }
+            };
+
+            const cfg = configMap[p] || configMap['OPENROUTER'];
+
+            card.style.setProperty('--sync-accent-rgb', cfg.accentRgb);
+            card.style.setProperty('--sync-accent-color', cfg.accentColor);
+
+            if (iconEl) iconEl.textContent = cfg.icon;
+            if (titleEl) titleEl.textContent = `Catálogo Oficial ${cfg.name}`;
+            if (btnText) btnText.textContent = `Sincronizar Modelos (${p})`;
+
+            const lastSyncIso = localStorage.getItem('synapse_' + p.toLowerCase() + '_last_sync');
+            let lastSyncText = cfg.desc;
+            let isSynced = false;
+            if (lastSyncIso) {
+                try {
+                    const date = new Date(lastSyncIso);
+                    const timeStr = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                    lastSyncText = `Sincronizado hoje às ${timeStr} • ${cfg.desc}`;
+                    isSynced = true;
+                } catch(e) {}
+            }
+            if (statusDesc) statusDesc.textContent = lastSyncText;
+
+            let currentModels = [];
+            if (p === 'OPENROUTER') {
+                currentModels = (typeof getSynapseOpenRouterCatalog === 'function') ? getSynapseOpenRouterCatalog() : [];
+            } else {
+                const cached = getSyncedModelsForProvider(p);
+                currentModels = cached || (cfg.defaultModels.map(m => m.id));
+            }
+            const totalCount = currentModels.length;
+            let freeCount = 0;
+            currentModels.forEach(m => {
+                const id = typeof m === 'string' ? m : (m.id || '');
+                const info = getSynapseModelInfo(id, p);
+                if (info && info.isFree) freeCount++;
+            });
+
+            if (badgeEl) {
+                badgeEl.innerHTML = isSynced 
+                    ? `🟢 ${totalCount} Modelos (${freeCount} Grátis)` 
+                    : `🟡 ${totalCount} Modelos Disponíveis`;
+            }
+
+            if (statsBar) {
+                statsBar.innerHTML = `
+                    <span class="provider-stat-pill">${cfg.statLatency}</span>
+                    <span class="provider-stat-pill">🟢 ${freeCount} Gratuitos</span>
+                    <span class="provider-stat-pill">📦 Total: ${totalCount} Modelos</span>
+                    <span class="provider-stat-pill" style="margin-left: auto; color: ${cfg.accentColor}; font-weight: 600;">Provedor: ${p}</span>
+                `;
+            }
+
+            if (chipsContainer) {
+                chipsContainer.innerHTML = '';
+                cfg.defaultModels.forEach(chip => {
+                    const chipBtn = document.createElement('button');
+                    chipBtn.type = 'button';
+                    chipBtn.className = 'provider-chip-btn';
+                    chipBtn.innerHTML = `<span>${chip.label}</span> <span style="font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; background: ${chip.isFree ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; color: ${chip.isFree ? '#34d399' : '#f87171'};">${chip.isFree ? 'Grátis' : 'Pago'}</span>`;
+                    chipBtn.onclick = () => {
+                        if (chip.isAuto) {
+                            activateAutoFreeModel();
+                        } else {
+                            quickSelectModel(p, chip.url, chip.id);
+                        }
+                    };
+                    chipsContainer.appendChild(chipBtn);
+                });
+            }
+        }
+
+        // Sincronização Dinâmica em Tempo Real para TODOS os Provedores
+        async function syncProviderModels(targetProvider, silent = false) {
+            const p = String(targetProvider || (typeof apiType !== 'undefined' ? apiType : 'OPENROUTER')).toUpperCase();
+            const btn = document.getElementById('btn-sync-provider-models');
+            const iconSpin = document.getElementById('sync-provider-icon-spin');
+            const btnText = document.getElementById('sync-provider-btn-text');
+            const statusDesc = document.getElementById('provider-sync-status-desc');
+            const syncBadge = document.getElementById('provider-sync-badge');
+
+            const inlineBtns = document.querySelectorAll('.btn-quick-sync-inline');
+            inlineBtns.forEach(b => {
+                b.classList.add('is-syncing');
+                const span = b.querySelector('span');
+                if (span) span.innerText = '⏳ Sincronizando...';
+            });
+
+            if (btn) {
+                btn.disabled = true;
+                btn.classList.add('is-syncing');
+            }
+            if (iconSpin) iconSpin.classList.add('animate-spin');
+            if (btnText) btnText.innerText = `Sincronizando ${p}...`;
+            if (statusDesc) statusDesc.innerText = `Consultando catálogo oficial e modelos de ${p}...`;
 
             try {
-                if (!silent) addLog("Consultando API oficial do OpenRouter (https://openrouter.ai/api/v1/models)...", "info");
+                if (!silent) addLog(`[Synapse Sync] Iniciando sincronização inteligente de modelos para o provedor: ${p}...`, "info");
 
-                // Utiliza a chave salva do usuário se houver, caso contrário realiza a consulta pública de catálogo
-                const savedOpenRouterKey = localStorage.getItem('apiKey_OPENROUTER') || '';
-                const headers = {
-                    'HTTP-Referer': window.location.origin || 'https://synapse.local',
-                    'X-Title': 'Synapse Console'
-                };
-                if (savedOpenRouterKey) {
-                    headers['Authorization'] = `Bearer ${savedOpenRouterKey}`;
-                }
+                let resultModels = [];
+                let isFreeCount = 0;
 
-                const response = await fetch('https://openrouter.ai/api/v1/models', {
-                    method: 'GET',
-                    headers: headers
-                });
+                if (p === "OPENROUTER") {
+                    const savedKey = localStorage.getItem('apiKey_OPENROUTER') || document.getElementById('api-key')?.value.trim() || '';
+                    const headers = {
+                        'HTTP-Referer': window.location.origin || 'https://synapse.local',
+                        'X-Title': 'Synapse Console'
+                    };
+                    if (savedKey) headers['Authorization'] = `Bearer ${savedKey}`;
 
-                if (!response.ok) {
-                    throw new Error(`Falha HTTP ${response.status}: ${response.statusText}`);
-                }
+                    const resp = await fetch('https://openrouter.ai/api/v1/models', {
+                        method: 'GET',
+                        headers: headers
+                    });
 
-                const data = await response.json();
-                const remoteList = Array.isArray(data.data) ? data.data : (Array.isArray(data) ? data : []);
+                    if (!resp.ok) throw new Error(`Falha HTTP ${resp.status}: ${resp.statusText}`);
+                    const data = await resp.json();
+                    const remoteList = Array.isArray(data.data) ? data.data : (Array.isArray(data) ? data : []);
 
-                if (remoteList.length === 0) {
-                    throw new Error("Catálogo retornado pelo OpenRouter está vazio.");
-                }
+                    if (remoteList.length === 0) throw new Error("Catálogo retornado pelo OpenRouter está vazio.");
 
-                // Processa e normaliza os modelos retornados pela API oficial
-                const processedCatalog = [];
-                const modelIdMap = new Map();
+                    const processedCatalog = [];
+                    const modelIdMap = new Map();
 
-                // Garante a inserção do Modelo Automático primeiro
-                const autoModel = SYNAPSE_DEFAULT_OPENROUTER_CATALOG[0];
-                processedCatalog.push(autoModel);
-                modelIdMap.set(autoModel.id, true);
+                    const autoModel = SYNAPSE_DEFAULT_OPENROUTER_CATALOG[0];
+                    processedCatalog.push(autoModel);
+                    modelIdMap.set(autoModel.id, true);
+                    let freeCount = 1;
 
-                let freeCount = 1;
+                    remoteList.forEach(m => {
+                        if (!m || !m.id) return;
+                        const id = String(m.id).trim();
+                        const idLower = id.toLowerCase();
+                        const name = m.name || id.split('/').pop() || id;
 
-                remoteList.forEach(m => {
-                    if (!m || !m.id) return;
-                    const id = String(m.id).trim();
-                    const idLower = id.toLowerCase();
-                    const name = m.name || id.split('/').pop() || id;
-
-                    // Identifica se é modelo gratuito
-                    let isFree = false;
-                    if (idLower.includes(':free') || idLower.endsWith(':free') || idLower === 'openrouter/free') {
-                        isFree = true;
-                    } else if (m.pricing) {
-                        const pPrompt = parseFloat(m.pricing.prompt || 0);
-                        const pCompletion = parseFloat(m.pricing.completion || 0);
-                        if (pPrompt === 0 && pCompletion === 0) {
+                        let isFree = false;
+                        if (idLower.includes(':free') || idLower.endsWith(':free') || idLower === 'openrouter/free') {
                             isFree = true;
+                        } else if (m.pricing) {
+                            const pPrompt = parseFloat(m.pricing.prompt || 0);
+                            const pCompletion = parseFloat(m.pricing.completion || 0);
+                            if (pPrompt === 0 && pCompletion === 0) isFree = true;
+                        }
+                        if (isFree) freeCount++;
+
+                        let developer = "Provedor OpenRouter";
+                        if (idLower === 'ox-alpha' || idLower.includes('ox-alpha')) developer = "Stealth (Desenvolvedor não divulgado publicamente pelo OpenRouter)";
+                        else if (idLower.startsWith('deepseek/')) developer = "DeepSeek";
+                        else if (idLower.startsWith('google/')) developer = "Google DeepMind";
+                        else if (idLower.startsWith('meta-llama/')) developer = "Meta AI";
+                        else if (idLower.startsWith('anthropic/')) developer = "Anthropic";
+                        else if (idLower.startsWith('openai/')) developer = "OpenAI";
+                        else if (idLower.startsWith('mistralai/')) developer = "Mistral AI";
+                        else if (idLower.startsWith('qwen/')) developer = "Alibaba Qwen";
+                        else if (idLower.startsWith('dots/')) developer = "Dots AI";
+                        else if (id.includes('/')) {
+                            const rawPrefix = id.split('/')[0];
+                            developer = rawPrefix.charAt(0).toUpperCase() + rawPrefix.slice(1);
+                        }
+
+                        const ctxNum = m.context_length || 128000;
+                        let contextStr = `${ctxNum.toLocaleString('pt-BR')} tokens`;
+                        if (ctxNum >= 1000000) contextStr = `${(ctxNum / 1000000).toFixed(0)}M tokens`;
+                        else if (ctxNum >= 1000) contextStr = `${(ctxNum / 1000).toFixed(0)}k tokens`;
+
+                        const capabilities = ["Texto 📝"];
+                        let hasVision = false, hasTools = true, hasCode = false, hasReasoning = false;
+                        const modalities = (m.architecture && m.architecture.modality) ? String(m.architecture.modality).toLowerCase() : '';
+                        if (modalities.includes('image') || idLower.includes('vision') || idLower.includes('vl') || idLower.includes('flash-exp') || idLower.includes('gpt-4o')) {
+                            hasVision = true; capabilities.push("Visão / Imagem 👁️");
+                        }
+                        if (idLower.includes('r1') || idLower.includes('reason') || idLower.includes('thinking') || idLower.includes('o1') || idLower.includes('o3') || idLower.includes('ox-alpha') || idLower.includes('dots3')) {
+                            hasReasoning = true; capabilities.push("Raciocínio Lógico 🧠");
+                        }
+                        if (idLower.includes('code') || idLower.includes('coder') || idLower.includes('ox-alpha') || idLower.includes('sonnet') || idLower.includes('deepseek')) {
+                            hasCode = true; capabilities.push("Programação 💻");
+                        }
+
+                        const categories = ["all"];
+                        if (isFree) categories.push("free");
+                        if (hasReasoning) categories.push("reasoning");
+                        if (hasCode) categories.push("coding");
+                        if (hasVision) categories.push("vision");
+
+                        let icon = "✦"; let color = "#38bdf8";
+                        if (idLower.includes('ox-alpha')) { icon = "🐂"; color = "#f59e0b"; }
+                        else if (idLower.includes('dots')) { icon = "🎯"; color = "#ec4899"; }
+                        else if (idLower.startsWith('deepseek/')) { icon = "🪐"; color = "#0284c7"; }
+                        else if (idLower.startsWith('google/')) { icon = "♊"; color = "#818cf8"; }
+                        else if (idLower.startsWith('openai/')) { icon = "🤖"; color = "#10b981"; }
+                        else if (idLower.startsWith('anthropic/')) { icon = "🧠"; color = "#f59e0b"; }
+                        else if (idLower.startsWith('meta-llama/')) { icon = "🦙"; color = "#3b82f6"; }
+                        else if (idLower.startsWith('mistralai/')) { icon = "🌪️"; color = "#f97316"; }
+
+                        let badge = isFree ? "🆓 Free" : "IA";
+                        if (idLower.includes('ox-alpha')) badge = "🧪 Stealth";
+                        else if (idLower.includes('dots3')) badge = "🎯 280B MoE";
+                        else if (idLower.includes('v4-flash')) badge = "👁️ Vision Flash";
+                        else if (idLower.includes('r1')) badge = "🧠 R1";
+                        else if (idLower.includes('2.5-flash')) badge = "🌟 2.5 Flash";
+
+                        let description = m.description || `Modelo ${name} fornecido via OpenRouter.`;
+                        if (idLower === 'ox-alpha') description = "Modelo experimental stealth voltado para programação avançada, raciocínio complexo e tarefas agentic de longa duração.";
+
+                        const item = {
+                            id: id,
+                            name: name,
+                            developer: developer,
+                            status: isFree ? "Gratuito" : "Disponível",
+                            isFree: isFree,
+                            isExperimental: idLower.includes('exp') || idLower.includes('alpha'),
+                            isPreview: idLower.includes('preview'),
+                            contextLength: contextStr,
+                            contextTokens: ctxNum,
+                            capabilities: capabilities,
+                            hasVision: hasVision,
+                            hasTools: hasTools,
+                            hasCode: hasCode,
+                            hasReasoning: hasReasoning,
+                            categories: categories,
+                            badge: badge,
+                            icon: icon,
+                            color: color,
+                            description: description,
+                            updatedAt: m.created ? new Date(m.created * 1000).toLocaleDateString('pt-BR') : "Ativo"
+                        };
+
+                        processedCatalog.push(item);
+                        modelIdMap.set(id, true);
+                    });
+
+                    SYNAPSE_DEFAULT_OPENROUTER_CATALOG.forEach(defModel => {
+                        if (!modelIdMap.has(defModel.id)) {
+                            processedCatalog.push(defModel);
+                            modelIdMap.set(defModel.id, true);
+                        }
+                    });
+
+                    localStorage.setItem('synapse_openrouter_catalog_cache', JSON.stringify(processedCatalog));
+                    localStorage.setItem('synapse_openrouter_last_sync', new Date().toISOString());
+
+                    resultModels = processedCatalog.map(m => m.id);
+                    isFreeCount = freeCount;
+                } else if (p === "GROQ") {
+                    const savedKey = localStorage.getItem('apiKey_GROQ') || document.getElementById('api-key')?.value.trim() || '';
+                    let groqList = [];
+                    if (savedKey) {
+                        try {
+                            const resp = await fetch('https://api.groq.com/openai/v1/models', {
+                                method: 'GET',
+                                headers: { 'Authorization': `Bearer ${savedKey}` }
+                            });
+                            if (resp.ok) {
+                                const data = await resp.json();
+                                if (data && Array.isArray(data.data)) {
+                                    groqList = data.data
+                                        .filter(m => m && m.active !== false && !m.id.includes('whisper') && !m.id.includes('tts'))
+                                        .map(m => m.id);
+                                }
+                            }
+                        } catch (groqErr) {
+                            console.warn("[Synapse Groq Online Fetch] Erro ao consultar API online da Groq:", groqErr);
                         }
                     }
 
-                    if (isFree) freeCount++;
-
-                    // Identifica o desenvolvedor/provedor oficial (sem inventar marcas para modelos stealth)
-                    let developer = "Provedor OpenRouter";
-                    if (idLower === 'ox-alpha' || idLower.includes('ox-alpha')) {
-                        developer = "Stealth (Desenvolvedor não divulgado publicamente pelo OpenRouter)";
-                    } else if (idLower.startsWith('deepseek/')) {
-                        developer = "DeepSeek";
-                    } else if (idLower.startsWith('google/')) {
-                        developer = "Google DeepMind";
-                    } else if (idLower.startsWith('meta-llama/')) {
-                        developer = "Meta AI";
-                    } else if (idLower.startsWith('anthropic/')) {
-                        developer = "Anthropic";
-                    } else if (idLower.startsWith('openai/')) {
-                        developer = "OpenAI";
-                    } else if (idLower.startsWith('mistralai/')) {
-                        developer = "Mistral AI";
-                    } else if (idLower.startsWith('qwen/')) {
-                        developer = "Alibaba Qwen";
-                    } else if (idLower.startsWith('dots/')) {
-                        developer = "Dots AI";
-                    } else if (idLower.startsWith('microsoft/')) {
-                        developer = "Microsoft";
-                    } else if (idLower.startsWith('cohere/')) {
-                        developer = "Cohere";
-                    } else if (id.includes('/')) {
-                        const rawPrefix = id.split('/')[0];
-                        developer = rawPrefix.charAt(0).toUpperCase() + rawPrefix.slice(1);
-                    }
-
-                    // Formata o contexto
-                    const ctxNum = m.context_length || 128000;
-                    let contextStr = `${ctxNum.toLocaleString('pt-BR')} tokens`;
-                    if (ctxNum >= 1000000) contextStr = `${(ctxNum / 1000000).toFixed(0)}M tokens`;
-                    else if (ctxNum >= 1000) contextStr = `${(ctxNum / 1000).toFixed(0)}k tokens`;
-
-                    // Capacidades
-                    const capabilities = ["Texto 📝"];
-                    let hasVision = false;
-                    let hasTools = false;
-                    let hasCode = false;
-                    let hasReasoning = false;
-
-                    const modalities = (m.architecture && m.architecture.modality) ? String(m.architecture.modality).toLowerCase() : '';
-                    if (modalities.includes('image') || idLower.includes('vision') || idLower.includes('vl') || idLower.includes('flash-exp') || idLower.includes('gpt-4o')) {
-                        hasVision = true;
-                        capabilities.push("Visão / Imagem 👁️");
-                    }
-
-                    if (idLower.includes('r1') || idLower.includes('reason') || idLower.includes('thinking') || idLower.includes('o1') || idLower.includes('o3') || idLower.includes('ox-alpha') || idLower.includes('dots3')) {
-                        hasReasoning = true;
-                        capabilities.push("Raciocínio Lógico 🧠");
-                    }
-
-                    if (idLower.includes('code') || idLower.includes('coder') || idLower.includes('ox-alpha') || idLower.includes('sonnet') || idLower.includes('deepseek')) {
-                        hasCode = true;
-                        capabilities.push("Programação 💻");
-                    }
-
-                    if (m.supported_parameters && Array.isArray(m.supported_parameters) && m.supported_parameters.includes('tools')) {
-                        hasTools = true;
-                        capabilities.push("Ferramentas (Tools) 🛠️");
+                    if (!groqList || groqList.length === 0) {
+                        groqList = [
+                            "llama-3.3-70b-versatile",
+                            "llama-3.1-8b-instant",
+                            "deepseek-r1-distill-llama-70b",
+                            "qwen-qwq-32b",
+                            "gemma2-9b-it",
+                            "llama-3.2-11b-vision-preview",
+                            "llama-3.2-3b-preview",
+                            "llama-3.2-1b-preview"
+                        ];
                     } else {
-                        hasTools = true;
+                        const priority = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "deepseek-r1-distill-llama-70b", "qwen-qwq-32b", "gemma2-9b-it"];
+                        groqList.sort((a, b) => {
+                            const idxA = priority.indexOf(a);
+                            const idxB = priority.indexOf(b);
+                            if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                            if (idxA !== -1) return -1;
+                            if (idxB !== -1) return 1;
+                            return a.localeCompare(b);
+                        });
                     }
 
-                    // Categorias para filtragem
-                    const categories = ["all"];
-                    if (isFree) categories.push("free");
-                    if (hasReasoning) categories.push("reasoning");
-                    if (hasCode) categories.push("coding");
-                    if (hasVision) categories.push("vision");
-                    if (idLower.includes('flash') || idLower.includes('mini') || idLower.includes('instant') || idLower.includes('small') || idLower.includes('8b')) categories.push("fast");
-                    if (idLower.includes('exp') || idLower.includes('preview') || idLower.includes('alpha') || idLower.includes('beta') || idLower.includes('stealth')) categories.push("experimental");
-                    if (idLower.startsWith('deepseek/')) categories.push("deepseek");
-                    if (idLower.startsWith('google/')) categories.push("google");
-                    if (idLower.startsWith('openai/')) categories.push("openai");
-                    if (idLower.startsWith('anthropic/')) categories.push("anthropic");
-                    if (idLower.startsWith('meta-llama/')) categories.push("meta");
+                    groqList = groqList.filter(id => !id.includes('mixtral-8x7b'));
 
-                    // Status
-                    let status = isFree ? "Gratuito" : "Disponível";
-                    if (idLower.includes('exp') || idLower.includes('alpha')) status = isFree ? "Experimental • Gratuito" : "Experimental";
-                    else if (idLower.includes('preview')) status = isFree ? "Preview • Gratuito" : "Preview";
-
-                    // Ícone e Cor
-                    let icon = "✦";
-                    let color = "#38bdf8";
-                    if (idLower.includes('ox-alpha')) { icon = "🐂"; color = "#f59e0b"; }
-                    else if (idLower.includes('dots')) { icon = "🎯"; color = "#ec4899"; }
-                    else if (idLower.startsWith('deepseek/')) { icon = "🪐"; color = "#0284c7"; }
-                    else if (idLower.startsWith('google/')) { icon = "♊"; color = "#818cf8"; }
-                    else if (idLower.startsWith('openai/')) { icon = "🤖"; color = "#10b981"; }
-                    else if (idLower.startsWith('anthropic/')) { icon = "🧠"; color = "#f59e0b"; }
-                    else if (idLower.startsWith('meta-llama/')) { icon = "🦙"; color = "#3b82f6"; }
-                    else if (idLower.startsWith('mistralai/')) { icon = "🌪️"; color = "#f97316"; }
-
-                    // Badge
-                    let badge = isFree ? "🆓 Free" : "IA";
-                    if (idLower.includes('ox-alpha')) badge = "🧪 Stealth";
-                    else if (idLower.includes('dots3')) badge = "🎯 280B MoE";
-                    else if (idLower.includes('v4-flash')) badge = "👁️ Vision Flash";
-                    else if (idLower.includes('r1')) badge = "🧠 R1";
-                    else if (idLower.includes('2.5-flash')) badge = "🌟 2.5 Flash";
-
-                    // Descrição
-                    let description = m.description || `Modelo ${name} fornecido via OpenRouter.`;
-                    if (idLower === 'ox-alpha') {
-                        description = "Modelo experimental stealth voltado para programação avançada, raciocínio complexo e tarefas agentic de longa duração. Desenvolvedor não divulgado publicamente pelo OpenRouter.";
+                    localStorage.setItem('synapse_groq_catalog_cache', JSON.stringify(groqList));
+                    localStorage.setItem('synapse_groq_last_sync', new Date().toISOString());
+                    resultModels = groqList;
+                    isFreeCount = groqList.length;
+                } else if (p === "GEMINI") {
+                    const savedKey = localStorage.getItem('apiKey_GEMINI') || document.getElementById('api-key')?.value.trim() || '';
+                    let geminiList = [];
+                    if (savedKey) {
+                        try {
+                            const cleanKey = savedKey.trim();
+                            const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${cleanKey}`, {
+                                method: 'GET'
+                            });
+                            if (resp.ok) {
+                                const data = await resp.json();
+                                if (data && Array.isArray(data.models)) {
+                                    geminiList = data.models
+                                        .filter(m => m && m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent'))
+                                        .map(m => m.name ? m.name.replace(/^models\//, '') : m.id)
+                                        .filter(Boolean);
+                                }
+                            }
+                        } catch (gemErr) {
+                            console.warn("[Synapse Gemini Online Fetch] Erro ao consultar API online do Gemini:", gemErr);
+                        }
                     }
 
-                    const item = {
-                        id: id,
-                        name: name,
-                        developer: developer,
-                        status: status,
-                        isFree: isFree,
-                        isExperimental: idLower.includes('exp') || idLower.includes('alpha'),
-                        isPreview: idLower.includes('preview'),
-                        contextLength: contextStr,
-                        contextTokens: ctxNum,
-                        capabilities: capabilities,
-                        hasVision: hasVision,
-                        hasTools: hasTools,
-                        hasCode: hasCode,
-                        hasReasoning: hasReasoning,
-                        categories: categories,
-                        badge: badge,
-                        icon: icon,
-                        color: color,
-                        description: description,
-                        updatedAt: m.created ? new Date(m.created * 1000).toLocaleDateString('pt-BR') : "Ativo"
-                    };
-
-                    processedCatalog.push(item);
-                    modelIdMap.set(id, true);
-                });
-
-                // Garante que os modelos em destaque solicitados estejam todos presentes mesmo se a busca retornar parcial
-                SYNAPSE_DEFAULT_OPENROUTER_CATALOG.forEach(defModel => {
-                    if (!modelIdMap.has(defModel.id)) {
-                        processedCatalog.push(defModel);
-                        modelIdMap.set(defModel.id, true);
+                    if (!geminiList || geminiList.length === 0) {
+                        geminiList = [
+                            "gemini-2.5-flash",
+                            "gemini-2.5-pro",
+                            "gemini-2.0-flash",
+                            "gemini-2.0-flash-lite",
+                            "gemini-2.0-flash-thinking-exp",
+                            "gemini-1.5-flash",
+                            "gemini-1.5-pro"
+                        ];
+                    } else {
+                        const priority = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
+                        geminiList.sort((a, b) => {
+                            const idxA = priority.indexOf(a);
+                            const idxB = priority.indexOf(b);
+                            if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                            if (idxA !== -1) return -1;
+                            if (idxB !== -1) return 1;
+                            return a.localeCompare(b);
+                        });
                     }
-                });
 
-                // Salva no cache local com timestamp
-                localStorage.setItem('synapse_openrouter_catalog_cache', JSON.stringify(processedCatalog));
-                localStorage.setItem('synapse_openrouter_last_sync', new Date().toISOString());
+                    localStorage.setItem('synapse_gemini_catalog_cache', JSON.stringify(geminiList));
+                    localStorage.setItem('synapse_gemini_last_sync', new Date().toISOString());
+                    resultModels = geminiList;
+                    isFreeCount = geminiList.filter(id => id.includes('flash') || id.includes('thinking')).length;
+                } else if (p === "OPENAI") {
+                    const savedKey = localStorage.getItem('apiKey_OPENAI') || document.getElementById('api-key')?.value.trim() || '';
+                    let openaiList = [];
+                    if (savedKey) {
+                        try {
+                            const resp = await fetch('https://api.openai.com/v1/models', {
+                                method: 'GET',
+                                headers: { 'Authorization': `Bearer ${savedKey}` }
+                            });
+                            if (resp.ok) {
+                                const data = await resp.json();
+                                if (data && Array.isArray(data.data)) {
+                                    openaiList = data.data
+                                        .map(m => m.id)
+                                        .filter(id => (id.startsWith('gpt-') || id.startsWith('o1') || id.startsWith('o3')) && !id.includes('instruct') && !id.includes('realtime') && !id.includes('audio') && !id.includes('tts'));
+                                }
+                            }
+                        } catch (oaErr) {
+                            console.warn("[Synapse OpenAI Online Fetch] Erro ao consultar API online da OpenAI:", oaErr);
+                        }
+                    }
 
-                // Atualiza os dropdowns e componentes interativos
-                const activeType = typeof apiType !== 'undefined' ? apiType : 'OPENROUTER';
-                updateAllModelDropdowns(activeType);
+                    if (!openaiList || openaiList.length === 0) {
+                        openaiList = [
+                            "gpt-4o-mini",
+                            "gpt-4o",
+                            "o3-mini",
+                            "o1",
+                            "o1-mini",
+                            "gpt-4-turbo",
+                            "gpt-3.5-turbo"
+                        ];
+                    } else {
+                        const priority = ["gpt-4o-mini", "gpt-4o", "o3-mini", "o1", "o1-mini", "gpt-4-turbo"];
+                        openaiList.sort((a, b) => {
+                            const idxA = priority.indexOf(a);
+                            const idxB = priority.indexOf(b);
+                            if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                            if (idxA !== -1) return -1;
+                            if (idxB !== -1) return 1;
+                            return a.localeCompare(b);
+                        });
+                    }
+
+                    localStorage.setItem('synapse_openai_catalog_cache', JSON.stringify(openaiList));
+                    localStorage.setItem('synapse_openai_last_sync', new Date().toISOString());
+                    resultModels = openaiList;
+                    isFreeCount = 0;
+                } else {
+                    const customBase = document.getElementById('base-url')?.value.trim() || 'https://openrouter.ai/api/v1/';
+                    const savedKey = localStorage.getItem('apiKey_CUSTOM') || document.getElementById('api-key')?.value.trim() || '';
+                    let customList = [];
+
+                    try {
+                        let modelsUrl = customBase.replace(/\/chat\/completions\/?$/, '').replace(/\/+$/, '') + '/models';
+                        const headers = {};
+                        if (savedKey) headers['Authorization'] = `Bearer ${savedKey}`;
+                        const resp = await fetch(modelsUrl, { method: 'GET', headers: headers });
+                        if (resp.ok) {
+                            const data = await resp.json();
+                            const arr = Array.isArray(data.data) ? data.data : (Array.isArray(data) ? data : (Array.isArray(data.models) ? data.models : []));
+                            customList = arr.map(m => typeof m === 'string' ? m : (m.id || m.name)).filter(Boolean);
+                        }
+                    } catch (customErr) {
+                        console.warn("[Synapse Custom Online Fetch] Erro ao consultar endpoint de modelos customizados:", customErr);
+                    }
+
+                    if (!customList || customList.length === 0) {
+                        const orCat = (typeof getSynapseOpenRouterCatalog === 'function') ? getSynapseOpenRouterCatalog() : [];
+                        const orFreeIds = orCat.filter(m => m.isFree).map(m => m.id);
+                        customList = Array.from(new Set([
+                            "google/gemini-2.5-flash",
+                            "deepseek-r1",
+                            "deepseek-chat",
+                            "meta-llama/llama-3.3-70b-instruct",
+                            "qwen/qwen-2.5-72b-instruct",
+                            "openrouter/free",
+                            "ox-alpha",
+                            ...orFreeIds
+                        ]));
+                    }
+
+                    localStorage.setItem('synapse_custom_catalog_cache', JSON.stringify(customList));
+                    localStorage.setItem('synapse_custom_last_sync', new Date().toISOString());
+                    resultModels = customList;
+                    isFreeCount = customList.filter(id => id.includes('free') || id.includes('flash') || id.includes('ox-alpha')).length;
+                }
+
+                updateAllModelDropdowns(p);
                 updateModelDetailsDisplay();
+                updateProviderSyncPanel(p);
 
+                triggerPulse();
                 const nowStr = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                if (statusDesc) statusDesc.innerText = `Sincronizado às ${nowStr} • ${freeCount} modelos gratuitos disponíveis`;
-                if (syncBadge) syncBadge.innerText = `🟢 ${processedCatalog.length} Modelos`;
-
                 if (!silent) {
-                    addLog(`Catálogo OpenRouter sincronizado com sucesso: ${processedCatalog.length} modelos (${freeCount} gratuitos).`, "success");
-                    showAppToast(`Catálogo Atualizado: ${processedCatalog.length} modelos (${freeCount} gratuitos)`, "success");
+                    addLog(`Catálogo ${p} sincronizado com sucesso às ${nowStr}: ${resultModels.length} modelos atualizados.`, "success");
+                    showAppToast(`⚡ ${resultModels.length} Modelos Sincronizados para ${p}!`, "success");
                 }
 
-                return processedCatalog;
+                return resultModels;
             } catch (err) {
-                console.error("[Synapse OpenRouter Sync] Erro:", err);
-                if (statusDesc) statusDesc.innerText = `Catálogo em cache local (${SYNAPSE_DEFAULT_OPENROUTER_CATALOG.length} modelos verificados)`;
+                console.error(`[Synapse Sync Error - ${p}]:`, err);
+                if (statusDesc) statusDesc.innerText = `Catálogo local ativo para ${p} (${err.message})`;
                 if (!silent) {
-                    addLog(`Aviso na sincronização online: ${err.message}. Usando catálogo local otimizado.`, "warning");
-                    showAppToast(`Catálogo carregado do cache local (${SYNAPSE_DEFAULT_OPENROUTER_CATALOG.length} modelos)`, "info");
+                    addLog(`Aviso na sincronização de ${p}: ${err.message}. Usando catálogo local otimizado.`, "warning");
+                    showAppToast(`Catálogo local carregado para ${p}`, "info");
                 }
-                return getSynapseOpenRouterCatalog();
+                updateAllModelDropdowns(p);
+                updateModelDetailsDisplay();
+                updateProviderSyncPanel(p);
+                return [];
             } finally {
-                if (btn) btn.disabled = false;
+                if (btn) {
+                    btn.disabled = false;
+                    btn.classList.remove('is-syncing');
+                }
                 if (iconSpin) iconSpin.classList.remove('animate-spin');
+                if (btnText) btnText.innerText = `Sincronizar Modelos (${p})`;
+
+                inlineBtns.forEach(b => {
+                    b.classList.remove('is-syncing');
+                    const span = b.querySelector('span');
+                    if (span) span.innerText = '🔄 Sincronizar';
+                });
             }
+        }
+
+        // Wrapper de compatibilidade total para chamadas legadas
+        async function syncOpenRouterModels(silent = false) {
+            return await syncProviderModels('OPENROUTER', silent);
         }
 
         // Ativa o Modelo Automático inteligente (openrouter/free)
@@ -14185,46 +14668,58 @@ WITH CHECK (true);</code>
             // integrando o catálogo dinâmico oficial do OpenRouter com as opções nativas do Gemini, Groq, OpenAI e Customizados.
             let options = [];
             if (type === "GEMINI") {
-                options = [
+                const cachedGemini = (typeof getSyncedModelsForProvider === 'function') ? getSyncedModelsForProvider("GEMINI") : null;
+                options = cachedGemini || [
                     "gemini-2.5-flash", 
                     "gemini-2.5-pro", 
                     "gemini-2.0-flash", 
+                    "gemini-2.0-flash-lite",
                     "gemini-2.0-flash-thinking-exp",
                     "gemini-1.5-flash", 
                     "gemini-1.5-pro"
                 ];
             } else if (type === "GROQ") {
-                options = [
-                    "deepseek-r1-distill-llama-70b",
+                const cachedGroq = (typeof getSyncedModelsForProvider === 'function') ? getSyncedModelsForProvider("GROQ") : null;
+                options = cachedGroq || [
                     "llama-3.3-70b-versatile", 
                     "llama-3.1-8b-instant", 
+                    "deepseek-r1-distill-llama-70b",
+                    "qwen-qwq-32b",
                     "gemma2-9b-it", 
-                    "mixtral-8x7b-32768"
+                    "llama-3.2-11b-vision-preview",
+                    "llama-3.2-3b-preview",
+                    "llama-3.2-1b-preview"
                 ];
             } else if (type === "OPENROUTER") {
                 const openRouterCatalog = getSynapseOpenRouterCatalog();
                 options = openRouterCatalog.map(m => m.id);
             } else if (type === "CUSTOM") {
-                const openRouterCatalog = getSynapseOpenRouterCatalog();
-                const orFreeIds = openRouterCatalog.filter(m => m.isFree).map(m => m.id);
-                options = [
-                    ...orFreeIds,
-                    "deepseek-r1",
-                    "deepseek-chat",
-                    "google/gemini-2.5-flash", 
-                    "meta-llama/llama-3.3-70b-instruct", 
-                    "qwen/qwen-2.5-72b-instruct"
-                ];
-                // Remove duplicatas mantendo ordem
-                options = Array.from(new Set(options));
+                const cachedCustom = (typeof getSyncedModelsForProvider === 'function') ? getSyncedModelsForProvider("CUSTOM") : null;
+                if (cachedCustom) {
+                    options = cachedCustom;
+                } else {
+                    const openRouterCatalog = getSynapseOpenRouterCatalog();
+                    const orFreeIds = openRouterCatalog.filter(m => m.isFree).map(m => m.id);
+                    options = [
+                        "google/gemini-2.5-flash", 
+                        "deepseek-r1",
+                        "deepseek-chat",
+                        "meta-llama/llama-3.3-70b-instruct", 
+                        "qwen/qwen-2.5-72b-instruct",
+                        ...orFreeIds
+                    ];
+                    options = Array.from(new Set(options));
+                }
             } else {
-                options = [
+                const cachedOpenAI = (typeof getSyncedModelsForProvider === 'function') ? getSyncedModelsForProvider("OPENAI") : null;
+                options = cachedOpenAI || [
                     "gpt-4o-mini", 
                     "gpt-4o", 
                     "o3-mini", 
                     "o1", 
                     "o1-mini", 
-                    "gpt-4-turbo"
+                    "gpt-4-turbo",
+                    "gpt-3.5-turbo"
                 ];
             }
             
@@ -14373,6 +14868,10 @@ WITH CHECK (true);</code>
             
             if (typeof updateModelDetailsDisplay === 'function') {
                 updateModelDetailsDisplay();
+            }
+
+            if (typeof updateProviderSyncPanel === 'function') {
+                updateProviderSyncPanel(type);
             }
         }
 
@@ -27758,7 +28257,15 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             // Sincroniza dinamicamente as opções para o modelo de moderação geral/mestre do sistema.
             // Permite alternar perfeitamente entre canais de inferência do OpenRouter, OpenAI, Gemini local, Groq e outros.
             let optionsList = [];
-            if (typeVal === "GEMINI") {
+            const syncedList = (typeof getSyncedModelsForProvider === 'function') ? getSyncedModelsForProvider(typeVal) : null;
+
+            if (syncedList && syncedList.length > 0) {
+                optionsList = syncedList.map(opt => {
+                    const info = getSynapseModelInfo(opt, typeVal);
+                    const tag = info.isFree ? '🟢 Grátis' : '🔴 Pago';
+                    return { value: opt, label: `${info.name || opt} • ${tag}` };
+                });
+            } else if (typeVal === "GEMINI") {
                 optionsList = [
                     { value: "gemini-2.5-flash", label: "gemini-2.5-flash • 🟢 Grátis (Mais Recente e Recomendado)" },
                     { value: "gemini-2.5-pro", label: "gemini-2.5-pro • 🔴 Pago (Raciocínio Ultra-Avançado)" },
@@ -27768,11 +28275,11 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 ];
             } else if (typeVal === "GROQ") {
                 optionsList = [
-                    { value: "deepseek-r1-distill-llama-70b", label: "deepseek-r1-distill-llama-70b • 🟢 Grátis" },
-                    { value: "llama-3.3-70b-versatile", label: "llama-3.3-70b-versatile • 🟢 Grátis" },
-                    { value: "llama-3.1-8b-instant", label: "llama-3.1-8b-instant • 🟢 Grátis" },
-                    { value: "gemma2-9b-it", label: "gemma2-9b-it • 🟢 Grátis" },
-                    { value: "mixtral-8x7b-32768", label: "mixtral-8x7b-32768 • 🟢 Grátis" }
+                    { value: "llama-3.3-70b-versatile", label: "llama-3.3-70b-versatile • 🟢 Grátis (Recomendado)" },
+                    { value: "llama-3.1-8b-instant", label: "llama-3.1-8b-instant • 🟢 Grátis (Ultrarrápido)" },
+                    { value: "deepseek-r1-distill-llama-70b", label: "deepseek-r1-distill-llama-70b • 🟢 Grátis (Raciocínio)" },
+                    { value: "qwen-qwq-32b", label: "qwen-qwq-32b • 🟢 Grátis" },
+                    { value: "gemma2-9b-it", label: "gemma2-9b-it • 🟢 Grátis" }
                 ];
             } else if (typeVal === "OPENROUTER") {
                 const orCat = (typeof getSynapseOpenRouterCatalog === 'function') ? getSynapseOpenRouterCatalog() : [];
@@ -27790,6 +28297,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 ];
             } else {
                 optionsList = [
+                    { value: "google/gemini-2.5-flash", label: "google/gemini-2.5-flash • 🟢 Grátis" },
                     { value: "deepseek-r1", label: "deepseek-r1 • 🔴 Pago" },
                     { value: "deepseek-chat", label: "deepseek-chat • 🔴 Pago" },
                     { value: "custom-model", label: "Modelo Customizado" }
