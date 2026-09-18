@@ -1,5 +1,11 @@
 package com.example.ui.view
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
@@ -1163,6 +1169,33 @@ fun SettingsTab(
     var supabaseAuto by remember { mutableStateOf(false) }
     var testConnectionStatus by remember { mutableStateOf("") } // "", "TESTING", "SUCCESS", "ERROR"
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    var hasNotificationPermission by remember {
+        mutableStateOf(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            } else {
+                true
+            }
+        )
+    }
+
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        hasNotificationPermission = isGranted
+        if (isGranted) {
+            viewModel.sendPushNotification(
+                title = "🔔 Notificações Ativadas",
+                message = "O Synapse Console agora pode enviar alertas push e avisos em segundo plano.",
+                category = "system"
+            )
+        }
+    }
 
     // Webhook Manager States
     var webhookName by remember { mutableStateOf("Synapse Production Webhook") }
@@ -2870,6 +2903,45 @@ fun SettingsTab(
                                     checked = viewModel.soundEffectsOn.collectAsStateWithLifecycle().value,
                                     onCheckedChange = { viewModel.updateNotificationSetting("sound_effects_on", it) }
                                 )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Box(Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF334155)))
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                // Android Push System Action / Test Button
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !hasNotificationPermission) {
+                                    Button(
+                                        onClick = {
+                                            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                        },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF59E0B)),
+                                        shape = RoundedCornerShape(12.dp)
+                                    ) {
+                                        Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.Black, modifier = Modifier.size(18.dp))
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text("Autorizar Notificações no Android", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                                    }
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                }
+
+                                OutlinedButton(
+                                    onClick = {
+                                        viewModel.sendPushNotification(
+                                            title = "⚡ Synapse Console Ativo",
+                                            message = "O sistema de notificações push nativas está operacional no seu dispositivo!",
+                                            category = "system"
+                                        )
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    border = BorderStroke(1.dp, Color(0xFF38BDF8)),
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF38BDF8))
+                                ) {
+                                    Icon(Icons.Default.Notifications, contentDescription = null, modifier = Modifier.size(18.dp))
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("🔔 Enviar Notificação de Teste", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                                }
                             }
                         }
                     }

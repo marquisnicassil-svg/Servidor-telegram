@@ -1,4 +1,4 @@
-const CACHE_NAME = 'console-ia-cache-v22';
+const CACHE_NAME = 'console-ia-cache-v23';
 const urlsToCache = [
   './',
   './index.html',
@@ -38,5 +38,47 @@ self.addEventListener('fetch', event => {
   // Network-first strategy para recursos locais estáticos
   event.respondWith(
     fetch(event.request).catch(() => caches.match(event.request))
+  );
+});
+
+// Suporte a Notificações Push e Interações em segundo plano
+self.addEventListener('push', event => {
+  let data = { title: 'Synapse Console', body: 'Nova atualização do sistema.', icon: './app/src/main/res/drawable/synapse_logo_1781452080476.jpg' };
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (e) {
+      data.body = event.data.text();
+    }
+  }
+
+  const options = {
+    body: data.body || 'Alerta do console',
+    icon: data.icon || './app/src/main/res/drawable/synapse_logo_1781452080476.jpg',
+    badge: data.badge || './app/src/main/res/drawable/synapse_logo_1781452080476.jpg',
+    vibrate: [100, 50, 100],
+    data: {
+      url: data.url || './index.html'
+    }
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'Synapse Console', options)
+  );
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+      for (const client of clientList) {
+        if (client.url.includes('index.html') && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow('./index.html');
+      }
+    })
   );
 });

@@ -1,6 +1,13 @@
 package com.example.ui.viewmodel
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import androidx.core.app.NotificationCompat
 import android.util.Log
 import android.speech.tts.TextToSpeech
 import android.speech.tts.Voice
@@ -146,6 +153,81 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
             "notif_security_on" -> _notifSecurityOn.value = value
             "notif_silent_mode" -> _notifSilentMode.value = value
             "sound_effects_on" -> _soundEffectsOn.value = value
+        }
+    }
+
+    private fun ensureNotificationChannel(channelId: String, channelName: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val app = getApplication<Application>()
+            val notificationManager = app.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            if (notificationManager.getNotificationChannel(channelId) == null) {
+                val channel = NotificationChannel(
+                    channelId,
+                    channelName,
+                    NotificationManager.IMPORTANCE_DEFAULT
+                ).apply {
+                    description = "Canal de notificações para $channelName"
+                    enableVibration(true)
+                }
+                notificationManager.createNotificationChannel(channel)
+            }
+        }
+    }
+
+    fun sendPushNotification(title: String, message: String, category: String = "system") {
+        if (_notifSilentMode.value) return
+
+        val shouldSend = when (category) {
+            "messages" -> _notifMessagesOn.value
+            "updates" -> _notifUpdatesOn.value
+            "integrations" -> _notifIntegrationsOn.value
+            "security" -> _notifSecurityOn.value
+            else -> _notifSystemOn.value
+        }
+        if (!shouldSend) return
+
+        try {
+            val app = getApplication<Application>()
+            val channelId = "synapse_${category}_channel"
+            val channelName = when (category) {
+                "messages" -> "Mensagens & Chat"
+                "updates" -> "Atualizações do Sistema"
+                "integrations" -> "Integrações & Webhooks"
+                "security" -> "Segurança e Autenticação"
+                else -> "Geral & Notificações"
+            }
+            ensureNotificationChannel(channelId, channelName)
+
+            val intent = app.packageManager.getLaunchIntentForPackage(app.packageName)?.apply {
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            val pendingIntent = if (intent != null) {
+                PendingIntent.getActivity(
+                    app,
+                    System.currentTimeMillis().toInt(),
+                    intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+            } else null
+
+            val builder = NotificationCompat.Builder(app, channelId)
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true)
+
+            if (pendingIntent != null) {
+                builder.setContentIntent(pendingIntent)
+            }
+
+            val notificationManager = app.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notifId = (System.currentTimeMillis() % 100000).toInt()
+            notificationManager.notify(notifId, builder.build())
+            playSound("notification")
+        } catch (e: Exception) {
+            Log.e("BotViewModel", "Erro ao disparar notificação: ${e.message}")
         }
     }
 
