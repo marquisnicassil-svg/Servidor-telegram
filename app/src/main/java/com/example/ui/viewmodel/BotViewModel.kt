@@ -1639,6 +1639,14 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
     override fun onCleared() {
         super.onCleared()
         try {
+            globalServerRunning.value = false
+            globalPollingJob?.cancel()
+            globalPollingJob = null
+            globalScope.cancel()
+        } catch (e: Exception) {
+            Log.e("BotViewModel", "Error cancelling polling scope: ${e.message}")
+        }
+        try {
             textToSpeech?.stop()
             textToSpeech?.shutdown()
         } catch (e: Exception) {
@@ -1646,6 +1654,7 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
         }
         try {
             toneGenerator?.release()
+            toneGenerator = null
         } catch (e: Exception) {
             Log.e("BotViewModel", "Error releasing ToneGenerator: ${e.message}")
         }

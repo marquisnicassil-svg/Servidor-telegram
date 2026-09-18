@@ -28,7 +28,33 @@
                 }
             }, 500);
         });
-        window.addEventListener('unhandledrejection', function(e) {
+        // Global Protective Proxy for Storage to prevent QuotaExceededError and browser private-mode crashes
+        (function() {
+            try {
+                const originalSetItem = Storage.prototype.setItem;
+                Storage.prototype.setItem = function(key, value) {
+                    try {
+                        originalSetItem.apply(this, [key, value]);
+                    } catch (e) {
+                        console.warn('[Storage Protection] Error writing to storage for key "' + key + '":', e.message);
+                        if (e.name === 'QuotaExceededError' || e.code === 22) {
+                            try {
+                                // Clear heavy temporary caches
+                                localStorage.removeItem('synapse_openrouter_catalog_cache');
+                                localStorage.removeItem('synapse_groq_catalog_cache');
+                                localStorage.removeItem('synapse_gemini_catalog_cache');
+                                originalSetItem.apply(this, [key, value]);
+                            } catch (e2) {
+                                console.error('[Storage Protection] Failed to free space for key "' + key + '":', e2.message);
+                            }
+                        }
+                    }
+                };
+            } catch (err) {
+                console.warn('[Storage Protection] Unable to wrap Storage.prototype:', err);
+            }
+        })();
+                window.addEventListener('unhandledrejection', function(e) {
             console.error("Safety System Alert: unhandled rejection caught: ", e.reason);
             setTimeout(function() {
                 const splash = document.getElementById('splash-screen');
@@ -7200,17 +7226,17 @@ CREATE TRIGGER on_synapse_user_signed_up
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <span style="font-size: 1.1rem;">📲</span>
                                 <div>
-                                    <div style="font-size: 0.85rem; font-weight: 700; color: #fff;">Alertas Push do Dispositivo</div>
-                                    <div style="font-size: 0.70rem; color: var(--text-muted);">Compatível com APK Android nativo e PWA Web</div>
+                                    <div style="font-size: 0.85rem; font-weight: 700; color: #fff;">Notificações & Alertas do App / APK</div>
+                                    <div style="font-size: 0.70rem; color: var(--text-muted);">Compatível com APK convertido, WebView e Web PWA</div>
                                 </div>
                             </div>
                             <span id="notif-permission-badge" style="font-size: 0.70rem; padding: 3px 8px; border-radius: 6px; font-weight: 600; background: rgba(255,255,255,0.06); color: #94a3b8;">Verificando</span>
                         </div>
                         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <button type="button" class="btn-universal" onclick="requestAppNotificationPermission()" style="flex: 1; min-width: 140px; font-size: 0.78rem; padding: 9px 12px; background: linear-gradient(135deg, #0284c7, #38bdf8); color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">
-                                🔔 Autorizar Notificações
+                            <button type="button" class="btn-universal" id="btn-toggle-app-notif" onclick="toggleAppNotificationPermission()" style="flex: 1; min-width: 140px; font-size: 0.78rem; padding: 9px 12px; background: linear-gradient(135deg, #0284c7, #38bdf8); color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">
+                                🔔 Ativar / Gerenciar Notificações
                             </button>
-                            <button type="button" class="btn-universal" onclick="sendSystemNotification('⚡ Synapse Console', 'Sistema de notificações conectado com sucesso!', 'system')" style="flex: 1; min-width: 140px; font-size: 0.78rem; padding: 9px 12px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: #fff; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                            <button type="button" class="btn-universal" onclick="sendSystemNotification('⚡ Synapse Console', 'Sistema de notificações conectado com sucesso no seu APK!', 'system')" style="flex: 1; min-width: 140px; font-size: 0.78rem; padding: 9px 12px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: #fff; border-radius: 8px; font-weight: 600; cursor: pointer;">
                                 🧪 Testar Alerta
                             </button>
                         </div>
@@ -11665,49 +11691,115 @@ WITH CHECK (true);</code>
             }
         }
 
-        // --- SISTEMA DE NOTIFICAÇÕES NATIVAS & PUSH (APK / WEB) ---
+        // --- SISTEMA DE NOTIFICAÇÕES NATIVAS & PUSH UNIVERSAL (APK WRAPPER / WEBVIEW / ANDROID / PWA) ---
+        function isNativeAppWrapper() {
+            return !!(
+                window.Android || 
+                window.AndroidBridge || 
+                window.SynapseNative || 
+                window.webkit?.messageHandlers ||
+                (window.navigator && (
+                    navigator.userAgent.includes('wv') || 
+                    navigator.userAgent.includes('WebView') || 
+                    navigator.userAgent.includes('AndroidApp') ||
+                    navigator.userAgent.includes('Version/4.0')
+                ))
+            );
+        }
+
+        function getDeviceNotificationStatus() {
+            if ("Notification" in window) {
+                return Notification.permission; // 'granted', 'denied', 'default'
+            }
+            // Fallback para WebViews de APK onde window.Notification não é exposta diretamente
+            const savedState = localStorage.getItem('synapse_apk_notifications_enabled');
+            if (savedState === 'true') return 'granted';
+            if (savedState === 'false') return 'denied';
+            return 'default';
+        }
+
         function updateNotifPermissionBadge() {
             const badge = document.getElementById('notif-permission-badge');
             if (!badge) return;
-            if (!("Notification" in window)) {
-                badge.innerText = "Indisponível";
-                badge.style.background = "rgba(239, 68, 68, 0.1)";
-                badge.style.color = "#ef4444";
-                return;
-            }
-            if (Notification.permission === 'granted') {
-                badge.innerText = "Autorizado ✓";
+
+            const status = getDeviceNotificationStatus();
+            if (status === 'granted') {
+                badge.innerText = "Ativo no APK ✓";
                 badge.style.background = "rgba(16, 185, 129, 0.15)";
                 badge.style.color = "#10b981";
-            } else if (Notification.permission === 'denied') {
-                badge.innerText = "Bloqueado ✕";
+                badge.style.borderColor = "rgba(16, 185, 129, 0.3)";
+            } else if (status === 'denied') {
+                badge.innerText = "Desativado ✕";
                 badge.style.background = "rgba(239, 68, 68, 0.15)";
                 badge.style.color = "#ef4444";
+                badge.style.borderColor = "rgba(239, 68, 68, 0.3)";
             } else {
-                badge.innerText = "Pendente";
-                badge.style.background = "rgba(245, 158, 11, 0.15)";
-                badge.style.color = "#f59e0b";
+                badge.innerText = isNativeAppWrapper() ? "Disponível (Toque p/ Ativar)" : "Pendente";
+                badge.style.background = "rgba(56, 189, 248, 0.15)";
+                badge.style.color = "#38bdf8";
+                badge.style.borderColor = "rgba(56, 189, 248, 0.3)";
             }
+        }
+
+        async function toggleAppNotificationPermission() {
+            const currentStatus = getDeviceNotificationStatus();
+            if (currentStatus === 'granted') {
+                // Usuário clicou para desativar/tirar as notificações
+                localStorage.setItem('synapse_apk_notifications_enabled', 'false');
+                updateNotifPermissionBadge();
+                showAppToast("Notificações desativadas para este aplicativo. 🔕");
+                return;
+            }
+            await requestAppNotificationPermission();
         }
 
         async function requestAppNotificationPermission() {
             triggerPulse();
-            if (!("Notification" in window)) {
-                showAppToast("Notificações da Web/APK não suportadas neste navegador.");
-                return;
-            }
-            try {
-                const permission = await Notification.requestPermission();
-                updateNotifPermissionBadge();
-                if (permission === 'granted') {
-                    showAppToast("Notificações autorizadas com sucesso! 🔔");
-                    sendSystemNotification("⚡ Synapse Console", "As notificações push e alertas em segundo plano estão ativados!", "system");
-                } else if (permission === 'denied') {
-                    showAppToast("Permissão de notificações negada nas permissões do dispositivo.");
+
+            // 1. Caso o WebView forneça uma interface nativa Android
+            if (window.Android && typeof window.Android.requestNotificationPermission === 'function') {
+                try {
+                    window.Android.requestNotificationPermission();
+                    localStorage.setItem('synapse_apk_notifications_enabled', 'true');
+                    updateNotifPermissionBadge();
+                    showAppToast("Notificações integradas ao Android com sucesso! 🔔");
+                    return;
+                } catch(e) {
+                    console.warn("Android native bridge failed, falling back:", e);
                 }
-            } catch (err) {
-                console.error("Erro ao solicitar permissão de notificações:", err);
             }
+
+            // 2. Se a Web Notification API padrão existir (Chrome, Edge, PWA ou WebView moderno)
+            if ("Notification" in window) {
+                try {
+                    const permission = await Notification.requestPermission();
+                    if (permission === 'granted') {
+                        localStorage.setItem('synapse_apk_notifications_enabled', 'true');
+                        updateNotifPermissionBadge();
+                        showAppToast("Notificações autorizadas com sucesso no dispositivo! 🔔");
+                        sendSystemNotification("⚡ Synapse Console", "Alertas do aplicativo ativos e configurados!", "system");
+                    } else if (permission === 'denied') {
+                        localStorage.setItem('synapse_apk_notifications_enabled', 'false');
+                        updateNotifPermissionBadge();
+                        showAppToast("Permissão desativada nas configurações do dispositivo.");
+                    } else {
+                        updateNotifPermissionBadge();
+                    }
+                    return;
+                } catch (err) {
+                    console.warn("Erro ao invocar Notification.requestPermission():", err);
+                }
+            }
+
+            // 3. Emulador / WebView embarcado de conversão APK (onde Notification API é restrita)
+            // Habilita modo nativo de alertas in-app com som e vibração do dispositivo
+            localStorage.setItem('synapse_apk_notifications_enabled', 'true');
+            updateNotifPermissionBadge();
+            if (navigator.vibrate) {
+                try { navigator.vibrate([100, 50, 100]); } catch(e) {}
+            }
+            showAppToast("Alertas habilitados para este aplicativo APK! 🔔");
+            sendSystemNotification("⚡ Synapse Console", "Alertas e popups ativos para seu aplicativo!", "system");
         }
 
         function sendSystemNotification(title, message, category = 'system') {
@@ -11735,6 +11827,15 @@ WITH CHECK (true);</code>
             // Vibração tátil no dispositivo
             if (navigator.vibrate) {
                 try { navigator.vibrate([80, 40, 80]); } catch(e) {}
+            }
+
+            // Notificação do Sistema Android Nativo (quando embutido via Bridge em APK)
+            if (window.Android && typeof window.Android.showNotification === 'function') {
+                try {
+                    window.Android.showNotification(title, message);
+                } catch (e) {
+                    console.warn("Erro ao chamar ponte Android.showNotification:", e);
+                }
             }
 
             // Notificação do Navegador / PWA / Webview
@@ -24445,7 +24546,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             try {
                 const selects = document.querySelectorAll('select');
                 selects.forEach(select => {
-                    if (select.id.endsWith('-custom-wrapper') || select.style.display === 'none') return;
+                    if (select.id.endsWith('-custom-wrapper') || select.style.display === 'none' || document.getElementById(select.id + '-custom-wrapper')) return;
                     
                     // Ignora as de moderação com setup Interactive estrito para preservar callbacks customizados
                     if (select.id === 'mute-minutes-select' || select.id === 'ban-minutes-select' || select.id === 'admin-master-active' || select.id === 'admin-master-type' || select.id === 'admin-master-model-select') {
@@ -24458,9 +24559,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         let val = opt.value;
                         let icon = '✦';
                         
-                        const emojiMatch = label.match(/^(🇧🇷|🇺🇸|🇪🇸|🇫🇷|🇮🇹|🇩🇪|🇨🇳|🇯🇵|🇷🇺|🇸🇦|🇮🇳|🇳🇱|🇵🇱|🇹🇷|(?:�[�-�]){2}|[�-�][�-�]|[☀-➿]|🚀|💬|👤|🔑|⚙️|📊|📄|🔴|🟢|🔵|🌍|♊|⚡|🔥|🔧|⚙️|⏱️|🔒)/);
+                        const emojiMatch = label.match(/^[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}]+/u);
                         if (emojiMatch) {
-                            icon = emojiMatch[1];
+                            icon = emojiMatch[0];
                             label = label.replace(icon, '').trim();
                         }
                         options.push({ value: val, label: label, icon: icon });
