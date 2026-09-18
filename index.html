@@ -14430,6 +14430,16 @@ WITH CHECK (true);</code>
                         else if (idLower.includes('v4-flash')) badge = "👁️ Vision Flash";
                         else if (idLower.includes('r1')) badge = "🧠 R1";
                         else if (idLower.includes('2.5-flash')) badge = "🌟 2.5 Flash";
+                        else if (idLower.includes('2.5-pro')) badge = "👑 2.5 Pro";
+                        else if (idLower.includes('3.7-sonnet') || idLower.includes('3.7')) badge = "🚀 3.7 Sonnet";
+                        else if (idLower.includes('3.5-sonnet')) badge = "⭐ 3.5 Sonnet";
+                        else if (idLower.includes('o3-mini')) badge = "🔬 o3-mini";
+                        else if (idLower.includes('o1')) badge = "👑 o1";
+                        else if (idLower.includes('4o-mini')) badge = "⚡ 4o-mini";
+                        else if (idLower.includes('4o')) badge = "🌐 GPT-4o";
+                        else if (idLower.includes('3.3-70b')) badge = "🦙 3.3 70B";
+                        else if (idLower.includes('coder') || idLower.includes('code')) badge = "💻 Code";
+                        else if (isFree) badge = "🆓 Free";
 
                         let description = m.description || `Modelo ${name} fornecido via OpenRouter.`;
                         if (idLower === 'ox-alpha') description = "Modelo experimental stealth voltado para programação avançada, raciocínio complexo e tarefas agentic de longa duração.";
@@ -23555,17 +23565,17 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             return false;
         };
 
-        // Modal de Seleção Customizado Premium de Nova Geração (Modern Glass & Category Chips UI)
+        // Modal de Seleção Customizado Ultra Premium de Nova Geração (Modern Glass, Clean Chips & Badges)
         function showCustomSelect(title, options, currentValue, onSelect) {
             const titleLower = String(title).toLowerCase();
             const lang = currentLanguage || 'pt';
 
-            // Helper para identificar provedores / categorias inteligentes e metadados visuais
+            // Helper para identificar provedores / categorias inteligentes e metadados visuais refinados
             const getOptionMetadata = (opt) => {
                 const val = String(opt.value || '').toLowerCase();
-                const rawLabel = String(opt.label || '');
-                const lbl = rawLabel.toLowerCase();
-                
+                let rawLabel = String(opt.label || opt.value || '');
+                let lbl = rawLabel.toLowerCase();
+
                 let category = 'all';
                 let categoryLabel = 'Geral';
                 let brandColor = '#38bdf8';
@@ -23574,217 +23584,225 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 let icon = opt.icon || '✦';
                 let isModel = false;
                 let isFree = false;
-                let cleanLabel = rawLabel.replace(/\s*•\s*(🟢\s*Grátis|🔴\s*Pago)/gi, '').trim();
 
-                // Categorização para Modelos de IA
-                if (titleLower.includes('modelo') || titleLower.includes('model') || val.includes('gemini') || val.includes('gpt') || val.includes('deepseek') || val.includes('claude') || val.includes('llama') || val.includes('ox-alpha') || val.includes('dots3') || val.includes('openrouter')) {
+                // Limpeza profissional de sufixos de preço ou tags residuais no rótulo
+                let cleanLabel = rawLabel.replace(/\s*•\s*(🟢\s*Grátis|🔴\s*Pago|gr[aá]tis|pago)/gi, '').trim();
+
+                // Categorização avançada para Modelos de IA
+                if (titleLower.includes('modelo') || titleLower.includes('model') || val.includes('gemini') || val.includes('gpt') || val.includes('deepseek') || val.includes('claude') || val.includes('llama') || val.includes('ox-alpha') || val.includes('dots3') || val.includes('openrouter') || val.includes('qwen') || val.includes('mistral') || val.includes('mixtral')) {
                     isModel = true;
                     const currentApi = typeof apiType !== 'undefined' ? apiType : '';
                     const modelInfo = (typeof getSynapseModelInfo === 'function') ? getSynapseModelInfo(opt.value, currentApi) : null;
-                    
-                    if (modelInfo) {
-                        icon = modelInfo.icon || '✦';
-                        brandColor = modelInfo.color || '#38bdf8';
-                        isFree = !!modelInfo.isFree;
-                        badge = modelInfo.badge || '';
-                        subtitle = `${modelInfo.developer} • ${modelInfo.contextLength || '128k'} • ${modelInfo.description || ''}`;
-                        if (modelInfo.name && !cleanLabel) cleanLabel = modelInfo.name;
-                        
-                        if (val.includes('openrouter/free') || val.includes('ox-alpha') || val.includes('dots3') || val.includes('v4-flash') || val.includes(':free')) {
-                            category = 'free';
-                            categoryLabel = '🆓 Gratuitos';
-                        } else if (val.includes('deepseek') || lbl.includes('deepseek')) {
-                            category = 'deepseek';
-                            categoryLabel = '🪐 DeepSeek';
-                        } else if (val.includes('gemini') || lbl.includes('gemini') || val.includes('google')) {
-                            category = 'google';
-                            categoryLabel = '♊ Google';
-                        } else if (val.includes('gpt') || val.includes('openai') || val.includes('o1') || val.includes('o3')) {
-                            category = 'openai';
-                            categoryLabel = '🤖 OpenAI';
-                        } else if (val.includes('claude') || val.includes('anthropic')) {
-                            category = 'anthropic';
-                            categoryLabel = '🧠 Anthropic';
-                        } else if (val.includes('llama') || val.includes('meta')) {
-                            category = 'meta';
-                            categoryLabel = '🦙 Meta';
+
+                    // Extração do nome limpo sem prefixos de provedor redundantes (ex: "OpenAI: GPT-4o" -> "GPT-4o")
+                    if (cleanLabel.includes(':')) {
+                        cleanLabel = cleanLabel.split(':')[1].trim();
+                    } else if (cleanLabel.includes('/') && !cleanLabel.includes(' ')) {
+                        cleanLabel = cleanLabel.split('/').pop().trim();
+                    }
+
+                    if (modelInfo && modelInfo.name) {
+                        let candidateName = modelInfo.name;
+                        if (candidateName.includes(':')) candidateName = candidateName.split(':')[1].trim();
+                        if (!cleanLabel || cleanLabel === opt.value) cleanLabel = candidateName;
+                        if (modelInfo.color) brandColor = modelInfo.color;
+                        if (modelInfo.icon && modelInfo.icon !== '✦') icon = modelInfo.icon;
+                    }
+
+                    // Determinação precisa de Gratuito vs Pago
+                    if (val.includes('openrouter/free') || val.includes('ox-alpha') || val.includes('dots3') || val.includes('v4-flash') || val.includes(':free') || val.endsWith(':free')) {
+                        isFree = true;
+                    } else if (modelInfo && typeof modelInfo.isFree === 'boolean') {
+                        isFree = modelInfo.isFree;
+                    }
+
+                    // Identificação por Provedores líderes e badges contextuais refinadas
+                    if (val.includes('openrouter/free') || val.includes('ox-alpha') || val.includes('dots3') || val.includes('v4-flash') || val.includes(':free')) {
+                        category = 'free';
+                        categoryLabel = '🆓 Gratuitos';
+                    }
+
+                    if (val.includes('deepseek') || lbl.includes('deepseek')) {
+                        category = category === 'free' ? 'free' : 'deepseek';
+                        categoryLabel = category === 'free' ? '🆓 Gratuitos' : '🪐 DeepSeek';
+                        brandColor = '#0284c7';
+                        icon = '🪐';
+                        if (val.includes('r1') || lbl.includes('r1')) {
+                            badge = '🧠 R1';
+                            subtitle = 'DeepSeek • Raciocínio Lógico & Código PhD';
                         } else {
+                            badge = '⚡ V3';
+                            subtitle = 'DeepSeek • Conversação V3 Ultrarrápida (671B)';
+                        }
+                    } else if (val.includes('gemini') || lbl.includes('gemini') || val.includes('google')) {
+                        category = category === 'free' ? 'free' : 'google';
+                        categoryLabel = category === 'free' ? '🆓 Gratuitos' : '♊ Google';
+                        brandColor = '#818cf8';
+                        icon = '♊';
+                        if (val.includes('2.5-pro') || lbl.includes('2.5 pro')) {
+                            badge = '👑 2.5 Pro';
+                            subtitle = 'Google DeepMind • Raciocínio Flagship (2M tokens)';
+                        } else if (val.includes('2.5-flash') || lbl.includes('2.5 flash')) {
+                            badge = '🌟 2.5 Flash';
+                            subtitle = 'Google DeepMind • Multimodal Instantâneo (1M tokens)';
+                        } else if (val.includes('2.0-flash') || lbl.includes('2.0 flash')) {
+                            badge = '⚡ 2.0 Flash';
+                            subtitle = 'Google DeepMind • Geração Multimodal em Tempo Real';
+                        } else if (val.includes('thinking')) {
+                            badge = '🧠 Thinking';
+                            subtitle = 'Google DeepMind • Raciocínio Explícito Passo a Passo';
+                        } else {
+                            badge = 'Google';
+                            subtitle = 'Google DeepMind • Versão Estável de Alta Eficiência';
+                        }
+                    } else if (val.includes('gpt') || val.includes('openai') || val.includes('o1') || val.includes('o3') || lbl.includes('gpt') || lbl.includes('o1') || lbl.includes('o3')) {
+                        category = 'openai';
+                        categoryLabel = '🤖 OpenAI';
+                        brandColor = '#10b981';
+                        icon = '🤖';
+                        if (val.includes('o3-mini') || lbl.includes('o3-mini')) {
+                            badge = '🔬 o3-mini';
+                            subtitle = 'OpenAI • Raciocínio Veloz para Código e Exatas';
+                        } else if (val.includes('o1') || lbl.includes('o1')) {
+                            badge = '👑 o1';
+                            subtitle = 'OpenAI • Pensamento Lógico e Análise Profunda';
+                        } else if (val.includes('4o-mini') || lbl.includes('4o-mini')) {
+                            badge = '⚡ 4o-mini';
+                            subtitle = 'OpenAI • Super Leve, Ágil e de Baixo Custo';
+                        } else if (val.includes('4o') || lbl.includes('4o')) {
+                            badge = '🌐 GPT-4o';
+                            subtitle = 'OpenAI • Modelo Flagship Multimodal Omni';
+                        } else {
+                            badge = 'OpenAI';
+                            subtitle = 'OpenAI • Modelo Avançado de Linguagem';
+                        }
+                    } else if (val.includes('claude') || val.includes('anthropic') || lbl.includes('claude') || lbl.includes('anthropic')) {
+                        category = 'anthropic';
+                        categoryLabel = '🧠 Anthropic';
+                        brandColor = '#f59e0b';
+                        icon = '🧠';
+                        if (val.includes('3.7') || lbl.includes('3.7')) {
+                            badge = '🚀 3.7 Sonnet';
+                            subtitle = 'Anthropic • Raciocínio Híbrido & Engenharia de Software';
+                        } else if (val.includes('3.5') || lbl.includes('3.5')) {
+                            badge = '⭐ 3.5 Sonnet';
+                            subtitle = 'Anthropic • Benchmark de Escrita e Síntese Complexa';
+                        } else {
+                            badge = 'Claude';
+                            subtitle = 'Anthropic • Modelo Conversacional e Código';
+                        }
+                    } else if (val.includes('llama') || val.includes('meta') || lbl.includes('llama')) {
+                        category = category === 'free' ? 'free' : 'meta';
+                        categoryLabel = category === 'free' ? '🆓 Gratuitos' : '🦙 Meta';
+                        brandColor = '#3b82f6';
+                        icon = '🦙';
+                        if (val.includes('3.3') || lbl.includes('3.3')) {
+                            badge = '🦙 3.3 70B';
+                            subtitle = 'Meta AI • Modelo Aberto Flagship de Alta Capacidade';
+                        } else if (val.includes('3.1') || lbl.includes('3.1')) {
+                            badge = '⚡ 3.1';
+                            subtitle = 'Meta AI • Modelo Instantâneo de Altíssima Velocidade';
+                        } else if (val.includes('3.2') || lbl.includes('3.2')) {
+                            badge = '👁️ 3.2 Visão';
+                            subtitle = 'Meta AI • Modelo Leve Multimodal & Visão';
+                        } else {
+                            badge = 'Llama';
+                            subtitle = 'Meta AI • Família Llama Open Source';
+                        }
+                    } else if (val.includes('qwen') || lbl.includes('qwen')) {
+                        category = 'qwen';
+                        categoryLabel = '💻 Qwen';
+                        brandColor = '#10b981';
+                        icon = '💻';
+                        badge = '💻 Qwen';
+                        subtitle = 'Alibaba Qwen • Modelo de Alto Desempenho em Código';
+                    } else if (val.includes('mistral') || val.includes('mixtral') || lbl.includes('mistral')) {
+                        category = 'mistral';
+                        categoryLabel = '🌪️ Mistral';
+                        brandColor = '#f97316';
+                        icon = '🌪️';
+                        badge = '🌪️ Mistral';
+                        subtitle = 'Mistral AI • Modelo MoE de Alta Eficiência';
+                    } else if (val.includes('ox-alpha')) {
+                        category = 'free';
+                        categoryLabel = '🆓 Gratuitos';
+                        brandColor = '#f59e0b';
+                        icon = '🐂';
+                        badge = '🧪 Stealth';
+                        subtitle = 'Stealth • Programação Avançada e Tarefas Agentic';
+                    } else if (val.includes('dots')) {
+                        category = 'free';
+                        categoryLabel = '🆓 Gratuitos';
+                        brandColor = '#ec4899';
+                        icon = '🎯';
+                        badge = '🎯 280B MoE';
+                        subtitle = 'Dots AI • Modelo Multimodal com Raciocínio Integrado';
+                    } else {
+                        if (category === 'all') {
                             category = 'others';
                             categoryLabel = '⚡ Outros';
                         }
-                    } else if (val.includes('deepseek') || lbl.includes('deepseek')) {
-                        category = 'deepseek';
-                        categoryLabel = 'DeepSeek';
-                        brandColor = '#0284c7';
-                        icon = '🪐';
-                        isFree = val.includes(':free');
-                        if (val.includes('r1')) {
-                            subtitle = 'Raciocínio Profundo & Lógica Matemática';
-                            badge = '🧠 R1';
-                        } else {
-                            subtitle = 'Modelo Conversacional V3 Ultrarrápido';
-                            badge = '⚡ V3';
-                        }
-                    } else if (val.includes('gemini') || lbl.includes('gemini') || val.includes('google')) {
-                        category = 'google';
-                        categoryLabel = 'Google Gemini';
-                        brandColor = '#818cf8';
-                        icon = '♊';
-                        isFree = !val.includes('pro') && !val.includes('ultra');
-                        if (val.includes('2.5-flash')) {
-                            subtitle = 'Google DeepMind • Última Geração & Alta Velocidade';
-                            badge = '🌟 2.5 Flash';
-                        } else if (val.includes('2.5-pro')) {
-                            subtitle = 'Google DeepMind • Raciocínio Complexo & Contexto Massivo';
-                            badge = '👑 2.5 Pro';
-                        } else if (val.includes('thinking')) {
-                            subtitle = 'Raciocínio Explícito Passo a Passo';
-                            badge = '🧠 Thinking';
-                        } else if (val.includes('2.0-flash')) {
-                            subtitle = 'Geração Multimodal em Tempo Real';
-                            badge = '⚡ 2.0 Flash';
-                        } else {
-                            subtitle = 'Google DeepMind • Versão Estável de Alta Eficiência';
-                            badge = 'Google';
-                        }
-                    } else if (val.includes('gpt') || val.includes('openai') || val.includes('o1') || val.includes('o3')) {
-                        category = 'openai';
-                        categoryLabel = 'OpenAI';
-                        brandColor = '#10b981';
-                        icon = '🤖';
-                        isFree = false;
-                        if (val.includes('o3-mini')) {
-                            subtitle = 'OpenAI • Raciocínio Acelerado para Código e Lógica';
-                            badge = '🔬 o3-mini';
-                        } else if (val.includes('o1')) {
-                            subtitle = 'OpenAI • Pensamento Lógico Profundo';
-                            badge = '👑 o1';
-                        } else if (val.includes('4o-mini')) {
-                            subtitle = 'OpenAI • Super Leve, Ágil e de Baixo Custo';
-                            badge = '⚡ 4o-mini';
-                        } else if (val.includes('4o')) {
-                            subtitle = 'OpenAI • Modelo Flagship Multimodal Omni';
-                            badge = '🌐 GPT-4o';
-                        } else {
-                            subtitle = 'OpenAI • Modelo Avançado de Linguagem';
-                            badge = 'OpenAI';
-                        }
-                    } else if (val.includes('claude') || val.includes('anthropic')) {
-                        category = 'anthropic';
-                        categoryLabel = 'Anthropic';
-                        brandColor = '#f59e0b';
-                        icon = '🧠';
-                        isFree = false;
-                        if (val.includes('3.7')) {
-                            subtitle = 'Anthropic • Raciocínio Híbrido & Engenharia de Código';
-                            badge = '🚀 3.7 Sonnet';
-                        } else {
-                            subtitle = 'Anthropic • Raciocínio Fluido & Precisão de Escrita';
-                            badge = '⭐ 3.5 Sonnet';
-                        }
-                    } else if (val.includes('llama') || val.includes('meta')) {
-                        category = 'meta';
-                        categoryLabel = 'Meta Llama';
-                        brandColor = '#3b82f6';
-                        icon = '🦙';
-                        isFree = val.includes(':free') || val.includes('groq') || true;
-                        if (val.includes('3.3')) {
-                            subtitle = 'Meta AI • Modelo Aberto de Alta Performance (70B)';
-                            badge = '🦙 Llama 3.3';
-                        } else if (val.includes('3.1')) {
-                            subtitle = 'Meta AI • Modelo Instantâneo de Altíssima Velocidade';
-                            badge = '⚡ Llama 3.1';
-                        } else if (val.includes('3.2')) {
-                            subtitle = 'Meta AI • Modelo Leve Multimodal & Visão';
-                            badge = '👁️ Llama 3.2';
-                        } else if (val.includes('guard')) {
-                            subtitle = 'Meta AI • Modelo de Moderação & Segurança';
-                            badge = '🛡️ Llama Guard';
-                        } else {
-                            subtitle = 'Meta AI • Família Llama Open Source';
-                            badge = '🦙 Llama';
-                        }
-                    } else if (val.includes('mixtral') || val.includes('mistral')) {
-                        category = 'mistral';
-                        categoryLabel = 'Mistral AI';
-                        brandColor = '#f97316';
-                        icon = '🌪️';
-                        isFree = val.includes(':free') || val.includes('groq') || true;
-                        subtitle = 'Mistral AI • Modelo MoE de Alta Capacidade';
-                        badge = '🌪️ Mixtral';
-                    } else if (val.includes('qwen')) {
-                        category = 'qwen';
-                        categoryLabel = 'Qwen';
-                        brandColor = '#6366f1';
-                        icon = '💻';
-                        isFree = val.includes(':free') || val.includes('groq') || true;
-                        subtitle = 'Alibaba Cloud • Modelo Aberto Avançado de Raciocínio';
-                        badge = '💻 Qwen';
-                    } else if (val.includes('gemma')) {
-                        category = 'google';
-                        categoryLabel = 'Google Gemma';
-                        brandColor = '#38bdf8';
-                        icon = '💎';
-                        isFree = true;
-                        subtitle = 'Google DeepMind • Modelo Aberto Leve e Eficiente';
-                        badge = '💎 Gemma 2';
-                    } else {
-                        category = 'others';
-                        categoryLabel = 'Outros Modelos';
-                        brandColor = '#a855f7';
-                        icon = '⚡';
-                        isFree = val.includes(':free') || val.includes('free');
-                        subtitle = 'Modelo de Inferência de Alta Performance';
-                        badge = 'LLM';
+                        if (!badge) badge = 'IA';
+                        if (!subtitle) subtitle = 'Modelo de Inferência de Alta Performance';
                     }
                 }
-                // Categorização para Idiomas
+                // Categorização refinada para Idiomas
                 else if (titleLower.includes('idioma') || titleLower.includes('language') || titleLower.includes('traduz') || titleLower.includes('translate')) {
                     if (['pt', 'en', 'es'].includes(val)) {
                         category = 'popular';
-                        categoryLabel = 'Mais Usados';
+                        categoryLabel = '⭐ Mais Usados';
                         brandColor = '#38bdf8';
-                        if (val === 'pt') { subtitle = 'Português (Brasil) • Idioma Oficial do Console'; badge = 'Oficial'; }
-                        if (val === 'en') { subtitle = 'English (US) • Global Standard'; badge = 'Global'; }
-                        if (val === 'es') { subtitle = 'Español • Lengua Internacional'; badge = 'Popular'; }
+                        if (val === 'pt') { subtitle = 'Português (Brasil) • Idioma Oficial do Console'; badge = 'Oficial'; icon = '🇧🇷'; }
+                        if (val === 'en') { subtitle = 'English (US) • Global Standard'; badge = 'Global'; icon = '🇺🇸'; }
+                        if (val === 'es') { subtitle = 'Español • Lengua Internacional'; badge = 'Popular'; icon = '🇪🇸'; }
                     } else if (['fr', 'de', 'it', 'nl', 'pl', 'sv', 'ru'].includes(val)) {
                         category = 'europe';
-                        categoryLabel = 'Europa';
+                        categoryLabel = '🌍 Europa';
                         brandColor = '#6366f1';
                         badge = 'Europeu';
                         subtitle = 'Tradução e Interface Internacional';
                     } else {
                         category = 'asia_world';
-                        categoryLabel = 'Ásia & Global';
+                        categoryLabel = '🌏 Ásia & Global';
                         brandColor = '#ec4899';
                         badge = 'Global';
-                        subtitle = 'Suporte Multilíngue Global';
+                        subtitle = 'Suporte Multilíngue Internacional';
                     }
                 }
-                // Categorização para Vozes
+                // Categorização refinada para Vozes
                 else if (titleLower.includes('voz') || titleLower.includes('voice') || titleLower.includes('tts')) {
                     if (val.includes('pt') || lbl.includes('português') || lbl.includes('brasil')) {
                         category = 'pt';
-                        categoryLabel = 'Português';
+                        categoryLabel = '🇧🇷 Português';
                         brandColor = '#22c55e';
                         badge = 'BR';
-                        subtitle = 'Voz Natural Sintetizada em Português';
+                        subtitle = 'Voz Neural Natural em Português';
                     } else if (val.includes('en') || lbl.includes('english')) {
                         category = 'en';
-                        categoryLabel = 'Inglês';
+                        categoryLabel = '🇺🇸 Inglês';
                         brandColor = '#3b82f6';
                         badge = 'US';
-                        subtitle = 'Voz Natural em Inglês';
+                        subtitle = 'Voz Sintetizada em Inglês';
                     } else {
                         category = 'others';
-                        categoryLabel = 'Outros';
+                        categoryLabel = '⚡ Outras';
                         brandColor = '#f59e0b';
                         badge = 'Voz';
                         subtitle = 'Síntese Neural de Áudio';
                     }
                 }
-                // Outras Opções (Geral)
-                else {
+                // Categorização para Área e Senioridade
+                else if (titleLower.includes('área') || titleLower.includes('area')) {
+                    category = 'all';
+                    categoryLabel = 'Áreas';
+                    badge = 'Carreira';
+                    subtitle = 'Trilha de Simulação de Entrevista Profissional';
+                } else if (titleLower.includes('senioridade') || titleLower.includes('seniority')) {
+                    category = 'all';
+                    categoryLabel = 'Nível';
+                    badge = 'Nível';
+                    subtitle = 'Complexidade de Perguntas e Avaliação Técnica';
+                } else {
                     category = 'all';
                     categoryLabel = 'Geral';
                     if (!subtitle) subtitle = 'Opção de configuração do sistema';
@@ -23804,7 +23822,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 };
             };
 
-            // Gera as Categorias disponíveis para a barra de chips superior
+            // Gera as Categorias disponíveis para a barra de chips superior com ordenação intuitiva
             const buildCategories = () => {
                 const catMap = new Map();
                 options.forEach(opt => {
@@ -23825,7 +23843,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             const categories = buildCategories();
             let activeCategory = 'all';
 
-            // Placeholder contextual
+            // Placeholder contextual refinado
             const getSearchPlaceholder = () => {
                 if (lang === 'pt') {
                     if (titleLower.includes('idioma') || titleLower.includes('language')) return 'Pesquisar idiomas (ex: Português, English, Español)...';
@@ -23845,150 +23863,173 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             };
 
             // Injeta os estilos dinâmicos de nova geração se ainda não existirem
-            if (!document.getElementById('synapse-custom-select-styles-v2')) {
+            if (!document.getElementById('synapse-custom-select-styles-v3')) {
                 const styleSheet = document.createElement('style');
-                styleSheet.id = 'synapse-custom-select-styles-v2';
+                styleSheet.id = 'synapse-custom-select-styles-v3';
                 styleSheet.innerText = `
                     .app-custom-select-modal {
                         position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-                        background: radial-gradient(circle at center, rgba(15, 23, 42, 0.75) 0%, rgba(3, 7, 18, 0.88) 100%);
-                        backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+                        background: radial-gradient(circle at 50% 30%, rgba(15, 23, 42, 0.82) 0%, rgba(3, 7, 18, 0.94) 100%);
+                        backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px);
                         display: flex; z-index: 120000; opacity: 0; transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
                         box-sizing: border-box;
                     }
                     @media (min-width: 768px) {
-                        .app-custom-select-modal { align-items: center; justify-content: center; padding: 24px; }
+                        .app-custom-select-modal { align-items: center; justify-content: center; padding: 28px; }
                         .app-custom-select-card {
-                            background: rgba(11, 15, 25, 0.95);
-                            border: 1px solid rgba(56, 189, 248, 0.2);
-                            border-radius: 28px; max-width: 500px; width: 100%; transform: translateY(24px) scale(0.96);
-                            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.9), 0 0 40px rgba(56, 189, 248, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+                            background: rgba(11, 15, 25, 0.96);
+                            border: 1px solid rgba(56, 189, 248, 0.22);
+                            border-radius: 28px; max-width: 540px; width: 100%; transform: translateY(24px) scale(0.96);
+                            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.95), 0 0 50px rgba(56, 189, 248, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.18);
                         }
                     }
                     @media (max-width: 767px) {
                         .app-custom-select-modal { align-items: flex-end; justify-content: center; padding: 0; }
                         .app-custom-select-card {
-                            background: rgba(11, 15, 25, 0.98);
-                            border-top: 1px solid rgba(56, 189, 248, 0.25);
-                            border-top-left-radius: 30px; border-top-right-radius: 30px; width: 100%;
+                            background: rgba(10, 14, 23, 0.98);
+                            border-top: 1px solid rgba(56, 189, 248, 0.28);
+                            border-left: none; border-right: none; border-bottom: none;
+                            border-top-left-radius: 32px; border-top-right-radius: 32px; width: 100%;
                             transform: translateY(100%);
-                            box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.95), 0 0 30px rgba(56, 189, 248, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+                            box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.98), 0 0 40px rgba(56, 189, 248, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.18);
                         }
                     }
                     .app-custom-select-card {
                         padding: 24px 20px 28px; box-sizing: border-box; transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
                         color: #ffffff; font-family: system-ui, -apple-system, sans-serif; display: flex;
-                        flex-direction: column; max-height: 84vh; position: relative; overflow: hidden;
+                        flex-direction: column; max-height: 85vh; position: relative; overflow: hidden;
                     }
-                    .bottom-sheet-handle { display: none; width: 44px; height: 5px; background: rgba(255, 255, 255, 0.25); border-radius: 4px; margin: -10px auto 16px auto; }
+                    .bottom-sheet-handle {
+                        display: none; width: 48px; height: 5px; background: rgba(255, 255, 255, 0.28);
+                        border-radius: 4px; margin: -10px auto 18px auto; transition: background 0.2s;
+                    }
                     @media (max-width: 767px) { .bottom-sheet-handle { display: block; } }
 
                     /* Barra de Categorias e Chips */
                     .custom-select-chips-bar {
                         display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px;
-                        scrollbar-width: none; -ms-overflow-style: none;
+                        scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;
                     }
                     .custom-select-chips-bar::-webkit-scrollbar { display: none; }
                     .custom-select-chip {
-                        padding: 6px 14px; border-radius: 20px; font-size: 0.76rem; font-weight: 600; cursor: pointer;
+                        padding: 7px 15px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; cursor: pointer;
                         white-space: nowrap; transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-                        border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(255, 255, 255, 0.03);
-                        color: #94a3b8; display: flex; align-items: center; gap: 6px; user-select: none;
+                        border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(255, 255, 255, 0.035);
+                        color: #94a3b8; display: flex; align-items: center; gap: 7px; user-select: none;
                     }
                     .custom-select-chip:hover {
-                        border-color: rgba(255, 255, 255, 0.2); color: #ffffff; background: rgba(255, 255, 255, 0.06); transform: translateY(-1px);
+                        border-color: rgba(255, 255, 255, 0.22); color: #ffffff; background: rgba(255, 255, 255, 0.07); transform: translateY(-1px);
                     }
                     .custom-select-chip.active {
-                        background: linear-gradient(135deg, rgba(56, 189, 248, 0.22) 0%, rgba(56, 189, 248, 0.08) 100%) !important;
+                        background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(56, 189, 248, 0.1) 100%) !important;
                         border-color: var(--primary, #38bdf8) !important;
                         color: #ffffff !important; font-weight: 700;
-                        box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+                        box-shadow: 0 0 16px rgba(56, 189, 248, 0.28);
                     }
 
                     /* Search Box */
                     .custom-select-search-box { position: relative; margin-bottom: 12px; display: flex; align-items: center; }
                     .custom-select-search-input {
-                        width: 100%; height: 46px; background: rgba(255, 255, 255, 0.035);
-                        border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px;
-                        padding: 0 40px 0 42px; color: #fff; font-size: 0.88rem; outline: none;
+                        width: 100%; height: 48px; background: rgba(255, 255, 255, 0.04);
+                        border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 16px;
+                        padding: 0 42px 0 44px; color: #fff; font-size: 0.9rem; outline: none;
                         transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); box-sizing: border-box;
                     }
                     .custom-select-search-input:focus {
-                        border-color: var(--primary, #38bdf8); background: rgba(56, 189, 248, 0.04);
-                        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18), 0 8px 20px rgba(0,0,0,0.5);
+                        border-color: var(--primary, #38bdf8); background: rgba(56, 189, 248, 0.05);
+                        box-shadow: 0 0 0 3.5px rgba(56, 189, 248, 0.2), 0 8px 20px rgba(0,0,0,0.5);
                     }
-                    .custom-select-search-icon { position: absolute; left: 14px; color: #64748b; font-size: 1.05rem; pointer-events: none; }
+                    .custom-select-search-icon { position: absolute; left: 15px; color: #64748b; font-size: 1.1rem; pointer-events: none; }
                     .custom-select-clear-btn {
-                        position: absolute; right: 12px; width: 22px; height: 22px; border-radius: 50%;
-                        background: rgba(255, 255, 255, 0.1); border: none; color: #cbd5e1;
+                        position: absolute; right: 14px; width: 22px; height: 22px; border-radius: 50%;
+                        background: rgba(255, 255, 255, 0.12); border: none; color: #cbd5e1;
                         display: flex; align-items: center; justify-content: center; font-size: 0.72rem;
                         cursor: pointer; transition: background 0.2s;
                     }
-                    .custom-select-clear-btn:hover { background: rgba(255, 255, 255, 0.22); color: #fff; }
+                    .custom-select-clear-btn:hover { background: rgba(255, 255, 255, 0.25); color: #fff; }
 
                     /* Container de Opções */
                     .custom-select-options-container {
                         overflow-y: auto; flex-grow: 1; padding-right: 4px; margin-bottom: 4px;
-                        display: flex; flex-direction: column; gap: 8px;
+                        display: flex; flex-direction: column; gap: 8px; -webkit-overflow-scrolling: touch;
                     }
                     .custom-select-options-container::-webkit-scrollbar { width: 5px; }
                     .custom-select-options-container::-webkit-scrollbar-track { background: transparent; }
-                    .custom-select-options-container::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 10px; }
-                    .custom-select-options-container::-webkit-scrollbar-thumb:hover { background: rgba(56, 189, 248, 0.35); }
+                    .custom-select-options-container::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.14); border-radius: 10px; }
+                    .custom-select-options-container::-webkit-scrollbar-thumb:hover { background: rgba(56, 189, 248, 0.4); }
 
                     /* Cartão de Opção */
                     .custom-select-card-item {
-                        display: flex; align-items: center; justify-content: space-between; padding: 12px 14px;
-                        border-radius: 16px; cursor: pointer; transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-                        background: rgba(255, 255, 255, 0.025); border: 1px solid rgba(255, 255, 255, 0.06);
+                        display: flex; align-items: center; justify-content: space-between; padding: 13px 15px;
+                        border-radius: 18px; cursor: pointer; transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+                        background: rgba(255, 255, 255, 0.025); border: 1px solid rgba(255, 255, 255, 0.065);
                         box-sizing: border-box; text-align: left; position: relative; overflow: hidden;
                     }
                     .custom-select-card-item:hover {
                         background: rgba(56, 189, 248, 0.08) !important;
-                        border-color: rgba(56, 189, 248, 0.3) !important;
+                        border-color: rgba(56, 189, 248, 0.35) !important;
                         transform: translateY(-1.5px);
-                        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4), 0 0 20px rgba(56, 189, 248, 0.08);
+                        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), 0 0 22px rgba(56, 189, 248, 0.09);
                     }
                     .custom-select-card-item:active { transform: scale(0.985); }
                     .custom-select-card-item.selected {
-                        background: linear-gradient(135deg, rgba(56, 189, 248, 0.14) 0%, rgba(56, 189, 248, 0.04) 100%) !important;
+                        background: linear-gradient(135deg, rgba(56, 189, 248, 0.16) 0%, rgba(56, 189, 248, 0.05) 100%) !important;
                         border: 1.5px solid var(--primary, #38bdf8) !important;
-                        box-shadow: 0 4px 20px rgba(56, 189, 248, 0.2), inset 0 0 15px rgba(56, 189, 248, 0.08);
+                        box-shadow: 0 4px 22px rgba(56, 189, 248, 0.24), inset 0 0 16px rgba(56, 189, 248, 0.09);
                     }
                     .custom-select-avatar {
-                        width: 42px; height: 42px; min-width: 42px; border-radius: 12px;
+                        width: 44px; height: 44px; min-width: 44px; border-radius: 14px;
                         display: flex; align-items: center; justify-content: center;
-                        font-size: 1.35rem; margin-right: 14px; background: rgba(255, 255, 255, 0.05);
+                        font-size: 1.4rem; margin-right: 14px; background: rgba(255, 255, 255, 0.05);
                         border: 1px solid rgba(255, 255, 255, 0.1); transition: transform 0.2s;
                     }
                     .custom-select-card-item:hover .custom-select-avatar { transform: scale(1.08); }
+
                     .custom-select-badge {
                         font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 6px;
-                        background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1);
-                        letter-spacing: 0.3px; text-transform: uppercase;
+                        background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.12);
+                        letter-spacing: 0.3px; white-space: nowrap;
                     }
                     .section-divider-title {
                         font-size: 0.72rem; color: var(--primary, #38bdf8); font-weight: 700;
-                        letter-spacing: 1.2px; margin: 12px 0 6px 4px; text-transform: uppercase; opacity: 0.9;
+                        letter-spacing: 1.2px; margin: 12px 0 6px 4px; text-transform: uppercase; opacity: 0.92;
                         display: flex; align-items: center; gap: 6px;
                     }
                     .custom-select-sync-btn {
                         display: inline-flex; align-items: center; gap: 6px;
-                        background: linear-gradient(135deg, rgba(56, 189, 248, 0.16) 0%, rgba(129, 140, 248, 0.12) 100%);
-                        border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 9px;
-                        padding: 6px 12px; color: #38bdf8; font-size: 0.75rem; font-weight: 700;
+                        background: linear-gradient(135deg, rgba(56, 189, 248, 0.18) 0%, rgba(129, 140, 248, 0.14) 100%);
+                        border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 10px;
+                        padding: 6px 13px; color: #38bdf8; font-size: 0.76rem; font-weight: 700;
                         cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-                        box-shadow: 0 2px 10px rgba(56, 189, 248, 0.15);
+                        box-shadow: 0 2px 12px rgba(56, 189, 248, 0.18);
                     }
                     .custom-select-sync-btn:hover {
-                        background: linear-gradient(135deg, rgba(56, 189, 248, 0.28) 0%, rgba(129, 140, 248, 0.22) 100%);
-                        border-color: rgba(56, 189, 248, 0.6);
-                        box-shadow: 0 4px 16px rgba(56, 189, 248, 0.3);
+                        background: linear-gradient(135deg, rgba(56, 189, 248, 0.3) 0%, rgba(129, 140, 248, 0.24) 100%);
+                        border-color: rgba(56, 189, 248, 0.65);
+                        box-shadow: 0 4px 18px rgba(56, 189, 248, 0.35);
                         transform: translateY(-1px);
                         color: #ffffff;
                     }
                     .custom-select-sync-btn:active {
                         transform: translateY(0);
+                    }
+
+                    /* Custom Select Trigger Button no formulário */
+                    .custom-select-trigger {
+                        background: rgba(255, 255, 255, 0.035) !important;
+                        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+                        border-radius: 16px !important;
+                        padding: 12px 18px !important;
+                        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+                    }
+                    .custom-select-trigger:hover {
+                        background: rgba(56, 189, 248, 0.06) !important;
+                        border-color: rgba(56, 189, 248, 0.35) !important;
+                        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 15px rgba(56, 189, 248, 0.08) !important;
+                        transform: translateY(-1px) !important;
+                    }
+                    .custom-select-trigger:active {
+                        transform: translateY(0) scale(0.99) !important;
                     }
                 `;
                 document.head.appendChild(styleSheet);
@@ -24012,15 +24053,21 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     const valStr = String(opt.value || '').toLowerCase();
                     const subStr = String(meta.subtitle || '').toLowerCase();
                     const badgeStr = String(meta.badge || '').toLowerCase();
+                    const cleanStr = String(meta.cleanLabel || '').toLowerCase();
 
-                    const matchesText = !normFilter || labelStr.includes(normFilter) || valStr.includes(normFilter) || subStr.includes(normFilter) || badgeStr.includes(normFilter);
+                    const matchesText = !normFilter || 
+                        labelStr.includes(normFilter) || 
+                        valStr.includes(normFilter) || 
+                        subStr.includes(normFilter) || 
+                        badgeStr.includes(normFilter) ||
+                        cleanStr.includes(normFilter);
+
                     const matchesCategory = (categoryFilter === 'all') || (meta.category === categoryFilter);
-
                     return matchesText && matchesCategory;
                 });
 
                 let html = '';
-                
+
                 // Exibe a Seleção Atual no topo se não houver filtro de busca e a categoria for 'all'
                 if (!filterText && categoryFilter === 'all') {
                     const currentOpt = options.find(opt => String(opt.value) === String(currentValue));
@@ -24029,9 +24076,10 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         let curPriceBadge = '';
                         if (curMeta.isModel) {
                             curPriceBadge = curMeta.isFree 
-                                ? `<span class="custom-select-badge" style="background: rgba(16, 185, 129, 0.16); color: #34d399; border-color: rgba(16, 185, 129, 0.35); font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 6px;">🟢 Grátis</span>`
-                                : `<span class="custom-select-badge" style="background: rgba(239, 68, 68, 0.16); color: #f87171; border-color: rgba(239, 68, 68, 0.35); font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 6px;">🔴 Pago</span>`;
+                                ? `<span class="custom-select-badge" style="background: rgba(16, 185, 129, 0.16); color: #34d399; border-color: rgba(16, 185, 129, 0.35);">🟢 Grátis</span>`
+                                : `<span class="custom-select-badge" style="background: rgba(239, 68, 68, 0.16); color: #f87171; border-color: rgba(239, 68, 68, 0.35);">🔴 Pago</span>`;
                         }
+
                         html += `
                             <div class="section-divider-title">
                                 <span>⭐</span> <span>${i18n('current_selection_title') || 'Opção Atualmente Selecionada'}</span>
@@ -24043,7 +24091,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                                     </div>
                                     <div style="display: flex; flex-direction: column; overflow: hidden; padding-right: 8px;">
                                         <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                                            <span style="font-size: 0.94rem; font-weight: 700; color: #ffffff;">${curMeta.cleanLabel}</span>
+                                            <span style="font-size: 0.95rem; font-weight: 700; color: #ffffff;">${curMeta.cleanLabel}</span>
                                             ${curPriceBadge}
                                             ${curMeta.badge ? `<span class="custom-select-badge" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);">${curMeta.badge}</span>` : ''}
                                         </div>
@@ -24082,21 +24130,21 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         let priceBadge = '';
                         if (meta.isModel) {
                             priceBadge = meta.isFree 
-                                ? `<span class="custom-select-badge" style="background: rgba(16, 185, 129, 0.14); color: #34d399; border-color: rgba(16, 185, 129, 0.35); font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 6px;">🟢 Grátis</span>`
-                                : `<span class="custom-select-badge" style="background: rgba(239, 68, 68, 0.14); color: #f87171; border-color: rgba(239, 68, 68, 0.35); font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 6px;">🔴 Pago</span>`;
+                                ? `<span class="custom-select-badge" style="background: rgba(16, 185, 129, 0.14); color: #34d399; border-color: rgba(16, 185, 129, 0.35);">🟢 Grátis</span>`
+                                : `<span class="custom-select-badge" style="background: rgba(239, 68, 68, 0.14); color: #f87171; border-color: rgba(239, 68, 68, 0.35);">🔴 Pago</span>`;
                         }
 
                         html += `
                             <div class="custom-select-card-item ${isActive ? 'selected' : ''}" data-value="${opt.value}">
                                 <div style="display: flex; align-items: center; flex-grow: 1; overflow: hidden;">
-                                    <div class="custom-select-avatar" style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.1);">
+                                    <div class="custom-select-avatar" style="background: rgba(255,255,255,0.035); border-color: rgba(255,255,255,0.1);">
                                         ${meta.icon}
                                     </div>
                                     <div style="display: flex; flex-direction: column; overflow: hidden; padding-right: 8px;">
                                         <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                                            <span style="font-size: 0.92rem; font-weight: 600; color: #f8fafc;">${meta.cleanLabel}</span>
+                                            <span style="font-size: 0.93rem; font-weight: 600; color: #f8fafc;">${meta.cleanLabel}</span>
                                             ${priceBadge}
-                                            ${meta.badge ? `<span class="custom-select-badge" style="color: ${meta.brandColor}; border-color: rgba(255,255,255,0.08);">${meta.badge}</span>` : ''}
+                                            ${meta.badge ? `<span class="custom-select-badge" style="color: ${meta.brandColor}; border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);">${meta.badge}</span>` : ''}
                                         </div>
                                         <span style="font-size: 0.75rem; color: #94a3b8; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                             ${meta.subtitle}
@@ -24106,13 +24154,14 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                                 <div style="min-width: 24px; display: flex; align-items: center; justify-content: center;">
                                     ${isActive 
                                         ? `<div style="width: 24px; height: 24px; border-radius: 50%; background: var(--primary, #38bdf8); color: #000; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);">✓</div>`
-                                        : `<div style="width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.18);"></div>`
+                                        : `<div style="width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.2);"></div>`
                                     }
                                 </div>
                             </div>
                         `;
                     });
                 }
+
                 return html;
             };
 
@@ -24146,17 +24195,17 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 <div class="bottom-sheet-handle"></div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 0 4px; gap: 8px;">
                     <div style="display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1;">
-                        <div style="width: 32px; height: 32px; min-width: 32px; border-radius: 10px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); display: flex; align-items: center; justify-content: center; font-size: 1rem; color: var(--primary, #38bdf8);">
+                        <div style="width: 34px; height: 34px; min-width: 34px; border-radius: 12px; background: rgba(56, 189, 248, 0.14); border: 1px solid rgba(56, 189, 248, 0.35); display: flex; align-items: center; justify-content: center; font-size: 1.05rem; color: var(--primary, #38bdf8); box-shadow: 0 0 12px rgba(56, 189, 248, 0.15);">
                             ✦
                         </div>
                         <div style="min-width: 0;">
-                            <h4 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #f8fafc; letter-spacing: -0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${title}</h4>
-                            <span id="custom-select-count-label" style="font-size: 0.72rem; color: #94a3b8;">${options.length} ${options.length === 1 ? 'opção disponível' : 'opções disponíveis'}</span>
+                            <h4 style="margin: 0; font-size: 1.08rem; font-weight: 750; color: #f8fafc; letter-spacing: -0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${title}</h4>
+                            <span id="custom-select-count-label" style="font-size: 0.74rem; color: #94a3b8;">${options.length} ${options.length === 1 ? 'opção disponível' : 'opções disponíveis'}</span>
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
                         ${syncBtnHtml}
-                        <button id="custom-select-close" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); width: 34px; height: 34px; border-radius: 50%; color: #cbd5e1; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; transition: all 0.2s;">✕</button>
+                        <button id="custom-select-close" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); width: 34px; height: 34px; border-radius: 50%; color: #cbd5e1; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; transition: all 0.2s;">✕</button>
                     </div>
                 </div>
                 
@@ -24213,6 +24262,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         if (typeof syncProviderModels === 'function') {
                             await syncProviderModels(currentProvider, false);
                         }
+
                         // Recarrega opções atualizadas após o sync
                         let updatedOptions = [];
                         if (currentProvider === 'OPENROUTER') {
@@ -24221,12 +24271,14 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         } else if (typeof getSyncedModelsForProvider === 'function') {
                             updatedOptions = getSyncedModelsForProvider(currentProvider) || [];
                         }
+
                         if (updatedOptions.length > 0) {
                             options = updatedOptions;
                             const countLbl = document.getElementById('custom-select-count-label');
                             if (countLbl) countLbl.textContent = `${options.length} ${options.length === 1 ? 'opção disponível' : 'opções disponíveis'}`;
                             refreshList();
                         }
+
                         if (labelEl) labelEl.textContent = 'Sincronizado!';
                         setTimeout(() => {
                             if (labelEl) labelEl.textContent = 'Sincronizar';
@@ -24259,6 +24311,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             };
 
             searchInput.focus();
+
             searchInput.oninput = (e) => {
                 const val = e.target.value;
                 if (clearBtn) clearBtn.style.display = val ? 'flex' : 'none';
@@ -24295,6 +24348,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     };
                 });
             };
+
             registerClicks();
         }
 
@@ -24305,7 +24359,6 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
             const wrapperId = selectId + '-custom-wrapper';
             const existingWrapper = document.getElementById(wrapperId);
-
             if (existingWrapper) {
                 existingWrapper.remove();
             }
@@ -24317,17 +24370,10 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             // Oculta completamente o elemento nativo (porém mantém seu estado e compatibilidade com o JS legado)
             rawSelect.style.display = 'none';
 
-            // Cria o botão com design moderno, combinando com o design de bordas e inputs do Synapse Console
+            // Cria o botão com design moderno e ultra premium, combinando perfeitamente com a interface do console
             const btn = document.createElement('div');
             btn.id = wrapperId;
             btn.className = 'custom-select-trigger';
-            btn.style.background = 'rgba(255, 255, 255, 0.025)';
-            btn.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-            btn.style.borderRadius = 'var(--input-border-radius, 14px)';
-            btn.style.padding = '10px 16px';
-            btn.style.display = 'flex';
-            btn.style.alignItems = 'center';
-            btn.style.justifyContent = 'space-between';
             btn.style.cursor = 'pointer';
             btn.style.fontSize = '0.9rem';
             btn.style.color = '#ffffff';
@@ -24335,18 +24381,20 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             btn.style.marginTop = '6px';
             btn.style.marginBottom = '12px';
             btn.style.boxSizing = 'border-box';
-            btn.style.transition = 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+            btn.style.display = 'flex';
+            btn.style.alignItems = 'center';
+            btn.style.justifyContent = 'space-between';
 
             btn.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 10px; overflow: hidden;">
-                    <div id="${selectId}-custom-icon-box" style="width: 28px; height: 28px; border-radius: 8px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.25); display: flex; align-items: center; justify-content: center; font-size: 0.95rem;">
+                <div style="display: flex; align-items: center; gap: 11px; overflow: hidden; min-width: 0;">
+                    <div id="${selectId}-custom-icon-box" style="width: 32px; height: 32px; min-width: 32px; border-radius: 10px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.28); display: flex; align-items: center; justify-content: center; font-size: 1.05rem; box-shadow: 0 0 10px rgba(56, 189, 248, 0.12);">
                         ✦
                     </div>
-                    <span id="${selectId}-custom-value" style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Selecione...</span>
+                    <span id="${selectId}-custom-value" style="font-weight: 650; font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #f8fafc;">Selecione...</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 6px; margin-left: 8px;">
-                    <span style="color: var(--primary, #38bdf8); font-size: 0.72rem; font-weight: bold; opacity: 0.85;">Alterar</span>
-                    <span style="color: var(--text-muted); font-size: 0.72rem; transition: transform 0.2s;">▼</span>
+                <div style="display: flex; align-items: center; gap: 7px; margin-left: 10px; flex-shrink: 0;">
+                    <span style="color: var(--primary, #38bdf8); font-size: 0.74rem; font-weight: 700; letter-spacing: 0.2px; background: rgba(56, 189, 248, 0.1); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.2);">Alterar</span>
+                    <span style="color: #64748b; font-size: 0.74rem; transition: transform 0.2s;">▼</span>
                 </div>
             `;
 
@@ -24356,9 +24404,17 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             const updateDisplayText = () => {
                 const val = rawSelect.value;
                 const opt = options.find(o => String(o.value) === String(val));
-                const displayLabel = opt ? opt.label : val;
-                const icon = opt ? (opt.icon || '✦') : '✦';
-                
+                let displayLabel = opt ? opt.label : val;
+                let icon = opt ? (opt.icon || '✦') : '✦';
+
+                // Limpeza visual de tags no botão fechado
+                if (displayLabel) {
+                    displayLabel = displayLabel.replace(/\s*•\s*(🟢\s*Grátis|🔴\s*Pago|gr[aá]tis|pago)/gi, '').trim();
+                    if (displayLabel.includes(':')) {
+                        displayLabel = displayLabel.split(':')[1].trim();
+                    }
+                }
+
                 const txtNode = btn.querySelector(`#${selectId}-custom-value`);
                 const iconBox = btn.querySelector(`#${selectId}-custom-icon-box`);
                 if (txtNode) txtNode.textContent = displayLabel;
@@ -24402,7 +24458,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         let val = opt.value;
                         let icon = '✦';
                         
-                        const emojiMatch = label.match(/^(🇧🇷|🇺🇸|🇪🇸|🇫🇷|🇮🇹|🇩🇪|🇨🇳|🇯🇵|🇷🇺|🇸🇦|🇮🇳|🇳🇱|🇵🇱|🇹🇷|(?:\uD83C[\uDDE6-\uDDFF]){2}|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|🚀|💬|👤|🔑|⚙️|📊|📄|🔴|🟢|🔵|🌍|♊|⚡|🔥|🔧|⚙️|⏱️|🔒)/);
+                        const emojiMatch = label.match(/^(🇧🇷|🇺🇸|🇪🇸|🇫🇷|🇮🇹|🇩🇪|🇨🇳|🇯🇵|🇷🇺|🇸🇦|🇮🇳|🇳🇱|🇵🇱|🇹🇷|(?:�[�-�]){2}|[�-�][�-�]|[☀-➿]|🚀|💬|👤|🔑|⚙️|📊|📄|🔴|🟢|🔵|🌍|♊|⚡|🔥|🔧|⚙️|⏱️|🔒)/);
                         if (emojiMatch) {
                             icon = emojiMatch[1];
                             label = label.replace(icon, '').trim();
@@ -24433,8 +24489,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 console.error("Erro na auto-sincronização Synapse Select:", err);
             }
         }
-
-        function goToAuthSection() {
+                function goToAuthSection() {
             triggerPulse();
             switchTab('tab-config');
             setTimeout(() => {
