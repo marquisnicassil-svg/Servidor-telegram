@@ -14269,9 +14269,11 @@ WITH CHECK (true);</code>
                     defaultModels: [
                         { id: 'llama-3.3-70b-versatile', label: '🦙 Llama 3.3 70B (Versatile)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
                         { id: 'llama-3.1-8b-instant', label: '⚡ Llama 3.1 8B (Instant)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'deepseek-r1-distill-llama-70b', label: '🧠 DeepSeek R1 70B', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'qwen-qwq-32b', label: '💻 Qwen QwQ 32B', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'gemma2-9b-it', label: '💎 Gemma 2 9B', isFree: true, url: 'https://api.groq.com/openai/v1/' }
+                        { id: 'meta-llama/llama-4-scout-17b-16k', label: '🚀 Llama 4 Scout 17B (LPU Fast)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'deepseek-r1-distill-llama-70b', label: '🧠 DeepSeek R1 70B (Reasoning)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'gemma2-9b-it', label: '💎 Gemma 2 9B (Google)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'mistral-saba-24b', label: '🌪️ Mistral Saba 24B', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'compound-beta', label: '🧪 Compound Beta (Groq Reasoning)', isFree: true, url: 'https://api.groq.com/openai/v1/' }
                     ]
                 },
                 'GEMINI': {
@@ -14612,19 +14614,11 @@ WITH CHECK (true);</code>
                         groqList = [
                             "llama-3.3-70b-versatile",
                             "llama-3.1-8b-instant",
+                            "meta-llama/llama-4-scout-17b-16k",
                             "deepseek-r1-distill-llama-70b",
-                            "qwen-qwq-32b",
-                            "qwen-2.5-coder-32b",
-                            "qwen-2.5-32b",
                             "gemma2-9b-it",
-                            "llama-3.2-11b-vision-preview",
-                            "llama-3.2-90b-vision-preview",
-                            "llama-3.2-3b-preview",
-                            "llama-3.2-1b-preview",
-                            "llama-guard-3-8b",
-                            "mixtral-8x7b-32768",
-                            "llama3-70b-8192",
-                            "llama3-8b-8192"
+                            "mistral-saba-24b",
+                            "compound-beta"
                         ];
                     } else {
                         const priority = [
@@ -14941,19 +14935,11 @@ WITH CHECK (true);</code>
                 options = cachedGroq || [
                     "llama-3.3-70b-versatile", 
                     "llama-3.1-8b-instant", 
+                    "meta-llama/llama-4-scout-17b-16k",
                     "deepseek-r1-distill-llama-70b",
-                    "qwen-qwq-32b",
-                    "qwen-2.5-coder-32b",
-                    "qwen-2.5-32b",
                     "gemma2-9b-it",
-                    "llama-3.2-11b-vision-preview",
-                    "llama-3.2-90b-vision-preview",
-                    "llama-3.2-3b-preview",
-                    "llama-3.2-1b-preview",
-                    "llama-guard-3-8b",
-                    "mixtral-8x7b-32768",
-                    "llama3-70b-8192",
-                    "llama3-8b-8192"
+                    "mistral-saba-24b",
+                    "compound-beta"
                 ];
             } else if (type === "OPENROUTER") {
                 const openRouterCatalog = getSynapseOpenRouterCatalog();
@@ -18315,6 +18301,10 @@ WITH CHECK (true);</code>
                     // Sanitize memory history as well
                     let modifiedHistory = false;
                     chatHistoryObjects = chatHistoryObjects.filter(obj => {
+                        if (obj.role === 'assistant' && (obj.content.startsWith("Erro [") || obj.content.startsWith("Erro Gemini:") || obj.content.startsWith("Falha de conexão"))) {
+                            modifiedHistory = true;
+                            return false;
+                        }
                         if (obj.role === 'assistant' && obj.content.includes("Memória apagada. Sessão reiniciada.")) {
                             modifiedHistory = true;
                             return false;
@@ -20092,9 +20082,18 @@ WITH CHECK (true);</code>
                         } else {
                             const fetchUrl = sanitizeChatCompletionsUrl(url);
                             
-                            // Monta payload OpenAI/Groq
+                            // Monta payload OpenAI/Groq com higienização estrita contra erros e overflow de tokens
                             let openAiMessages = [{ role: "system", content: prompt }];
-                            chatHistoryObjects.forEach(msg => {
+                            // Filtra mensagens que são respostas de erro do sistema para não inflar a contagem de tokens nem reprojetar erros para a API
+                            const cleanHistory = chatHistoryObjects.filter(m => {
+                                if (!m || !m.content) return false;
+                                const c = String(m.content).trim();
+                                if (/^(Erro\s*\[|Erro Gemini:|Falha de conexão)/i.test(c)) return false;
+                                return true;
+                            });
+                            // Mantém as últimas 14 mensagens para evitar o erro 'Please reduce the length of the messages' da Groq/OpenRouter
+                            const boundedHistory = cleanHistory.slice(-14);
+                            boundedHistory.forEach(msg => {
                                 openAiMessages.push({
                                     role: msg.role === 'user' ? 'user' : 'assistant',
                                     content: msg.content
@@ -24284,7 +24283,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             }
 
             const isModelPicker = titleLower.includes('modelo') || titleLower.includes('model') || options.some(o => getOptionMetadata(o).isModel);
-            const currentProvider = (document.getElementById('api-provider')?.value || 'OPENROUTER').toUpperCase();
+            const currentProvider = (typeof apiType !== 'undefined' && apiType ? apiType : (typeof currentApiType !== 'undefined' && currentApiType ? currentApiType : (document.getElementById('api-provider')?.value || 'OPENROUTER'))).toUpperCase();
             const syncBtnHtml = isModelPicker ? `
                 <button id="custom-select-sync-trigger" class="custom-select-sync-btn" title="Sincronizar modelos do provedor ativo via API em tempo real">
                     <span id="custom-select-sync-icon" style="display:inline-block; transition:transform 0.5s;">🔄</span>
@@ -28710,9 +28709,11 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 optionsList = [
                     { value: "llama-3.3-70b-versatile", label: "llama-3.3-70b-versatile • 🟢 Grátis (Recomendado)" },
                     { value: "llama-3.1-8b-instant", label: "llama-3.1-8b-instant • 🟢 Grátis (Ultrarrápido)" },
+                    { value: "meta-llama/llama-4-scout-17b-16k", label: "meta-llama/llama-4-scout-17b-16k • 🟢 Grátis (Llama 4)" },
                     { value: "deepseek-r1-distill-llama-70b", label: "deepseek-r1-distill-llama-70b • 🟢 Grátis (Raciocínio)" },
-                    { value: "qwen-qwq-32b", label: "qwen-qwq-32b • 🟢 Grátis" },
-                    { value: "gemma2-9b-it", label: "gemma2-9b-it • 🟢 Grátis" }
+                    { value: "gemma2-9b-it", label: "gemma2-9b-it • 🟢 Grátis" },
+                    { value: "mistral-saba-24b", label: "mistral-saba-24b • 🟢 Grátis" },
+                    { value: "compound-beta", label: "compound-beta • 🟢 Grátis (Raciocínio)" }
                 ];
             } else if (typeVal === "OPENROUTER") {
                 const orCat = (typeof getSynapseOpenRouterCatalog === 'function') ? getSynapseOpenRouterCatalog() : [];
