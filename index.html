@@ -41,14 +41,19 @@
                             try {
                                 // Clear heavy temporary caches
                                 localStorage.removeItem('synapse_openrouter_catalog_cache');
-                                // Auto-migra cache de modelos antigos da Groq que continham poucos modelos
+                                // Limpa modelos obsoletos ou descontinuados da Groq no cache local
 try {
     const rawG = localStorage.getItem('synapse_groq_catalog_cache');
     if (rawG) {
         const parsedG = JSON.parse(rawG);
-        if (Array.isArray(parsedG) && parsedG.length <= 11) {
-            localStorage.removeItem('synapse_groq_catalog_cache');
-            console.log('[Synapse] Cache de modelos Groq legado purgado com sucesso para recarga completa.');
+        const decommissioned = ["qwen-qwq-32b", "qwen-2.5-coder-32b", "qwen-2.5-32b", "llama-3.2-3b-preview", "llama-3.2-1b-preview"];
+        if (Array.isArray(parsedG)) {
+            const hasDecom = parsedG.some(m => decommissioned.includes(m));
+            if (hasDecom) {
+                const cleanedG = parsedG.filter(m => !decommissioned.includes(m));
+                localStorage.setItem('synapse_groq_catalog_cache', JSON.stringify(cleanedG));
+                console.log('[Synapse] Modelos descontinuados da Groq removidos do cache.');
+            }
         }
     }
 } catch(e) {}
@@ -14318,24 +14323,15 @@ WITH CHECK (true);</code>
                     defaultModels: [
                         { id: 'llama-3.3-70b-versatile', label: '🦙 Llama 3.3 70B (Versatile)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
                         { id: 'llama-3.1-8b-instant', label: '⚡ Llama 3.1 8B (Instant)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'meta-llama/llama-4-scout-17b-16k', label: '🚀 Llama 4 Scout 17B (LPU Fast)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'meta-llama/llama-4-maverick-17b-128k', label: '🌌 Llama 4 Maverick 17B (128K)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
                         { id: 'deepseek-r1-distill-llama-70b', label: '🧠 DeepSeek R1 70B (Reasoning)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'deepseek-r1-distill-qwen-32b', label: '🔬 DeepSeek R1 Qwen 32B', isFree: true, url: 'https://api.groq.com/openai/v1/' },
                         { id: 'qwen/qwen3.8-27b', label: '👁️ Qwen 3.8 27B (Multimodal Vision)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
                         { id: 'qwen/qwen3.6-27b', label: '👁️ Qwen 3.6 27B (Multimodal Vision)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'qwen-qwq-32b', label: '🔮 Qwen QwQ 32B (Reasoning)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'qwen-2.5-coder-32b', label: '💻 Qwen 2.5 Coder 32B (Coding)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'qwen-2.5-32b', label: '🌐 Qwen 2.5 32B (Instruct)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
                         { id: 'gemma2-9b-it', label: '💎 Gemma 2 9B (Google)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
                         { id: 'mistral-saba-24b', label: '🌪️ Mistral Saba 24B', isFree: true, url: 'https://api.groq.com/openai/v1/' },
                         { id: 'compound-beta', label: '🧪 Compound Beta (Groq Reasoning)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
                         { id: 'llama-3.2-11b-vision-preview', label: '📷 Llama 3.2 11B Vision', isFree: true, url: 'https://api.groq.com/openai/v1/' },
                         { id: 'llama-3.2-90b-vision-preview', label: '📸 Llama 3.2 90B Vision Flagship', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'llama-3.2-3b-preview', label: '⚡ Llama 3.2 3B (Compact Fast)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'llama-3.2-1b-preview', label: '🪶 Llama 3.2 1B (Ultra Light)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'llama-guard-3-8b', label: '🛡️ Llama Guard 3 8B (Safety)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'mixtral-8x7b-32768', label: '🌀 Mixtral 8x7B (MoE 32k)', isFree: true, url: 'https://api.groq.com/openai/v1/' }
+                        { id: 'llama-guard-3-8b', label: '🛡️ Llama Guard 3 8B (Safety)', isFree: true, url: 'https://api.groq.com/openai/v1/' }
                     ]
                 },
                 'GEMINI': {
@@ -14672,60 +14668,48 @@ WITH CHECK (true);</code>
                         }
                     }
 
-                    // Lista base abrangente oficial da Groq Cloud LPU
-                    const allKnownGroqModels = [
+                    // Modelos estritamente ativos e suportados pela Groq Cloud LPU
+                    // (Modelos como qwen-qwq-32b, qwen-2.5-32b, llama-3.2-3b-preview foram descontinuados/decommissioned pela Groq)
+                    const decommissionedGroq = [
+                        "qwen-qwq-32b", "qwen-2.5-coder-32b", "qwen-2.5-32b",
+                        "llama-3.2-3b-preview", "llama-3.2-1b-preview",
+                        "llava-v1.5-7b-4096-preview", "gemma-7b-it"
+                    ];
+                    const officialActiveGroqModels = [
                         "llama-3.3-70b-versatile",
                         "llama-3.1-8b-instant",
-                        "meta-llama/llama-4-scout-17b-16k",
-                        "meta-llama/llama-4-maverick-17b-128k",
                         "deepseek-r1-distill-llama-70b",
-                        "deepseek-r1-distill-qwen-32b",
-                        "qwen/qwen3.8-27b",
                         "qwen/qwen3.6-27b",
-                        "qwen-qwq-32b",
-                        "qwen-2.5-coder-32b",
-                        "qwen-2.5-32b",
+                        "qwen/qwen3.8-27b",
                         "gemma2-9b-it",
                         "mistral-saba-24b",
                         "compound-beta",
                         "llama-3.2-11b-vision-preview",
                         "llama-3.2-90b-vision-preview",
-                        "llama-3.2-3b-preview",
-                        "llama-3.2-1b-preview",
-                        "llama-guard-3-8b",
-                        "mixtral-8x7b-32768"
+                        "llama-guard-3-8b"
                     ];
 
-                    // Se a API online da Groq retornou modelos, une-os à lista conhecida garantindo que nenhum modelo seja omitido
                     if (groqList && groqList.length > 0) {
-                        const mergedSet = new Set([...groqList, ...allKnownGroqModels]);
-                        groqList = Array.from(mergedSet);
+                        // Filtra modelos descontinuados que possam vir em caches ou endpoints legados
+                        groqList = groqList.filter(id => !decommissionedGroq.includes(id));
+                        const mergedSet = new Set([...groqList, ...officialActiveGroqModels]);
+                        groqList = Array.from(mergedSet).filter(id => !decommissionedGroq.includes(id));
                     } else {
-                        groqList = [...allKnownGroqModels];
+                        groqList = [...officialActiveGroqModels];
                     }
 
-                    // Ordena por prioridade de performance e relevância
                     const priority = [
                         "llama-3.3-70b-versatile",
                         "llama-3.1-8b-instant",
-                        "meta-llama/llama-4-scout-17b-16k",
-                        "meta-llama/llama-4-maverick-17b-128k",
                         "deepseek-r1-distill-llama-70b",
-                        "deepseek-r1-distill-qwen-32b",
-                        "qwen/qwen3.8-27b",
                         "qwen/qwen3.6-27b",
-                        "qwen-qwq-32b",
-                        "qwen-2.5-coder-32b",
-                        "qwen-2.5-32b",
+                        "qwen/qwen3.8-27b",
                         "gemma2-9b-it",
                         "mistral-saba-24b",
                         "compound-beta",
                         "llama-3.2-11b-vision-preview",
                         "llama-3.2-90b-vision-preview",
-                        "llama-3.2-3b-preview",
-                        "llama-3.2-1b-preview",
-                        "llama-guard-3-8b",
-                        "mixtral-8x7b-32768"
+                        "llama-guard-3-8b"
                     ];
                     groqList.sort((a, b) => {
                         const idxA = priority.indexOf(a);
@@ -15022,27 +15006,20 @@ WITH CHECK (true);</code>
                 ];
             } else if (type === "GROQ") {
                 const cachedGroq = (typeof getSyncedModelsForProvider === 'function') ? getSyncedModelsForProvider("GROQ") : null;
-                options = cachedGroq || [
+                const decommissionedGroq = ["qwen-qwq-32b", "qwen-2.5-coder-32b", "qwen-2.5-32b", "llama-3.2-3b-preview", "llama-3.2-1b-preview"];
+                const cleanCached = cachedGroq ? cachedGroq.filter(m => !decommissionedGroq.includes(m)) : null;
+                options = (cleanCached && cleanCached.length > 0) ? cleanCached : [
                     "llama-3.3-70b-versatile",
                     "llama-3.1-8b-instant",
-                    "meta-llama/llama-4-scout-17b-16k",
-                    "meta-llama/llama-4-maverick-17b-128k",
                     "deepseek-r1-distill-llama-70b",
-                    "deepseek-r1-distill-qwen-32b",
-                    "qwen/qwen3.8-27b",
                     "qwen/qwen3.6-27b",
-                    "qwen-qwq-32b",
-                    "qwen-2.5-coder-32b",
-                    "qwen-2.5-32b",
+                    "qwen/qwen3.8-27b",
                     "gemma2-9b-it",
                     "mistral-saba-24b",
                     "compound-beta",
                     "llama-3.2-11b-vision-preview",
                     "llama-3.2-90b-vision-preview",
-                    "llama-3.2-3b-preview",
-                    "llama-3.2-1b-preview",
-                    "llama-guard-3-8b",
-                    "mixtral-8x7b-32768"
+                    "llama-guard-3-8b"
                 ];
             } else if (type === "OPENROUTER") {
                 const openRouterCatalog = getSynapseOpenRouterCatalog();
@@ -20206,7 +20183,7 @@ WITH CHECK (true);</code>
                                 return true;
                             });
                             // Mantém as últimas 14 mensagens para evitar o erro 'Please reduce the length of the messages' da Groq/OpenRouter
-                            const boundedHistory = cleanHistory.slice(-14);
+                            const boundedHistory = cleanHistory.slice(-6);
                             boundedHistory.forEach(msg => {
                                 openAiMessages.push({
                                     role: msg.role === 'user' ? 'user' : 'assistant',
@@ -20268,12 +20245,40 @@ WITH CHECK (true);</code>
                             addLog(`[DIAGNÓSTICO] Método HTTP: POST`, "sys");
                             addLog(`[DIAGNÓSTICO] Corpo enviado: ${JSON.stringify(reqPayload)}`, "sys");
 
-                            const response = await fetch(fetchUrl, {
+                            // Ajuste dinâmico de histórico: se a Groq ou modelo tiver janela pequena, limita as últimas mensagens
+                            let currentMessages = [...openAiMessages];
+                            let response = await fetch(fetchUrl, {
                                 method: 'POST',
                                 headers: headers,
-                                body: JSON.stringify(reqPayload)
+                                body: JSON.stringify({
+                                    model: model,
+                                    messages: currentMessages,
+                                    temperature: 0.7
+                                })
                             });
                             
+                            // Auto-Recuperação Inteligente 1: Se der erro de excesso de mensagens/tokens ('reduce the length of the messages')
+                            if (!response.ok && response.status === 400) {
+                                const errClone = await response.clone().text();
+                                if (errClone.includes("reduce the length") || errClone.includes("context_length_exceeded") || errClone.includes("tokens")) {
+                                    addLog("[AUTO-RECUPERAÇÃO] Limite de contexto da janela atingido. Compactando histórico para as últimas 2 mensagens e reenviando...", "warning");
+                                    // Reduz para apenas a última mensagem do usuário + system prompt
+                                    const compactMessages = [
+                                        currentMessages[0], // system prompt
+                                        ...currentMessages.slice(-2) // última mensagem
+                                    ];
+                                    response = await fetch(fetchUrl, {
+                                        method: 'POST',
+                                        headers: headers,
+                                        body: JSON.stringify({
+                                            model: model,
+                                            messages: compactMessages,
+                                            temperature: 0.7
+                                        })
+                                    });
+                                }
+                            }
+
                             addLog(`[DIAGNÓSTICO] Status da Resposta: Código ${response.status} (${response.statusText})`, response.ok ? "success" : "error");
                             
                             if (response.ok) {
@@ -20281,9 +20286,35 @@ WITH CHECK (true);</code>
                                 addLog(`[DIAGNÓSTICO] Resposta Completa: ${JSON.stringify(data)}`, "success");
                                 aiReply = data.choices?.[0]?.message?.content || "Mudo.";
                             } else {
-                                const err = await response.text();
-                                addLog(`[DIAGNÓSTICO - ERRO] Detalhes (Resposta Completa de Erro): ${err}`, "error");
-                                aiReply = `Erro [${activeApiType}]: ${err}`;
+                                const rawErr = await response.text();
+                                addLog(`[DIAGNÓSTICO - ERRO] Detalhes (Resposta Completa de Erro): ${rawErr}`, "error");
+                                
+                                let friendlyMessage = rawErr;
+                                try {
+                                    const parsedErr = JSON.parse(rawErr);
+                                    const errObj = parsedErr.error || parsedErr;
+                                    const errMsg = errObj.message || rawErr;
+                                    const errCode = errObj.code || "";
+                                    const errType = errObj.type || "";
+                                    
+                                    if (errCode === "model_decommissioned" || errMsg.includes("decommissioned") || errMsg.includes("no longer supported")) {
+                                        friendlyMessage = `⚠️ <b>Modelo Descontinuado pelo Provedor</b><br><br>O modelo <code>${model}</code> foi desativado recentemente pela infraestrutura da Groq. Por favor, selecione <b>Llama 3.3 70B (Versatile)</b> ou <b>Llama 3.1 8B (Instant)</b> nos Ajustes para respostas imediatas.`;
+                                    } else if (errCode === "model_not_found" || errMsg.includes("does not exist")) {
+                                        if (!cleanKey) {
+                                            friendlyMessage = `🔑 <b>Chave de API Ausente</b><br><br>Você ainda não configurou ou salvou sua chave de API para o provedor <b>${activeApiType}</b>. Acesse <b>Ajustes ⚙️ > Provedor & Chaves</b>, insira sua chave e clique em Salvar.`;
+                                        } else {
+                                            friendlyMessage = `⚠️ <b>Modelo não encontrado ou sem acesso</b><br><br>O modelo selecionado não está disponível na sua conta. Escolha outro modelo na lista de modelos ativos.`;
+                                        }
+                                    } else if (errMsg.includes("reduce the length") || errObj.param === "messages") {
+                                        friendlyMessage = `📏 <b>Limite de Conversa Atingido</b><br><br>A mensagem ou o histórico é muito extenso para este modelo. Inicie uma <b>Nova Sessão</b> ou envie uma mensagem mais curta.`;
+                                    } else if (response.status === 401 || errMsg.includes("Missing Authentication header")) {
+                                        friendlyMessage = `🔑 <b>Autenticação Necessária (Erro 401)</b><br><br>A chave de API do provedor <b>${activeApiType}</b> está vazia ou incorreta. Verifique sua chave nas configurações.`;
+                                    } else {
+                                        friendlyMessage = errMsg;
+                                    }
+                                } catch(e) {}
+
+                                aiReply = `Erro [${activeApiType}]: ${friendlyMessage}`;
                             }
                         }
                     } catch (e) {
