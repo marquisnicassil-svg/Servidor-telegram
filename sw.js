@@ -1,4 +1,4 @@
-const CACHE_NAME = 'console-ia-cache-v23';
+const CACHE_NAME = 'console-ia-cache-v24';
 const urlsToCache = [
   './',
   './index.html',
@@ -81,4 +81,26 @@ self.addEventListener('notificationclick', event => {
       }
     })
   );
+});
+
+// Permite que o app envie comandos de exibicao de notificacao para o Service Worker em segundo plano
+self.addEventListener("message", event => {
+  if (event.data && event.data.type === "SHOW_NOTIFICATION") {
+    const d = event.data;
+    const options = {
+      body: d.message || d.body || "Nova mensagem da Inteligência Artificial",
+      icon: d.icon || "./app/src/main/res/drawable/synapse_logo_1781452080476.jpg",
+      badge: d.badge || "./app/src/main/res/drawable/synapse_logo_1781452080476.jpg",
+      vibrate: [200, 100, 200],
+      tag: d.tag || ("synapse-ai-notif-" + Date.now()),
+      renotify: true,
+      requireInteraction: false,
+      data: {
+        url: "./index.html"
+      }
+    };
+    event.waitUntil(
+      self.registration.showNotification(d.title || "⚡ Synapse AI Console", options)
+    );
+  }
 });

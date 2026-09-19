@@ -41,7 +41,17 @@
                             try {
                                 // Clear heavy temporary caches
                                 localStorage.removeItem('synapse_openrouter_catalog_cache');
-                                localStorage.removeItem('synapse_groq_catalog_cache');
+                                // Auto-migra cache de modelos antigos da Groq que continham poucos modelos
+try {
+    const rawG = localStorage.getItem('synapse_groq_catalog_cache');
+    if (rawG) {
+        const parsedG = JSON.parse(rawG);
+        if (Array.isArray(parsedG) && parsedG.length <= 11) {
+            localStorage.removeItem('synapse_groq_catalog_cache');
+            console.log('[Synapse] Cache de modelos Groq legado purgado com sucesso para recarga completa.');
+        }
+    }
+} catch(e) {}
                                 localStorage.removeItem('synapse_gemini_catalog_cache');
                                 originalSetItem.apply(this, [key, value]);
                             } catch (e2) {
@@ -11802,68 +11812,107 @@ WITH CHECK (true);</code>
             sendSystemNotification("⚡ Synapse Console", "Alertas e popups ativos para seu aplicativo!", "system");
         }
 
-        function sendSystemNotification(title, message, category = 'system') {
-            const silentSwitch = document.getElementById('notif-silent-switch');
-            if (silentSwitch && silentSwitch.classList.contains('on')) {
+        function sendSystemNotification(title, message, category = "system") {
+            const silentSwitch = document.getElementById("notif-silent-switch");
+            if (silentSwitch && silentSwitch.classList.contains("on")) {
                 return; // Modo silencioso ativado
             }
 
             // Verifica se a categoria está ativada nas configurações
             let isCategoryEnabled = true;
-            if (category === 'messages') {
-                isCategoryEnabled = document.getElementById('notif-messages-switch')?.classList.contains('on') ?? true;
-            } else if (category === 'updates') {
-                isCategoryEnabled = document.getElementById('notif-updates-switch')?.classList.contains('on') ?? true;
-            } else if (category === 'integrations') {
-                isCategoryEnabled = document.getElementById('notif-integrations-switch')?.classList.contains('on') ?? true;
-            } else if (category === 'security') {
-                isCategoryEnabled = document.getElementById('notif-security-switch')?.classList.contains('on') ?? true;
+            if (category === "messages") {
+                isCategoryEnabled = document.getElementById("notif-messages-switch")?.classList.contains("on") ?? true;
+            } else if (category === "updates") {
+                isCategoryEnabled = document.getElementById("notif-updates-switch")?.classList.contains("on") ?? true;
+            } else if (category === "integrations") {
+                isCategoryEnabled = document.getElementById("notif-integrations-switch")?.classList.contains("on") ?? true;
+            } else if (category === "security") {
+                isCategoryEnabled = document.getElementById("notif-security-switch")?.classList.contains("on") ?? true;
             } else {
-                isCategoryEnabled = document.getElementById('notif-system-switch')?.classList.contains('on') ?? true;
+                isCategoryEnabled = document.getElementById("notif-system-switch")?.classList.contains("on") ?? true;
             }
 
             if (!isCategoryEnabled) return;
 
-            // Vibração tátil no dispositivo
+            // Vibração tátil no dispositivo móvel
             if (navigator.vibrate) {
-                try { navigator.vibrate([80, 40, 80]); } catch(e) {}
+                try { navigator.vibrate([150, 75, 150]); } catch(e) {}
             }
 
-            // Notificação do Sistema Android Nativo (quando embutido via Bridge em APK)
-            if (window.Android && typeof window.Android.showNotification === 'function') {
+            // 1. Ponte Nativa Android (quando executando no APK com JavaScriptInterface)
+            if (window.Android && typeof window.Android.showNotification === "function") {
                 try {
                     window.Android.showNotification(title, message);
                 } catch (e) {
                     console.warn("Erro ao chamar ponte Android.showNotification:", e);
                 }
             }
-
-            // Notificação do Navegador / PWA / Webview
-            if ("Notification" in window && Notification.permission === 'granted') {
+            if (window.AndroidBridge && typeof window.AndroidBridge.showNotification === "function") {
                 try {
-                    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-                        navigator.serviceWorker.ready.then(reg => {
-                            reg.showNotification(title, {
-                                body: message,
-                                icon: './app/src/main/res/drawable/synapse_logo_1781452080476.jpg',
-                                badge: './app/src/main/res/drawable/synapse_logo_1781452080476.jpg',
-                                vibrate: [80, 40, 80],
-                                tag: 'synapse-alert-' + Date.now()
-                            });
-                        });
-                    } else {
-                        new Notification(title, {
-                            body: message,
-                            icon: './app/src/main/res/drawable/synapse_logo_1781452080476.jpg'
-                        });
-                    }
+                    window.AndroidBridge.showNotification(title, message);
                 } catch (e) {
-                    console.warn("Erro ao exibir notificação nativa:", e);
+                    console.warn("Erro ao chamar ponte AndroidBridge.showNotification:", e);
                 }
             }
 
-            // Toast visual in-app como feedback imediato
-            showAppToast(`${title}: ${message}`);
+            // 2. Disparo de Notificação no Android / Celular (ServiceWorker Registration & Notification API)
+            // No Android Chrome/PWA/WebView, ServiceWorkerRegistration.showNotification é o único mecanismo que coloca a notificação na barra de status quando a aba/app está minimizado ou em segundo plano
+            const iconUrl = "./app/src/main/res/drawable/synapse_logo_1781452080476.jpg";
+            const notifTag = "synapse-alert-" + (category === "messages" ? "msg" : Date.now());
+
+            if ("Notification" in window) {
+                if (Notification.permission === "granted") {
+                    if ("serviceWorker" in navigator) {
+                        try {
+                            if (navigator.serviceWorker.controller) {
+                                navigator.serviceWorker.controller.postMessage({
+                                    type: "SHOW_NOTIFICATION",
+                                    title: title,
+                                    message: message,
+                                    icon: iconUrl,
+                                    badge: iconUrl,
+                                    tag: notifTag
+                                });
+                            }
+                            navigator.serviceWorker.ready.then(reg => {
+                                if (reg && typeof reg.showNotification === "function") {
+                                    reg.showNotification(title, {
+                                        body: message,
+                                        icon: iconUrl,
+                                        badge: iconUrl,
+                                        vibrate: [150, 70, 150],
+                                        tag: notifTag,
+                                        renotify: true,
+                                        data: { url: "./index.html" }
+                                    }).catch(err => {
+                                        try {
+                                            new Notification(title, { body: message, icon: iconUrl, tag: notifTag });
+                                        } catch(e2) {}
+                                    });
+                                }
+                            }).catch(() => {});
+                        } catch(swErr) {}
+                    } else {
+                        try {
+                            new Notification(title, { body: message, icon: iconUrl, tag: notifTag });
+                        } catch (nErr) {}
+                    }
+                } else if (Notification.permission === "default") {
+                    try {
+                        Notification.requestPermission().then(perm => {
+                            if (perm === "granted") {
+                                localStorage.setItem("synapse_apk_notifications_enabled", "true");
+                                sendSystemNotification(title, message, category);
+                            }
+                        }).catch(() => {});
+                    } catch(e) {}
+                }
+            }
+
+            // Toast visual in-app como feedback imediato se o app estiver aberto e visível
+            if (!document.hidden) {
+                showAppToast(title + ": " + message);
+            }
         }
 
         function setAccent(color, element) {
@@ -12874,7 +12923,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=23')
+                navigator.serviceWorker.register('./sw.js?v=24')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -14270,10 +14319,23 @@ WITH CHECK (true);</code>
                         { id: 'llama-3.3-70b-versatile', label: '🦙 Llama 3.3 70B (Versatile)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
                         { id: 'llama-3.1-8b-instant', label: '⚡ Llama 3.1 8B (Instant)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
                         { id: 'meta-llama/llama-4-scout-17b-16k', label: '🚀 Llama 4 Scout 17B (LPU Fast)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'meta-llama/llama-4-maverick-17b-128k', label: '🌌 Llama 4 Maverick 17B (128K)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
                         { id: 'deepseek-r1-distill-llama-70b', label: '🧠 DeepSeek R1 70B (Reasoning)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'deepseek-r1-distill-qwen-32b', label: '🔬 DeepSeek R1 Qwen 32B', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'qwen/qwen3.8-27b', label: '👁️ Qwen 3.8 27B (Multimodal Vision)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'qwen/qwen3.6-27b', label: '👁️ Qwen 3.6 27B (Multimodal Vision)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'qwen-qwq-32b', label: '🔮 Qwen QwQ 32B (Reasoning)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'qwen-2.5-coder-32b', label: '💻 Qwen 2.5 Coder 32B (Coding)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'qwen-2.5-32b', label: '🌐 Qwen 2.5 32B (Instruct)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
                         { id: 'gemma2-9b-it', label: '💎 Gemma 2 9B (Google)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
                         { id: 'mistral-saba-24b', label: '🌪️ Mistral Saba 24B', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'compound-beta', label: '🧪 Compound Beta (Groq Reasoning)', isFree: true, url: 'https://api.groq.com/openai/v1/' }
+                        { id: 'compound-beta', label: '🧪 Compound Beta (Groq Reasoning)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'llama-3.2-11b-vision-preview', label: '📷 Llama 3.2 11B Vision', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'llama-3.2-90b-vision-preview', label: '📸 Llama 3.2 90B Vision Flagship', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'llama-3.2-3b-preview', label: '⚡ Llama 3.2 3B (Compact Fast)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'llama-3.2-1b-preview', label: '🪶 Llama 3.2 1B (Ultra Light)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'llama-guard-3-8b', label: '🛡️ Llama Guard 3 8B (Safety)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'mixtral-8x7b-32768', label: '🌀 Mixtral 8x7B (MoE 32k)', isFree: true, url: 'https://api.groq.com/openai/v1/' }
                     ]
                 },
                 'GEMINI': {
@@ -14610,41 +14672,69 @@ WITH CHECK (true);</code>
                         }
                     }
 
-                    if (!groqList || groqList.length === 0) {
-                        groqList = [
-                            "llama-3.3-70b-versatile",
-                            "llama-3.1-8b-instant",
-                            "meta-llama/llama-4-scout-17b-16k",
-                            "deepseek-r1-distill-llama-70b",
-                            "gemma2-9b-it",
-                            "mistral-saba-24b",
-                            "compound-beta"
-                        ];
+                    // Lista base abrangente oficial da Groq Cloud LPU
+                    const allKnownGroqModels = [
+                        "llama-3.3-70b-versatile",
+                        "llama-3.1-8b-instant",
+                        "meta-llama/llama-4-scout-17b-16k",
+                        "meta-llama/llama-4-maverick-17b-128k",
+                        "deepseek-r1-distill-llama-70b",
+                        "deepseek-r1-distill-qwen-32b",
+                        "qwen/qwen3.8-27b",
+                        "qwen/qwen3.6-27b",
+                        "qwen-qwq-32b",
+                        "qwen-2.5-coder-32b",
+                        "qwen-2.5-32b",
+                        "gemma2-9b-it",
+                        "mistral-saba-24b",
+                        "compound-beta",
+                        "llama-3.2-11b-vision-preview",
+                        "llama-3.2-90b-vision-preview",
+                        "llama-3.2-3b-preview",
+                        "llama-3.2-1b-preview",
+                        "llama-guard-3-8b",
+                        "mixtral-8x7b-32768"
+                    ];
+
+                    // Se a API online da Groq retornou modelos, une-os à lista conhecida garantindo que nenhum modelo seja omitido
+                    if (groqList && groqList.length > 0) {
+                        const mergedSet = new Set([...groqList, ...allKnownGroqModels]);
+                        groqList = Array.from(mergedSet);
                     } else {
-                        const priority = [
-                            "llama-3.3-70b-versatile",
-                            "llama-3.1-8b-instant",
-                            "deepseek-r1-distill-llama-70b",
-                            "qwen-qwq-32b",
-                            "qwen-2.5-coder-32b",
-                            "qwen-2.5-32b",
-                            "gemma2-9b-it",
-                            "llama-3.2-11b-vision-preview",
-                            "llama-3.2-90b-vision-preview",
-                            "llama-3.2-3b-preview",
-                            "llama-3.2-1b-preview",
-                            "llama-guard-3-8b",
-                            "mixtral-8x7b-32768"
-                        ];
-                        groqList.sort((a, b) => {
-                            const idxA = priority.indexOf(a);
-                            const idxB = priority.indexOf(b);
-                            if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-                            if (idxA !== -1) return -1;
-                            if (idxB !== -1) return 1;
-                            return a.localeCompare(b);
-                        });
+                        groqList = [...allKnownGroqModels];
                     }
+
+                    // Ordena por prioridade de performance e relevância
+                    const priority = [
+                        "llama-3.3-70b-versatile",
+                        "llama-3.1-8b-instant",
+                        "meta-llama/llama-4-scout-17b-16k",
+                        "meta-llama/llama-4-maverick-17b-128k",
+                        "deepseek-r1-distill-llama-70b",
+                        "deepseek-r1-distill-qwen-32b",
+                        "qwen/qwen3.8-27b",
+                        "qwen/qwen3.6-27b",
+                        "qwen-qwq-32b",
+                        "qwen-2.5-coder-32b",
+                        "qwen-2.5-32b",
+                        "gemma2-9b-it",
+                        "mistral-saba-24b",
+                        "compound-beta",
+                        "llama-3.2-11b-vision-preview",
+                        "llama-3.2-90b-vision-preview",
+                        "llama-3.2-3b-preview",
+                        "llama-3.2-1b-preview",
+                        "llama-guard-3-8b",
+                        "mixtral-8x7b-32768"
+                    ];
+                    groqList.sort((a, b) => {
+                        const idxA = priority.indexOf(a);
+                        const idxB = priority.indexOf(b);
+                        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                        if (idxA !== -1) return -1;
+                        if (idxB !== -1) return 1;
+                        return a.localeCompare(b);
+                    });
 
                     localStorage.setItem('synapse_groq_catalog_cache', JSON.stringify(groqList));
                     localStorage.setItem('synapse_groq_last_sync', new Date().toISOString());
@@ -14933,13 +15023,26 @@ WITH CHECK (true);</code>
             } else if (type === "GROQ") {
                 const cachedGroq = (typeof getSyncedModelsForProvider === 'function') ? getSyncedModelsForProvider("GROQ") : null;
                 options = cachedGroq || [
-                    "llama-3.3-70b-versatile", 
-                    "llama-3.1-8b-instant", 
+                    "llama-3.3-70b-versatile",
+                    "llama-3.1-8b-instant",
                     "meta-llama/llama-4-scout-17b-16k",
+                    "meta-llama/llama-4-maverick-17b-128k",
                     "deepseek-r1-distill-llama-70b",
+                    "deepseek-r1-distill-qwen-32b",
+                    "qwen/qwen3.8-27b",
+                    "qwen/qwen3.6-27b",
+                    "qwen-qwq-32b",
+                    "qwen-2.5-coder-32b",
+                    "qwen-2.5-32b",
                     "gemma2-9b-it",
                     "mistral-saba-24b",
-                    "compound-beta"
+                    "compound-beta",
+                    "llama-3.2-11b-vision-preview",
+                    "llama-3.2-90b-vision-preview",
+                    "llama-3.2-3b-preview",
+                    "llama-3.2-1b-preview",
+                    "llama-guard-3-8b",
+                    "mixtral-8x7b-32768"
                 ];
             } else if (type === "OPENROUTER") {
                 const openRouterCatalog = getSynapseOpenRouterCatalog();
@@ -19875,6 +19978,17 @@ WITH CHECK (true);</code>
                 addLog(`[STEP 5] onPressed executado - Validação de entrada de texto concluída. Mensagem: "${txt}"`, "info");
             }
             if (!txt || !dotFreeTxt) return;
+            // Solicita permissão de notificação no Android/Navegador preventivamente se ainda não concedida
+            if ("Notification" in window && Notification.permission === "default") {
+                try {
+                    Notification.requestPermission().then(p => {
+                        if (p === "granted") {
+                            localStorage.setItem("synapse_apk_notifications_enabled", "true");
+                            if (typeof updateNotifPermissionBadge === "function") updateNotifPermissionBadge();
+                        }
+                    }).catch(() => {});
+                } catch(e) {}
+            }
 
             try {
                 playSynthSound('send');
@@ -20203,6 +20317,22 @@ WITH CHECK (true);</code>
                     addLog("[STEP 8] Renderização concluída - O novo bloco de texto da resposta da IA foi finalizado na árvore de renderização.", "info");
                 }
                 addLog(`Thread preenchida com sucesso e salva na memória.`, "success");
+                // Dispara notificação na barra de navegação/status do celular (ótimo quando o usuário sai do app enquanto a IA responde)
+                try {
+                    const agentName = (typeof selectedAssistantId !== 'undefined' && selectedAssistantId) 
+                        ? (selectedAssistantId.charAt(0).toUpperCase() + selectedAssistantId.slice(1))
+                        : "Synapse IA";
+                    const cleanSummary = String(cleanedAiReply || "")
+                        .replace(/[\*\_\#\`\~\>]/g, "")
+                        .replace(/\s+/g, " ")
+                        .trim();
+                    const notifSnippet = cleanSummary.length > 120 
+                        ? cleanSummary.substring(0, 120) + "..." 
+                        : (cleanSummary || "Sua resposta foi gerada com sucesso.");
+                    sendSystemNotification("💬 " + agentName + " respondeu", notifSnippet, "messages");
+                } catch(notifErr) {
+                    console.warn("[Chat Notification Error]", notifErr);
+                }
 
                 // Auto-Sincronização Cloud Supabase caso esteja ativado
                 if (document.getElementById('supabase-auto-switch')?.classList.contains('on')) {

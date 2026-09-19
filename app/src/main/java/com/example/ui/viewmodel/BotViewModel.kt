@@ -164,7 +164,7 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
                 val channel = NotificationChannel(
                     channelId,
                     channelName,
-                    NotificationManager.IMPORTANCE_DEFAULT
+                    NotificationManager.IMPORTANCE_HIGH
                 ).apply {
                     description = "Canal de notificações para $channelName"
                     enableVibration(true)
@@ -215,7 +215,8 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
                 .setContentTitle(title)
                 .setContentText(message)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(message))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setAutoCancel(true)
 
             if (pendingIntent != null) {
@@ -698,6 +699,7 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
                                                 isBotReply = true
                                             )
                                             repository.insertMessage(aiMessageEntity)
+
                                             addLog("Telegram OUT: Solicitado link de contexto.", LogType.TG_OUT)
                                         }
                                     } catch (err: Exception) {
@@ -731,6 +733,14 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
                                                 isBotReply = true
                                             )
                                             repository.insertMessage(aiMessageEntity)
+                                            try {
+                                                val previewText = if (aiReply.length > 120) aiReply.take(120) + "..." else aiReply
+                                                sendPushNotification(
+                                                    title = "💬 Telegram: " + finalBotDetails.firstName,
+                                                    message = previewText,
+                                                    category = "messages"
+                                                )
+                                            } catch (e: Exception) {}
                                             addLog("Telegram OUT: Resposta enviada com sucesso!", LogType.TG_OUT)
                                         }
                                     } catch (err: Exception) {
@@ -808,6 +818,7 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
                         isBotReply = true
                     )
                     repository.insertMessage(aiMsg)
+
                 } catch (e: Exception) {
                     addLog("Erro na geração simulada: ${e.message}", LogType.ERROR)
                 } finally {
@@ -851,6 +862,14 @@ class BotViewModel(application: Application) : AndroidViewModel(application) {
                     isBotReply = true
                 )
                 repository.insertMessage(aiMsg)
+                try {
+                    val previewText = if (aiResponse.length > 120) aiResponse.take(120) + "..." else aiResponse
+                    sendPushNotification(
+                        title = "💬 IA Bot respondeu",
+                        message = previewText,
+                        category = "messages"
+                    )
+                } catch (e: Exception) {}
             } catch (e: Exception) {
                 addLog("Erro na execução do Chat de testes local: ${e.message}", LogType.ERROR)
                 val errorMsg = BotMessageEntity(
