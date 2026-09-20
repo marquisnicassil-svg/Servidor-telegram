@@ -41,22 +41,6 @@
                             try {
                                 // Clear heavy temporary caches
                                 localStorage.removeItem('synapse_openrouter_catalog_cache');
-                                // Limpa modelos obsoletos ou descontinuados da Groq no cache local
-try {
-    const rawG = localStorage.getItem('synapse_groq_catalog_cache');
-    if (rawG) {
-        const parsedG = JSON.parse(rawG);
-        const decommissioned = ["qwen-qwq-32b", "qwen-2.5-coder-32b", "qwen-2.5-32b", "llama-3.2-3b-preview", "llama-3.2-1b-preview"];
-        if (Array.isArray(parsedG)) {
-            const hasDecom = parsedG.some(m => decommissioned.includes(m));
-            if (hasDecom) {
-                const cleanedG = parsedG.filter(m => !decommissioned.includes(m));
-                localStorage.setItem('synapse_groq_catalog_cache', JSON.stringify(cleanedG));
-                console.log('[Synapse] Modelos descontinuados da Groq removidos do cache.');
-            }
-        }
-    }
-} catch(e) {}
                                 localStorage.removeItem('synapse_gemini_catalog_cache');
                                 originalSetItem.apply(this, [key, value]);
                             } catch (e2) {
@@ -13213,6 +13197,14 @@ WITH CHECK (true);</code>
                         data.supabaseKey = 'sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa';
                         needsSaveMigration = true;
                     }
+                    // Migração automática de modelos descontinuados da Groq
+                    if (data.modelName === 'llama-3.1-8b-instant') {
+                        data.modelName = 'openai/gpt-oss-20b';
+                        needsSaveMigration = true;
+                    } else if (data.modelName === 'llama-3.3-70b-versatile') {
+                        data.modelName = 'openai/gpt-oss-120b';
+                        needsSaveMigration = true;
+                    }
                     if (needsSaveMigration) {
                         localStorage.setItem('ai_console_settings', JSON.stringify(data));
                     }
@@ -14089,14 +14081,15 @@ WITH CHECK (true);</code>
                 if (pType === 'GEMINI') {
                     isFree = !idLower.includes('pro') && !idLower.includes('ultra');
                 } else if (pType === 'GROQ') {
-                    isFree = true;
+                    // Para Groq, a API não retorna preços nem gratuidade garantida
+                    isFree = null;
                 } else if (pType === 'OPENAI') {
                     isFree = false;
                 }
                 return { 
                     ...found,
                     isFree: isFree,
-                    status: isFree ? (found.status && found.status.includes('Experimental') ? 'Experimental • Gratuito' : 'Gratuito') : (found.status ? found.status.replace('Gratuito', 'Pago') : 'Pago')
+                    status: isFree === null ? 'Informação não disponível' : (isFree ? (found.status && found.status.includes('Experimental') ? 'Experimental • Gratuito' : 'Gratuito') : (found.status ? found.status.replace('Gratuito', 'Pago') : 'Pago'))
                 };
             }
 
@@ -14107,7 +14100,8 @@ WITH CHECK (true);</code>
                 if (pType === 'GEMINI') {
                     isFree = !idLower.includes('pro') && !idLower.includes('ultra');
                 } else if (pType === 'GROQ') {
-                    isFree = true;
+                    // Para Groq, a API não retorna preços nem gratuidade garantida
+                    isFree = null;
                 } else if (pType === 'OPENAI') {
                     isFree = false;
                 }
@@ -14115,7 +14109,7 @@ WITH CHECK (true);</code>
                     ...partial, 
                     id: rawId,
                     isFree: isFree,
-                    status: isFree ? (partial.status && partial.status.includes('Experimental') ? 'Experimental • Gratuito' : 'Gratuito') : (partial.status ? partial.status.replace('Gratuito', 'Pago') : 'Pago')
+                    status: isFree === null ? 'Informação não disponível' : (isFree ? (partial.status && partial.status.includes('Experimental') ? 'Experimental • Gratuito' : 'Gratuito') : (partial.status ? partial.status.replace('Gratuito', 'Pago') : 'Pago'))
                 };
             }
 
@@ -14231,7 +14225,6 @@ WITH CHECK (true);</code>
                 color = "#3b82f6";
                 categories.push("meta", "coding");
                 capabilities = ["Texto 📝", "Código 💻", "Ferramentas 🛠️"];
-                if (pType === 'GROQ') isFree = true;
             } else if (idLower.startsWith('dots/')) {
                 developer = "Dots AI";
                 icon = "🎯";
@@ -14244,7 +14237,6 @@ WITH CHECK (true);</code>
                 icon = "🌪️";
                 color = "#f97316";
                 categories.push("fast", "coding");
-                if (pType === 'GROQ') isFree = true;
             } else if (idLower.startsWith('qwen/')) {
                 developer = "Alibaba Qwen";
                 icon = "💻";
@@ -14253,16 +14245,17 @@ WITH CHECK (true);</code>
                 capabilities = ["Código 💻", "Refatoração 🛠️", "Texto 📝"];
             }
 
-            // Para Groq Cloud API, toda a inferência de catálogo oferecida no app está no Free Tier
+            // Para Groq Cloud API, a API não retorna preços nem gratuidade garantida
             if (pType === 'GROQ') {
-                isFree = true;
+                isFree = null;
+                status = "Informação não disponível";
             }
 
             return {
                 id: rawId,
                 name: rawId.split('/').pop() || rawId,
                 developer: developer,
-                status: isFree ? "Gratuito" : (status === "Gratuito" ? "Pago" : status),
+                status: isFree === null ? "Informação não disponível" : (isFree ? "Gratuito" : (status === "Gratuito" ? "Pago" : status)),
                 isFree: isFree,
                 isExperimental: isExperimental,
                 contextLength: contextLength,
@@ -14321,17 +14314,10 @@ WITH CHECK (true);</code>
                     desc: 'Inferência ultrarrápida em tempo real com hardware Groq LPU',
                     statLatency: '⚡ LPU Ultra-Low Latency',
                     defaultModels: [
-                        { id: 'llama-3.3-70b-versatile', label: '🦙 Llama 3.3 70B (Versatile)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'llama-3.1-8b-instant', label: '⚡ Llama 3.1 8B (Instant)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'deepseek-r1-distill-llama-70b', label: '🧠 DeepSeek R1 70B (Reasoning)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'qwen/qwen3.8-27b', label: '👁️ Qwen 3.8 27B (Multimodal Vision)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'qwen/qwen3.6-27b', label: '👁️ Qwen 3.6 27B (Multimodal Vision)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'gemma2-9b-it', label: '💎 Gemma 2 9B (Google)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'mistral-saba-24b', label: '🌪️ Mistral Saba 24B', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'compound-beta', label: '🧪 Compound Beta (Groq Reasoning)', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'llama-3.2-11b-vision-preview', label: '📷 Llama 3.2 11B Vision', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'llama-3.2-90b-vision-preview', label: '📸 Llama 3.2 90B Vision Flagship', isFree: true, url: 'https://api.groq.com/openai/v1/' },
-                        { id: 'llama-guard-3-8b', label: '🛡️ Llama Guard 3 8B (Safety)', isFree: true, url: 'https://api.groq.com/openai/v1/' }
+                        { id: 'llama-3.3-70b-versatile', label: '🦙 Llama 3.3 70B (Versatile)', isFree: null, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'llama-3.1-8b-instant', label: '⚡ Llama 3.1 8B (Instant)', isFree: null, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'openai/gpt-oss-120b', label: '🧠 GPT OSS 120B', isFree: null, url: 'https://api.groq.com/openai/v1/' },
+                        { id: 'openai/gpt-oss-20b', label: '⚡ GPT OSS 20B', isFree: null, url: 'https://api.groq.com/openai/v1/' }
                     ]
                 },
                 'GEMINI': {
@@ -14429,27 +14415,62 @@ WITH CHECK (true);</code>
             });
 
             if (badgeEl) {
-                badgeEl.innerHTML = isSynced 
-                    ? `🟢 ${totalCount} Modelos (${freeCount} Grátis)` 
-                    : `🟡 ${totalCount} Modelos Disponíveis`;
+                if (p === 'GROQ') {
+                    badgeEl.innerHTML = isSynced 
+                        ? `🟢 ${totalCount} Modelos Sincronizados` 
+                        : `🟡 ${totalCount} Modelos Disponíveis`;
+                } else {
+                    badgeEl.innerHTML = isSynced 
+                        ? `🟢 ${totalCount} Modelos (${freeCount} Grátis)` 
+                        : `🟡 ${totalCount} Modelos Disponíveis`;
+                }
             }
 
             if (statsBar) {
-                statsBar.innerHTML = `
-                    <span class="provider-stat-pill">${cfg.statLatency}</span>
-                    <span class="provider-stat-pill">🟢 ${freeCount} Gratuitos</span>
-                    <span class="provider-stat-pill">📦 Total: ${totalCount} Modelos</span>
-                    <span class="provider-stat-pill" style="margin-left: auto; color: ${cfg.accentColor}; font-weight: 600;">Provedor: ${p}</span>
-                `;
+                if (p === 'GROQ') {
+                    statsBar.innerHTML = `
+                        <span class="provider-stat-pill">${cfg.statLatency}</span>
+                        <span class="provider-stat-pill">📦 Total: ${totalCount} Modelos</span>
+                        <span class="provider-stat-pill" style="margin-left: auto; color: ${cfg.accentColor}; font-weight: 600;">Provedor: ${p}</span>
+                    `;
+                } else {
+                    statsBar.innerHTML = `
+                        <span class="provider-stat-pill">${cfg.statLatency}</span>
+                        <span class="provider-stat-pill">🟢 ${freeCount} Gratuitos</span>
+                        <span class="provider-stat-pill">📦 Total: ${totalCount} Modelos</span>
+                        <span class="provider-stat-pill" style="margin-left: auto; color: ${cfg.accentColor}; font-weight: 600;">Provedor: ${p}</span>
+                    `;
+                }
             }
 
             if (chipsContainer) {
                 chipsContainer.innerHTML = '';
-                cfg.defaultModels.forEach(chip => {
+                let chipsToRender = cfg.defaultModels;
+                if (p === 'GROQ') {
+                    const cachedGroq = (typeof getSyncedModelsForProvider === 'function') ? getSyncedModelsForProvider("GROQ") : null;
+                    if (cachedGroq && cachedGroq.length > 0) {
+                        chipsToRender = cachedGroq.slice(0, 8).map(mId => {
+                            const info = getSynapseModelInfo(mId, 'GROQ');
+                            return {
+                                id: mId,
+                                label: info.name || mId,
+                                isFree: null,
+                                url: 'https://api.groq.com/openai/v1/'
+                            };
+                        });
+                    }
+                }
+                chipsToRender.forEach(chip => {
                     const chipBtn = document.createElement('button');
                     chipBtn.type = 'button';
                     chipBtn.className = 'provider-chip-btn';
-                    chipBtn.innerHTML = `<span>${chip.label}</span> <span style="font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; background: ${chip.isFree ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; color: ${chip.isFree ? '#34d399' : '#f87171'};">${chip.isFree ? 'Grátis' : 'Pago'}</span>`;
+                    let priceTag = '';
+                    if (chip.isFree === true) {
+                        priceTag = `<span style="font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; background: rgba(16, 185, 129, 0.2); color: #34d399;">Grátis</span>`;
+                    } else if (chip.isFree === false) {
+                        priceTag = `<span style="font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; background: rgba(239, 68, 68, 0.2); color: #f87171;">Pago</span>`;
+                    }
+                    chipBtn.innerHTML = `<span>${chip.label}</span> ${priceTag}`;
                     chipBtn.onclick = () => {
                         if (chip.isAuto) {
                             activateAutoFreeModel();
@@ -14648,6 +14669,7 @@ WITH CHECK (true);</code>
                     const resolvedKeyObj = (typeof getActiveApiCredentials === 'function') ? getActiveApiCredentials("GROQ") : { key: '' };
                     const savedKey = resolvedKeyObj.key || localStorage.getItem('apiKey_GROQ') || document.getElementById('api-key')?.value.trim() || '';
                     let groqList = [];
+                    let fetchSucceeded = false;
                     if (savedKey) {
                         try {
                             const resp = await fetch('https://api.groq.com/openai/v1/models', {
@@ -14657,7 +14679,8 @@ WITH CHECK (true);</code>
                             if (resp.ok) {
                                 const data = await resp.json();
                                 if (data && Array.isArray(data.data)) {
-                                    // Manter todos os modelos de chat/completions/raciocínio/visão válidos da Groq
+                                    fetchSucceeded = true;
+                                    // Manter todos os modelos ativos retornados pela API oficial da Groq (exceto áudio/whisper/tts/safetensors)
                                     groqList = data.data
                                         .filter(m => m && m.active !== false && !m.id.includes('whisper') && !m.id.includes('tts') && !m.id.includes('safetensors'))
                                         .map(m => m.id);
@@ -14668,62 +14691,28 @@ WITH CHECK (true);</code>
                         }
                     }
 
-                    // Modelos estritamente ativos e suportados pela Groq Cloud LPU
-                    // (Modelos como qwen-qwq-32b, qwen-2.5-32b, llama-3.2-3b-preview foram descontinuados/decommissioned pela Groq)
-                    const decommissionedGroq = [
-                        "qwen-qwq-32b", "qwen-2.5-coder-32b", "qwen-2.5-32b",
-                        "llama-3.2-3b-preview", "llama-3.2-1b-preview",
-                        "llava-v1.5-7b-4096-preview", "gemma-7b-it"
-                    ];
-                    const officialActiveGroqModels = [
-                        "llama-3.3-70b-versatile",
-                        "llama-3.1-8b-instant",
-                        "deepseek-r1-distill-llama-70b",
-                        "qwen/qwen3.6-27b",
-                        "qwen/qwen3.8-27b",
-                        "gemma2-9b-it",
-                        "mistral-saba-24b",
-                        "compound-beta",
-                        "llama-3.2-11b-vision-preview",
-                        "llama-3.2-90b-vision-preview",
-                        "llama-guard-3-8b"
-                    ];
-
-                    if (groqList && groqList.length > 0) {
-                        // Filtra modelos descontinuados que possam vir em caches ou endpoints legados
-                        groqList = groqList.filter(id => !decommissionedGroq.includes(id));
-                        const mergedSet = new Set([...groqList, ...officialActiveGroqModels]);
-                        groqList = Array.from(mergedSet).filter(id => !decommissionedGroq.includes(id));
+                    if (!fetchSucceeded || groqList.length === 0) {
+                        // Fallback apenas quando a API não estiver acessível (ex: sem chave ou offline)
+                        const cached = (typeof getSyncedModelsForProvider === 'function') ? getSyncedModelsForProvider("GROQ") : null;
+                        if (cached && cached.length > 0) {
+                            groqList = cached;
+                        } else {
+                            groqList = [
+                                "llama-3.3-70b-versatile",
+                                "llama-3.1-8b-instant",
+                                "openai/gpt-oss-120b",
+                                "openai/gpt-oss-20b"
+                            ];
+                        }
                     } else {
-                        groqList = [...officialActiveGroqModels];
+                        // Ordem alfabética limpa para os modelos retornados diretamente da API
+                        groqList.sort((a, b) => a.localeCompare(b));
                     }
-
-                    const priority = [
-                        "llama-3.3-70b-versatile",
-                        "llama-3.1-8b-instant",
-                        "deepseek-r1-distill-llama-70b",
-                        "qwen/qwen3.6-27b",
-                        "qwen/qwen3.8-27b",
-                        "gemma2-9b-it",
-                        "mistral-saba-24b",
-                        "compound-beta",
-                        "llama-3.2-11b-vision-preview",
-                        "llama-3.2-90b-vision-preview",
-                        "llama-guard-3-8b"
-                    ];
-                    groqList.sort((a, b) => {
-                        const idxA = priority.indexOf(a);
-                        const idxB = priority.indexOf(b);
-                        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-                        if (idxA !== -1) return -1;
-                        if (idxB !== -1) return 1;
-                        return a.localeCompare(b);
-                    });
 
                     localStorage.setItem('synapse_groq_catalog_cache', JSON.stringify(groqList));
                     localStorage.setItem('synapse_groq_last_sync', new Date().toISOString());
                     resultModels = groqList;
-                    isFreeCount = groqList.length;
+                    isFreeCount = 0;
                 } else if (p === "GEMINI") {
                     const resolvedKeyObj = (typeof getActiveApiCredentials === 'function') ? getActiveApiCredentials("GEMINI") : { key: '' };
                     const savedKey = resolvedKeyObj.key || localStorage.getItem('apiKey_GEMINI') || document.getElementById('api-key')?.value.trim() || '';
@@ -14967,8 +14956,8 @@ WITH CHECK (true);</code>
                     </div>
                     <div style="background: rgba(0, 0, 0, 0.2); border-radius: 8px; padding: 6px 10px; border: 1px solid rgba(255, 255, 255, 0.04);">
                         <div style="font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Custo / Tarifação</div>
-                        <div style="font-size: 0.8rem; font-weight: 700; color: ${info.isFree ? '#34d399' : '#f87171'}; margin-top: 2px;">
-                            ${info.isFree ? '🟢 Gratuito (R$ 0,00)' : '🔴 Pago (Tarifação Provedor)'}
+                        <div style="font-size: 0.8rem; font-weight: 700; color: ${info.isFree === null ? '#94a3b8' : (info.isFree ? '#34d399' : '#f87171')}; margin-top: 2px;">
+                            ${info.isFree === null ? '⚪ Informação não disponível' : (info.isFree ? '🟢 Gratuito (R$ 0,00)' : '🔴 Pago (Tarifação Provedor)')}
                         </div>
                     </div>
                     <div style="background: rgba(0, 0, 0, 0.2); border-radius: 8px; padding: 6px 10px; border: 1px solid rgba(255, 255, 255, 0.04);">
@@ -15006,20 +14995,11 @@ WITH CHECK (true);</code>
                 ];
             } else if (type === "GROQ") {
                 const cachedGroq = (typeof getSyncedModelsForProvider === 'function') ? getSyncedModelsForProvider("GROQ") : null;
-                const decommissionedGroq = ["qwen-qwq-32b", "qwen-2.5-coder-32b", "qwen-2.5-32b", "llama-3.2-3b-preview", "llama-3.2-1b-preview"];
-                const cleanCached = cachedGroq ? cachedGroq.filter(m => !decommissionedGroq.includes(m)) : null;
-                options = (cleanCached && cleanCached.length > 0) ? cleanCached : [
+                options = (cachedGroq && cachedGroq.length > 0) ? cachedGroq : [
                     "llama-3.3-70b-versatile",
                     "llama-3.1-8b-instant",
-                    "deepseek-r1-distill-llama-70b",
-                    "qwen/qwen3.6-27b",
-                    "qwen/qwen3.8-27b",
-                    "gemma2-9b-it",
-                    "mistral-saba-24b",
-                    "compound-beta",
-                    "llama-3.2-11b-vision-preview",
-                    "llama-3.2-90b-vision-preview",
-                    "llama-guard-3-8b"
+                    "openai/gpt-oss-120b",
+                    "openai/gpt-oss-20b"
                 ];
             } else if (type === "OPENROUTER") {
                 const openRouterCatalog = getSynapseOpenRouterCatalog();
@@ -20298,17 +20278,23 @@ WITH CHECK (true);</code>
                                     const errType = errObj.type || "";
                                     
                                     if (errCode === "model_decommissioned" || errMsg.includes("decommissioned") || errMsg.includes("no longer supported")) {
-                                        friendlyMessage = `⚠️ <b>Modelo Descontinuado pelo Provedor</b><br><br>O modelo <code>${model}</code> foi desativado recentemente pela infraestrutura da Groq. Por favor, selecione <b>Llama 3.3 70B (Versatile)</b> ou <b>Llama 3.1 8B (Instant)</b> nos Ajustes para respostas imediatas.`;
-                                    } else if (errCode === "model_not_found" || errMsg.includes("does not exist")) {
+                                        friendlyMessage = `⚠️ <b>Modelo Descontinuado pelo Provedor</b><br><br>O modelo <code>${model}</code> não está mais ativo na infraestrutura do provedor. Por favor, acesse <b>Ajustes ⚙️ > Provedor & Chaves</b>, clique em <b>Sincronizar Modelos</b> e selecione um modelo ativo no catálogo.`;
+                                    } else if (response.status === 401 || errCode === "invalid_api_key" || errMsg.includes("Missing Authentication header") || errMsg.includes("Invalid API Key")) {
+                                        friendlyMessage = `🔑 <b>Autenticação Inválida (Erro 401)</b><br><br>A chave de API para o provedor <b>${activeApiType}</b> não foi informada ou está incorreta. Acesse <b>Ajustes ⚙️ > Provedor & Chaves</b> e atualize sua chave de API.`;
+                                    } else if (response.status === 403) {
+                                        friendlyMessage = `🚫 <b>Acesso Negado (Erro 403)</b><br><br>Sua conta ou chave de API não possui permissão para acessar o recurso solicitado ou o modelo selecionado no provedor <b>${activeApiType}</b>.`;
+                                    } else if (response.status === 404 || errCode === "model_not_found" || errMsg.includes("does not exist")) {
                                         if (!cleanKey) {
                                             friendlyMessage = `🔑 <b>Chave de API Ausente</b><br><br>Você ainda não configurou ou salvou sua chave de API para o provedor <b>${activeApiType}</b>. Acesse <b>Ajustes ⚙️ > Provedor & Chaves</b>, insira sua chave e clique em Salvar.`;
                                         } else {
-                                            friendlyMessage = `⚠️ <b>Modelo não encontrado ou sem acesso</b><br><br>O modelo selecionado não está disponível na sua conta. Escolha outro modelo na lista de modelos ativos.`;
+                                            friendlyMessage = `⚠️ <b>Modelo não encontrado (Erro 404)</b><br><br>O modelo <code>${model}</code> não foi encontrado ou não está disponível para esta chave. Acesse os Ajustes e sincronize o catálogo de modelos ativos.`;
                                         }
+                                    } else if (response.status === 429 || errCode === "rate_limit_exceeded" || errMsg.includes("Rate limit")) {
+                                        friendlyMessage = `⏳ <b>Limite de Taxa Excedido (Erro 429)</b><br><br>O limite de requisições ou tokens por minuto do provedor <b>${activeApiType}</b> foi atingido. Aguarde alguns instantes antes de enviar nova mensagem.`;
+                                    } else if (response.status >= 500) {
+                                        friendlyMessage = `🔌 <b>Instabilidade no Servidor do Provedor (Erro ${response.status})</b><br><br>O servidor de inferência do provedor <b>${activeApiType}</b> retornou instabilidade temporária. Tente novamente em instantes.`;
                                     } else if (errMsg.includes("reduce the length") || errObj.param === "messages") {
                                         friendlyMessage = `📏 <b>Limite de Conversa Atingido</b><br><br>A mensagem ou o histórico é muito extenso para este modelo. Inicie uma <b>Nova Sessão</b> ou envie uma mensagem mais curta.`;
-                                    } else if (response.status === 401 || errMsg.includes("Missing Authentication header")) {
-                                        friendlyMessage = `🔑 <b>Autenticação Necessária (Erro 401)</b><br><br>A chave de API do provedor <b>${activeApiType}</b> está vazia ou incorreta. Verifique sua chave nas configurações.`;
                                     } else {
                                         friendlyMessage = errMsg;
                                     }
@@ -23845,6 +23831,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 let icon = opt.icon || '✦';
                 let isModel = false;
                 let isFree = false;
+                let isFreeUnknown = false;
 
                 // Limpeza profissional de sufixos de preço ou tags residuais no rótulo
                 let cleanLabel = rawLabel.replace(/\s*•\s*(🟢\s*Grátis|🔴\s*Pago|gr[aá]tis|pago)/gi, '').trim();
@@ -23873,6 +23860,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     // Determinação precisa de Gratuito vs Pago
                     if (val.includes('openrouter/free') || val.includes('ox-alpha') || val.includes('dots3') || val.includes('v4-flash') || val.includes(':free') || val.endsWith(':free')) {
                         isFree = true;
+                    } else if (modelInfo && modelInfo.isFree === null) {
+                        isFreeUnknown = true;
                     } else if (modelInfo && typeof modelInfo.isFree === 'boolean') {
                         isFree = modelInfo.isFree;
                     }
@@ -24336,9 +24325,13 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         const curMeta = getOptionMetadata(currentOpt);
                         let curPriceBadge = '';
                         if (curMeta.isModel) {
-                            curPriceBadge = curMeta.isFree 
-                                ? `<span class="custom-select-badge" style="background: rgba(16, 185, 129, 0.16); color: #34d399; border-color: rgba(16, 185, 129, 0.35);">🟢 Grátis</span>`
-                                : `<span class="custom-select-badge" style="background: rgba(239, 68, 68, 0.16); color: #f87171; border-color: rgba(239, 68, 68, 0.35);">🔴 Pago</span>`;
+                            if (curMeta.isFreeUnknown) {
+                                curPriceBadge = '';
+                            } else {
+                                curPriceBadge = curMeta.isFree 
+                                    ? `<span class="custom-select-badge" style="background: rgba(16, 185, 129, 0.16); color: #34d399; border-color: rgba(16, 185, 129, 0.35);">🟢 Grátis</span>`
+                                    : `<span class="custom-select-badge" style="background: rgba(239, 68, 68, 0.16); color: #f87171; border-color: rgba(239, 68, 68, 0.35);">🔴 Pago</span>`;
+                            }
                         }
 
                         html += `
@@ -24390,9 +24383,13 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
                         let priceBadge = '';
                         if (meta.isModel) {
-                            priceBadge = meta.isFree 
-                                ? `<span class="custom-select-badge" style="background: rgba(16, 185, 129, 0.14); color: #34d399; border-color: rgba(16, 185, 129, 0.35);">🟢 Grátis</span>`
-                                : `<span class="custom-select-badge" style="background: rgba(239, 68, 68, 0.14); color: #f87171; border-color: rgba(239, 68, 68, 0.35);">🔴 Pago</span>`;
+                            if (meta.isFreeUnknown) {
+                                priceBadge = '';
+                            } else {
+                                priceBadge = meta.isFree 
+                                    ? `<span class="custom-select-badge" style="background: rgba(16, 185, 129, 0.14); color: #34d399; border-color: rgba(16, 185, 129, 0.35);">🟢 Grátis</span>`
+                                    : `<span class="custom-select-badge" style="background: rgba(239, 68, 68, 0.14); color: #f87171; border-color: rgba(239, 68, 68, 0.35);">🔴 Pago</span>`;
+                            }
                         }
 
                         html += `
@@ -28855,8 +28852,10 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             if (syncedList && syncedList.length > 0) {
                 optionsList = syncedList.map(opt => {
                     const info = getSynapseModelInfo(opt, typeVal);
-                    const tag = info.isFree ? '🟢 Grátis' : '🔴 Pago';
-                    return { value: opt, label: `${info.name || opt} • ${tag}` };
+                    let tag = '';
+                    if (info.isFree === true) tag = ' • 🟢 Grátis';
+                    else if (info.isFree === false) tag = ' • 🔴 Pago';
+                    return { value: opt, label: `${info.name || opt}${tag}` };
                 });
             } else if (typeVal === "GEMINI") {
                 optionsList = [
@@ -28868,13 +28867,10 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 ];
             } else if (typeVal === "GROQ") {
                 optionsList = [
-                    { value: "llama-3.3-70b-versatile", label: "llama-3.3-70b-versatile • 🟢 Grátis (Recomendado)" },
-                    { value: "llama-3.1-8b-instant", label: "llama-3.1-8b-instant • 🟢 Grátis (Ultrarrápido)" },
-                    { value: "meta-llama/llama-4-scout-17b-16k", label: "meta-llama/llama-4-scout-17b-16k • 🟢 Grátis (Llama 4)" },
-                    { value: "deepseek-r1-distill-llama-70b", label: "deepseek-r1-distill-llama-70b • 🟢 Grátis (Raciocínio)" },
-                    { value: "gemma2-9b-it", label: "gemma2-9b-it • 🟢 Grátis" },
-                    { value: "mistral-saba-24b", label: "mistral-saba-24b • 🟢 Grátis" },
-                    { value: "compound-beta", label: "compound-beta • 🟢 Grátis (Raciocínio)" }
+                    { value: "llama-3.3-70b-versatile", label: "llama-3.3-70b-versatile" },
+                    { value: "llama-3.1-8b-instant", label: "llama-3.1-8b-instant" },
+                    { value: "openai/gpt-oss-120b", label: "openai/gpt-oss-120b" },
+                    { value: "openai/gpt-oss-20b", label: "openai/gpt-oss-20b" }
                 ];
             } else if (typeVal === "OPENROUTER") {
                 const orCat = (typeof getSynapseOpenRouterCatalog === 'function') ? getSynapseOpenRouterCatalog() : [];
