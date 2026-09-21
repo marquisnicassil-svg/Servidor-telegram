@@ -2648,8 +2648,6 @@
                 transform: scale(1) translateY(0);
             }
         }
-        #subscription-upgrade-modal > div,
-        #subscription-checkout-modal > div,
         #app-custom-select-modal > div,
         #user-management-modal > div {
             animation: modalEnter 0.28s cubic-bezier(0.34, 1.45, 0.64, 1) forwards !important;
@@ -5890,7 +5888,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                 <!-- Lista Minimalista / Menu de Lista com fundo Super Black -->
                 <div class="config-index-list" id="main-settings-list" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
                     
-                    <!-- Opção 1: Aparência e Temas -->
+                    <!-- 1. Aparência -->
                     <div class="config-index-item" onclick="openConfigSubView('appearance')">
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
                             <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: rgba(var(--primary-rgb, 255,255,255), 0.08); flex-shrink: 0;">
@@ -5903,7 +5901,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                                 </svg>
                             </div>
                             <div style="display: flex; flex-direction: column; gap: 2px;">
-                                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);" data-i18n="aparencia_temas">Aparência e Temas</span>
+                                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);" data-i18n="aparencia_temas">Aparência</span>
                                 <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;" data-i18n="aparencia_temas_desc">Modo AMOLED, cores de destaque e customização visual</span>
                             </div>
                         </div>
@@ -5912,7 +5910,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         </svg>
                     </div>
 
-                    <!-- Opção 2: Motor de Inteligência Artificial -->
+                    <!-- 2. Inteligência Artificial -->
                     <div class="config-index-item" onclick="openConfigSubView('ai')">
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
                             <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: rgba(var(--primary-rgb, 255,255,255), 0.08); flex-shrink: 0;">
@@ -5930,7 +5928,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                                 </svg>
                             </div>
                             <div style="display: flex; flex-direction: column; gap: 2px;">
-                                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);" data-i18n="motor_ai">Motor de Inteligência Artificial</span>
+                                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);" data-i18n="motor_ai">Inteligência Artificial</span>
                                 <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;" data-i18n="motor_ai_desc">Gerencie provedores como Gemini, OpenAI, Groq, chaves de API e prompts</span>
                             </div>
                         </div>
@@ -5939,27 +5937,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         </svg>
                     </div>
 
-                    <!-- Opção 3: Conexão e Banco de Dados -->
-                    <div class="config-index-item" onclick="openConfigSubView('database')">
-                        <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
-                            <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: rgba(var(--primary-rgb, 255,255,255), 0.08); flex-shrink: 0;">
-                                <svg style="width: 20px; height: 20px; stroke: var(--primary); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24">
-                                    <ellipse cx="12" cy="5" rx="9" ry="3"/>
-                                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
-                                    <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/>
-                                </svg>
-                            </div>
-                            <div style="display: flex; flex-direction: column; gap: 2px;">
-                                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);" data-i18n="banco_dados">Conexão e Banco de Dados</span>
-                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;" data-i18n="banco_dados_desc">Configurações do Supabase, URLs do projeto, tabelas e backups</span>
-                            </div>
-                        </div>
-                        <svg style="width: 16px; height: 16px; stroke: var(--text-muted); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0;" viewBox="0 0 24 24">
-                            <polyline points="9 18 15 12 9 6"></polyline>
-                        </svg>
-                    </div>
-
-                    <!-- Opção Nova: Notificações -->
+                    <!-- 3. Notificações -->
                     <div class="config-index-item" onclick="openConfigSubView('notifications')">
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
                             <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: rgba(var(--primary-rgb, 255,255,255), 0.08); flex-shrink: 0;">
@@ -5978,7 +5956,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         </svg>
                     </div>
 
-                    <!-- Opção Nova: Acessibilidade, Voz e Leitura -->
+                    <!-- 4. Acessibilidade -->
                     <div class="config-index-item" onclick="openConfigSubView('accessibility')">
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
                             <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: rgba(var(--primary-rgb, 255,255,255), 0.08); flex-shrink: 0;">
@@ -5995,7 +5973,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                                 </svg>
                             </div>
                             <div style="display: flex; flex-direction: column; gap: 2px;">
-                                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);" data-i18n="voz_acessibilidade">Voz, Leitura e Acessibilidade</span>
+                                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);" data-i18n="voz_acessibilidade">Acessibilidade</span>
                                 <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;" data-i18n="voz_acessibilidade_desc">Ajuste velocidade de áudio, tom de voz, tamanho dos textos e animações</span>
                             </div>
                         </div>
@@ -6004,7 +5982,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         </svg>
                     </div>
 
-                    <!-- Opção 4: Minha Conta & Sessão -->
+                    <!-- 5. Conta e Sessão -->
                     <div class="config-index-item" onclick="openConfigSubView('account')">
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
                             <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: rgba(var(--primary-rgb, 255,255,255), 0.08); flex-shrink: 0;">
@@ -6014,7 +5992,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                                 </svg>
                             </div>
                             <div style="display: flex; flex-direction: column; gap: 2px;">
-                                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);" data-i18n="minha_conta">Minha Conta & Sessão</span>
+                                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);" data-i18n="minha_conta">Conta e Sessão</span>
                                 <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;" data-i18n="minha_conta_desc">Dados do usuário conectado, chaves de acesso e gerenciamento de login</span>
                             </div>
                         </div>
@@ -6023,7 +6001,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         </svg>
                     </div>
 
-                    <!-- Opção Nova: Seleção de Idioma do Sistema -->
+                    <!-- 6. Idioma -->
                     <div class="config-index-item" onclick="openConfigSubView('languages')">
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
                             <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: rgba(var(--primary-rgb, 255,255,255), 0.08); flex-shrink: 0;">
@@ -6034,7 +6012,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                                 </svg>
                             </div>
                             <div style="display: flex; flex-direction: column; gap: 2px;">
-                                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);" data-i18n="idioma_selector_title">Idioma do Sistema / Language</span>
+                                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);" data-i18n="idioma_selector_title">Idioma</span>
                                 <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;" data-i18n="idioma_selector_desc">Altere o idioma de toda a interface do aplicativo para PT, EN ou ES</span>
                             </div>
                         </div>
@@ -6043,25 +6021,26 @@ CREATE TRIGGER on_synapse_user_signed_up
                         </svg>
                     </div>
 
-                    <!-- Opção Nova: Assinatura e Planos (Freemium) -->
-                    <div class="config-index-item" onclick="openConfigSubView('subscription')" style="border-color: rgba(245, 158, 11, 0.3) !important;">
+                    <!-- 7. Avançado (Supabase, Conexões, APIs, Cache e Recursos de Desenvolvedor) -->
+                    <div class="config-index-item" onclick="openConfigSubView('advanced')">
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
-                            <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: rgba(245, 158, 11, 0.1); flex-shrink: 0;">
-                                <svg style="width: 20px; height: 20px; stroke: #fbbf24; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24">
-                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: rgba(var(--primary-rgb, 255,255,255), 0.08); flex-shrink: 0;">
+                                <svg style="width: 20px; height: 20px; stroke: var(--primary); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                                 </svg>
                             </div>
                             <div style="display: flex; flex-direction: column; gap: 2px;">
-                                <span style="font-weight: 700; font-size: 0.95rem; color: #fbbf24;">Assinatura &amp; Planos</span>
-                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;">Gerencie limites do plano Freemium e faça upgrade para Pro ou Ultra</span>
+                                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);" data-i18n="menu_advanced_title">Avançado</span>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;" data-i18n="menu_advanced_desc">Supabase, banco de dados, conexões técnicas, cache e ferramentas dev</span>
                             </div>
                         </div>
-                        <svg style="width: 16px; height: 16px; stroke: #fbbf24; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0;" viewBox="0 0 24 24">
+                        <svg style="width: 16px; height: 16px; stroke: var(--text-muted); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0;" viewBox="0 0 24 24">
                             <polyline points="9 18 15 12 9 6"></polyline>
                         </svg>
                     </div>
 
-                    <!-- Opção Nova: Compartilhar Synapse -->
+                    <!-- Compartilhar Synapse (Ação Rápida Preservada) -->
                     <div class="config-index-item" onclick="shareSynapseApp()" style="border-color: rgba(16, 185, 129, 0.3) !important;">
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
                             <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: rgba(16, 185, 129, 0.1); flex-shrink: 0;">
@@ -6224,179 +6203,6 @@ CREATE TRIGGER on_synapse_user_signed_up
                 <button class="btn-save-premium" onclick="saveConfigWithPremiumFeedback(this)" data-i18n="aplicar_ajustes_conta">
                     Aplicar Ajustes
                 </button>
-            </div>
-
-            <!-- SUB-VIEW: ASSINATURA E PLANOS (MONETIZAÇÃO FREEMIUM) -->
-            <div id="config-subview-subscription" class="config-subview" style="display: none;">
-                <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;">⬅️ Voltar para Ajustes</button>
-                
-                <div class="section-header" style="text-align: left; margin-bottom: 16px;">
-                    <h2 style="font-size: 1.4rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px;">⭐ Assinatura e Planos</h2>
-                    <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; line-height: 1.3;">Gerencie sua cota de uso, escolha o plano ideal e prepare-se para os recursos profissionais.</p>
-                </div>
-
-                <!-- CARD DO PLANO ATUAL -->
-                <div id="subscription-status-card" style="margin-bottom: 24px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 16px; padding: 18px; text-align: left; position: relative; overflow: hidden;">
-                    <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(245, 158, 11, 0.08); border-radius: 50%; filter: blur(30px);"></div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; position: relative; z-index: 2;">
-                        <div>
-                            <span style="font-size: 0.7rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 2px;">Status do Plano</span>
-                            <span id="subscription-active-plan-name" style="font-size: 1.35rem; font-weight: 800; color: #fff;">Plano Gratuito (Free) 🆓</span>
-                        </div>
-                        <span id="subscription-active-plan-badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 0.68rem; font-weight: 700; padding: 4px 10px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Básico</span>
-                    </div>
-
-                    <!-- COTAS E PROGRESSOS -->
-                    <div style="display: flex; flex-direction: column; gap: 12px; position: relative; z-index: 2;">
-                        <!-- Medidor 1: Chats -->
-                        <div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 0.78rem;">
-                                <span style="color: #fff; font-weight: 600;">💬 Mensagens de Chat (Diário)</span>
-                                <span id="usage-text-chat" style="color: var(--text-muted); font-weight: bold;">0 / 15</span>
-                            </div>
-                            <div style="background: rgba(255,255,255,0.04); height: 6px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.02);">
-                                <div id="usage-progress-chat" style="height: 100%; width: 0%; background: linear-gradient(90deg, #10b981, #34d399); transition: width 0.4s ease; border-radius: 3px;"></div>
-                            </div>
-                        </div>
-
-                        <!-- Medidor 2: Currículos -->
-                        <div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 0.78rem;">
-                                <span style="color: #fff; font-weight: 600;">📄 Currículos Inteligentes IA</span>
-                                <span id="usage-text-resume" style="color: var(--text-muted); font-weight: bold;">0 / 2</span>
-                            </div>
-                            <div style="background: rgba(255,255,255,0.04); height: 6px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.02);">
-                                <div id="usage-progress-resume" style="height: 100%; width: 0%; background: linear-gradient(90deg, #8b5cf6, #a78bfa); transition: width 0.4s ease; border-radius: 3px;"></div>
-                            </div>
-                        </div>
-
-                        <!-- Medidor 3: Simulações Entrevista -->
-                        <div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 0.78rem;">
-                                <span style="color: #fff; font-weight: 600;">💼 Simulações de Entrevista</span>
-                                <span id="usage-text-interview" style="color: var(--text-muted); font-weight: bold;">0 / 2</span>
-                            </div>
-                            <div style="background: rgba(255,255,255,0.04); height: 6px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.02);">
-                                <div id="usage-progress-interview" style="height: 100%; width: 0%; background: linear-gradient(90deg, #f59e0b, #fbbf24); transition: width 0.4s ease; border-radius: 3px;"></div>
-                            </div>
-                        </div>
-
-                        <!-- Medidor 4: Exportação PDF -->
-                        <div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 0.78rem;">
-                                <span style="color: #fff; font-weight: 600;">📥 Exportações PDF de Currículo</span>
-                                <span id="usage-text-export_pdf" style="color: var(--text-muted); font-weight: bold;">0 / 1</span>
-                            </div>
-                            <div style="background: rgba(255,255,255,0.04); height: 6px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.02);">
-                                <div id="usage-progress-export_pdf" style="height: 100%; width: 0%; background: linear-gradient(90deg, #3b82f6, #60a5fa); transition: width 0.4s ease; border-radius: 3px;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SELETOR DE PLANO PARA TESTES / DEMO -->
-                <div style="margin-bottom: 24px; padding: 14px; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); border-radius: 12px; text-align: left;">
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                        <span style="font-size: 1.1rem;">⚡</span>
-                        <span style="font-weight: 700; font-size: 0.82rem; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.5px;">Simulação do Console</span>
-                    </div>
-                    <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0 0 12px 0; line-height: 1.35;">
-                        Selecione seu plano ativo para testar a experiência real e as travas de limites instantaneamente:
-                    </p>
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-                        <button onclick="setAppPlanSimulated('free')" class="btn-universal" style="padding: 8px; font-size: 0.75rem; font-weight: 700; background: rgba(255,255,255,0.03); border-color: var(--border-color); color: #fff;">Plano Free</button>
-                        <button onclick="setAppPlanSimulated('pro', true)" class="btn-universal" style="padding: 8px; font-size: 0.75rem; font-weight: 700; background: rgba(139, 92, 246, 0.08); border-color: rgba(139, 92, 246, 0.4); color: #a78bfa;">Plano Pro ⭐</button>
-                        <button onclick="setAppPlanSimulated('ultra')" class="btn-universal" style="padding: 8px; font-size: 0.75rem; font-weight: 700; background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.4); color: #fbbf24;">Plano Ultra 🚀</button>
-                    </div>
-                </div>
-
-                <!-- CARDS DE COMPARAÇÃO DE PLANOS -->
-                <h3 style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: left; margin: 0 0 12px 4px;">Comparação de Planos</h3>
-                
-                <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;">
-                    <!-- Plano 1: FREE -->
-                    <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px; text-align: left; transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='rgba(255,255,255,0.15)';" onmouseout="this.style.transform='none'; this.style.borderColor='var(--border-color)';">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                            <div>
-                                <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0; display: flex; align-items: center; gap: 6px;">Plano Free 🆓</h4>
-                                <p style="font-size: 0.72rem; color: var(--text-muted); margin: 2px 0 0 0;">Ideal para experimentação e uso eventual</p>
-                            </div>
-                            <span style="font-size: 1.25rem; font-weight: 800; color: #fff;">Grátis</span>
-                        </div>
-                        <ul style="margin: 0; padding-left: 18px; font-size: 0.76rem; color: var(--text-main); display: flex; flex-direction: column; gap: 6px; list-style-type: '✓ ';">
-                            <li>Até 15 mensagens de chat por dia</li>
-                            <li>Até 2 currículos com IA (limite geral)</li>
-                            <li>Até 2 simulações de entrevista (limite geral)</li>
-                            <li>Até 1 exportação PDF de currículo</li>
-                        </ul>
-                    </div>
-
-                    <!-- Plano 2: PRO -->
-                    <div style="background: rgba(139, 92, 246, 0.03); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 14px; padding: 18px; text-align: left; position: relative; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(139, 92, 246, 0.15)';" onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
-                        <span style="position: absolute; top: 12px; right: 12px; background: rgba(139, 92, 246, 0.15); color: #a78bfa; font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 8px; border: 1px solid rgba(139, 92, 246, 0.3);">Mais Popular 🔥</span>
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                            <div>
-                                <h4 style="font-size: 1.05rem; font-weight: 800; color: #a78bfa; margin: 0; display: flex; align-items: center; gap: 4px;">Plano Pro ⭐</h4>
-                                <p style="font-size: 0.72rem; color: var(--text-muted); margin: 2px 0 0 0;">Aceleração de carreira sem limites</p>
-                            </div>
-                            <span style="font-size: 1.25rem; font-weight: 800; color: #a78bfa;">R$ 29,90<span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">/mês</span></span>
-                        </div>
-                        <ul style="margin: 0 0 14px 0; padding-left: 18px; font-size: 0.76rem; color: var(--text-main); display: flex; flex-direction: column; gap: 6px; list-style-type: '✓ ';">
-                            <li><b style="color: #a78bfa;">Mensagens de chat ILIMITADAS</b></li>
-                            <li><b style="color: #a78bfa;">Geração ILIMITADA de Currículos com IA</b></li>
-                            <li><b style="color: #a78bfa;">Exportações de PDF ILIMITADAS</b></li>
-                            <li><b style="color: #a78bfa;">Simulações de Entrevistas completas e ILIMITADAS</b></li>
-                            <li>Acesso prioritário a novos Agentes Especialistas</li>
-                            <li>Remoção de marcas d'água no exportador</li>
-                        </ul>
-                        <button onclick="openSubscriptionCheckoutModal('pro')" class="btn-universal" style="border: none; width: 100%; border-radius: 10px; padding: 12px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; margin-top: 0.5rem;">Adquirir Plano Pro ⭐</button>
-                    </div>
-
-                    <!-- Plano 3: ULTRA -->
-                    <div style="background: rgba(245, 158, 11, 0.03); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 14px; padding: 18px; text-align: left; position: relative; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(245, 158, 11, 0.15)';" onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
-                        <span style="position: absolute; top: 12px; right: 12px; background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 8px; border: 1px solid rgba(245, 158, 11, 0.3);">Max Performance ⚡</span>
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                            <div>
-                                <h4 style="font-size: 1.05rem; font-weight: 800; color: #fbbf24; margin: 0; display: flex; align-items: center; gap: 4px;">Plano Ultra 🚀</h4>
-                                <p style="font-size: 0.72rem; color: var(--text-muted); margin: 2px 0 0 0;">Supremacia em IA, automação e memória</p>
-                            </div>
-                            <span style="font-size: 1.25rem; font-weight: 800; color: #fbbf24;">R$ 59,90<span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">/mês</span></span>
-                        </div>
-                        <ul style="margin: 0 0 14px 0; padding-left: 18px; font-size: 0.76rem; color: var(--text-main); display: flex; flex-direction: column; gap: 6px; list-style-type: '✓ ';">
-                            <li>Tudo do Plano Pro</li>
-                            <li><b style="color: #fbbf24;">Memória contextual persistente avançada</b></li>
-                            <li>Modelos premium avançados da OpenAI e Gemini (Ultra-Speed)</li>
-                            <li>Integração total de Webhooks (Make, N8N, Zapier) inclusa</li>
-                            <li>Suporte prioritário VIP 24h</li>
-                        </ul>
-                        <button onclick="openSubscriptionCheckoutModal('ultra')" class="btn-universal" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-weight: bold; width: 100%; border-radius: 10px; padding: 12px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(245, 158, 11, 0.25)';" onmouseout="this.style.background='rgba(245, 158, 11, 0.15)';">Adquirir Plano Ultra 🚀</button>
-                    </div>
-                </div>
-
-                <!-- PREPARAÇÃO DE PAGAMENTO COM STRIPE, PLAY STORE, APP STORE -->
-                <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 16px; padding: 18px; text-align: left; margin-bottom: 20px;">
-                    <h4 style="font-size: 0.8rem; font-weight: 700; color: #fff; margin: 0 0 4px 0; display: flex; align-items: center; gap: 6px;">
-                        <span>💳</span> Infraestrutura Pronta para Pagamentos
-                    </h4>
-                    <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0 0 14px 0; line-height: 1.4;">
-                        A arquitetura do Synapse está totalmente preparada e mapeada para se integrar de forma segura aos maiores processadores de checkout global e nacional.
-                    </p>
-                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                        <span style="font-size: 0.65rem; font-weight: 700; color: #635bff; background: rgba(99, 91, 255, 0.1); border: 1px solid rgba(99, 91, 255, 0.25); padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
-                            Stripe API Ready
-                        </span>
-                        <span style="font-size: 0.65rem; font-weight: 700; color: #00e676; background: rgba(0, 230, 118, 0.1); border: 1px solid rgba(0, 230, 118, 0.25); padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
-                            Google Play Billing API
-                        </span>
-                        <span style="font-size: 0.65rem; font-weight: 700; color: #00b0ff; background: rgba(0, 176, 255, 0.1); border: 1px solid rgba(0, 176, 255, 0.25); padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
-                            Apple StoreKit Ready
-                        </span>
-                        <span style="font-size: 0.65rem; font-weight: 700; color: #32b5b4; background: rgba(50, 181, 180, 0.1); border: 1px solid rgba(50, 181, 180, 0.25); padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
-                            ❖ Pix Instant Checkout Ready
-                        </span>
-                    </div>
-                </div>
-
             </div>
 
             <!-- SUB-VIEW 1: APARÊNCIA E TEMAS (UPGRADED) -->
@@ -8135,6 +7941,132 @@ WITH CHECK (true);</code>
                 </div>
             </div>
 
+            <!-- SUB-VIEW: AVANÇADO (Supabase, Conexões Técnicas, Cache e Recursos Dev) -->
+            <div id="config-subview-advanced" class="config-subview" style="display: none;">
+                <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; width: fit-content;" data-i18n="voltar_ajustes">⬅️ Voltar para Ajustes</button>
+                
+                <div class="section-header" style="text-align: left; margin-bottom: 16px;">
+                    <h2 style="font-size: 1.35rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px;">
+                        🛠️ Avançado & Infraestrutura
+                    </h2>
+                    <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; line-height: 1.3;">
+                        Gerencie banco de dados na nuvem (Supabase), conexões e APIs técnicas, cache do sistema e ferramentas de diagnóstico.
+                    </p>
+                </div>
+
+                <!-- Hub de Acesso Rápido Avançado -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 20px;">
+                    <!-- Card Supabase / Banco -->
+                    <div class="config-index-item" onclick="openConfigSubView('database')" style="margin-bottom: 0; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; cursor: pointer; transition: 0.2s;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; background: rgba(16, 185, 129, 0.12); flex-shrink: 0;">
+                                <span style="font-size: 1.2rem;">☁️</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 2px; text-align: left;">
+                                <span style="font-weight: 700; font-size: 0.9rem; color: #fff;">Supabase & Banco de Dados</span>
+                                <span style="font-size: 0.72rem; color: var(--text-muted);">Tabelas, URL, chaves anônimas e sincronização</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Terminal -->
+                    <div class="config-index-item" onclick="switchTab('terminal')" style="margin-bottom: 0; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; cursor: pointer; transition: 0.2s;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; background: rgba(59, 130, 246, 0.12); flex-shrink: 0;">
+                                <span style="font-size: 1.2rem;">💻</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 2px; text-align: left;">
+                                <span style="font-weight: 700; font-size: 0.9rem; color: #fff;">Terminal de Comandos</span>
+                                <span style="font-size: 0.72rem; color: var(--text-muted);">Acesse o console de desenvolvimento nativo</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Painel 1: Cache, Armazenamento Local e Performance -->
+                <div class="supabase-card" style="margin-bottom: 18px; text-align: left; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+                        <span style="font-size: 1.15rem;">⚡</span>
+                        <div style="display: flex; flex-direction: column; gap: 2px;">
+                            <h3 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0;">Cache & Armazenamento</h3>
+                            <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0;">Gerencie cache local, service workers e sincronização em tempo real</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px;">
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-size: 0.82rem; font-weight: 600; color: #fff;">Limpar Cache da Aplicação</span>
+                                <span style="font-size: 0.7rem; color: var(--text-muted);">Redefine caches locais e força atualização de componentes</span>
+                            </div>
+                            <button onclick="forceAppUpdateAndClearCache()" style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; border-radius: 8px; padding: 6px 12px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.2s;">
+                                🔄 Limpar Cache
+                            </button>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px;">
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-size: 0.82rem; font-weight: 600; color: #fff;">Instalação PWA</span>
+                                <span style="font-size: 0.7rem; color: var(--text-muted);">Instalar o Synapse como Progressive Web App no dispositivo</span>
+                            </div>
+                            <button onclick="installPWA()" style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa; border-radius: 8px; padding: 6px 12px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.2s;">
+                                ⬇️ Instalar PWA
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Painel 2: APIs Técnicas e Conexões de Rede -->
+                <div class="supabase-card" style="margin-bottom: 18px; text-align: left; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+                        <span style="font-size: 1.15rem;">🌐</span>
+                        <div style="display: flex; flex-direction: column; gap: 2px;">
+                            <h3 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0;">APIs Técnicas e Diagnóstico de Rede</h3>
+                            <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0;">Status de endpoints, segurança SSL e monitoramento de requisições</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                            <span style="font-size: 0.78rem; color: var(--text-muted);">Status da Rede / Online</span>
+                            <span style="font-size: 0.75rem; font-weight: 700; color: #34d399; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 2px 8px; border-radius: 6px;">Ativo (Conectado)</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                            <span style="font-size: 0.78rem; color: var(--text-muted);">Canal de Telemetria / Logs</span>
+                            <span style="font-size: 0.75rem; font-weight: 700; color: #60a5fa; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); padding: 2px 8px; border-radius: 6px;">Console Synapse</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 10px;">
+                            <span style="font-size: 0.78rem; color: var(--text-muted);">Protocolo de Comunicação</span>
+                            <span style="font-size: 0.75rem; font-weight: 700; color: #a78bfa; background: rgba(167, 139, 250, 0.1); border: 1px solid rgba(167, 139, 250, 0.2); padding: 2px 8px; border-radius: 6px;">HTTPS / TLS 1.3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Painel 3: Recursos de Desenvolvedor -->
+                <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+                        <span style="font-size: 1.15rem;">👨‍💻</span>
+                        <div style="display: flex; flex-direction: column; gap: 2px;">
+                            <h3 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0;">Recursos de Desenvolvedor</h3>
+                            <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0;">Comandos rápidos de inspeção, depuração e controle de build</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        <button onclick="switchTab('terminal')" style="flex: 1; min-width: 140px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); color: #fff; padding: 8px 14px; border-radius: 10px; font-size: 0.78rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            🖥️ Abrir Terminal
+                        </button>
+                        <button onclick="openConfigSubView('database')" style="flex: 1; min-width: 140px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); color: #fff; padding: 8px 14px; border-radius: 10px; font-size: 0.78rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            ☁️ Configurar Supabase
+                        </button>
+                    </div>
+                </div>
+
+                <button class="btn-save-premium" onclick="saveConfigWithPremiumFeedback(this)">
+                    Aplicar Ajustes
+                </button>
+            </div>
+
         </section>
 
         <!-- ABA 3: TERMINAL / LOGS -->
@@ -8746,20 +8678,22 @@ WITH CHECK (true);</code>
                 "online": "Online",
                 "ajustes_sistema_titulo": "⚙️ Ajustes do Sistema",
                 "ajustes_sistema_subtitle": "Gerencie recursos visuais, inteligência e dados de nuvem",
-                "aparencia_temas": "Aparência e Temas",
+                "aparencia_temas": "Aparência",
                 "aparencia_temas_desc": "Modo AMOLED, cores de destaque e customização visual",
                 "conexao_telegram": "Conexão Bot do Telegram",
                 "conexao_telegram_desc": "Insira o token do BotFather e configure a integração do robô",
                 "menu_notifications_title": "Notificações",
                 "menu_notifications_desc": "Controle como você recebe alertas do sistema, mensagens e segurança",
-                "motor_ai": "Motor de Inteligência Artificial",
+                "motor_ai": "Inteligência Artificial",
                 "motor_ai_desc": "Gerencie provedores como Gemini, OpenAI, Groq, chaves de API e prompts",
                 "banco_dados": "Conexão e Banco de Dados",
                 "banco_dados_desc": "Configurações do Supabase, URLs do projeto, tabelas e backups",
-                "voz_acessibilidade": "Voz, Leitura e Acessibilidade",
+                "voz_acessibilidade": "Acessibilidade",
                 "voz_acessibilidade_desc": "Ajuste velocidade de áudio, tom de voz, tamanho dos textos e animações",
-                "minha_conta": "Minha Conta & Sessão",
+                "minha_conta": "Conta e Sessão",
                 "minha_conta_desc": "Dados do usuário conectado, chaves de acesso e gerenciamento de login",
+                "menu_advanced_title": "Avançado",
+                "menu_advanced_desc": "Supabase, banco de dados, conexões técnicas, cache e ferramentas dev",
                 "config_voice_lang_title": "🎤 Voz e Idioma",
                 "config_voice_lang_desc": "Configure o idioma do sistema, o estilo de voz da IA e o tom",
                 "ai_voice_gender_lbl": "👤 Perfil de Voz da IA",
@@ -8840,7 +8774,7 @@ WITH CHECK (true);</code>
                 "online": "Online",
                 "ajustes_sistema_titulo": "⚙️ System Configuration",
                 "ajustes_sistema_subtitle": "Manage visual themes, artificial logic, and databases",
-                "aparencia_temas": "Appearance & Themes",
+                "aparencia_temas": "Appearance",
                 "aparencia_temas_desc": "AMOLED mode, glowing accent colors and custom setups",
                 "conexao_telegram": "Telegram Bot Setup",
                 "conexao_telegram_desc": "Configure Telegram BotFather token to capture remote logs",
@@ -8850,10 +8784,14 @@ WITH CHECK (true);</code>
                 "motor_ai_desc": "Manage API endpoints and credentials for Gemini, OpenAI and Groq",
                 "banco_dados": "Database & Cloud",
                 "banco_dados_desc": "Connect your private database using high-security Supabase",
-                "voz_acessibilidade": "Voice & Accessibility Services",
+                "voz_acessibilidade": "Accessibility",
                 "voz_acessibilidade_desc": "Tweak TTS narration speed, acoustic pitch, and typography scale",
-                "minha_conta": "My Account Status",
+                "minha_conta": "Account & Session",
                 "minha_conta_desc": "Review currently logged session details and credential safety",
+                "idioma_selector_title": "Language",
+                "idioma_selector_desc": "Migrate your workspace interface language instantly to EN, PT, or ES",
+                "menu_advanced_title": "Advanced",
+                "menu_advanced_desc": "Supabase, database, technical connections, cache, and dev tools",
                 "config_voice_lang_title": "🎤 Voice & Language",
                 "config_voice_lang_desc": "Customize system language, AI voice profile and pitch",
                 "ai_voice_gender_lbl": "👤 AI Voice Profile",
@@ -8934,20 +8872,24 @@ WITH CHECK (true);</code>
                 "online": "En Línea",
                 "ajustes_sistema_titulo": "⚙️ Ajustes Generales",
                 "ajustes_sistema_subtitle": "Gestione características visuales, motores de IA y nube",
-                "aparencia_temas": "Temas y Apariencia",
+                "aparencia_temas": "Apariencia",
                 "aparencia_temas_desc": "Modo AMOLED, tonos de color y moldes estéticos nativos",
                 "conexao_telegram": "Enlace de Telegram Bot",
                 "conexao_telegram_desc": "Ingrese el token de seguridad para vincular registros remotos",
                 "menu_notifications_title": "Notificaciones",
                 "menu_notifications_desc": "Controle cómo recibe alertas del sistema, mensajes y seguridad",
-                "motor_ai": "Motores de Inteligencia",
+                "motor_ai": "Inteligencia Artificial",
                 "motor_ai_desc": "Establezca credenciales para Gemini, OpenAI o Groq en el sistema",
                 "banco_dados": "Nube y Bases de Datos",
                 "banco_dados_desc": "Sincronice copias de respaldo mediante un servidor Supabase",
-                "voz_acessibilidade": "Voz, Sonido y Accesos",
+                "voz_acessibilidade": "Accesibilidad",
                 "voz_acessibilidade_desc": "Defina la agilidad de los diálogos, modulación de tonos y accesos",
-                "minha_conta": "Cuenta y Credenciales",
+                "minha_conta": "Cuenta y Sesión",
                 "minha_conta_desc": "Administre su perfil de acceso y su estado de la sesión Postgres",
+                "idioma_selector_title": "Idioma",
+                "idioma_selector_desc": "Actualizar el idioma visual de toda la plataforma a ES, PT o EN",
+                "menu_advanced_title": "Avanzado",
+                "menu_advanced_desc": "Supabase, base de datos, conexiones técnicas, caché y herramientas dev",
                 "config_voice_lang_title": "🎤 Voz e Idioma",
                 "config_voice_lang_desc": "Personaliza el idioma del sistema, el estilo de voz de la IA y el tono",
                 "ai_voice_gender_lbl": "👤 Perfil de Voz de la IA",
@@ -18889,11 +18831,6 @@ WITH CHECK (true);</code>
                 playSynthSound('send');
             } catch(e){}
 
-            // Verificar limite de mensagens do plano Freemium
-            if (typeof checkSubscriptionLimit === 'function' && !checkSubscriptionLimit('chat')) {
-                return;
-            }
-
             // Check if user is banned
             const userEmail = (supabaseSession && supabaseSession.user) ? supabaseSession.user.email : null;
             const banStatus = typeof isUserBanned === 'function' ? isUserBanned(userEmail) : null;
@@ -18937,11 +18874,6 @@ WITH CHECK (true);</code>
             // Registra atividade no log administrativo
             if (typeof logAdminActivity === 'function') {
                 logAdminActivity(userEmail || "usuario-local", "Mensagem de Chat", txt);
-            }
-
-            // Incrementar uso de chat do plano Freemium
-            if (typeof incrementAppSubscriptionUsage === 'function') {
-                incrementAppSubscriptionUsage('chat');
             }
 
             // Memória: adiciona input do usuário
@@ -20244,10 +20176,6 @@ WITH CHECK (true);</code>
         }
 
         function startWebInterview() {
-            if (typeof checkSubscriptionLimit === 'function' && !checkSubscriptionLimit('interview')) {
-                return;
-            }
-
             const cargo = document.getElementById('int-input-cargo').value || "Desenvolvedor Mobile Android";
             const area = document.getElementById('int-select-area').value;
             const nivel = document.getElementById('int-select-nivel').value;
@@ -20263,10 +20191,6 @@ WITH CHECK (true);</code>
             };
 
             saveRecentProfession(cargo);
-
-            if (typeof incrementAppSubscriptionUsage === 'function') {
-                incrementAppSubscriptionUsage('interview');
-            }
 
             document.getElementById('int-setup-container').style.display = 'none';
             document.getElementById('int-chat-container').style.display = 'flex';
@@ -21602,11 +21526,6 @@ Retorne APENAS o objeto JSON acima, sem nenhum bloco de código markdown (\`\`\`
             const userPrompt = document.getElementById('rb-ai-prompt').value.trim();
             const expLevel = document.getElementById('rb-input-level').value || 'Não Especificado';
 
-            // Verificar limite de currículos do plano Freemium
-            if (typeof checkSubscriptionLimit === 'function' && !checkSubscriptionLimit('resume')) {
-                return;
-            }
-
             // Check if user is banned
             const userEmail = (supabaseSession && supabaseSession.user) ? supabaseSession.user.email : null;
             const banStatus = typeof isUserBanned === 'function' ? isUserBanned(userEmail) : null;
@@ -21953,11 +21872,6 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem wraps do tipo \`\`
                 showAppToast("Novo currículo adaptado gerado com sucesso pela inteligência artificial!", "success");
                 addLog("Currículo inteligente criado pela IA com sucesso.", "success");
 
-                // Incrementar uso de currículo do plano Freemium
-                if (typeof incrementAppSubscriptionUsage === 'function') {
-                    incrementAppSubscriptionUsage('resume');
-                }
-
                 // Avança automaticamente para o passo 4 do Wizard (Resultado Final & Exportação)
                 switchResumeWizardStep(4);
 
@@ -22056,11 +21970,6 @@ O retorno deve ser EXCLUSIVAMENTE um objeto JSON válido (sem wraps do tipo \`\`
             const vacancy = document.getElementById('rb-ai-vacancy').value.trim();
             if (!vacancy) {
                 showAppToast("Por favor, cole os detalhes ou descrição da vaga alvo!", "warning");
-                return;
-            }
-
-            // Verificar limite de currículos do plano Freemium
-            if (typeof checkSubscriptionLimit === 'function' && !checkSubscriptionLimit('resume')) {
                 return;
             }
 
@@ -22172,11 +22081,6 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 showAppToast("Sucesso! Seu currículo foi adaptado às prioridades da vaga.", "success");
                 addLog("Otimização para vaga efetuada.", "success");
 
-                // Incrementar uso de currículo do plano Freemium
-                if (typeof incrementAppSubscriptionUsage === 'function') {
-                    incrementAppSubscriptionUsage('resume');
-                }
-
                 // Avança automaticamente para o passo 4 do Wizard (Resultado Final & Exportação)
                 switchResumeWizardStep(4);
 
@@ -22189,11 +22093,6 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
         }
 
         function exportResumePDF() {
-            // Verificar limite de exportações de PDF do plano Freemium
-            if (typeof checkSubscriptionLimit === 'function' && !checkSubscriptionLimit('export_pdf')) {
-                return;
-            }
-
             addLog("Preparando exportação do arquivo de currículo em PDF...", "info");
             
             const previewContent = document.getElementById('rb-preview-container').innerHTML;
@@ -22299,10 +22198,6 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             `);
             doc.close();
 
-            // Incrementar uso de exportações de PDF do plano Freemium
-            if (typeof incrementAppSubscriptionUsage === 'function') {
-                incrementAppSubscriptionUsage('export_pdf');
-            }
         }
 
         // ==========================================================================
@@ -28249,442 +28144,6 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             }
         }
 
-        // --- MOTOR DE MONETIZAÇÃO FREEMIUM SYNAPSE ---
-        const SYNAPSE_PLANS = {
-            free: {
-                name: "Plano Gratuito",
-                badge: "Básico",
-                limits: { chat: 15, resume: 2, interview: 2, export_pdf: 1 }
-            },
-            pro: {
-                name: "Plano Pro",
-                badge: "Premium",
-                limits: { chat: 999999, resume: 999999, interview: 999999, export_pdf: 999999 }
-            },
-            ultra: {
-                name: "Plano Ultra",
-                badge: "VIP",
-                limits: { chat: 999999, resume: 999999, interview: 999999, export_pdf: 999999 }
-            }
-        };
-
-        function getAppSubscriptionPlan() {
-            return localStorage.getItem('synapse_subscription_plan') || 'free';
-        }
-
-        function setAppSubscriptionPlan(plan) {
-            localStorage.setItem('synapse_subscription_plan', plan);
-            updateSubscriptionUI();
-        }
-
-        function getAppSubscriptionUsage() {
-            const todayStr = new Date().toDateString();
-            let usage = null;
-            try {
-                usage = JSON.parse(localStorage.getItem('synapse_subscription_usage'));
-            } catch(e){}
-
-            if (!usage || usage.date !== todayStr) {
-                const oldUsage = usage || { chat: 0, resume: 0, interview: 0, export_pdf: 0 };
-                usage = {
-                    date: todayStr,
-                    chat: 0,
-                    resume: oldUsage.resume || 0,
-                    interview: oldUsage.interview || 0,
-                    export_pdf: oldUsage.export_pdf || 0
-                };
-                localStorage.setItem('synapse_subscription_usage', JSON.stringify(usage));
-            }
-            return usage;
-        }
-
-        function incrementAppSubscriptionUsage(feature) {
-            const usage = getAppSubscriptionUsage();
-            if (usage[feature] !== undefined) {
-                usage[feature]++;
-            }
-            localStorage.setItem('synapse_subscription_usage', JSON.stringify(usage));
-            updateSubscriptionUI();
-        }
-
-        function checkSubscriptionLimit(feature) {
-            const planKey = getAppSubscriptionPlan();
-            if (planKey === 'pro' || planKey === 'ultra') return true;
-
-            const plan = SYNAPSE_PLANS[planKey];
-            const usage = getAppSubscriptionUsage();
-            const currentUsage = usage[feature] || 0;
-            const limit = plan.limits[feature];
-
-            if (currentUsage >= limit) {
-                showPremiumUpgradeModal(feature, limit);
-                return false;
-            }
-            return true;
-        }
-
-        function showPremiumUpgradeModal(feature, limit) {
-            triggerPulse();
-            const modal = document.getElementById('subscription-upgrade-modal');
-            if (!modal) return;
-
-            let featureName = "este recurso";
-            let featureDesc = "Você atingiu o limite de uso permitido no plano gratuito.";
-            if (feature === 'chat') {
-                featureName = "Mensagens de Chat";
-                featureDesc = `Você atingiu o limite de <b>${limit} mensagens diárias</b> do plano gratuito. Faça upgrade para continuar conversando com a inteligência do console.`;
-            } else if (feature === 'resume') {
-                featureName = "Criação de Currículos";
-                featureDesc = `Você atingiu o limite de <b>${limit} currículos gerados</b> com IA do plano gratuito. Faça upgrade para desbloquear gerações e otimizações infinitas.`;
-            } else if (feature === 'interview') {
-                featureName = "Simulação de Entrevistas";
-                featureDesc = `Você atingiu o limite de <b>${limit} simulações de entrevista</b> do plano gratuito. Faça upgrade para praticar quantas vezes quiser e receber feedback especializado detalhado.`;
-            } else if (feature === 'export_pdf') {
-                featureName = "Exportação de PDF";
-                featureDesc = `Você atingiu o limite de <b>${limit} exportação de PDF</b> do plano gratuito. Faça upgrade para exportar seus currículos criados sem qualquer limite ou marca d'água.`;
-            }
-
-            document.getElementById('modal-upgrade-feature-title').innerText = featureName;
-            document.getElementById('modal-upgrade-feature-desc').innerHTML = featureDesc;
-            modal.style.display = 'flex';
-        }
-
-        function hidePremiumUpgradeModal() {
-            triggerPulse();
-            const modal = document.getElementById('subscription-upgrade-modal');
-            if (modal) modal.style.display = 'none';
-        }
-
-        function updateSubscriptionUI() {
-            const planKey = getAppSubscriptionPlan();
-            const plan = SYNAPSE_PLANS[planKey];
-            const usage = getAppSubscriptionUsage();
-
-            const planNameEl = document.getElementById('subscription-active-plan-name');
-            const planBadgeEl = document.getElementById('subscription-active-plan-badge');
-            const cardEl = document.getElementById('subscription-status-card');
-
-            if (planNameEl) {
-                if (planKey === 'free') {
-                    planNameEl.innerHTML = `Plano Gratuito (Free) 🆓`;
-                    if (planBadgeEl) {
-                        planBadgeEl.innerText = "Básico";
-                        planBadgeEl.style.background = "rgba(255,255,255,0.06)";
-                        planBadgeEl.style.color = "var(--text-muted)";
-                        planBadgeEl.style.borderColor = "var(--border-color)";
-                    }
-                    if (cardEl) {
-                        cardEl.style.background = "rgba(255,255,255,0.02)";
-                        cardEl.style.borderColor = "var(--border-color)";
-                    }
-                } else if (planKey === 'pro') {
-                    planNameEl.innerHTML = `Plano Pro Ativo ⭐`;
-                    if (planBadgeEl) {
-                        planBadgeEl.innerText = "Premium";
-                        planBadgeEl.style.background = "rgba(139, 92, 246, 0.15)";
-                        planBadgeEl.style.color = "#a78bfa";
-                        planBadgeEl.style.borderColor = "rgba(139, 92, 246, 0.3)";
-                    }
-                    if (cardEl) {
-                        cardEl.style.background = "linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(99, 102, 241, 0.15) 100%)";
-                        cardEl.style.borderColor = "rgba(139, 92, 246, 0.3)";
-                    }
-                } else if (planKey === 'ultra') {
-                    planNameEl.innerHTML = `Plano Ultra Ativo 🚀`;
-                    if (planBadgeEl) {
-                        planBadgeEl.innerText = "VIP";
-                        planBadgeEl.style.background = "rgba(245, 158, 11, 0.15)";
-                        planBadgeEl.style.color = "#fbbf24";
-                        planBadgeEl.style.borderColor = "rgba(245, 158, 11, 0.3)";
-                    }
-                    if (cardEl) {
-                        cardEl.style.background = "linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)";
-                        cardEl.style.borderColor = "rgba(245, 158, 11, 0.35)";
-                    }
-                }
-            }
-
-            const features = ['chat', 'resume', 'interview', 'export_pdf'];
-            features.forEach(f => {
-                const textEl = document.getElementById(`usage-text-${f}`);
-                const progressEl = document.getElementById(`usage-progress-${f}`);
-                if (textEl && progressEl) {
-                    const current = usage[f] || 0;
-                    const limit = SYNAPSE_PLANS[planKey].limits[f];
-                    
-                    if (planKey === 'pro' || planKey === 'ultra') {
-                        textEl.innerText = `${current} / Ilimitado`;
-                        progressEl.style.width = `100%`;
-                        progressEl.style.background = planKey === 'pro' ? 'linear-gradient(90deg, #8b5cf6, #a78bfa)' : 'linear-gradient(90deg, #f59e0b, #fbbf24)';
-                    } else {
-                        textEl.innerText = `${current} / ${limit}`;
-                        const pct = Math.min(100, (current / limit) * 100);
-                        progressEl.style.width = `${pct}%`;
-                        
-                        if (pct >= 100) {
-                            progressEl.style.background = 'linear-gradient(90deg, #ef4444, #f87171)';
-                        } else if (pct >= 75) {
-                            progressEl.style.background = 'linear-gradient(90deg, #f59e0b, #fbbf24)';
-                        } else {
-                            progressEl.style.background = f === 'chat' ? 'linear-gradient(90deg, #10b981, #34d399)' :
-                                                 f === 'resume' ? 'linear-gradient(90deg, #8b5cf6, #a78bfa)' :
-                                                 f === 'interview' ? 'linear-gradient(90deg, #f59e0b, #fbbf24)' :
-                                                                   'linear-gradient(90deg, #3b82f6, #60a5fa)';
-                        }
-                    }
-                }
-            });
-        }
-
-        function setAppPlanSimulated(plan, feedback = false) {
-            triggerPulse();
-            setAppSubscriptionPlan(plan);
-            if (feedback) {
-                let planName = plan === 'pro' ? "Pro ⭐" : plan === 'ultra' ? "Ultra 🚀" : "Gratuito 🆓";
-                showAppToast(`Plano ${planName} ativado com sucesso! Aproveite os novos limites.`, "success");
-                addLog(`Assinatura atualizada: plano ${planName} ativado via console de simulação.`, "success");
-            }
-        }
-
-        // --- MOTOR DE CHECKOUT INTERATIVO DE ASSINATURA ---
-        let checkoutTimerInterval = null;
-        let currentCheckoutPlan = 'pro';
-        let currentCheckoutMethod = 'pix';
-
-        function openSubscriptionCheckoutModal(plan) {
-            currentCheckoutPlan = plan;
-            currentCheckoutMethod = 'pix'; // default
-            
-            const titleEl = document.getElementById('checkout-plan-title');
-            const priceEl = document.getElementById('checkout-plan-price');
-            
-            const proTitle = plan === 'pro' ? 'Plano Pro ⭐' : 'Plano Ultra 🚀';
-            const proPrice = plan === 'pro' ? 'R$ 29,90' : 'R$ 59,90';
-            
-            if (titleEl) titleEl.innerText = proTitle;
-            if (priceEl) priceEl.innerText = proPrice;
-
-            // Reset screens
-            document.getElementById('checkout-screen-container').style.display = 'block';
-            document.getElementById('checkout-success-container').style.display = 'none';
-            
-            // Switch tabs
-            switchCheckoutPaymentMethod('pix');
-
-            // Reset inputs
-            document.getElementById('checkout-card-number').value = '';
-            document.getElementById('checkout-card-name').value = '';
-            document.getElementById('checkout-card-expiry').value = '';
-            document.getElementById('checkout-card-cvv').value = '';
-
-            // Show modal
-            document.getElementById('subscription-checkout-modal').style.display = 'flex';
-
-            // Start countdown timer (10 mins)
-            startCheckoutPixTimer(600);
-        }
-
-        function closeSubscriptionCheckoutModal() {
-            document.getElementById('subscription-checkout-modal').style.display = 'none';
-            if (checkoutTimerInterval) {
-                clearInterval(checkoutTimerInterval);
-                checkoutTimerInterval = null;
-            }
-        }
-
-        function switchCheckoutPaymentMethod(method) {
-            currentCheckoutMethod = method;
-            const tabPix = document.getElementById('checkout-tab-pix');
-            const tabCard = document.getElementById('checkout-tab-card');
-            const detPix = document.getElementById('checkout-pix-details');
-            const detCard = document.getElementById('checkout-card-details');
-
-            if (method === 'pix') {
-                tabPix.style.background = 'rgba(50, 181, 180, 0.08)';
-                tabPix.style.borderColor = 'rgba(50, 181, 180, 0.4)';
-                tabPix.style.color = '#32b5b4';
-
-                tabCard.style.background = 'rgba(255, 255, 255, 0.02)';
-                tabCard.style.borderColor = 'var(--border-color)';
-                tabCard.style.color = 'var(--text-muted)';
-
-                detPix.style.display = 'block';
-                detCard.style.display = 'none';
-            } else {
-                tabCard.style.background = 'rgba(139, 92, 246, 0.08)';
-                tabCard.style.borderColor = 'rgba(139, 92, 246, 0.4)';
-                tabCard.style.color = '#a78bfa';
-
-                tabPix.style.background = 'rgba(255, 255, 255, 0.02)';
-                tabPix.style.borderColor = 'var(--border-color)';
-                tabPix.style.color = 'var(--text-muted)';
-
-                detCard.style.display = 'block';
-                detPix.style.display = 'none';
-            }
-        }
-
-        function startCheckoutPixTimer(seconds) {
-            if (checkoutTimerInterval) {
-                clearInterval(checkoutTimerInterval);
-            }
-            
-            const timerEl = document.getElementById('checkout-pix-timer');
-            let timeLeft = seconds;
-            
-            function updateTimer() {
-                const mins = Math.floor(timeLeft / 60);
-                const secs = timeLeft % 60;
-                const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-                if (timerEl) {
-                    timerEl.innerText = `O código expira em ${formatted}`;
-                }
-                
-                if (timeLeft <= 0) {
-                    clearInterval(checkoutTimerInterval);
-                    if (timerEl) {
-                        timerEl.innerText = 'Código Pix Expirado! Abra o checkout novamente.';
-                        timerEl.style.color = '#ef4444';
-                    }
-                    // Disable confirmation button
-                    const btnConfirmPix = document.getElementById('checkout-btn-confirm-pix');
-                    if (btnConfirmPix) {
-                        btnConfirmPix.disabled = true;
-                        btnConfirmPix.style.opacity = '0.5';
-                    }
-                }
-                timeLeft--;
-            }
-
-            const btnConfirmPix = document.getElementById('checkout-btn-confirm-pix');
-            if (btnConfirmPix) {
-                btnConfirmPix.disabled = false;
-                btnConfirmPix.style.opacity = '1';
-            }
-
-            updateTimer();
-            checkoutTimerInterval = setInterval(updateTimer, 1000);
-        }
-
-        function copyPixCheckoutCode() {
-            const copyText = document.getElementById("checkout-pix-key-input");
-            if (copyText) {
-                copyText.select();
-                copyText.setSelectionRange(0, 99999);
-                navigator.clipboard.writeText(copyText.value);
-                showAppToast("Código Pix copiado para a área de transferência! Cole no app do seu banco.", "success");
-            }
-        }
-
-        function formatCardNumber(input) {
-            let v = input.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-            let matches = v.match(/\d{4,16}/g);
-            let match = matches && matches[0] || '';
-            let parts = [];
-
-            for (let i = 0, len = match.length; i < len; i += 4) {
-                parts.push(match.substring(i, i + 4));
-            }
-
-            if (parts.length > 0) {
-                input.value = parts.join(' ');
-            } else {
-                input.value = v;
-            }
-        }
-
-        function formatCardExpiry(input) {
-            let v = input.value.replace(/\D/g, '');
-            if (v.length >= 2) {
-                input.value = v.substring(0, 2) + '/' + v.substring(2, 4);
-            } else {
-                input.value = v;
-            }
-        }
-
-        function processPixPaymentSimulation() {
-            const btn = document.getElementById('checkout-btn-confirm-pix');
-            if (!btn) return;
-            const originalContent = btn.innerHTML;
-            
-            btn.disabled = true;
-            btn.innerHTML = `<div class="loader-spinner" style="width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px;"></div> Consultando compensação no Banco Central...`;
-            
-            setTimeout(() => {
-                btn.disabled = false;
-                btn.innerHTML = originalContent;
-                
-                // Set the active plan
-                setAppSubscriptionPlan(currentCheckoutPlan);
-                
-                // Show success screen
-                showSuccessScreen('Pix Instantâneo');
-            }, 1800);
-        }
-
-        function processCardPaymentSimulation() {
-            const num = document.getElementById('checkout-card-number').value.trim();
-            const name = document.getElementById('checkout-card-name').value.trim();
-            const exp = document.getElementById('checkout-card-expiry').value.trim();
-            const cvv = document.getElementById('checkout-card-cvv').value.trim();
-
-            if (!num || !name || !exp || !cvv) {
-                showAppToast("Por favor, preencha todos os campos do cartão de crédito!", "warning");
-                return;
-            }
-
-            const btn = document.getElementById('checkout-btn-confirm-card');
-            if (!btn) return;
-            const originalContent = btn.innerHTML;
-            
-            btn.disabled = true;
-            btn.innerHTML = `<div class="loader-spinner" style="width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px;"></div> Processando com Stripe...`;
-            
-            setTimeout(() => {
-                btn.disabled = false;
-                btn.innerHTML = originalContent;
-                
-                // Set active plan
-                setAppSubscriptionPlan(currentCheckoutPlan);
-                
-                // Show success screen
-                showSuccessScreen('Cartão de Crédito');
-            }, 2000);
-        }
-
-        function showSuccessScreen(methodName) {
-            // Stop timer
-            if (checkoutTimerInterval) {
-                clearInterval(checkoutTimerInterval);
-                checkoutTimerInterval = null;
-            }
-
-            const successPlanTitle = document.getElementById('success-plan-title');
-            const successCheckoutMethod = document.getElementById('success-checkout-method');
-            const successCheckoutPrice = document.getElementById('success-checkout-price');
-
-            const planName = currentCheckoutPlan === 'pro' ? 'Plano Pro ⭐' : 'Plano Ultra Ativo 🚀';
-            const planPrice = currentCheckoutPlan === 'pro' ? 'R$ 29,90/mês' : 'R$ 59,90/mês';
-
-            if (successPlanTitle) successPlanTitle.innerText = planName;
-            if (successCheckoutMethod) successCheckoutMethod.innerText = methodName;
-            if (successCheckoutPrice) successCheckoutPrice.innerText = planPrice;
-
-            // Switch screens in modal
-            document.getElementById('checkout-screen-container').style.display = 'none';
-            document.getElementById('checkout-success-container').style.display = 'block';
-
-            // Log activity
-            addLog(`Cobrança aprovada: Plano ${planName} adquirido com sucesso via ${methodName}.`, "success");
-            showAppToast(`Sua assinatura do plano ${planName} foi ativada com sucesso!`, "success");
-        }
-
-        function goToSubscriptionSubView() {
-            hidePremiumUpgradeModal();
-            switchTab('tab-config');
-            openConfigSubView('subscription');
-        }
-
         // --- SISTEMA PREMIUM DE MENU DE CONTEXTO EM MENSAGENS (LONG PRESS / DIREITO) ---
         function getCleanMessageText(messageEl) {
             const clone = messageEl.cloneNode(true);
@@ -28957,10 +28416,6 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
         // Registrar inicialização da carteira
         document.addEventListener('DOMContentLoaded', () => {
             initFirebase();
-            setTimeout(() => {
-                getAppSubscriptionUsage();
-                updateSubscriptionUI();
-            }, 1000);
 
             // Generic Ripple Effect implementation for all clickable cards, rows, buttons
             document.addEventListener('click', function(e) {
@@ -28992,226 +28447,6 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             });
         });
     </script>
-
-    <!-- MODAL DE UPGRADE PREMIUM (CONTRATO DE MONETIZAÇÃO) -->
-    <div id="subscription-upgrade-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 10000; align-items: center; justify-content: center; padding: 16px; animation: fadeIn 0.2s ease-out;">
-        <div style="background: #0d0d0d; border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 20px; max-width: 440px; width: 100%; padding: 24px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.8); text-align: center;">
-            <div style="background: rgba(245, 158, 11, 0.1); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 30px; padding: 4px 14px; font-size: 0.72rem; font-weight: 700; width: fit-content; margin: 0 auto 16px auto; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 6px;">
-                <span>⭐</span> Recurso Premium Limitado
-            </div>
-            <div style="font-size: 3rem; margin-bottom: 12px; line-height: 1;">👑</div>
-            <h3 style="font-size: 1.3rem; font-weight: 800; color: #fff; margin: 0 0 8px 0;">Limite Excedido</h3>
-            <h4 id="modal-upgrade-feature-title" style="font-size: 0.95rem; font-weight: 700; color: #fbbf24; margin: 0 0 12px 0;">Mensagens de Chat</h4>
-            <p id="modal-upgrade-feature-desc" style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 24px 0; line-height: 1.5;">
-                Você atingiu o limite de consultas diárias permitidas no plano gratuito. Faça upgrade para continuar conversando sem interrupções.
-            </p>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <button onclick="goToSubscriptionSubView()" style="background: var(--primary); border: none; color: #000; font-weight: bold; width: 100%; border-radius: 12px; padding: 14px; font-size: 0.9rem; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-                    🚀 Ver Opções de Upgrade
-                </button>
-                <button onclick="openSubscriptionCheckoutModal('pro'); hidePremiumUpgradeModal();" style="background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.4); color: #a78bfa; font-weight: bold; width: 100%; border-radius: 12px; padding: 12px; font-size: 0.85rem; cursor: pointer; transition: background 0.2s;">
-                    ⭐ Adquirir Plano Pro
-                </button>
-                <button onclick="hidePremiumUpgradeModal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 0.8rem; cursor: pointer; padding: 8px; font-weight: 600;">
-                    Talvez mais tarde
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL DE CHECKOUT DE ASSINATURA (MONETIZAÇÃO FREEMIUM COM PIX) -->
-    <div id="subscription-checkout-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 10001; align-items: center; justify-content: center; padding: 16px; animation: fadeIn 0.2s ease-out;">
-        <div style="background: #0d0f14; border: 1px solid var(--border-color); border-radius: 20px; max-width: 480px; width: 100%; padding: 24px; position: relative; box-shadow: 0 15px 50px rgba(0,0,0,0.85); display: flex; flex-direction: column;">
-            
-            <!-- Botão Fechar -->
-            <button onclick="closeSubscriptionCheckoutModal()" style="position: absolute; top: 16px; right: 16px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-muted); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: bold; transition: all 0.2s;" onmouseover="this.style.color='#fff'; this.style.background='rgba(255,255,255,0.1)';" onmouseout="this.style.color='var(--text-muted)'; this.style.background='rgba(255,255,255,0.05)';">✕</button>
-
-            <!-- TELA DE CHECKOUT ATIVO -->
-            <div id="checkout-screen-container" style="display: block;">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <span style="font-size: 2rem; margin-bottom: 6px; display: inline-block;">💳</span>
-                    <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0;">Finalizar Assinatura</h3>
-                    <p style="font-size: 0.78rem; color: var(--text-muted); margin: 4px 0 0 0;">Escolha o método de pagamento e ative instantaneamente!</p>
-                </div>
-
-                <!-- CARD RESUMO DO PLANO SELECIONADO -->
-                <div id="checkout-plan-summary" style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px 18px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <span id="checkout-plan-title" style="font-size: 1rem; font-weight: 800; color: var(--primary);">Plano Pro ⭐</span>
-                        <span style="font-size: 0.7rem; color: var(--text-muted); display: block; margin-top: 2px;">Cobrança Recorrente Mensal</span>
-                    </div>
-                    <div style="text-align: right;">
-                        <span id="checkout-plan-price" style="font-size: 1.15rem; font-weight: 800; color: #fff;">R$ 29,90</span>
-                        <span style="font-size: 0.65rem; color: #32b5b4; display: block; font-weight: bold;">✓ 100% Seguro</span>
-                    </div>
-                </div>
-
-                <!-- SELETOR DE MÉTODO DE PAGAMENTO -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
-                    <button id="checkout-tab-pix" onclick="switchCheckoutPaymentMethod('pix')" style="background: rgba(50, 181, 180, 0.08); border: 1px solid rgba(50, 181, 180, 0.4); color: #32b5b4; border-radius: 12px; padding: 12px; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;">
-                        <span style="font-size: 1.1rem;">📱</span> Pix Instantâneo
-                    </button>
-                    <button id="checkout-tab-card" onclick="switchCheckoutPaymentMethod('card')" style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 12px; padding: 12px; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;">
-                        <span style="font-size: 1.1rem;">💳</span> Cartão de Crédito
-                    </button>
-                </div>
-
-                <!-- CONTEÚDO 1: PIX DETALHES -->
-                <div id="checkout-pix-details" style="display: block; text-align: center; background: rgba(255,255,255,0.01); border: 1px dashed rgba(50, 181, 180, 0.2); border-radius: 16px; padding: 16px; margin-bottom: 20px;">
-                    <p style="font-size: 0.76rem; color: var(--text-muted); margin: 0 0 14px 0; line-height: 1.4; text-align: left;">
-                        Escaneie o código QR ou use o Pix Copia e Cola para pagar. A ativação é feita de forma <b style="color: #32b5b4;">instantânea</b> assim que detectado.
-                    </p>
-
-                    <!-- QR CODE SIMULADO (HIGH QUALITY) -->
-                    <div style="background: #fff; padding: 12px; border-radius: 12px; width: 140px; height: 140px; margin: 0 auto 16px auto; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0,0,0,0.5); position: relative;">
-                        <!-- Desenho de QR code vetorial de alta definição para parecer autêntico -->
-                        <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; shape-rendering: crispEdges;">
-                            <!-- Quadrado superior esquerdo -->
-                            <rect x="0" y="0" width="30" height="30" fill="#000" />
-                            <rect x="5" y="5" width="20" height="20" fill="#fff" />
-                            <rect x="10" y="10" width="10" height="10" fill="#000" />
-                            
-                            <!-- Quadrado superior direito -->
-                            <rect x="70" y="0" width="30" height="30" fill="#000" />
-                            <rect x="75" y="5" width="20" height="20" fill="#fff" />
-                            <rect x="80" y="10" width="10" height="10" fill="#000" />
-                            
-                            <!-- Quadrado inferior esquerdo -->
-                            <rect x="0" y="70" width="30" height="30" fill="#000" />
-                            <rect x="5" y="75" width="20" height="20" fill="#fff" />
-                            <rect x="10" y="80" width="10" height="10" fill="#000" />
-
-                            <!-- Pequeno quadradinho inferior direito de alinhamento -->
-                            <rect x="75" y="75" width="10" height="10" fill="#000" />
-                            
-                            <!-- Padrões aleatórios de QR Code representados ordenadamente -->
-                            <rect x="40" y="0" width="10" height="5" fill="#000" />
-                            <rect x="55" y="0" width="5" height="10" fill="#000" />
-                            <rect x="45" y="15" width="15" height="5" fill="#000" />
-                            <rect x="35" y="25" width="10" height="10" fill="#000" />
-                            
-                            <rect x="0" y="40" width="10" height="10" fill="#000" />
-                            <rect x="15" y="45" width="10" height="5" fill="#000" />
-                            <rect x="20" y="55" width="10" height="10" fill="#000" />
-                            <rect x="5" y="60" width="5" height="5" fill="#000" />
-                            
-                            <rect x="40" y="40" width="20" height="20" fill="#000" />
-                            <rect x="45" y="45" width="10" height="10" fill="#fff" />
-                            
-                            <rect x="65" y="35" width="10" height="15" fill="#000" />
-                            <rect x="85" y="35" width="15" height="5" fill="#000" />
-                            <rect x="75" y="50" width="10" height="10" fill="#000" />
-                            <rect x="90" y="55" width="5" height="15" fill="#000" />
-                            
-                            <rect x="35" y="70" width="10" height="10" fill="#000" />
-                            <rect x="50" y="75" width="5" height="15" fill="#000" />
-                            <rect x="40" y="90" width="15" height="5" fill="#000" />
-                            <rect x="60" y="85" width="10" height="10" fill="#000" />
-                            <rect x="65" y="70" width="5" height="5" fill="#000" />
-                            
-                            <rect x="85" y="85" width="15" height="15" fill="#000" />
-                            <rect x="90" y="90" width="5" height="5" fill="#fff" />
-                        </svg>
-                        
-                        <!-- Logo do Pix no centro do QR code para um toque premium de realismo -->
-                        <div style="position: absolute; width: 30px; height: 30px; background: #fff; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center;">
-                            <span style="font-size: 1.1rem; font-weight: bold; color: #32b5b4;">❖</span>
-                        </div>
-                    </div>
-
-                    <!-- TEXTO DE TEMPO EXPIRANDO -->
-                    <div style="font-size: 0.74rem; font-weight: bold; color: #fbbf24; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                        <span>⏱️</span> <span id="checkout-pix-timer">O código expira em 10:00</span>
-                    </div>
-
-                    <!-- CHAVE COPIA E COLA -->
-                    <div style="display: flex; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; margin-bottom: 8px;">
-                        <input id="checkout-pix-key-input" type="text" readonly value="00020101021226830014br.gov.bcb.pix2561api.synapseia.com/v2/cob/982c75b8cb1a4caea9d7e35b750cb82b5204000053039865802BR5920Synapse IA Ltda6009Sao Paulo62070503***6304CA3B" style="background: transparent; border: none; color: var(--text-muted); font-size: 0.65rem; padding: 10px; width: 100%; font-family: monospace; text-overflow: ellipsis;">
-                        <button onclick="copyPixCheckoutCode()" style="background: rgba(255,255,255,0.05); border: none; border-left: 1px solid var(--border-color); color: #fff; padding: 0 14px; font-size: 0.75rem; font-weight: bold; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)';" onmouseout="this.style.background='rgba(255,255,255,0.05)';">Copiar</button>
-                    </div>
-
-                    <button id="checkout-btn-confirm-pix" onclick="processPixPaymentSimulation()" class="btn-universal" style="background: #10b981; border: none; color: #000; font-weight: bold; width: 100%; border-radius: 10px; padding: 12px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s; margin-top: 14px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-                        ❖ Confirmar Pagamento do Pix
-                    </button>
-                </div>
-
-                <!-- CONTEÚDO 2: CARD DETALHES -->
-                <div id="checkout-card-details" style="display: none; background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; margin-bottom: 20px;">
-                    <div style="display: flex; flex-direction: column; gap: 12px; text-align: left;">
-                        
-                        <div>
-                            <label style="display:block; margin-bottom: 4px; color: var(--text-muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">Número do Cartão:</label>
-                            <input id="checkout-card-number" type="text" placeholder="0000 0000 0000 0000" class="form-control" style="background: #090d16; color: #fff; border: 1px solid var(--border-color); height: 44px; border-radius: 10px; padding: 0 12px; font-size: 0.85rem; width: 100%; box-sizing: border-box;" oninput="formatCardNumber(this)" maxlength="19">
-                        </div>
-
-                        <div>
-                            <label style="display:block; margin-bottom: 4px; color: var(--text-muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">Nome Impresso:</label>
-                            <input id="checkout-card-name" type="text" placeholder="EX: JOÃO M SILVA" class="form-control" style="background: #090d16; color: #fff; border: 1px solid var(--border-color); height: 44px; border-radius: 10px; padding: 0 12px; font-size: 0.85rem; width: 100%; box-sizing: border-box; text-transform: uppercase;">
-                        </div>
-
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <div>
-                                <label style="display:block; margin-bottom: 4px; color: var(--text-muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">Validade:</label>
-                                <input id="checkout-card-expiry" type="text" placeholder="MM/AA" class="form-control" style="background: #090d16; color: #fff; border: 1px solid var(--border-color); height: 44px; border-radius: 10px; padding: 0 12px; font-size: 0.85rem; width: 100%; box-sizing: border-box;" oninput="formatCardExpiry(this)" maxlength="5">
-                            </div>
-                            <div>
-                                <label style="display:block; margin-bottom: 4px; color: var(--text-muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">CVC (Segurança):</label>
-                                <input id="checkout-card-cvv" type="text" placeholder="123" class="form-control" style="background: #090d16; color: #fff; border: 1px solid var(--border-color); height: 44px; border-radius: 10px; padding: 0 12px; font-size: 0.85rem; width: 100%; box-sizing: border-box;" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="4">
-                            </div>
-                        </div>
-
-                        <p style="font-size: 0.68rem; color: var(--text-muted); text-align: center; margin: 4px 0 0 0; line-height: 1.35; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                            <span>🔒</span> Transação criptografada ponta a ponta com Stripe API.
-                        </p>
-
-                        <button id="checkout-btn-confirm-card" onclick="processCardPaymentSimulation()" class="btn-universal" style="background: var(--primary); border: none; color: #000; font-weight: bold; width: 100%; border-radius: 10px; padding: 12px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s; margin-top: 8px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-                            Finalizar Assinatura 💳
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TELA DE SUCESSO DO CHECKOUT (CONFIRMAÇÃO DETALHADA E ANIMADA) -->
-            <div id="checkout-success-container" style="display: none; text-align: center; padding: 10px 0;">
-                <!-- Ícone Check pulsante animado -->
-                <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(16, 185, 129, 0.1); border: 2px solid #10b981; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; animation: pulse 2s infinite;">
-                    <span style="font-size: 3rem; color: #10b981; line-height: 1;">✓</span>
-                </div>
-
-                <h3 style="font-size: 1.4rem; font-weight: 800; color: #fff; margin: 0 0 8px 0;">🎉 Assinatura Ativada!</h3>
-                <h4 id="success-plan-title" style="font-size: 1rem; font-weight: 700; color: var(--primary); margin: 0 0 16px 0;">Plano Pro Ativo ⭐</h4>
-                
-                <p style="font-size: 0.82rem; color: var(--text-main); margin: 0 0 20px 0; line-height: 1.5; padding: 0 10px;">
-                    Seja muito bem-vindo ao ecossistema premium do Synapse IA! O seu plano foi atualizado com sucesso e todas as suas cotas de uso diárias de chat, currículos e simulações foram expandidas ao nível <b>ilimitado</b>.
-                </p>
-
-                <!-- Detalhes Fiscais/Contratuais da Ativação -->
-                <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 16px; margin-bottom: 24px; text-align: left; font-size: 0.75rem;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                        <span style="color: var(--text-muted);">Método de Cobrança:</span>
-                        <b style="color: #fff;" id="success-checkout-method">Pix Instantâneo</b>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                        <span style="color: var(--text-muted);">Status da Transação:</span>
-                        <b style="color: #10b981;">Aprovado / Ativo</b>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                        <span style="color: var(--text-muted);">Recorrência:</span>
-                        <b style="color: #fff;">Mensal</b>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px; margin-top: 6px;">
-                        <span style="color: var(--text-muted); font-weight: bold;">Valor Cobrado:</span>
-                        <b style="color: var(--primary); font-size: 0.85rem;" id="success-checkout-price">R$ 29,90/mês</b>
-                    </div>
-                </div>
-
-                <button onclick="closeSubscriptionCheckoutModal()" class="btn-universal" style="background: var(--primary); border: none; color: #000; font-weight: bold; width: 100%; border-radius: 12px; padding: 12px; font-size: 0.88rem; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-                    Começar a Aproveitar 🚀
-                </button>
-            </div>
-
-        </div>
-    </div>
 
     <!-- NOVA TELA INTERNA DE PRÉ-VISUALIZAÇÃO EM TELA CHEIA (SANDBOX SEGURO) -->
     <div id="synapse-fullscreen-code-modal" class="prog-fullscreen-preview-screen" style="display: none;">
