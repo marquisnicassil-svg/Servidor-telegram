@@ -5956,7 +5956,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         </svg>
                     </div>
 
-                    <!-- 4. Acessibilidade -->
+                    <!-- 4. Voz, Leitura e Acessibilidade -->
                     <div class="config-index-item" onclick="openConfigSubView('accessibility')">
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
                             <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: rgba(var(--primary-rgb, 255,255,255), 0.08); flex-shrink: 0;">
@@ -5973,8 +5973,8 @@ CREATE TRIGGER on_synapse_user_signed_up
                                 </svg>
                             </div>
                             <div style="display: flex; flex-direction: column; gap: 2px;">
-                                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);" data-i18n="voz_acessibilidade">Acessibilidade</span>
-                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;" data-i18n="voz_acessibilidade_desc">Ajuste velocidade de áudio, tom de voz, tamanho dos textos e animações</span>
+                                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);" data-i18n="voz_acessibilidade">Voz, Leitura e Acessibilidade</span>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;" data-i18n="voz_acessibilidade_desc">Voz narradora, velocidade de leitura, contraste, tamanhos e animações</span>
                             </div>
                         </div>
                         <svg style="width: 16px; height: 16px; stroke: var(--text-muted); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0;" viewBox="0 0 24 24">
@@ -6218,7 +6218,6 @@ CREATE TRIGGER on_synapse_user_signed_up
                 <div style="display: flex; gap: 6px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); padding: 4px; border-radius: 14px; margin-bottom: 20px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
                     <button class="appearance-tab-btn active" onclick="switchAppearanceCategory('basic')" style="flex: 1; min-width: 90px; padding: 10px 12px; border-radius: 10px; border: none; background: transparent; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;">🎨 Básica</button>
                     <button class="appearance-tab-btn" onclick="switchAppearanceCategory('advanced')" style="flex: 1; min-width: 90px; padding: 10px 12px; border-radius: 10px; border: none; background: transparent; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;">⚙️ Avançada</button>
-                    <button class="appearance-tab-btn" onclick="switchAppearanceCategory('accessibility')" style="flex: 1; min-width: 105px; padding: 10px 12px; border-radius: 10px; border: none; background: transparent; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;">♿ Acessibilidade</button>
                     <button class="appearance-tab-btn" onclick="switchAppearanceCategory('profiles')" style="flex: 1; min-width: 90px; padding: 10px 12px; border-radius: 10px; border: none; background: transparent; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;">💾 Perfis</button>
                 </div>
 
@@ -6614,61 +6613,6 @@ CREATE TRIGGER on_synapse_user_signed_up
                                 <span style="color: var(--text-muted); font-size: 0.70rem;">Cards elevam levemente ao passar o ponteiro</span>
                             </div>
                             <div class="toggle-switch" id="visual-depth-switch"></div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- CATEGORIA 3: ACESSIBILIDADE -->
-                <div id="appearance-cat-accessibility" class="appearance-cat-section" style="display: none; flex-direction: column; gap: 12px;">
-                    
-                    <div class="supabase-card" style="text-align: left; background: rgba(255,255,255,0.015); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; transition: all 0.2s;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleAccessibilityContrast()">
-                            <div style="text-align: left; display: flex; flex-direction: column; gap: 2px; padding-right: 12px; flex: 1;">
-                                <span style="font-weight: 600; font-size: 0.84rem; color: #fff;">👁️ Modo de Alto Contraste</span>
-                                <span style="color: var(--text-muted); font-size: 0.70rem;">Pretos puros, brancos intensos e bordas fortes para máxima legibilidade.</span>
-                            </div>
-                            <div class="toggle-switch" id="access-contrast-switch"></div>
-                        </div>
-                    </div>
-
-                    <div class="supabase-card" style="text-align: left; background: rgba(255,255,255,0.015); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; transition: all 0.2s;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleAccessibilityLargeText()">
-                            <div style="text-align: left; display: flex; flex-direction: column; gap: 2px; padding-right: 12px; flex: 1;">
-                                <span style="font-weight: 600; font-size: 0.84rem; color: #fff;">🔎 Texto Ampliado (+25%)</span>
-                                <span style="color: var(--text-muted); font-size: 0.70rem;">Aumenta o tamanho de todos os textos de conversa e botões do app.</span>
-                            </div>
-                            <div class="toggle-switch" id="access-largetext-switch"></div>
-                        </div>
-                    </div>
-
-                    <div class="supabase-card" style="text-align: left; background: rgba(255,255,255,0.015); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; transition: all 0.2s;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleAccessibilityLargeIcons()">
-                            <div style="text-align: left; display: flex; flex-direction: column; gap: 2px; padding-right: 12px; flex: 1;">
-                                <span style="font-weight: 600; font-size: 0.84rem; color: #fff;">🔘 Ícones Ampliados</span>
-                                <span style="color: var(--text-muted); font-size: 0.70rem;">Aumenta o tamanho dos botões de navegação, status e categorias.</span>
-                            </div>
-                            <div class="toggle-switch" id="access-largeicons-switch"></div>
-                        </div>
-                    </div>
-
-                    <div class="supabase-card" style="text-align: left; background: rgba(255,255,255,0.015); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; transition: all 0.2s;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleAccessibilityAnimations()">
-                            <div style="text-align: left; display: flex; flex-direction: column; gap: 2px; padding-right: 12px; flex: 1;">
-                                <span style="font-weight: 600; font-size: 0.84rem; color: #fff;">🎬 Redução Dinâmica de Animações</span>
-                                <span style="color: var(--text-muted); font-size: 0.70rem;">Desativa transições, flashes e efeitos visuais pesados.</span>
-                            </div>
-                            <div class="toggle-switch" id="access-animations-switch"></div>
-                        </div>
-                    </div>
-
-                    <div class="supabase-card" style="text-align: left; background: rgba(255,255,255,0.015); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; transition: all 0.2s;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleAccessibilityReadingMode()">
-                            <div style="text-align: left; display: flex; flex-direction: column; gap: 2px; padding-right: 12px; flex: 1;">
-                                <span style="font-weight: 600; font-size: 0.84rem; color: #fff;">📖 Modo Leitura Imersiva</span>
-                                <span style="color: var(--text-muted); font-size: 0.70rem;">Aplica fontes serifadas de alta leitura, remove distrações visuais e espaça as linhas.</span>
-                            </div>
-                            <div class="toggle-switch" id="access-reading-switch"></div>
                         </div>
                     </div>
 
@@ -8756,8 +8700,8 @@ WITH CHECK (true);</code>
                 "motor_ai_desc": "Gerencie provedores como Gemini, OpenAI, Groq, chaves de API e prompts",
                 "banco_dados": "Conexão e Banco de Dados",
                 "banco_dados_desc": "Configurações do Supabase, URLs do projeto, tabelas e backups",
-                "voz_acessibilidade": "Acessibilidade",
-                "voz_acessibilidade_desc": "Ajuste velocidade de áudio, tom de voz, tamanho dos textos e animações",
+                "voz_acessibilidade": "Voz, Leitura e Acessibilidade",
+                "voz_acessibilidade_desc": "Voz narradora, velocidade de leitura, contraste, tamanhos e animações",
                 "minha_conta": "Conta e Sessão",
                 "minha_conta_desc": "Dados do usuário conectado, chaves de acesso e gerenciamento de login",
                 "menu_advanced_title": "Avançado",
