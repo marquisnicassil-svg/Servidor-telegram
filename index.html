@@ -595,18 +595,26 @@
         }
 
         /* ==========================================================================
-           5. Chat / Console de Testes Interno
+           5. Chat / Console de Testes Interno (Modernizado)
            ========================================================================== */
         #tab-chat {
-            padding-bottom: var(--safe-bottom);
+            padding: 0 12px var(--safe-bottom) 12px;
             overflow: hidden;
+            display: none;
+            background: radial-gradient(circle at 50% 0%, rgba(var(--primary-rgb, 139, 92, 246), 0.05) 0%, transparent 60%);
+        }
+
+        #tab-chat.active {
+            display: flex;
+            flex-direction: column;
         }
 
         .chat-wrapper {
             display: flex;
             flex-direction: column;
             flex: 1;
-            min-height: 0; 
+            min-height: 0;
+            background: transparent;
         }
 
         .chat-messages {
@@ -615,41 +623,48 @@
             -webkit-overflow-scrolling: touch;
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            padding-bottom: 12px;
+            gap: 14px;
+            padding: 14px 4px 14px 4px;
             min-height: 0;
+            scroll-behavior: smooth;
         }
 
         .chat-message {
-            max-width: 85%;
-            padding: 10px 14px;
+            max-width: 86%;
+            padding: 12px 16px;
             font-size: var(--chat-font-size, 0.95rem);
             word-wrap: break-word;
-            line-height: 1.4;
+            line-height: 1.5;
             flex-shrink: 0;
             position: relative;
+            box-sizing: border-box;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
 
         .chat-message.user {
             background: var(--btn-gradient, var(--primary));
-            color: var(--primary-contrast, #ffffff) !important; /* Contraste inteligente */
+            color: var(--primary-contrast, #ffffff) !important;
             font-weight: 500;
             align-self: flex-end;
-            border-radius: 18px 18px 0px 18px !important;
-            box-shadow: var(--btn-shadow, none);
+            border-radius: 20px 20px 4px 20px !important;
+            box-shadow: 0 3px 14px rgba(var(--primary-rgb, 139, 92, 246), 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.12);
         }
 
         .chat-message.bot {
-            background-color: var(--card-bg-secondary);
+            background: var(--card-bg-secondary);
             color: var(--text-main);
             align-self: flex-start;
-            border-radius: 18px 18px 18px 0px !important;
+            border-radius: 20px 20px 20px 4px !important;
             border: 1px solid var(--border-color);
-            padding: 10px 42px 28px 14px;
+            padding: 14px 46px 14px 16px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
 
         .chat-message.bot.has-avatar {
-            padding-left: 52px !important;
+            padding-left: 54px !important;
         }
 
         @keyframes agentPulseEffect {
@@ -660,42 +675,47 @@
         /* Espaçamento interno e margem do botão de áudio nos balões de chat */
         .chat-message .reader-btn {
             position: absolute;
-            right: 12px;
-            bottom: 10px;
-            background: none !important;
-            border: none !important;
+            right: 8px;
+            bottom: 8px;
+            background: rgba(255, 255, 255, 0.04) !important;
+            border: 1px solid rgba(255, 255, 255, 0.06) !important;
+            border-radius: 50% !important;
             color: var(--text-muted) !important;
             cursor: pointer;
-            font-size: 1.15rem;
-            padding: 8px !important; /* Espaçamento interno */
-            margin: 4px !important; /* Desgruda totalmente da borda interna inferior direita */
+            font-size: 0.95rem;
+            width: 30px !important;
+            height: 30px !important;
+            padding: 0 !important;
+            margin: 0 !important;
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0.7;
-            transition: opacity 0.2s;
+            opacity: 0.75;
+            transition: all 0.2s ease;
         }
         .chat-message .reader-btn:hover {
-            color: var(--text-main) !important;
+            color: var(--primary) !important;
             opacity: 1 !important;
+            transform: scale(1.08);
+            background: rgba(var(--primary-rgb, 139, 92, 246), 0.15) !important;
         }
 
         /* Markdown Styles */
         .chat-message.bot pre {
             background-color: var(--card-bg-primary);
-            padding: 10px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 12px;
             overflow-x: auto;
-            margin-top: 8px;
-            margin-bottom: 8px;
+            margin-top: 10px;
+            margin-bottom: 10px;
             border: 1px solid var(--border-color);
         }
         .chat-message.bot code {
             font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
             background-color: var(--card-bg-primary);
-            padding: 2px 5px;
-            border-radius: 4px;
-            font-size: 0.85em;
+            padding: 3px 6px;
+            border-radius: 6px;
+            font-size: 0.86em;
         }
         .chat-message.bot p {
             margin-bottom: 8px;
@@ -709,11 +729,11 @@
 
         .chat-input-area {
             display: flex;
-            gap: 10px;
-            padding-top: 12px;
-            padding-bottom: 12px;
+            gap: 8px;
+            padding: 10px 4px 10px 4px;
             background-color: transparent;
             flex-shrink: 0;
+            align-items: center;
         }
 
         .form-control {
@@ -722,15 +742,16 @@
             border: 1px solid var(--border-color);
             color: var(--text-main);
             border-radius: 24px;
-            padding: 12px 18px;
-            font-size: 0.95rem;
+            padding: 10px 16px;
+            font-size: 0.92rem;
             outline: none;
-            transition: border-color 0.2s, background-color 0.3s;
+            transition: border-color 0.2s, background-color 0.3s, box-shadow 0.2s;
             font-family: inherit;
         }
 
         .form-control:focus {
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(var(--primary-rgb, 139, 92, 246), 0.18) !important;
         }
 
         .chat-btn-send {
@@ -738,24 +759,24 @@
             color: var(--primary-contrast, #ffffff) !important;
             border: none;
             border-radius: 50%;
-            width: 46px;
-            height: 46px;
+            width: 42px;
+            height: 42px;
             flex-shrink: 0;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: var(--btn-shadow, none);
-            transition: transform 0.1s, background 0.3s, box-shadow 0.3s;
+            box-shadow: 0 3px 12px rgba(var(--primary-rgb, 139, 92, 246), 0.35);
+            transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s, box-shadow 0.3s;
         }
 
         .chat-btn-send:active {
-            transform: scale(0.9);
+            transform: scale(0.92);
         }
 
         .chat-btn-send svg {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             fill: currentColor;
             margin-left: 2px;
         }
@@ -3557,9 +3578,9 @@
                 <button id="header-clear-chat-btn" onclick="clearChat()" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; outline: none; color: var(--text-muted); opacity: 0.8; transition: opacity 0.2s;" title="Apagar Conversa" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
                     🗑️
                 </button>
-                <div class="badge-live" style="margin: 0;">Online</div>
+                <div id="header-badge-live" class="badge-live" style="margin: 0;">Online</div>
                 <!-- HTML do Menu dos Três Pontos (Opções) Sincronizado -->
-                <div style="position: relative; display: inline-block;">
+                <div id="header-three-dots-container" style="position: relative; display: inline-block;">
                     <button id="three-dots-btn" onclick="toggleThreeDotsMenu()" style="background: transparent; border: none; color: var(--text-main); font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; outline: none; opacity: 0.8; transition: opacity 0.2s;" title="Mais Opções" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
                         ⋮
                     </button>
@@ -3705,26 +3726,26 @@
         
         <!-- ABA 1: CONSOLE DE CHAT (Playground) -->
         <section id="tab-chat" class="tab-section active">
-            <div class="chat-wrapper" style="border-radius: 16px; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="chat-wrapper" style="border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--border-color); background: rgba(12, 15, 29, 0.45); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);">
                 <!-- CABEÇALHO INTELIGENTE DO CHAT -->
-                <div id="chat-session-header" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid var(--border-color); background: rgba(10, 15, 36, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 16px 16px 0 0; gap: 12px; flex-wrap: wrap;">
-                    <div style="display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1;">
-                        <div id="chat-active-agent-icon" style="font-size: 1.4rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">🤖</div>
+                <div id="chat-session-header" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--border-color); background: rgba(14, 18, 36, 0.65); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-radius: 20px 20px 0 0; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 9px; min-width: 0; flex: 1;">
+                        <div id="chat-active-agent-icon" style="font-size: 1.25rem; background: rgba(var(--primary-rgb, 139, 92, 246), 0.12); border: 1px solid rgba(var(--primary-rgb, 139, 92, 246), 0.25); border-radius: 12px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">🤖</div>
                         <div style="min-width: 0;">
-                            <h3 id="chat-active-agent-name" style="margin: 0; font-size: 0.9rem; font-weight: 800; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Sessão Neural: Geral</h3>
-                            <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+                            <h3 id="chat-active-agent-name" style="margin: 0; font-size: 0.85rem; font-weight: 800; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: -0.2px;">Sessão Neural: Geral</h3>
+                            <div style="display: flex; align-items: center; gap: 6px; margin-top: 1px;">
                                 <span class="pulse-indicator" style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981; display: inline-block;"></span>
-                                <span id="chat-memory-count" onclick="openMemoryManagerModal()" style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; cursor: pointer; border-bottom: 1px dashed var(--text-muted); transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Memória Ativa (0 fatos)</span>
+                                <span id="chat-memory-count" onclick="openMemoryManagerModal()" style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600; cursor: pointer; border-bottom: 1px dashed var(--text-muted); transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Memória Ativa (0 fatos)</span>
                             </div>
                         </div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
                         <!-- Resetar contexto da conversa atual -->
-                        <button onclick="startNewChatSession()" class="btn-universal" style="padding: 6px 12px; font-size: 0.75rem; font-weight: 700; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.2); color: var(--primary); display: flex; align-items: center; gap: 4px;" title="Limpar conversa atual e iniciar nova sessão">
+                        <button onclick="startNewChatSession()" class="btn-universal" style="padding: 5px 10px; font-size: 0.72rem; font-weight: 700; background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.25); color: var(--primary); display: flex; align-items: center; gap: 4px; border-radius: 10px;" title="Limpar conversa atual e iniciar nova sessão">
                             🔄 Nova Sessão
                         </button>
                         <!-- Gerenciar Memória Completa -->
-                        <button onclick="openMemoryManagerModal()" class="btn-universal" style="padding: 6px 12px; font-size: 0.75rem; font-weight: 700; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); color: #fff; display: flex; align-items: center; gap: 4px;" title="Ver e gerenciar fatos da memória contextual">
+                        <button onclick="openMemoryManagerModal()" class="btn-universal" style="padding: 5px 10px; font-size: 0.72rem; font-weight: 700; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); color: #fff; display: flex; align-items: center; gap: 4px; border-radius: 10px;" title="Ver e gerenciar fatos da memória contextual">
                             🧠 Memória
                         </button>
                     </div>
@@ -3736,15 +3757,15 @@
                         <button class="reader-btn" data-text="Estou conectado e com memória ativada." onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>
                     </div>
                 </div>
-                <div class="chat-input-area" style="position: relative; align-items: center; gap: 8px; padding-top: 10px; padding-bottom: 10px;">
+                <div class="chat-input-area" style="position: relative; align-items: center; gap: 6px; padding: 10px 8px;">
                     <!-- Botão de Anexos (Lado Esquerdo) -->
                     <div style="position: relative; display: flex; align-items: center; order: 1 !important;">
-                        <button id="btn-attachments" onclick="toggleAttachmentMenu(event)" class="chat-input-action-btn" title="Anexar arquivos" style="outline: none;">
+                        <button id="btn-attachments" onclick="toggleAttachmentMenu(event)" class="chat-input-action-btn" title="Anexar arquivos" style="outline: none; width: 40px !important; height: 40px !important;">
                             📎
                         </button>
                         
                         <!-- Menu de Anexos Popup -->
-                        <div id="attachment-menu" class="attachment-menu-popup">
+                        <div id="attachment-menu" class="attachment-menu-popup" style="bottom: 52px !important;">
                             <button onclick="handleAttachmentOption('camera')" class="attachment-menu-item">
                                 <span>📷</span> <span data-i18n="attach_camera">Tirar foto</span>
                             </button>
@@ -3765,23 +3786,23 @@
 
                     <!-- Campo de Texto Principal (Centro) -->
                     <div style="position: relative; flex: 1; display: flex; align-items: center; order: 2 !important;">
-                        <input type="text" id="chat-input" class="form-control" style="padding-left: 18px; padding-right: 18px; border-radius: 24px; background-color: var(--card-bg-secondary); border: 1px solid var(--border-color); height: 48px; color: var(--text-main); pointer-events: auto !important; -webkit-user-select: text !important; user-select: text !important; position: relative; z-index: 100 !important; cursor: text !important; box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
+                        <input type="text" id="chat-input" class="form-control" style="padding-left: 16px; padding-right: 16px; border-radius: 22px; background-color: var(--card-bg-secondary); border: 1px solid var(--border-color); height: 42px; color: var(--text-main); pointer-events: auto !important; -webkit-user-select: text !important; user-select: text !important; position: relative; z-index: 100 !important; cursor: text !important; box-shadow: inset 0 1px 2px rgba(0,0,0,0.25);" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
                     </div>
 
                     <!-- Botão de Microfone (Lado Direito) -->
-                    <div style="position: relative; display: flex; align-items: center; order: 3 !important; width: 44px; height: 44px; justify-content: center;">
-                        <button id="btn-mic-chat" onclick="toggleMic()" class="chat-input-action-btn" title="Ditado por Voz" style="outline: none;">
-                            <svg class="mic-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="transition: transform 0.2s;"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+                    <div style="position: relative; display: flex; align-items: center; order: 3 !important; width: 40px; height: 40px; justify-content: center;">
+                        <button id="btn-mic-chat" onclick="toggleMic()" class="chat-input-action-btn" title="Ditado por Voz" style="outline: none; width: 40px !important; height: 40px !important;">
+                            <svg class="mic-icon" viewBox="0 0 24 24" width="17" height="17" fill="currentColor" style="transition: transform 0.2s;"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
                         </button>
                     </div>
 
                     <!-- Botão de Enviar (Extrema Direita) -->
-                    <button class="chat-btn-send" onclick="sendMessage()" style="order: 4 !important;">
+                    <button class="chat-btn-send" onclick="sendMessage()" style="order: 4 !important; width: 40px; height: 40px;">
                         <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                     </button>
 
                     <!-- Barra de Gravação Ativa -->
-                    <div id="recording-bar" style="display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: #0b0d19; border: 1px solid var(--primary); border-radius: 24px; z-index: 150; align-items: center; justify-content: space-between; padding: 0 16px; box-shadow: 0 0 15px rgba(138, 92, 246, 0.4); animation: slideInUp 0.2s cubic-bezier(0.1, 0.9, 0.2, 1); height: 48px; box-sizing: border-box;">
+                    <div id="recording-bar" style="display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: #0b0d19; border: 1px solid var(--primary); border-radius: 22px; z-index: 150; align-items: center; justify-content: space-between; padding: 0 14px; box-shadow: 0 0 15px rgba(138, 92, 246, 0.4); animation: slideInUp 0.2s cubic-bezier(0.1, 0.9, 0.2, 1); height: 42px; box-sizing: border-box;">
                         <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;">
                             <!-- Red Recording dot -->
                             <div class="recording-indicator-dot"></div>
@@ -8614,10 +8635,23 @@ WITH CHECK (true);</code>
             // Sincroniza classes do Drawer
             syncDrawerActiveStates(tabId);
 
-            // Mostra/Oculta botão de apagar conversa no cabeçalho
+            // Mostra/Oculta elementos exclusivos do chat no cabeçalho (Apagar conversa, Indicador Online, Menu Três Pontos)
+            const isChatTab = (tabId === 'tab-chat');
             const clearChatBtn = document.getElementById('header-clear-chat-btn');
             if (clearChatBtn) {
-                clearChatBtn.style.display = (tabId === 'tab-chat') ? 'flex' : 'none';
+                clearChatBtn.style.display = isChatTab ? 'flex' : 'none';
+            }
+            const onlineBadge = document.getElementById('header-badge-live');
+            if (onlineBadge) {
+                onlineBadge.style.display = isChatTab ? 'inline-block' : 'none';
+            }
+            const threeDotsContainer = document.getElementById('header-three-dots-container');
+            if (threeDotsContainer) {
+                threeDotsContainer.style.display = isChatTab ? 'inline-block' : 'none';
+                if (!isChatTab) {
+                    const threeDotsDropdown = document.getElementById('three-dots-dropdown');
+                    if (threeDotsDropdown) threeDotsDropdown.style.display = 'none';
+                }
             }
 
             // Foca o input caso volte para o chat
