@@ -598,10 +598,11 @@
            5. Chat / Console de Testes Interno (Modernizado)
            ========================================================================== */
         #tab-chat {
-            padding: 0 12px var(--safe-bottom) 12px;
+            padding: 0 4px var(--safe-bottom) 4px;
             overflow: hidden;
             display: none;
             background: radial-gradient(circle at 50% 0%, rgba(var(--primary-rgb, 139, 92, 246), 0.05) 0%, transparent 60%);
+            height: 100%;
         }
 
         #tab-chat.active {
@@ -623,22 +624,22 @@
             -webkit-overflow-scrolling: touch;
             display: flex;
             flex-direction: column;
-            gap: 14px;
-            padding: 14px 4px 14px 4px;
+            gap: 12px;
+            padding: 12px 6px 12px 6px;
             min-height: 0;
             scroll-behavior: smooth;
         }
 
         .chat-message {
-            max-width: 86%;
-            padding: 12px 16px;
-            font-size: var(--chat-font-size, 0.95rem);
+            max-width: 88%;
+            padding: 10px 14px;
+            font-size: var(--chat-font-size, 0.93rem);
             word-wrap: break-word;
-            line-height: 1.5;
+            line-height: 1.48;
             flex-shrink: 0;
             position: relative;
             box-sizing: border-box;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
             transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
 
@@ -647,8 +648,8 @@
             color: var(--primary-contrast, #ffffff) !important;
             font-weight: 500;
             align-self: flex-end;
-            border-radius: 20px 20px 4px 20px !important;
-            box-shadow: 0 3px 14px rgba(var(--primary-rgb, 139, 92, 246), 0.35);
+            border-radius: 18px 18px 4px 18px !important;
+            box-shadow: 0 2px 10px rgba(var(--primary-rgb, 139, 92, 246), 0.3);
             border: 1px solid rgba(255, 255, 255, 0.12);
         }
 
@@ -656,15 +657,15 @@
             background: var(--card-bg-secondary);
             color: var(--text-main);
             align-self: flex-start;
-            border-radius: 20px 20px 20px 4px !important;
+            border-radius: 18px 18px 18px 4px !important;
             border: 1px solid var(--border-color);
-            padding: 14px 46px 14px 16px;
+            padding: 10px 36px 10px 14px;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
 
         .chat-message.bot.has-avatar {
-            padding-left: 54px !important;
+            padding-left: 44px !important;
         }
 
         @keyframes agentPulseEffect {
@@ -675,16 +676,16 @@
         /* Espaçamento interno e margem do botão de áudio nos balões de chat */
         .chat-message .reader-btn {
             position: absolute;
-            right: 8px;
-            bottom: 8px;
+            right: 6px;
+            bottom: 6px;
             background: rgba(255, 255, 255, 0.04) !important;
             border: 1px solid rgba(255, 255, 255, 0.06) !important;
             border-radius: 50% !important;
             color: var(--text-muted) !important;
             cursor: pointer;
-            font-size: 0.95rem;
-            width: 30px !important;
-            height: 30px !important;
+            font-size: 0.85rem;
+            width: 26px !important;
+            height: 26px !important;
             padding: 0 !important;
             margin: 0 !important;
             display: flex;
@@ -730,7 +731,7 @@
         .chat-input-area {
             display: flex;
             gap: 8px;
-            padding: 10px 4px 10px 4px;
+            padding: 8px 10px 10px 10px;
             background-color: transparent;
             flex-shrink: 0;
             align-items: center;
@@ -759,14 +760,14 @@
             color: var(--primary-contrast, #ffffff) !important;
             border: none;
             border-radius: 50%;
-            width: 42px;
-            height: 42px;
+            width: 38px;
+            height: 38px;
             flex-shrink: 0;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 3px 12px rgba(var(--primary-rgb, 139, 92, 246), 0.35);
+            box-shadow: 0 2px 10px rgba(var(--primary-rgb, 139, 92, 246), 0.35);
             transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s, box-shadow 0.3s;
         }
 
@@ -2790,15 +2791,16 @@
             border: 1px solid rgba(255, 255, 255, 0.08) !important;
             color: var(--text-muted) !important;
             border-radius: 50% !important;
-            width: 44px !important;
-            height: 44px !important;
+            width: 38px !important;
+            height: 38px !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            font-size: 1.15rem !important;
+            font-size: 1.1rem !important;
             cursor: pointer !important;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
             outline: none !important;
+            flex-shrink: 0 !important;
         }
         .chat-input-action-btn:hover {
             background: rgba(138, 92, 246, 0.12) !important;
@@ -3726,46 +3728,58 @@
         
         <!-- ABA 1: CONSOLE DE CHAT (Playground) -->
         <section id="tab-chat" class="tab-section active">
-            <div class="chat-wrapper" style="border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--border-color); background: rgba(12, 15, 29, 0.45); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);">
-                <!-- CABEÇALHO INTELIGENTE DO CHAT -->
-                <div id="chat-session-header" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--border-color); background: rgba(14, 18, 36, 0.65); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-radius: 20px 20px 0 0; gap: 8px;">
-                    <div style="display: flex; align-items: center; gap: 9px; min-width: 0; flex: 1;">
-                        <div id="chat-active-agent-icon" style="font-size: 1.25rem; background: rgba(var(--primary-rgb, 139, 92, 246), 0.12); border: 1px solid rgba(var(--primary-rgb, 139, 92, 246), 0.25); border-radius: 12px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">🤖</div>
-                        <div style="min-width: 0;">
-                            <h3 id="chat-active-agent-name" style="margin: 0; font-size: 0.85rem; font-weight: 800; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: -0.2px;">Sessão Neural: Geral</h3>
-                            <div style="display: flex; align-items: center; gap: 6px; margin-top: 1px;">
-                                <span class="pulse-indicator" style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981; display: inline-block;"></span>
-                                <span id="chat-memory-count" onclick="openMemoryManagerModal()" style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600; cursor: pointer; border-bottom: 1px dashed var(--text-muted); transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Memória Ativa (0 fatos)</span>
+            <div class="chat-wrapper" style="border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--border-color); background: rgba(12, 15, 29, 0.45); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25); position: relative;">
+                <!-- CABEÇALHO COMPACTO E MODERNO DO CHAT -->
+                <div id="chat-session-header" style="position: relative; display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid var(--border-color); background: rgba(14, 18, 36, 0.7); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-radius: 18px 18px 0 0; gap: 8px; min-height: 48px;">
+                    <!-- Seletor Rápido de Agente -->
+                    <div id="chat-agent-selector-btn" onclick="toggleChatAgentDropdown(event)" style="display: flex; align-items: center; gap: 8px; min-width: 0; cursor: pointer; padding: 4px 8px 4px 4px; border-radius: 12px; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'" title="Toque para trocar de agente">
+                        <div id="chat-active-agent-icon" style="font-size: 1.15rem; background: rgba(var(--primary-rgb, 139, 92, 246), 0.15); border: 1px solid rgba(var(--primary-rgb, 139, 92, 246), 0.3); border-radius: 10px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">🤖</div>
+                        <div style="display: flex; flex-direction: column; min-width: 0;">
+                            <div style="display: flex; align-items: center; gap: 4px;">
+                                <h3 id="chat-active-agent-name" style="margin: 0; font-size: 0.88rem; font-weight: 750; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: -0.2px;">Geral</h3>
+                                <svg viewBox="0 0 24 24" width="13" height="13" fill="var(--text-muted)" style="flex-shrink: 0; opacity: 0.7;"><path d="M7 10l5 5 5-5z"/></svg>
                             </div>
+                            <span style="font-size: 0.65rem; color: var(--text-muted); line-height: 1; margin-top: 1px; display: flex; align-items: center; gap: 4px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981; display: inline-block;"></span> Online</span>
                         </div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <!-- Resetar contexto da conversa atual -->
-                        <button onclick="startNewChatSession()" class="btn-universal" style="padding: 5px 10px; font-size: 0.72rem; font-weight: 700; background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.25); color: var(--primary); display: flex; align-items: center; gap: 4px; border-radius: 10px;" title="Limpar conversa atual e iniciar nova sessão">
-                            🔄 Nova Sessão
+
+                    <!-- Dropdown de Troca Rápida de Agente -->
+                    <div id="chat-agent-dropdown" style="display: none; position: absolute; top: 48px; left: 10px; z-index: 1200; background: #0e1224; border: 1px solid var(--border-color); border-radius: 14px; padding: 6px; box-shadow: 0 12px 32px rgba(0,0,0,0.6); min-width: 220px; max-width: 270px; max-height: 280px; overflow-y: auto; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);"></div>
+
+                    <!-- Ações Compactas do Chat (Memória e Nova Sessão) -->
+                    <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                        <!-- Memória Contextual Compacta -->
+                        <button id="btn-chat-memory" onclick="openMemoryManagerModal()" class="chat-header-btn" title="Memória Contextual" style="display: flex; align-items: center; gap: 4px; padding: 5px 8px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.75rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--primary)'; this.style.color='var(--text-main)'" onmouseout="this.style.borderColor='var(--border-color)'; this.style.color='var(--text-muted)'">
+                            <span>🧠</span>
+                            <span id="chat-memory-count" style="font-weight: 700; font-size: 0.72rem; color: var(--text-main);">0</span>
                         </button>
-                        <!-- Gerenciar Memória Completa -->
-                        <button onclick="openMemoryManagerModal()" class="btn-universal" style="padding: 5px 10px; font-size: 0.72rem; font-weight: 700; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); color: #fff; display: flex; align-items: center; gap: 4px; border-radius: 10px;" title="Ver e gerenciar fatos da memória contextual">
-                            🧠 Memória
+                        <!-- Resetar conversa / Nova Sessão Compacta -->
+                        <button id="btn-chat-new-session" onclick="startNewChatSession()" class="chat-header-btn" title="Nova Conversa" style="display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 10px; background: rgba(var(--primary-rgb, 139, 92, 246), 0.12); border: 1px solid rgba(var(--primary-rgb, 139, 92, 246), 0.28); color: var(--primary); font-size: 0.8rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            🔄
                         </button>
                     </div>
                 </div>
 
                 <div class="chat-messages" id="chat-messages" style="flex: 1;">
-                    <div class="chat-message bot">
-                        Estou conectado e com memória ativada.
-                        <button class="reader-btn" data-text="Estou conectado e com memória ativada." onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>
+                    <div class="chat-message bot has-avatar">
+                        <div class="chat-msg-avatar" style="position: absolute; left: 8px; top: 8px; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(var(--primary-rgb, 139, 92, 246), 0.15); border: 1.5px solid var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.3); z-index: 2;">
+                            <span style="font-size: 0.85rem; line-height: 1;">🤖</span>
+                        </div>
+                        <div>
+                            Olá! Como posso ajudar você hoje?
+                        </div>
+                        <button class="reader-btn" data-text="Olá! Como posso ajudar você hoje?" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 6px; bottom: 6px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 50%; color: var(--text-muted); cursor: pointer; font-size: 0.85rem; width: 26px; height: 26px; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; opacity: 0.75; transition: all 0.2s ease;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">🔊</button>
                     </div>
                 </div>
-                <div class="chat-input-area" style="position: relative; align-items: center; gap: 6px; padding: 10px 8px;">
+                <div id="chat-input-area" class="chat-input-area" style="position: relative; display: flex; align-items: center; gap: 8px; padding: 8px 10px 10px 10px; background: rgba(14, 18, 36, 0.75); border-top: 1px solid var(--border-color); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-radius: 0 0 18px 18px;">
                     <!-- Botão de Anexos (Lado Esquerdo) -->
-                    <div style="position: relative; display: flex; align-items: center; order: 1 !important;">
-                        <button id="btn-attachments" onclick="toggleAttachmentMenu(event)" class="chat-input-action-btn" title="Anexar arquivos" style="outline: none; width: 40px !important; height: 40px !important;">
+                    <div style="position: relative; display: flex; align-items: center; flex-shrink: 0; order: 1 !important;">
+                        <button id="btn-attachments" onclick="toggleAttachmentMenu(event)" class="chat-input-action-btn" title="Anexar arquivos" style="outline: none; width: 38px !important; height: 38px !important;">
                             📎
                         </button>
                         
                         <!-- Menu de Anexos Popup -->
-                        <div id="attachment-menu" class="attachment-menu-popup" style="bottom: 52px !important;">
+                        <div id="attachment-menu" class="attachment-menu-popup" style="bottom: 50px !important;">
                             <button onclick="handleAttachmentOption('camera')" class="attachment-menu-item">
                                 <span>📷</span> <span data-i18n="attach_camera">Tirar foto</span>
                             </button>
@@ -3784,25 +3798,25 @@
                         </div>
                     </div>
 
-                    <!-- Campo de Texto Principal (Centro) -->
-                    <div style="position: relative; flex: 1; display: flex; align-items: center; order: 2 !important;">
-                        <input type="text" id="chat-input" class="form-control" style="padding-left: 16px; padding-right: 16px; border-radius: 22px; background-color: var(--card-bg-secondary); border: 1px solid var(--border-color); height: 42px; color: var(--text-main); pointer-events: auto !important; -webkit-user-select: text !important; user-select: text !important; position: relative; z-index: 100 !important; cursor: text !important; box-shadow: inset 0 1px 2px rgba(0,0,0,0.25);" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
+                    <!-- Campo de Texto Principal (Centro) com destaque -->
+                    <div style="position: relative; flex: 1; min-width: 0; display: flex; align-items: center; order: 2 !important;">
+                        <input type="text" id="chat-input" class="form-control" style="padding-left: 16px; padding-right: 16px; border-radius: 22px; background-color: var(--card-bg-secondary); border: 1.5px solid rgba(255, 255, 255, 0.12); height: 42px; font-size: 0.94rem; color: var(--text-main); pointer-events: auto !important; -webkit-user-select: text !important; user-select: text !important; position: relative; z-index: 100 !important; cursor: text !important; box-shadow: inset 0 1px 3px rgba(0,0,0,0.25);" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
                     </div>
 
                     <!-- Botão de Microfone (Lado Direito) -->
-                    <div style="position: relative; display: flex; align-items: center; order: 3 !important; width: 40px; height: 40px; justify-content: center;">
-                        <button id="btn-mic-chat" onclick="toggleMic()" class="chat-input-action-btn" title="Ditado por Voz" style="outline: none; width: 40px !important; height: 40px !important;">
+                    <div style="position: relative; display: flex; align-items: center; order: 3 !important; width: 38px; height: 38px; justify-content: center; flex-shrink: 0;">
+                        <button id="btn-mic-chat" onclick="toggleMic()" class="chat-input-action-btn" title="Ditado por Voz" style="outline: none; width: 38px !important; height: 38px !important;">
                             <svg class="mic-icon" viewBox="0 0 24 24" width="17" height="17" fill="currentColor" style="transition: transform 0.2s;"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
                         </button>
                     </div>
 
                     <!-- Botão de Enviar (Extrema Direita) -->
-                    <button class="chat-btn-send" onclick="sendMessage()" style="order: 4 !important; width: 40px; height: 40px;">
+                    <button class="chat-btn-send" onclick="sendMessage()" title="Enviar mensagem" style="order: 4 !important; width: 38px; height: 38px; flex-shrink: 0;">
                         <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                     </button>
 
                     <!-- Barra de Gravação Ativa -->
-                    <div id="recording-bar" style="display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: #0b0d19; border: 1px solid var(--primary); border-radius: 22px; z-index: 150; align-items: center; justify-content: space-between; padding: 0 14px; box-shadow: 0 0 15px rgba(138, 92, 246, 0.4); animation: slideInUp 0.2s cubic-bezier(0.1, 0.9, 0.2, 1); height: 42px; box-sizing: border-box;">
+                    <div id="recording-bar" style="display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: #0b0d19; border: 1px solid var(--primary); border-radius: 18px; z-index: 150; align-items: center; justify-content: space-between; padding: 0 14px; box-shadow: 0 0 15px rgba(138, 92, 246, 0.4); animation: slideInUp 0.2s cubic-bezier(0.1, 0.9, 0.2, 1); height: 100%; box-sizing: border-box;">
                         <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;">
                             <!-- Red Recording dot -->
                             <div class="recording-indicator-dot"></div>
@@ -15735,9 +15749,9 @@ WITH CHECK (true);</code>
             const color = agent ? (agent.color || '#38BDF8') : '#38BDF8';
             const avatarInner = agent && agent.avatar ? 
                 `<img src="${agent.avatar}" style="width: 100%; height: 100%; object-fit: cover;">` : 
-                `<span style="font-size: 0.95rem; line-height: 1;">${agent ? (agent.icon || '🤖') : '🤖'}</span>`;
+                `<span style="font-size: 0.85rem; line-height: 1;">${agent ? (agent.icon || '🤖') : '🤖'}</span>`;
             return `
-                <div class="chat-msg-avatar" style="position: absolute; left: 12px; top: 12px; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(0,0,0,0.2); border: 1.5px solid ${color}; box-shadow: 0 2px 8px rgba(0,0,0,0.3); z-index: 2;">
+                <div class="chat-msg-avatar" style="position: absolute; left: 8px; top: 8px; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(0,0,0,0.2); border: 1.5px solid ${color}; box-shadow: 0 2px 6px rgba(0,0,0,0.3); z-index: 2;">
                     ${avatarInner}
                 </div>
             `;
@@ -16055,7 +16069,7 @@ WITH CHECK (true);</code>
             let welcomeMsg = activeAssis.welcome || `Olá! Sou seu assistente ${activeName}. Como posso ajudar hoje?`;
             if (id === 'geral') {
                 const uName = getUserDisplayName();
-                welcomeMsg = uName ? `✨ Olá, ${uName}!\n\nComo posso ajudar você hoje?` : `✨ Olá! Como posso ajudar você hoje?`;
+                welcomeMsg = uName ? `Olá, ${uName}! Como posso ajudar você hoje?` : `Olá! Como posso ajudar você hoje?`;
             }
 
             if (!isSameAgent) {
@@ -16064,13 +16078,13 @@ WITH CHECK (true);</code>
 
             if (currentLanguage === 'pt') {
                 addLog(`Agente Ativo: ${activeIcon} ${activeName} ✓`, "success");
-                showAppToast(`${activeName} assumiu o terminal neural.`, "success");
+                showAppToast(`${activeName} assumiu o chat.`, "success");
             } else if (currentLanguage === 'en') {
                 addLog(`Active Agent: ${activeIcon} ${activeName} ✓`, "success");
                 showAppToast(`${activeName} is now active.`, "success");
             } else {
                 addLog(`Agente Activo: ${activeIcon} ${activeName} ✓`, "success");
-                showAppToast(`${activeName} ha asumido el canal neuro.`, "success");
+                showAppToast(`${activeName} ha asumido el chat.`, "success");
             }
 
             const topTitleEl = document.getElementById('topbar-section-title');
@@ -16094,9 +16108,9 @@ WITH CHECK (true);</code>
                     window.chatHistoryObjects.push({ role: 'assistant', content: welcomeMsg });
                     
                     const escapedForSpeech = welcomeMsg.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
-                    const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
+                    const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 6px; bottom: 6px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 50%; color: var(--text-muted); cursor: pointer; font-size: 0.85rem; width: 26px; height: 26px; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; opacity: 0.75; transition: all 0.2s ease;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">🔊</button>`;
                     
-                    container.innerHTML = `<div class="chat-message bot has-avatar" style="border-left: 3px solid ${activeAssis.color || '#38BDF8'};">${getAgentAvatarHtml(id)}${formatAIResponse(welcomeMsg)}${readerHtml}</div>`;
+                    container.innerHTML = `<div class="chat-message bot has-avatar">${getAgentAvatarHtml(id)}${formatAIResponse(welcomeMsg)}${readerHtml}</div>`;
                     scrollToBottom();
                     saveChatSession();
                 }
@@ -17372,16 +17386,67 @@ WITH CHECK (true);</code>
                 const allAgents = getAllAgents();
                 const activeAssis = allAgents.find(a => a.id === selectedAssistantId) || allAgents[0];
                 if (activeAssis) {
-                    if (iconEl) iconEl.textContent = activeAssis.icon || '🤖';
-                    if (nameEl) nameEl.textContent = `Sessão Neural: ${activeAssis.name}`;
+                    if (iconEl) {
+                        if (activeAssis.avatar) {
+                            iconEl.innerHTML = `<img src="${activeAssis.avatar}" style="width: 100%; height: 100%; border-radius: 8px; object-fit: cover;">`;
+                        } else {
+                            iconEl.textContent = activeAssis.icon || '🤖';
+                        }
+                    }
+                    if (nameEl) nameEl.textContent = activeAssis.name;
                 }
             }
             
             if (badgeEl) {
                 const count = (workspaceData.memorias || []).length;
-                badgeEl.textContent = `Memória Ativa (${count} fatos)`;
+                badgeEl.textContent = count;
             }
         }
+
+        function toggleChatAgentDropdown(event) {
+            if (event) event.stopPropagation();
+            const dropdown = document.getElementById('chat-agent-dropdown');
+            if (!dropdown) return;
+            const isVisible = dropdown.style.display === 'block';
+            if (isVisible) {
+                dropdown.style.display = 'none';
+                return;
+            }
+            const agents = typeof getAllAgents === 'function' ? getAllAgents() : [];
+            let html = '<div style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; padding: 4px 8px 6px; letter-spacing: 0.5px;">Trocar Agente</div>';
+            agents.forEach(a => {
+                const isSelected = (a.id === selectedAssistantId);
+                const iconOrAv = a.avatar 
+                    ? `<img src="${a.avatar}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover;">` 
+                    : `<span style="font-size: 1.1rem; line-height: 1;">${a.icon || '🤖'}</span>`;
+                html += `
+                    <div onclick="selectAgent('${a.id}', false); toggleChatAgentDropdown();" style="display: flex; align-items: center; justify-content: space-between; padding: 7px 8px; border-radius: 8px; cursor: pointer; background: ${isSelected ? 'rgba(var(--primary-rgb, 139, 92, 246), 0.15)' : 'transparent'}; color: ${isSelected ? 'var(--primary)' : 'var(--text-main)'}; margin-bottom: 2px; transition: background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='${isSelected ? 'rgba(var(--primary-rgb, 139, 92, 246), 0.15)' : 'transparent'}'">
+                        <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
+                            ${iconOrAv}
+                            <span style="font-size: 0.82rem; font-weight: ${isSelected ? '700' : '500'}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${a.name}</span>
+                        </div>
+                        ${isSelected ? '<span style="font-size: 0.8rem; font-weight: bold;">✓</span>' : ''}
+                    </div>
+                `;
+            });
+            html += `
+                <div onclick="switchTab('tab-agents'); toggleChatAgentDropdown();" style="border-top: 1px solid rgba(255,255,255,0.08); margin-top: 4px; padding: 8px; font-size: 0.72rem; color: var(--primary); text-align: center; cursor: pointer; font-weight: 600;">
+                    ⚙️ Gerenciar Agentes
+                </div>
+            `;
+            dropdown.innerHTML = html;
+            dropdown.style.display = 'block';
+        }
+
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('chat-agent-dropdown');
+            if (dropdown && dropdown.style.display === 'block') {
+                const btn = document.getElementById('chat-agent-selector-btn');
+                if (!dropdown.contains(e.target) && (!btn || !btn.contains(e.target))) {
+                    dropdown.style.display = 'none';
+                }
+            }
+        });
 
         function openMemoryManagerModal() {
             triggerPulse();
@@ -17691,16 +17756,14 @@ WITH CHECK (true);</code>
             
             chatHistoryObjects = [];
             const uName = getUserDisplayName();
-            const welcomeText = uName ? `✨ Olá, ${uName}!\n\nComo posso ajudar você hoje?` : `✨ Olá! Como posso ajudar você hoje?`;
+            const welcomeText = uName ? `Olá, ${uName}! Como posso ajudar você hoje?` : `Olá! Como posso ajudar você hoje?`;
             chatHistoryObjects.push({ role: 'assistant', content: welcomeText });
             
             const escapedForSpeech = welcomeText.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
-            const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
+            const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 6px; bottom: 6px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 50%; color: var(--text-muted); cursor: pointer; font-size: 0.85rem; width: 26px; height: 26px; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; opacity: 0.75; transition: all 0.2s ease;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">🔊</button>`;
             
             const activeId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
-            const activeAssis = getAllAgents().find(a => a.id === activeId) || getAllAgents()[0];
-            const activeColor = activeAssis ? (activeAssis.color || '#38BDF8') : '#38BDF8';
-            document.getElementById('chat-messages').innerHTML = `<div class="chat-message bot has-avatar" style="border-left: 3px solid ${activeColor};">${getAgentAvatarHtml(activeId)}${formatAIResponse(welcomeText)}${readerHtml}</div>`;
+            document.getElementById('chat-messages').innerHTML = `<div class="chat-message bot has-avatar">${getAgentAvatarHtml(activeId)}${formatAIResponse(welcomeText)}${readerHtml}</div>`;
             
             saveChatSession();
             showAppToast("Nova sessão de chat criada!", "success");
@@ -18825,17 +18888,15 @@ WITH CHECK (true);</code>
             chatHistoryObjects = [];
             
             const uName = getUserDisplayName();
-            const welcomeText = uName ? `✨ Olá, ${uName}!\n\nComo posso ajudar você hoje?` : `✨ Olá! Como posso ajudar você hoje?`;
+            const welcomeText = uName ? `Olá, ${uName}! Como posso ajudar você hoje?` : `Olá! Como posso ajudar você hoje?`;
             
             chatHistoryObjects.push({ role: 'assistant', content: welcomeText });
             
             const escapedForSpeech = welcomeText.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
-            const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
+            const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 6px; bottom: 6px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 50%; color: var(--text-muted); cursor: pointer; font-size: 0.85rem; width: 26px; height: 26px; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; opacity: 0.75; transition: all 0.2s ease;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">🔊</button>`;
             
             const activeId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
-            const activeAssis = getAllAgents().find(a => a.id === activeId) || getAllAgents()[0];
-            const activeColor = activeAssis ? (activeAssis.color || '#38BDF8') : '#38BDF8';
-            document.getElementById('chat-messages').innerHTML = `<div class="chat-message bot has-avatar" style="border-left: 3px solid ${activeColor};">${getAgentAvatarHtml(activeId)}${formatAIResponse(welcomeText)}${readerHtml}</div>`;
+            document.getElementById('chat-messages').innerHTML = `<div class="chat-message bot has-avatar">${getAgentAvatarHtml(activeId)}${formatAIResponse(welcomeText)}${readerHtml}</div>`;
             
             saveChatSession();
             addLog("Memória do chat apagada manualmente.", "info");
@@ -23576,9 +23637,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 if (existingPrompt) existingPrompt.remove();
 
                 const welcomeMsgId = 'auth-welcome-msg-' + displayName.replace(/[^a-zA-Z0-9]/g, '');
-                const cleanText = displayName ? `✨ Olá, ${displayName}!\n\nComo posso ajudar você hoje?` : `✨ Olá! Como posso ajudar você hoje?`;
+                const cleanText = displayName ? `Olá, ${displayName}! Como posso ajudar você hoje?` : `Olá! Como posso ajudar você hoje?`;
                 const escapedForSpeech = cleanText.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
-                const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
+                const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 6px; bottom: 6px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 50%; color: var(--text-muted); cursor: pointer; font-size: 0.85rem; width: 26px; height: 26px; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; opacity: 0.75; transition: all 0.2s ease;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">🔊</button>`;
                 const activeId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
                 
                 // Clean up any old messages containing "Sua sessão" or "Supabase" or "Memória apagada"
