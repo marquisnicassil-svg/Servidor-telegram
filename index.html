@@ -3570,18 +3570,42 @@
 
 
     <!-- Cabeçalho Fixo Nativo -->
-    <header>
-        <div class="header-container" style="display: flex; align-items: center; justify-content: space-between;">
-            <button id="menu-drawer-btn" onclick="toggleDrawer(true)" style="background: transparent; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; outline: none; margin-right: 15px;">
+    <!-- Cabeçalho Principal Unificado -->
+    <header style="position: relative;">
+        <div class="header-container" style="display: flex; align-items: center; justify-content: space-between; position: relative;">
+            <button id="menu-drawer-btn" onclick="toggleDrawer(true)" style="background: transparent; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; outline: none; margin-right: 8px; flex-shrink: 0;">
                 ☰
             </button>
-            <h1 id="topbar-section-title" style="font-size: 1.05rem; font-weight: 700; text-align: center; margin: 0; flex: 1; color: var(--text-main);">💬 Conversas</h1>
-            <div style="display: flex; align-items: center; gap: 12px; min-width: 60px; justify-content: flex-end;">
-                <button id="header-clear-chat-btn" onclick="clearChat()" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; outline: none; color: var(--text-muted); opacity: 0.8; transition: opacity 0.2s;" title="Apagar Conversa" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
-                    🗑️
+
+            <!-- Título padrão para abas secundárias (não-chat) -->
+            <h1 id="topbar-section-title" style="display: none; font-size: 1.05rem; font-weight: 700; text-align: center; margin: 0; flex: 1; color: var(--text-main);">💬 Conversas</h1>
+
+            <!-- Seletor Rápido de Agente Unificado do Chat -->
+            <div id="chat-agent-selector-btn" onclick="toggleChatAgentDropdown(event)" style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; cursor: pointer; padding: 4px 6px; border-radius: 12px; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'" title="Toque para trocar de agente">
+                <div id="chat-active-agent-icon" style="font-size: 1.15rem; background: rgba(var(--primary-rgb, 139, 92, 246), 0.15); border: 1px solid rgba(var(--primary-rgb, 139, 92, 246), 0.3); border-radius: 10px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">🤖</div>
+                <div style="display: flex; flex-direction: column; min-width: 0;">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <h3 id="chat-active-agent-name" style="margin: 0; font-size: 0.92rem; font-weight: 750; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: -0.2px;">Geral</h3>
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="var(--text-muted)" style="flex-shrink: 0; opacity: 0.7;"><path d="M7 10l5 5 5-5z"/></svg>
+                    </div>
+                    <!-- Único Indicador Online -->
+                    <span style="font-size: 0.65rem; color: var(--text-muted); line-height: 1; margin-top: 1px; display: flex; align-items: center; gap: 4px;">
+                        <span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981; display: inline-block;"></span> Online
+                    </span>
+                </div>
+            </div>
+
+            <!-- Dropdown de Troca Rápida de Agente ancorado ao seletor -->
+            <div id="chat-agent-dropdown" style="display: none; position: absolute; top: calc(100% + 4px); left: 50px; z-index: 12000; background: #0e1224; border: 1px solid var(--border-color); border-radius: 14px; padding: 6px; box-shadow: 0 12px 32px rgba(0,0,0,0.7); min-width: 230px; max-width: calc(100vw - 70px); max-height: 300px; overflow-y: auto; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);"></div>
+
+            <!-- Ações do Cabeçalho do Chat -->
+            <div style="display: flex; align-items: center; gap: 6px; min-width: 60px; justify-content: flex-end; flex-shrink: 0;">
+                <!-- Botão Discreto de Nova Sessão / Reiniciar Chat -->
+                <button id="btn-chat-new-session" onclick="startNewChatSession()" class="chat-header-btn" title="Nova Sessão / Conversa" style="display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 10px; background: rgba(var(--primary-rgb, 139, 92, 246), 0.12); border: 1px solid rgba(var(--primary-rgb, 139, 92, 246), 0.28); color: var(--primary); font-size: 0.85rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    🔄
                 </button>
-                <div id="header-badge-live" class="badge-live" style="margin: 0;">Online</div>
-                <!-- HTML do Menu dos Três Pontos (Opções) Sincronizado -->
+
+                <!-- Menu de Três Pontos (Opções) Sincronizado -->
                 <div id="header-three-dots-container" style="position: relative; display: inline-block;">
                     <button id="three-dots-btn" onclick="toggleThreeDotsMenu()" style="background: transparent; border: none; color: var(--text-main); font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; outline: none; opacity: 0.8; transition: opacity 0.2s;" title="Mais Opções" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
                         ⋮
@@ -3598,6 +3622,11 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Elementos auxiliares preservados de forma oculta para compatibilidade total de scripts -->
+                <button id="header-clear-chat-btn" onclick="clearChat()" style="display: none !important;"></button>
+                <div id="header-badge-live" style="display: none !important;"></div>
+                <span id="chat-memory-count" style="display: none !important;">0</span>
             </div>
         </div>
     </header>
@@ -3729,37 +3758,6 @@
         <!-- ABA 1: CONSOLE DE CHAT (Playground) -->
         <section id="tab-chat" class="tab-section active">
             <div class="chat-wrapper" style="border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--border-color); background: rgba(12, 15, 29, 0.45); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25); position: relative;">
-                <!-- CABEÇALHO COMPACTO E MODERNO DO CHAT -->
-                <div id="chat-session-header" style="position: relative; display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid var(--border-color); background: rgba(14, 18, 36, 0.7); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-radius: 18px 18px 0 0; gap: 8px; min-height: 48px;">
-                    <!-- Seletor Rápido de Agente -->
-                    <div id="chat-agent-selector-btn" onclick="toggleChatAgentDropdown(event)" style="display: flex; align-items: center; gap: 8px; min-width: 0; cursor: pointer; padding: 4px 8px 4px 4px; border-radius: 12px; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'" title="Toque para trocar de agente">
-                        <div id="chat-active-agent-icon" style="font-size: 1.15rem; background: rgba(var(--primary-rgb, 139, 92, 246), 0.15); border: 1px solid rgba(var(--primary-rgb, 139, 92, 246), 0.3); border-radius: 10px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">🤖</div>
-                        <div style="display: flex; flex-direction: column; min-width: 0;">
-                            <div style="display: flex; align-items: center; gap: 4px;">
-                                <h3 id="chat-active-agent-name" style="margin: 0; font-size: 0.88rem; font-weight: 750; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: -0.2px;">Geral</h3>
-                                <svg viewBox="0 0 24 24" width="13" height="13" fill="var(--text-muted)" style="flex-shrink: 0; opacity: 0.7;"><path d="M7 10l5 5 5-5z"/></svg>
-                            </div>
-                            <span style="font-size: 0.65rem; color: var(--text-muted); line-height: 1; margin-top: 1px; display: flex; align-items: center; gap: 4px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981; display: inline-block;"></span> Online</span>
-                        </div>
-                    </div>
-
-                    <!-- Dropdown de Troca Rápida de Agente -->
-                    <div id="chat-agent-dropdown" style="display: none; position: absolute; top: 48px; left: 10px; z-index: 1200; background: #0e1224; border: 1px solid var(--border-color); border-radius: 14px; padding: 6px; box-shadow: 0 12px 32px rgba(0,0,0,0.6); min-width: 220px; max-width: 270px; max-height: 280px; overflow-y: auto; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);"></div>
-
-                    <!-- Ações Compactas do Chat (Memória e Nova Sessão) -->
-                    <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
-                        <!-- Memória Contextual Compacta -->
-                        <button id="btn-chat-memory" onclick="openMemoryManagerModal()" class="chat-header-btn" title="Memória Contextual" style="display: flex; align-items: center; gap: 4px; padding: 5px 8px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.75rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--primary)'; this.style.color='var(--text-main)'" onmouseout="this.style.borderColor='var(--border-color)'; this.style.color='var(--text-muted)'">
-                            <span>🧠</span>
-                            <span id="chat-memory-count" style="font-weight: 700; font-size: 0.72rem; color: var(--text-main);">0</span>
-                        </button>
-                        <!-- Resetar conversa / Nova Sessão Compacta -->
-                        <button id="btn-chat-new-session" onclick="startNewChatSession()" class="chat-header-btn" title="Nova Conversa" style="display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 10px; background: rgba(var(--primary-rgb, 139, 92, 246), 0.12); border: 1px solid rgba(var(--primary-rgb, 139, 92, 246), 0.28); color: var(--primary); font-size: 0.8rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                            🔄
-                        </button>
-                    </div>
-                </div>
-
                 <div class="chat-messages" id="chat-messages" style="flex: 1;">
                     <div class="chat-message bot has-avatar">
                         <div class="chat-msg-avatar" style="position: absolute; left: 8px; top: 8px; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(var(--primary-rgb, 139, 92, 246), 0.15); border: 1.5px solid var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.3); z-index: 2;">
@@ -8634,31 +8632,40 @@ WITH CHECK (true);</code>
             const btnEl = document.getElementById('btn-' + tabId);
             if (btnEl) btnEl.classList.add('active');
             
-            // Atualiza título da Top Bar dinamicamente
+            // Atualiza título da Top Bar e seletor de agente dinamicamente
+            const isChatTab = (tabId === 'tab-chat');
             const topTitleEl = document.getElementById('topbar-section-title');
-            if (topTitleEl) {
-                if (tabId === 'tab-chat') {
-                    const all = getAllAgents();
-                    const activeAssis = all.find(a => a.id === selectedAssistantId) || all[0];
-                    const activeName = activeAssis.name || 'Geral';
-                    topTitleEl.innerText = `${activeAssis.icon || '💬'} ${activeName}`;
-                } else {
-                    topTitleEl.textContent = tabTitlesMap[tabId] || 'Synapse Console';
+            const chatSelectorEl = document.getElementById('chat-agent-selector-btn');
+            
+            if (isChatTab) {
+                if (topTitleEl) topTitleEl.style.display = 'none';
+                if (chatSelectorEl) chatSelectorEl.style.display = 'flex';
+                if (typeof updateChatHeader === 'function') updateChatHeader();
+            } else {
+                if (topTitleEl) {
+                    topTitleEl.style.display = 'block';
+                    topTitleEl.textContent = (typeof tabTitlesMap !== 'undefined' && tabTitlesMap[tabId]) ? tabTitlesMap[tabId] : 'Synapse Console';
                 }
+                if (chatSelectorEl) chatSelectorEl.style.display = 'none';
+                const agentDropdown = document.getElementById('chat-agent-dropdown');
+                if (agentDropdown) agentDropdown.style.display = 'none';
             }
 
             // Sincroniza classes do Drawer
             syncDrawerActiveStates(tabId);
 
-            // Mostra/Oculta elementos exclusivos do chat no cabeçalho (Apagar conversa, Indicador Online, Menu Três Pontos)
-            const isChatTab = (tabId === 'tab-chat');
+            // Ações do cabeçalho do Chat (Nova Sessão, Menu Três Pontos)
+            const newSessionBtn = document.getElementById('btn-chat-new-session');
+            if (newSessionBtn) {
+                newSessionBtn.style.display = isChatTab ? 'flex' : 'none';
+            }
             const clearChatBtn = document.getElementById('header-clear-chat-btn');
             if (clearChatBtn) {
-                clearChatBtn.style.display = isChatTab ? 'flex' : 'none';
+                clearChatBtn.style.display = 'none';
             }
             const onlineBadge = document.getElementById('header-badge-live');
             if (onlineBadge) {
-                onlineBadge.style.display = isChatTab ? 'inline-block' : 'none';
+                onlineBadge.style.display = 'none';
             }
             const threeDotsContainer = document.getElementById('header-three-dots-container');
             if (threeDotsContainer) {
@@ -9254,14 +9261,16 @@ WITH CHECK (true);</code>
 
                 // Update current top bar title if active
                 const topTitleEl = document.getElementById('topbar-section-title');
+                const chatSelectorEl = document.getElementById('chat-agent-selector-btn');
                 const activeTab = document.querySelector('.tab-section.active');
                 if (topTitleEl && activeTab) {
                     if (activeTab.id === 'tab-chat') {
-                        const all = getAllAgents();
-                        const activeAssis = all.find(a => a.id === selectedAssistantId) || all[0];
-                        const activeName = activeAssis.name || 'Geral';
-                        topTitleEl.innerText = `${activeAssis.icon || '💬'} ${activeName}`;
+                        topTitleEl.style.display = 'none';
+                        if (chatSelectorEl) chatSelectorEl.style.display = 'flex';
+                        if (typeof updateChatHeader === 'function') updateChatHeader();
                     } else {
+                        topTitleEl.style.display = 'block';
+                        if (chatSelectorEl) chatSelectorEl.style.display = 'none';
                         topTitleEl.textContent = tabTitlesMap[activeTab.id] || 'Synapse Console';
                     }
                 }
