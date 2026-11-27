@@ -3725,9 +3725,28 @@
                     <a href="#" onclick="setAuthTab('recover'); return false;" style="font-size: 0.76rem; color: #a5b4fc; text-decoration: none; font-weight: 600; opacity: 0.9; transition: all 0.2s;" onmouseover="this.style.opacity='1'; this.style.textDecoration='underline'" onmouseout="this.style.opacity='0.9'; this.style.textDecoration='none'">Esqueceu sua senha?</a>
                 </div>
 
+                <div id="auth-inline-feedback" style="display: none; border-radius: 12px; padding: 11px 13px; font-size: 0.78rem; line-height: 1.45; text-align: left;"></div>
+
                 <button class="btn-supabase-action btn-auth-submit" onclick="executeSupabaseAuth()" id="auth-btn-submit">
                     Entrar na conta
                 </button>
+
+                <div id="auth-recover-code-toggle" style="display: none; text-align: center; margin-top: 2px;">
+                    <a href="#" onclick="toggleRecoveryCodeInput(); return false;" style="font-size: 0.76rem; color: #a5b4fc; text-decoration: none; font-weight: 600; opacity: 0.92;">Já tenho um código de recuperação (6 dígitos)</a>
+                </div>
+
+                <div id="auth-recovery-code-container" class="auth-input-group" style="display: none; margin-top: 4px; padding: 12px; border-radius: 14px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.26);">
+                    <label class="auth-input-label" for="auth-recovery-code">Código recebido no e-mail</label>
+                    <div class="auth-input-wrapper">
+                        <span class="auth-input-icon" aria-hidden="true">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                        </span>
+                        <input type="text" id="auth-recovery-code" class="form-control" placeholder="Ex: 123456" autocomplete="one-time-code" inputmode="numeric">
+                    </div>
+                    <button type="button" id="auth-btn-verify-code" onclick="verifyRecoveryOtp()" style="margin-top: 10px; width: 100%; min-height: 44px; border-radius: 11px; border: 1px solid rgba(129, 140, 248, 0.45); background: rgba(99, 102, 241, 0.2); color: #eef2ff; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                        Validar código e definir nova senha
+                    </button>
+                </div>
 
                 <div id="auth-divider" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin: 4px 0; font-size: 0.74rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px;">
                     <span style="flex: 1; height: 1px; background: rgba(148, 163, 184, 0.14);"></span>
@@ -12103,7 +12122,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=29')
+                navigator.serviceWorker.register('./sw.js?v=30')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -12457,10 +12476,12 @@ WITH CHECK (true);</code>
                         }
                     }
 
-                    // Restaura Supabase Fields
-                    safeSetVal('supabase-url', data.supabaseUrl !== undefined ? data.supabaseUrl : 'https://hqnlyksuprjdabcgpqdl.supabase.co');
-                    safeSetVal('supabase-key', data.supabaseKey !== undefined ? data.supabaseKey : 'sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa');
-                    safeSetVal('supabase-table', data.supabaseTable !== undefined ? data.supabaseTable : 'chat_backups');
+                    // Restaura Supabase Fields (com fallback seguro se salvo vazio)
+                    const resolvedSupabaseUrl = (data.supabaseUrl && String(data.supabaseUrl).trim()) ? String(data.supabaseUrl).trim() : 'https://hqnlyksuprjdabcgpqdl.supabase.co';
+                    const resolvedSupabaseKey = (data.supabaseKey && String(data.supabaseKey).trim()) ? String(data.supabaseKey).trim() : 'sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa';
+                    safeSetVal('supabase-url', resolvedSupabaseUrl);
+                    safeSetVal('supabase-key', resolvedSupabaseKey);
+                    safeSetVal('supabase-table', (data.supabaseTable && String(data.supabaseTable).trim()) ? String(data.supabaseTable).trim() : 'chat_backups');
                     
                     const autoSw = document.getElementById('supabase-auto-switch');
                     if (data.supabaseAuto) {
@@ -12800,7 +12821,9 @@ WITH CHECK (true);</code>
                 renderThemesGrid();
 
                 // Verifica se há alguma sessão segura do Supabase ativa
-                checkSupabaseAuthSession();
+                if (!window.isPasswordRecoveryPending) {
+                    checkSupabaseAuthSession();
+                }
 
             } catch (e) {
                 console.error("Erro ao carregar configurações: ", e);
@@ -22659,7 +22682,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 container.style.left = '16px';
                 container.style.right = '16px';
                 container.style.margin = '0 auto';
-                container.style.zIndex = '99999';
+                container.style.zIndex = '999999';
                 container.style.display = 'flex';
                 container.style.flexDirection = 'column';
                 container.style.gap = '10px';
@@ -24469,8 +24492,222 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
         }
 
          // --- SUBSECÇÃO SUPABASE AUTH (Login/Cadastro/Recuperação) ---
-         // --- SUBSECÇÃO SUPABASE AUTH (Login/Cadastro/Recuperação) ---
+        const SYNAPSE_DEFAULT_SUPABASE_URL = 'https://hqnlyksuprjdabcgpqdl.supabase.co';
+        const SYNAPSE_DEFAULT_SUPABASE_KEY = 'sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa';
         let recoveryToken = "";
+        window.isPasswordRecoveryPending = window.isPasswordRecoveryPending || false;
+
+        function getEffectiveSupabaseCredentials() {
+            const urlEl = document.getElementById('supabase-url');
+            const keyEl = document.getElementById('supabase-key');
+            let url = urlEl ? urlEl.value.trim() : '';
+            let key = keyEl ? keyEl.value.trim() : '';
+
+            if (!url) {
+                url = SYNAPSE_DEFAULT_SUPABASE_URL;
+                if (urlEl) urlEl.value = url;
+            }
+            if (!key) {
+                key = SYNAPSE_DEFAULT_SUPABASE_KEY;
+                if (keyEl) keyEl.value = key;
+            }
+
+            const cleanUrl = url.endsWith('/') ? url : url + '/';
+            const isDefault = url.replace(/\/+$/, '') === SYNAPSE_DEFAULT_SUPABASE_URL && key === SYNAPSE_DEFAULT_SUPABASE_KEY;
+            return { url, cleanUrl, key, isDefault };
+        }
+
+        function restoreDefaultSupabaseCredentials() {
+            const urlEl = document.getElementById('supabase-url');
+            const keyEl = document.getElementById('supabase-key');
+            if (urlEl) urlEl.value = SYNAPSE_DEFAULT_SUPABASE_URL;
+            if (keyEl) keyEl.value = SYNAPSE_DEFAULT_SUPABASE_KEY;
+            if (typeof saveConfiguration === 'function') {
+                saveConfiguration();
+            }
+            showAuthInlineFeedback('Credencial padrão do Supabase restaurada. Tente enviar o link ou fazer login novamente.', 'success');
+            if (typeof showAppToast === 'function') {
+                showAppToast('Credencial padrão do Supabase restaurada!', 'success');
+            }
+        }
+
+        function extractSupabaseErrorMessage(errText, statusCode) {
+            let parsed = null;
+            try { parsed = JSON.parse(errText); } catch (e) {}
+            const rawMsg = (parsed && (parsed.msg || parsed.error_description || parsed.message || parsed.error)) || errText || '';
+            const errorCode = (parsed && (parsed.error_code || parsed.code)) || '';
+            const lower = String(rawMsg).toLowerCase();
+
+            if (statusCode === 429 || errorCode === 'over_email_send_rate_limit' || lower.includes('rate limit') || lower.includes('only request this after')) {
+                return {
+                    friendly: 'Limite temporário de envios de e-mail atingido no Supabase. Aguarde cerca de 1 minuto (ou o limite por hora do plano gratuito) antes de tentar novamente.',
+                    raw: rawMsg,
+                    isMailerIssue: true
+                };
+            }
+            if (statusCode >= 500 || lower.includes('error sending recovery email') || lower.includes('unexpected_failure') || lower.includes('smtp')) {
+                return {
+                    friendly: 'O servidor de e-mail do Supabase falhou ao enviar o link (limite do mailer gratuito ou SMTP não configurado no painel do Supabase).',
+                    raw: rawMsg,
+                    isMailerIssue: true
+                };
+            }
+            if (lower.includes('invalid login credentials') || errorCode === 'invalid_credentials') {
+                return { friendly: 'E-mail ou senha incorretos.', raw: rawMsg, isMailerIssue: false };
+            }
+            if (lower.includes('email not confirmed') || errorCode === 'email_not_confirmed') {
+                return { friendly: 'Seu e-mail ainda não foi confirmado. Verifique sua caixa de entrada ou spam.', raw: rawMsg, isMailerIssue: false };
+            }
+            if (lower.includes('token has expired') || lower.includes('otp_expired') || lower.includes('invalid token')) {
+                return { friendly: 'Este código ou link de recuperação expirou ou é inválido. Solicite um novo.', raw: rawMsg, isMailerIssue: false };
+            }
+            if (lower.includes('same_password') || lower.includes('different from the old password')) {
+                return { friendly: 'A nova senha precisa ser diferente da senha anterior.', raw: rawMsg, isMailerIssue: false };
+            }
+            if (lower.includes('invalid api key') || statusCode === 401 || statusCode === 403) {
+                return { friendly: `Chave ou permissão rejeitada pelo Supabase (${rawMsg || statusCode}).`, raw: rawMsg, isMailerIssue: false };
+            }
+            return { friendly: rawMsg || `Erro HTTP ${statusCode}`, raw: rawMsg, isMailerIssue: false };
+        }
+
+        function showAuthInlineFeedback(message, type = 'info', extraHtml = '') {
+            const box = document.getElementById('auth-inline-feedback');
+            if (!box) return;
+            const styles = {
+                success: { bg: 'rgba(16, 185, 129, 0.12)', border: 'rgba(16, 185, 129, 0.35)', color: '#a7f3d0' },
+                error:   { bg: 'rgba(239, 68, 68, 0.12)',  border: 'rgba(239, 68, 68, 0.38)',  color: '#fecaca' },
+                warning: { bg: 'rgba(245, 158, 11, 0.12)', border: 'rgba(245, 158, 11, 0.38)', color: '#fde68a' },
+                info:    { bg: 'rgba(99, 102, 241, 0.12)', border: 'rgba(129, 140, 248, 0.35)', color: '#c7d2fe' }
+            };
+            const st = styles[type] || styles.info;
+            box.style.background = st.bg;
+            box.style.border = `1px solid ${st.border}`;
+            box.style.color = st.color;
+            box.style.display = 'block';
+            const safeMsg = typeof escapeSynapseHtml === 'function'
+                ? escapeSynapseHtml(message)
+                : String(message || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+            box.innerHTML = `<div>${safeMsg}</div>${extraHtml || ''}`;
+        }
+
+        function hideAuthInlineFeedback() {
+            const box = document.getElementById('auth-inline-feedback');
+            if (box) {
+                box.style.display = 'none';
+                box.innerHTML = '';
+            }
+        }
+
+        function toggleRecoveryCodeInput(forceShow) {
+            const codeContainer = document.getElementById('auth-recovery-code-container');
+            if (!codeContainer) return;
+            const shouldShow = typeof forceShow === 'boolean' ? forceShow : (codeContainer.style.display === 'none');
+            codeContainer.style.display = shouldShow ? 'block' : 'none';
+            if (shouldShow) {
+                const input = document.getElementById('auth-recovery-code');
+                if (input) setTimeout(() => input.focus(), 60);
+            }
+        }
+
+        async function verifyRecoveryTokenHash(tokenHash) {
+            const { cleanUrl, key } = getEffectiveSupabaseCredentials();
+            try {
+                addLog("Validando link de recuperação (token_hash) no Supabase...", "sys");
+                const response = await fetch(`${cleanUrl}auth/v1/verify`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': key,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        token_hash: tokenHash,
+                        type: 'recovery'
+                    })
+                });
+                const text = await response.text();
+                if (response.ok) {
+                    const data = JSON.parse(text || '{}');
+                    if (data.access_token) {
+                        recoveryToken = data.access_token;
+                        window.isPasswordRecoveryPending = true;
+                        showAuthGateScreen();
+                        setAuthTab('reset_password', { preserveFeedback: true });
+                        showAuthInlineFeedback('Link validado! Defina sua nova senha abaixo.', 'success');
+                        addLog("Token de recuperação validado com sucesso!", "success");
+                        return true;
+                    }
+                }
+                const errInfo = extractSupabaseErrorMessage(text, response.status);
+                window.isPasswordRecoveryPending = false;
+                showAuthGateScreen();
+                setAuthTab('recover', { preserveFeedback: true });
+                showAuthInlineFeedback(errInfo.friendly, 'error');
+                showAppToast(errInfo.friendly, 'error');
+            } catch (e) {
+                window.isPasswordRecoveryPending = false;
+                showAuthGateScreen();
+                showAuthInlineFeedback('Erro de rede ao validar o link de recuperação.', 'error');
+            }
+            return false;
+        }
+
+        async function verifyRecoveryOtp() {
+            const email = document.getElementById('auth-email')?.value.trim() || '';
+            const token = document.getElementById('auth-recovery-code')?.value.trim() || '';
+            if (!email) {
+                showAuthInlineFeedback('Informe o e-mail da conta acima antes de validar o código.', 'warning');
+                return;
+            }
+            if (!token) {
+                showAuthInlineFeedback('Digite ou cole o código de recuperação recebido no e-mail.', 'warning');
+                return;
+            }
+
+            const btn = document.getElementById('auth-btn-verify-code');
+            const origText = btn ? btn.textContent : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'Validando código...';
+            }
+
+            const { cleanUrl, key } = getEffectiveSupabaseCredentials();
+            try {
+                const response = await fetch(`${cleanUrl}auth/v1/verify`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': key,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        token: token,
+                        type: 'recovery'
+                    })
+                });
+                const text = await response.text();
+                if (response.ok) {
+                    const data = JSON.parse(text || '{}');
+                    if (data.access_token) {
+                        recoveryToken = data.access_token;
+                        window.isPasswordRecoveryPending = true;
+                        setAuthTab('reset_password', { preserveFeedback: true });
+                        showAuthInlineFeedback('Código confirmado! Escolha sua nova senha abaixo.', 'success');
+                        showAppToast('Código validado! Defina sua nova senha.', 'success');
+                        return;
+                    }
+                }
+                const errInfo = extractSupabaseErrorMessage(text, response.status);
+                showAuthInlineFeedback(errInfo.friendly, 'error');
+                showAppToast(errInfo.friendly, 'error');
+            } catch (err) {
+                showAuthInlineFeedback('Erro de rede ao validar o código no Supabase.', 'error');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = origText || 'Validar código e definir nova senha';
+                }
+            }
+        }
 
         function getParamsFromUrl() {
             const params = {};
@@ -24478,15 +24715,23 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 if (window.location.hash) {
                     const hashStr = window.location.hash.substring(1);
                     hashStr.split('&').forEach(pair => {
-                        const [key, val] = pair.split('=');
-                        if (key) params[decodeURIComponent(key)] = decodeURIComponent(val || '');
+                        const eqIdx = pair.indexOf('=');
+                        if (eqIdx > -1) {
+                            const key = pair.slice(0, eqIdx);
+                            const val = pair.slice(eqIdx + 1);
+                            params[decodeURIComponent(key)] = decodeURIComponent(val.replace(/\+/g, ' '));
+                        }
                     });
                 }
                 if (window.location.search) {
                     const searchStr = window.location.search.substring(1);
                     searchStr.split('&').forEach(pair => {
-                        const [key, val] = pair.split('=');
-                        if (key) params[decodeURIComponent(key)] = decodeURIComponent(val || '');
+                        const eqIdx = pair.indexOf('=');
+                        if (eqIdx > -1) {
+                            const key = pair.slice(0, eqIdx);
+                            const val = pair.slice(eqIdx + 1);
+                            params[decodeURIComponent(key)] = decodeURIComponent(val.replace(/\+/g, ' '));
+                        }
                     });
                 }
             } catch(e) {
@@ -24503,20 +24748,38 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 const errMsg = params.error_description || params.error;
                 addLog(`Erro no link de recuperação de senha: ${errMsg}`, "error");
                 showAppToast(`Erro de Recuperação: ${errMsg}`, "error");
-                window.history.replaceState(null, null, window.location.pathname + window.location.search);
+                window.history.replaceState(null, null, window.location.pathname);
+                setTimeout(() => {
+                    showAuthGateScreen();
+                    setAuthTab('recover', { preserveFeedback: true });
+                    showAuthInlineFeedback(`Link de recuperação inválido ou expirado: ${errMsg}`, 'error');
+                }, 80);
                 return false;
             }
 
             if ((params.type === 'recovery' || params.recovery === 'true') && params.access_token) {
                 recoveryToken = params.access_token;
+                window.isPasswordRecoveryPending = true;
                 addLog("Link de recuperação de senha válido detectado!", "success");
                 
                 // Clear hash instantly so user doesn't bookmark or reload with the token
-                window.history.replaceState(null, null, window.location.pathname + window.location.search);
+                window.history.replaceState(null, null, window.location.pathname);
                 
-                // Switch the Auth UI to 'reset_password' mode smoothly after DOM is loaded
+                // Ensure Gate stays visible even if an older local session exists
+                showAuthGateScreen();
                 setTimeout(() => {
-                    setAuthTab('reset_password');
+                    setAuthTab('reset_password', { preserveFeedback: true });
+                    showAuthInlineFeedback('Link de recuperação confirmado! Digite sua nova senha abaixo.', 'success');
+                }, 100);
+                return true;
+            }
+
+            if (params.type === 'recovery' && params.token_hash) {
+                window.isPasswordRecoveryPending = true;
+                window.history.replaceState(null, null, window.location.pathname);
+                showAuthGateScreen();
+                setTimeout(() => {
+                    verifyRecoveryTokenHash(params.token_hash);
                 }, 100);
                 return true;
             }
@@ -24604,7 +24867,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             }
         }
 
-        function setAuthTab(type) {
+        function setAuthTab(type, opts = {}) {
             triggerPulse();
             
             // Apply fade-out animation first
@@ -24616,6 +24879,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             
             setTimeout(() => {
                 authMode = type;
+                if (!opts || !opts.preserveFeedback) {
+                    hideAuthInlineFeedback();
+                }
                 
                 // Remove active classes from all auth tab buttons
                 document.querySelectorAll('#auth-form-container .auth-tab-btn').forEach(c => c.classList.remove('active'));
@@ -24626,6 +24892,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 const passwordContainer = document.getElementById('auth-password-container');
                 const confirmPasswordContainer = document.getElementById('auth-confirm-password-container');
                 const forgotLink = document.getElementById('auth-forgot-password-link');
+                const recoverCodeToggle = document.getElementById('auth-recover-code-toggle');
+                const recoverCodeBox = document.getElementById('auth-recovery-code-container');
                 const submitBtn = document.getElementById('auth-btn-submit');
                 const tabsHeader = document.querySelector('#auth-form-container .auth-tabs-container');
                 const passwordLabel = document.getElementById('auth-password-label');
@@ -24639,6 +24907,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
                 // Hide all error alerts on tab change
                 document.querySelectorAll('[id$="-error"]').forEach(el => el.style.display = 'none');
+                if (recoverCodeToggle) recoverCodeToggle.style.display = (type === 'recover') ? 'block' : 'none';
+                if (recoverCodeBox && type !== 'recover') recoverCodeBox.style.display = 'none';
                 
                 if (type === 'signin') {
                     const activeTab = document.getElementById('auth-tab-signin');
@@ -24680,7 +24950,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     if (forgotLink) forgotLink.style.display = 'none';
                 } else if (type === 'recover') {
                     if (titleEl) titleEl.innerText = 'Recuperar senha';
-                    if (descEl) descEl.innerText = 'Enviaremos um link de acesso.';
+                    if (descEl) descEl.innerText = 'Enviaremos um link ou código de acesso.';
                     
                     if (submitBtn) {
                         submitBtn.textContent = 'Enviar link de recuperação';
@@ -24717,7 +24987,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         backToLoginBtn.id = 'auth-reset-cancel';
                         backToLoginBtn.style.textAlign = 'center';
                         backToLoginBtn.style.marginTop = '12px';
-                        backToLoginBtn.innerHTML = `<a href="#" onclick="setAuthTab('signin'); return false;" style="font-size: 0.78rem; color: #a5b4fc; text-decoration: none; font-weight: 600; opacity: 0.9; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.9'">← Voltar para o Login</a>`;
+                        backToLoginBtn.innerHTML = `<a href="#" onclick="window.isPasswordRecoveryPending=false; setAuthTab('signin'); return false;" style="font-size: 0.78rem; color: #a5b4fc; text-decoration: none; font-weight: 600; opacity: 0.9; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.9'">← Voltar para o Login</a>`;
                         submitBtn.parentNode.insertBefore(backToLoginBtn, submitBtn.nextSibling);
                     } else {
                         backToLoginBtn.style.display = 'block';
@@ -24749,7 +25019,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
         }
 
         function setAuthFieldsDisabled(disabled) {
-            const ids = ['auth-email', 'auth-password', 'auth-username', 'auth-confirm-password'];
+            const ids = ['auth-email', 'auth-password', 'auth-username', 'auth-confirm-password', 'auth-recovery-code'];
             ids.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.disabled = disabled;
@@ -24758,6 +25028,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
         async function supabaseRecoverPassword(baseUrl, key, email) {
             addLog(`Solicitando e-mail de recuperação para ${email}...`, "sys");
+            hideAuthInlineFeedback();
             const submitBtn = document.getElementById('auth-btn-submit');
             if (submitBtn) {
                 submitBtn.innerHTML = '<span class="auth-spinner"></span> Enviando...';
@@ -24766,60 +25037,80 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             setAuthFieldsDisabled(true);
 
             try {
-                const response = await fetch(`${baseUrl}auth/v1/recover`, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': key,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ 
-                        email,
-                        options: {
-                            redirectTo: window.location.origin + window.location.pathname
-                        }
-                    })
-                });
+                const redirectTarget = (window.location.origin && window.location.origin.startsWith('http'))
+                    ? `${window.location.origin}${window.location.pathname}`
+                    : '';
+
+                const requestRecover = async (withRedirect) => {
+                    const endpoint = withRedirect && redirectTarget
+                        ? `${baseUrl}auth/v1/recover?redirect_to=${encodeURIComponent(redirectTarget)}`
+                        : `${baseUrl}auth/v1/recover`;
+                    return fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'apikey': key,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email })
+                    });
+                };
+
+                let response = await requestRecover(true);
+                let resText = await response.text();
+
+                // Se redirect_to não estiver na allowlist do Supabase, tenta novamente sem redirect_to
+                if (!response.ok && response.status === 400 && /redirect/i.test(resText)) {
+                    response = await requestRecover(false);
+                    resText = await response.text();
+                }
 
                 if (response.ok) {
-                    addLog(`E-mail de recuperação enviado com sucesso para ${email}!`, "success");
-                    showAppToast("Instruções de recuperação enviadas para o seu e-mail!", "success");
-                    setAuthTab('signin');
+                    addLog(`Solicitação de recuperação enviada para ${email}!`, "success");
+                    showAppToast("Solicitação de recuperação enviada! Verifique seu e-mail.", "success");
+                    showAuthInlineFeedback(
+                        `Solicitação enviada para ${email}. Verifique sua caixa de entrada e a pasta de spam.`,
+                        'success',
+                        `<div style="margin-top:6px; font-size:0.72rem; opacity:0.9;">Se o e-mail trouxe um link, clique nele para voltar aqui e criar a nova senha. Se trouxe um código de 6 dígitos, digite-o abaixo.</div>`
+                    );
+                    toggleRecoveryCodeInput(true);
                 } else {
-                    const errText = await response.text();
-                    let parsedErr = { message: errText };
-                    try { parsedErr = JSON.parse(errText); } catch(e){}
-                    addLog(`Erro ao solicitar recuperação: ${parsedErr.message || errText}`, "error");
-                    showAppToast(`Erro na Recuperação: ${parsedErr.message || errText}`, "error");
+                    const errInfo = extractSupabaseErrorMessage(resText, response.status);
+                    const { isDefault } = getEffectiveSupabaseCredentials();
+                    let extraHtml = '';
+                    if (!isDefault) {
+                        extraHtml += `<div style="margin-top:8px;"><a href="#" onclick="restoreDefaultSupabaseCredentials(); return false;" style="color:#a5b4fc; font-weight:700; text-decoration:underline;">Restaurar credencial padrão do Supabase</a></div>`;
+                    }
+                    if (errInfo.isMailerIssue) {
+                        extraHtml += `<div style="margin-top:6px; font-size:0.71rem; opacity:0.9;">Dica: no plano gratuito do Supabase, o envio de e-mails tem limite rigoroso (ou exige SMTP próprio). Se você for o dono do projeto no Supabase, pode definir uma nova senha em <strong>Authentication &gt; Users</strong> ou habilitar o provedor Google. Assim que entrar, também pode trocar sua senha em <strong>Ajustes &gt; Minha Conta &amp; Sessão</strong>.</div>`;
+                    }
+                    addLog(`Erro ao solicitar recuperação: ${errInfo.friendly} (${errInfo.raw})`, "error");
+                    showAppToast(errInfo.friendly, "error");
+                    showAuthInlineFeedback(errInfo.friendly, 'error', extraHtml);
                 }
             } catch (err) {
                 console.error(err);
                 addLog(`Incapaz de enviar e-mail de recuperação: ${err.message}`, "error");
                 showAppToast("Erro de rede ao solicitar recuperação de senha.", "error");
+                showAuthInlineFeedback("Erro de rede ao conectar com o Supabase. Verifique sua conexão e tente novamente.", 'error');
             } finally {
                 isAuthLoading = false;
                 setAuthFieldsDisabled(false);
                 if (submitBtn) {
                     submitBtn.disabled = false;
-                    submitBtn.textContent = "Enviar link de recuperação";
+                    submitBtn.textContent = authMode === 'recover' ? "Enviar link de recuperação" : "Entrar na conta";
                 }
             }
         }
 
         async function supabaseResetPassword(newPassword) {
-            const url = document.getElementById('supabase-url').value.trim();
-            const key = document.getElementById('supabase-key').value.trim();
-
-            if (!url || !key) {
-                showAppToast("Configure a URL do Projeto e a Chave Pública nas conexões do Supabase.", "warning");
-                return;
-            }
+            const { cleanUrl, key } = getEffectiveSupabaseCredentials();
 
             if (!recoveryToken) {
                 showAppToast("Token de recuperação ausente ou expirado. Por favor, solicite outro link.", "error");
+                showAuthInlineFeedback("Token de recuperação ausente ou expirado. Solicite um novo link ou código.", "error");
                 return;
             }
 
-            const cleanUrl = url.endsWith('/') ? url : url + '/';
             addLog("Enviando solicitação de redefinição de senha...", "sys");
 
             const submitBtn = document.getElementById('auth-btn-submit');
@@ -24846,30 +25137,35 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     
                     // Reset do token de recuperação
                     recoveryToken = "";
+                    window.isPasswordRecoveryPending = false;
                     
                     // Limpar inputs de senha
                     document.getElementById('auth-password').value = "";
                     const confirmInput = document.getElementById('auth-confirm-password');
                     if (confirmInput) confirmInput.value = "";
 
-                    // Força retorno ao Login
-                    setAuthTab('signin');
+                    // Força retorno ao Login com aviso inline
+                    setAuthTab('signin', { preserveFeedback: true });
+                    setTimeout(() => {
+                        showAuthInlineFeedback("Senha redefinida com sucesso! Entre agora usando sua nova senha.", "success");
+                    }, 220);
                 } else {
                     const errText = await response.text();
-                    let parsedErr = { message: errText };
-                    try { parsedErr = JSON.parse(errText); } catch(e){}
-                    addLog(`Erro ao redefinir senha no Supabase: ${parsedErr.message || errText}`, "error");
-                    showAppToast(`Erro de Redefinição: ${parsedErr.message || errText}`, "error");
+                    const errInfo = extractSupabaseErrorMessage(errText, response.status);
+                    addLog(`Erro ao redefinir senha no Supabase: ${errInfo.friendly}`, "error");
+                    showAppToast(errInfo.friendly, "error");
+                    showAuthInlineFeedback(errInfo.friendly, "error");
                 }
             } catch(err) {
                 console.error(err);
                 addLog(`Incapaz de redefinir senha (Erro de rede): ${err.message}`, "error");
                 showAppToast("Erro de rede ao salvar nova senha.", "error");
+                showAuthInlineFeedback("Erro de rede ao salvar a nova senha.", "error");
             } finally {
                 setAuthFieldsDisabled(false);
                 if (submitBtn) {
                     submitBtn.disabled = false;
-                    submitBtn.textContent = "Salvar nova senha";
+                    submitBtn.textContent = authMode === 'reset_password' ? "Salvar nova senha" : "Entrar na conta";
                 }
             }
         }
@@ -24878,6 +25174,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             if (isAuthLoading) return;
 
             triggerPulse();
+            hideAuthInlineFeedback();
             
             // Execute validation checks
             if (!validateAuthFieldsRealtime()) {
@@ -24908,6 +25205,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
             if (authMode === "recover") {
                 if (!email) {
+                    showAuthInlineFeedback("Digite o e-mail da sua conta para enviar a recuperação.", "warning");
                     showAppToast("Por favor, preencha o e-mail do usuário.", "warning");
                     return;
                 }
@@ -24932,16 +25230,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 }
             }
 
-            const url = document.getElementById('supabase-url').value.trim();
-            const key = document.getElementById('supabase-key').value.trim();
-
-            if(!url || !key) {
-                showAppToast("Configure a URL do Projeto e a Chave Pública (Anon Key) nas conexões do Supabase antes de se autenticar.", "warning");
-                return;
-            }
+            const { cleanUrl, key } = getEffectiveSupabaseCredentials();
 
             isAuthLoading = true;
-            const cleanUrl = url.endsWith('/') ? url : url + '/';
             
             if (authMode === "recover") {
                 await supabaseRecoverPassword(cleanUrl, key, email);
@@ -25011,14 +25302,15 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     }
                 } else {
                     const errText = await response.text();
-                    let parsedErr = { message: errText };
-                    try { parsedErr = JSON.parse(errText); } catch(e){}
-                    addLog(`Erro ao criar conta no Supabase: ${parsedErr.message || errText}`, "error");
-                    showAppToast(`Erro no Cadastro: ${parsedErr.message || errText}`, "error");
+                    const errInfo = extractSupabaseErrorMessage(errText, response.status);
+                    addLog(`Erro ao criar conta no Supabase: ${errInfo.friendly}`, "error");
+                    showAppToast(`Erro no Cadastro: ${errInfo.friendly}`, "error");
+                    showAuthInlineFeedback(errInfo.friendly, "error");
                 }
             } catch (err) {
                 console.error(err);
                 addLog(`Incapaz de registrar conta: sem conexão ou erro CORS: ${err.message}`, "error");
+                showAuthInlineFeedback("Erro de rede ao criar conta. Verifique sua conexão.", "error");
             } finally {
                 isAuthLoading = false;
                 submitBtn.disabled = false;
@@ -25054,6 +25346,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     } catch(e){}
                     
                     // Salva a sessão localmente
+                    window.isPasswordRecoveryPending = false;
                     supabaseSession = data;
                     localStorage.setItem('supabase_auth_session', JSON.stringify(supabaseSession));
                     
@@ -25077,10 +25370,10 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     testSupabaseConnection();
                 } else {
                     const errText = await response.text();
-                    let parsedErr = { message: errText };
-                    try { parsedErr = JSON.parse(errText); } catch(e){}
-                    addLog(`Credenciais rejeitadas: ${parsedErr.message || errText}`, "error");
-                    showAppToast(`Erro de Login: ${parsedErr.message || errText}`, "error");
+                    const errInfo = extractSupabaseErrorMessage(errText, response.status);
+                    addLog(`Credenciais rejeitadas: ${errInfo.friendly}`, "error");
+                    showAppToast(`Erro de Login: ${errInfo.friendly}`, "error");
+                    showAuthInlineFeedback(errInfo.friendly, "error");
                 }
             } catch (err) {
                 console.error(err);
@@ -25200,19 +25493,13 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 return;
             }
 
-            const url = document.getElementById('supabase-url').value.trim();
-            const key = document.getElementById('supabase-key').value.trim();
-            if (!url || !key) {
-                showAppToast("Configurações do Supabase ausentes.", "error");
-                return;
-            }
+            const { cleanUrl, key } = getEffectiveSupabaseCredentials();
 
             const changeBtn = document.getElementById('btn-save-new-password');
             const originalText = changeBtn.innerHTML;
             changeBtn.disabled = true;
             changeBtn.innerHTML = `<span>Processando alteração...</span>`;
 
-            const cleanUrl = url.endsWith('/') ? url : url + '/';
             addLog("Enviando solicitação de alteração de senha ao Supabase...", "sys");
 
             try {
@@ -25236,10 +25523,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     }
                 } else {
                     const errText = await response.text();
-                    let parsedErr = { message: errText };
-                    try { parsedErr = JSON.parse(errText); } catch(e){}
-                    showAppToast(`Erro ao alterar senha: ${parsedErr.message || errText}`, "error");
-                    addLog(`Falha na alteração de senha: ${parsedErr.message || errText}`, "error");
+                    const errInfo = extractSupabaseErrorMessage(errText, response.status);
+                    showAppToast(`Erro ao alterar senha: ${errInfo.friendly}`, "error");
+                    addLog(`Falha na alteração de senha: ${errInfo.friendly}`, "error");
                 }
             } catch(err) {
                 console.error(err);
@@ -25268,19 +25554,13 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 return;
             }
 
-            const url = document.getElementById('supabase-url').value.trim();
-            const key = document.getElementById('supabase-key').value.trim();
-            if (!url || !key) {
-                showAppToast("Configurações do Supabase ausentes.", "error");
-                return;
-            }
+            const { cleanUrl, key } = getEffectiveSupabaseCredentials();
 
             const changeBtn = document.getElementById('btn-save-new-email');
             const originalText = changeBtn.innerHTML;
             changeBtn.disabled = true;
             changeBtn.innerHTML = `<span>Processando e-mail...</span>`;
 
-            const cleanUrl = url.endsWith('/') ? url : url + '/';
             addLog(`Enviando solicitação de alteração de e-mail para ${newEmail}...`, "sys");
 
             try {
@@ -25304,10 +25584,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     }
                 } else {
                     const errText = await response.text();
-                    let parsedErr = { message: errText };
-                    try { parsedErr = JSON.parse(errText); } catch(e){}
-                    showAppToast(`Erro ao alterar e-mail: ${parsedErr.message || errText}`, "error");
-                    addLog(`Erro ao alterar e-mail: ${parsedErr.message || errText}`, "error");
+                    const errInfo = extractSupabaseErrorMessage(errText, response.status);
+                    showAppToast(`Erro ao alterar e-mail: ${errInfo.friendly}`, "error");
+                    addLog(`Erro ao alterar e-mail: ${errInfo.friendly}`, "error");
                 }
             } catch(err) {
                 console.error(err);
@@ -25333,23 +25612,24 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 return;
             }
 
-            const url = document.getElementById('supabase-url').value.trim();
-            const key = document.getElementById('supabase-key').value.trim();
-            if (!url || !key) {
-                showAppToast("Configurações do Supabase ausentes.", "error");
-                return;
-            }
+            const { cleanUrl, key } = getEffectiveSupabaseCredentials();
 
             const recoverBtn = document.getElementById('btn-recover-password');
             const originalText = recoverBtn.innerHTML;
             recoverBtn.disabled = true;
             recoverBtn.innerHTML = `<span>Enviando...</span>`;
 
-            const cleanUrl = url.endsWith('/') ? url : url + '/';
             addLog(`Enviando solicitação de recuperação de senha para ${email}...`, "sys");
 
             try {
-                const response = await fetch(`${cleanUrl}auth/v1/recover`, {
+                const redirectTarget = (window.location.origin && window.location.origin.startsWith('http'))
+                    ? `${window.location.origin}${window.location.pathname}`
+                    : '';
+                const endpoint = redirectTarget
+                    ? `${cleanUrl}auth/v1/recover?redirect_to=${encodeURIComponent(redirectTarget)}`
+                    : `${cleanUrl}auth/v1/recover`;
+
+                let response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'apikey': key,
@@ -25358,6 +25638,16 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     body: JSON.stringify({ email: email })
                 });
 
+                let resText = await response.text();
+                if (!response.ok && response.status === 400 && /redirect/i.test(resText)) {
+                    response = await fetch(`${cleanUrl}auth/v1/recover`, {
+                        method: 'POST',
+                        headers: { 'apikey': key, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: email })
+                    });
+                    resText = await response.text();
+                }
+
                 if (response.ok) {
                     showAppToast("E-mail de recuperação enviado com sucesso!", "success");
                     addLog(`E-mail de recuperação de senha enviado com sucesso para ${email}.`, "success");
@@ -25365,11 +25655,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         logAdminActivity(email, "Recuperação Solicitada", "Link de recuperação enviado ao e-mail");
                     }
                 } else {
-                    const errText = await response.text();
-                    let parsedErr = { message: errText };
-                    try { parsedErr = JSON.parse(errText); } catch(e){}
-                    showAppToast(`Erro ao solicitar recuperação: ${parsedErr.message || errText}`, "error");
-                    addLog(`Erro na solicitação de recuperação: ${parsedErr.message || errText}`, "error");
+                    const errInfo = extractSupabaseErrorMessage(resText, response.status);
+                    showAppToast(`Erro ao solicitar recuperação: ${errInfo.friendly}`, "error");
+                    addLog(`Erro na solicitação de recuperação: ${errInfo.friendly}`, "error");
                 }
             } catch(err) {
                 console.error(err);
@@ -25549,7 +25837,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             // Atualiza o Cabeçalho de Identificação da Conta
             renderAccountIdentification();
 
-            if (supabaseSession && supabaseSession.user) {
+            if (supabaseSession && supabaseSession.user && !window.isPasswordRecoveryPending) {
                 // Logado
                 if (formContainer) formContainer.style.display = 'none';
                 if (userContainer) userContainer.style.display = 'flex';
