@@ -8131,7 +8131,7 @@ WITH CHECK (true);</code>
                         <span style="font-size: 0.65rem; font-weight: 800; color: #c4b5fd; background: rgba(139, 92, 246, 0.16); border: 1px solid rgba(139, 92, 246, 0.3); padding: 3px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.4px;">SSO & Auth</span>
                     </div>
                     <p style="font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; margin: 0 0 14px 0;">
-                        Crie uma credencial pública para qualquer novo aplicativo seu, copie e cole na outra conversa para permitir login usando sua conta Synapse (sem configurar Supabase do zero).
+                        Crie uma credencial para qualquer novo aplicativo seu e copie um <strong>prompt pronto</strong> (com a credencial e instruções completas) para colar direto na outra conversa e conectar o login Synapse.
                     </p>
 
                     <div style="display: flex; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 14px; margin-bottom: 14px;">
@@ -12048,7 +12048,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=26')
+                navigator.serviceWorker.register('./sw.js?v=27')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -28899,8 +28899,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                             <button type="button" onclick="deleteConnectedApp('${safeId}')" title="Remover credencial" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: #fca5a5; border-radius: 10px; padding: 8px 10px; font-size: 0.85rem; cursor: pointer; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center;">🗑️</button>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                            <button type="button" onclick="copyConnectedAppCredential('${safeId}')" style="background: rgba(139, 92, 246, 0.14); border: 1px solid rgba(139, 92, 246, 0.35); color: #e9d5ff; border-radius: 10px; padding: 10px 8px; font-size: 0.76rem; font-weight: 700; cursor: pointer; min-height: 44px;">📋 Copiar Credencial</button>
-                            <button type="button" onclick="testConnectedAppPortal('${safeId}')" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.32); color: #6ee7b7; border-radius: 10px; padding: 10px 8px; font-size: 0.76rem; font-weight: 700; cursor: pointer; min-height: 44px;">🧪 Testar Portal</button>
+                            <button type="button" onclick="copyConnectedAppCredential('${safeId}')" style="background: rgba(139, 92, 246, 0.14); border: 1px solid rgba(139, 92, 246, 0.35); color: #e9d5ff; border-radius: 10px; padding: 10px 8px; font-size: 0.74rem; font-weight: 700; cursor: pointer; min-height: 44px;">📋 Copiar Prompt</button>
+                            <button type="button" onclick="testConnectedAppPortal('${safeId}')" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.32); color: #6ee7b7; border-radius: 10px; padding: 10px 8px; font-size: 0.74rem; font-weight: 700; cursor: pointer; min-height: 44px;">🧪 Testar Portal</button>
                         </div>
                     </div>
                 `;
@@ -28909,8 +28909,14 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
         function buildSynapseCredentialPayload(app) {
             const cfg = getSynapsePublicAuthConfig();
-            const callbackHint = app.redirectUri || 'SUA_URL_ATUAL_DO_APP (ex: window.location.origin + window.location.pathname)';
+            const callbackHint = app.redirectUri || 'Use a URL atual do app (ex: window.location.origin + window.location.pathname)';
+            const portalExampleUrl = `${cfg.portalUrl}?synapse_auth=1&app_id=${encodeURIComponent(app.id)}&app_name=${encodeURIComponent(app.name)}&redirect_uri=<URL_ATUAL_DO_APP>&state=<TOKEN_ALEATORIO>`;
             return [
+                'Conecte o sistema de login deste aplicativo à minha Central de Contas do Synapse usando a credencial abaixo.',
+                'Quero que o usuário possa clicar em "Entrar com Synapse" para fazer login com a mesma conta que já usa no Synapse (e também fazer login/cadastro direto, se aplicável).',
+                '',
+                'Aqui está a credencial e uma explicação completa de como implementar a conexão:',
+                '',
                 '=== SYNAPSE ACCOUNT CREDENTIAL ===',
                 `APP_NAME=${app.name}`,
                 `APP_ID=${app.id}`,
@@ -28918,17 +28924,25 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 `SYNAPSE_PORTAL_URL=${cfg.portalUrl}`,
                 `AUTH_API_URL=${cfg.supabaseUrl}`,
                 `PUBLIC_ANON_KEY=${cfg.anonKey}`,
+                '=== FIM DA CREDENCIAL ===',
                 '',
-                'INSTRUÇÕES PARA CONECTAR ESTE APP À CENTRAL DE CONTAS DO SYNAPSE:',
-                '1. Para login com 1 clique ("Entrar com Synapse"):',
-                `   Redirecione (ou abra popup) para: ${cfg.portalUrl}?synapse_auth=1&app_id=${encodeURIComponent(app.id)}&app_name=${encodeURIComponent(app.name)}&redirect_uri=<URL_DESTE_APP>&state=<TOKEN_ALEATORIO>`,
-                '   Após o usuário autorizar, o Synapse retorna para redirect_uri com os parâmetros no hash (#):',
-                '   #synapse_access_token=...&synapse_refresh_token=...&synapse_uid=...&synapse_email=...&synapse_name=...&synapse_app_id=...&state=...',
-                '   Valide o "state" retornado, limpe o hash da URL com history.replaceState e salve a sessão do usuário.',
-                '2. Para login/cadastro direto dentro deste app usando a mesma conta do Synapse:',
-                `   - Login: POST ${cfg.supabaseUrl}/auth/v1/token?grant_type=password (header apikey: PUBLIC_ANON_KEY)`,
-                `   - Cadastro: POST ${cfg.supabaseUrl}/auth/v1/signup (header apikey: PUBLIC_ANON_KEY)`,
-                '=== FIM DA CREDENCIAL ==='
+                'O QUE VOCÊ DEVE FAZER NESTE APLICATIVO:',
+                '1. Botão "Entrar com Synapse" (Login em 1 clique via Portal SSO):',
+                '   - Ao clicar no botão, gere um `state` aleatório, salve em `sessionStorage` para validar na volta e redirecione (ou abra popup) para:',
+                `     ${portalExampleUrl}`,
+                '   - Quando o usuário autorizar no Synapse, ele será redirecionado de volta para `redirect_uri` com os dados da sessão no hash da URL (#):',
+                '     #synapse_access_token=...&synapse_refresh_token=...&synapse_uid=...&synapse_email=...&synapse_name=...&synapse_app_id=...&state=...',
+                '   - Se usar `mode=popup`, também pode receber os mesmos campos via `window.addEventListener("message", ...)` validando `event.origin` igual à origem do `SYNAPSE_PORTAL_URL` (`type === "SYNAPSE_AUTH_SUCCESS"`).',
+                '   - Ao receber o retorno: valide se o `state` confere com o salvo em `sessionStorage`, limpe o hash da URL com `history.replaceState` e salve a sessão do usuário autenticado (`synapse_uid`, `synapse_email`, `synapse_name`, `synapse_access_token`).',
+                '',
+                '2. (Opcional) Login e cadastro direto por e-mail/senha compartilhando a mesma conta Synapse:',
+                `   - Login: POST ${cfg.supabaseUrl}/auth/v1/token?grant_type=password (header "apikey: ${cfg.anonKey}", JSON { email, password })`,
+                `   - Cadastro: POST ${cfg.supabaseUrl}/auth/v1/signup (header "apikey: ${cfg.anonKey}", JSON { email, password })`,
+                `   - Conferir usuário atual: GET ${cfg.supabaseUrl}/auth/v1/user (headers "apikey: ${cfg.anonKey}" e "Authorization: Bearer <ACCESS_TOKEN>")`,
+                '',
+                '3. Regras importantes:',
+                '   - Use apenas a PUBLIC_ANON_KEY informada acima; nunca peça nem armazene chaves privadas/admin.',
+                '   - Exiba na interface quando o usuário estiver conectado (nome, e-mail e botão de sair).'
             ].join('\n');
         }
 
@@ -28962,8 +28976,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 if (typeof showAppToast === 'function') {
                     showAppToast(
                         fromCreate
-                            ? `Credencial de "${app.name}" criada e copiada! Cole na outra conversa.`
-                            : `Credencial de "${app.name}" copiada! Cole na outra conversa.`,
+                            ? `Prompt + credencial de "${app.name}" criados e copiados! Cole na outra conversa.`
+                            : `Prompt + credencial de "${app.name}" copiados! Cole na outra conversa.`,
                         'success'
                     );
                 }
