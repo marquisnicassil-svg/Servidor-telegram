@@ -1893,15 +1893,21 @@
            9. Onboarding / Auth Gate Screen
            ========================================================================== */
         #auth-gate-screen {
+            --auth-accent: #6366f1;
+            --auth-accent-2: #7c3aed;
+            --auth-accent-soft: #a5b4fc;
+            --auth-muted: #94a3b8;
+            --auth-border: rgba(148, 163, 184, 0.14);
+            --text-muted: #94a3b8;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 50% 50%, #0c0a13 0%, #030206 100%);
+            background: radial-gradient(circle at 50% 15%, rgba(99, 102, 241, 0.16) 0%, #050814 55%, #02040a 100%);
             z-index: 9998; /* Just below splash but hiding everything else */
             display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 24px calc(24px + var(--safe-top));
+            padding: 20px calc(20px + var(--safe-top));
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1922,106 +1928,113 @@
         }
         .auth-gate-wrapper {
             width: 100%;
-            max-width: 385px;
-            background: rgba(13, 11, 21, 0.75);
-            border: 1px solid rgba(139, 92, 246, 0.15);
-            border-radius: 24px;
-            padding: 34px 28px;
+            max-width: 392px;
+            background: linear-gradient(180deg, rgba(17, 24, 42, 0.92) 0%, rgba(10, 14, 26, 0.96) 100%);
+            border: 1px solid var(--auth-border);
+            border-radius: 26px;
+            padding: 30px 24px 24px;
             display: flex;
             flex-direction: column;
-            gap: 24px;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.85), inset 0 1px 1px rgba(255,255,255,0.05);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            animation: gate-intro 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            gap: 20px;
+            box-shadow: 0 28px 64px rgba(0, 0, 0, 0.78), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            animation: gate-intro 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            box-sizing: border-box;
         }
         .auth-gate-logo {
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            gap: 10px;
-            margin-bottom: 4px;
+            gap: 8px;
+            margin-bottom: 2px;
         }
         @keyframes authLogoGlow {
-            0% { filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.35)) drop-shadow(0 0 2px rgba(139, 92, 246, 0.2)); transform: scale(1); }
-            50% { filter: drop-shadow(0 0 22px rgba(139, 92, 246, 0.65)) drop-shadow(0 0 6px rgba(236, 72, 153, 0.3)); transform: scale(1.03); }
-            100% { filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.35)) drop-shadow(0 0 2px rgba(139, 92, 246, 0.2)); transform: scale(1); }
+            0% { box-shadow: 0 0 16px rgba(99, 102, 241, 0.25); transform: scale(1); }
+            50% { box-shadow: 0 0 26px rgba(99, 102, 241, 0.45); transform: scale(1.02); }
+            100% { box-shadow: 0 0 16px rgba(99, 102, 241, 0.25); transform: scale(1); }
         }
         .auth-gate-logo img {
-            width: 60px;
-            height: 60px;
+            width: 58px;
+            height: 58px;
             border-radius: 16px;
-            animation: authLogoGlow 3s infinite ease-in-out;
+            border: 1px solid rgba(129, 140, 248, 0.28);
+            animation: authLogoGlow 3.5s infinite ease-in-out;
             transition: all 0.3s ease;
         }
         .auth-gate-logo h2 {
             font-family: 'Space Grotesk', system-ui, sans-serif;
-            font-size: 1.35rem;
+            font-size: 1.4rem;
             font-weight: 800;
-            color: #ffffff;
-            letter-spacing: -0.5px;
-            margin: 4px 0 0 0;
-            background: linear-gradient(90deg, #ffffff, #d946ef);
+            color: #f8fafc;
+            letter-spacing: -0.4px;
+            margin: 6px 0 0 0;
+            background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         .auth-gate-logo p {
             font-size: 0.84rem;
-            color: var(--text-muted);
+            color: var(--auth-muted);
             line-height: 1.45;
             padding: 0;
             margin: 0;
         }
         .auth-gate-footer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
             text-align: center;
             font-size: 0.72rem;
-            color: rgba(255, 255, 255, 0.35);
-            font-family: 'Space Grotesk', system-ui, sans-serif;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            margin-top: 10px;
+            color: #64748b;
+            font-family: 'Inter', system-ui, sans-serif;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+            margin-top: 2px;
             transition: opacity 0.3s ease;
         }
         @keyframes gate-intro {
-            0% { transform: scale(0.95) translateY(10px); opacity: 0; }
+            0% { transform: scale(0.96) translateY(10px); opacity: 0; }
             100% { transform: scale(1) translateY(0); opacity: 1; }
         }
 
         /* Modern Tabs styling */
         .auth-tabs-container {
             display: flex;
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.04);
             border-radius: 14px;
             padding: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            margin-bottom: 10px;
             position: relative;
         }
         .auth-tab-btn {
             flex: 1;
-            padding: 10px 16px;
+            min-height: 40px;
+            padding: 9px 14px;
             font-size: 0.85rem !important;
             font-weight: 700 !important;
-            color: rgba(255, 255, 255, 0.55) !important;
+            color: #94a3b8 !important;
             background: transparent !important;
             border: none !important;
             border-radius: 10px !important;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
             text-align: center;
             white-space: nowrap;
             font-family: 'Space Grotesk', system-ui, sans-serif;
             box-shadow: none !important;
         }
         .auth-tab-btn:hover {
-            color: rgba(255, 255, 255, 0.95) !important;
+            color: #f8fafc !important;
         }
         .auth-tab-btn.active {
             color: #ffffff !important;
-            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%) !important;
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3) !important;
+            background: linear-gradient(135deg, #6366f1 0%, #7c3aed 100%) !important;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35) !important;
         }
 
         /* Modern Inputs styling */
@@ -2029,16 +2042,16 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
-            margin-bottom: 14px;
+            margin-bottom: 10px;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .auth-input-label {
-            font-family: 'Space Grotesk', system-ui, sans-serif;
-            font-size: 0.70rem;
-            color: rgba(255, 255, 255, 0.6);
-            font-weight: 700;
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 0.72rem;
+            color: #94a3b8;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.6px;
             padding-left: 2px;
         }
         .auth-input-wrapper {
@@ -2050,46 +2063,57 @@
         .auth-input-icon {
             position: absolute;
             left: 14px;
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
             pointer-events: none;
             transition: color 0.25s ease;
             z-index: 5;
         }
+        .auth-input-wrapper:focus-within .auth-input-icon {
+            color: #a5b4fc;
+        }
         .auth-password-toggle {
             position: absolute;
-            right: 14px;
+            right: 8px;
             background: none;
             border: none;
-            color: rgba(255, 255, 255, 0.35);
+            color: #64748b;
             cursor: pointer;
-            font-size: 1.1rem;
-            padding: 4px;
+            padding: 6px;
+            min-width: 34px;
+            min-height: 34px;
             display: flex;
             align-items: center;
             justify-content: center;
+            border-radius: 8px;
             z-index: 10;
             outline: none;
-            transition: color 0.25s ease;
+            transition: color 0.2s ease, background 0.2s ease;
         }
         .auth-copy-btn {
             position: absolute;
-            right: 44px;
+            right: 40px;
             background: none;
             border: none;
-            color: rgba(255, 255, 255, 0.35);
+            color: #64748b;
             cursor: pointer;
-            font-size: 1.05rem;
-            padding: 4px;
+            padding: 6px;
+            min-width: 34px;
+            min-height: 34px;
             display: flex;
             align-items: center;
             justify-content: center;
+            border-radius: 8px;
             z-index: 10;
             outline: none;
-            transition: color 0.25s ease;
+            transition: color 0.2s ease, background 0.2s ease;
         }
-        .auth-copy-btn:hover {
-            color: rgba(255, 255, 255, 0.85);
+        .auth-copy-btn:hover,
+        .auth-password-toggle:hover {
+            color: #e2e8f0;
+            background: rgba(255, 255, 255, 0.06);
         }
         .input-copy-btn {
             position: absolute;
@@ -2803,31 +2827,31 @@
 
         /* Refinamentos do Portal de Acesso e Inputs de Autenticação */
         #auth-form-container .form-control {
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
-            background-color: rgba(15, 23, 42, 0.5) !important;
-            border-radius: 14px !important;
-            padding: 12px 14px 12px 42px !important; /* Spacing on the left for discrete icons */
-            font-size: 0.88rem !important;
-            color: #ffffff !important;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            border: 1px solid rgba(148, 163, 184, 0.14) !important;
+            background-color: rgba(15, 23, 42, 0.68) !important;
+            border-radius: 13px !important;
+            padding: 13px 14px 13px 42px !important;
+            font-size: 0.9rem !important;
+            color: #f8fafc !important;
+            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
             outline: none !important;
             width: 100% !important;
             box-sizing: border-box !important;
         }
         #auth-form-container .form-control:focus {
-            border-color: #8b5cf6 !important;
-            box-shadow: 0 0 16px rgba(139, 92, 246, 0.35) !important;
-            background-color: rgba(139, 92, 246, 0.06) !important;
+            border-color: #6366f1 !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+            background-color: rgba(99, 102, 241, 0.08) !important;
         }
         #auth-form-container .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.3) !important;
+            color: rgba(148, 163, 184, 0.48) !important;
         }
         /* Efeito de carregamento para botões */
         .btn-supabase-action, .btn-auth-submit {
             margin-top: 18px !important;
             width: 100% !important;
             border: none !important;
-            background: var(--btn-gradient, linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%)) !important;
+            background: var(--btn-gradient, linear-gradient(135deg, #6366f1 0%, #7c3aed 100%)) !important;
             padding: 14px 18px !important;
             font-size: 0.92rem !important;
             font-weight: 800 !important;
@@ -2837,15 +2861,29 @@
             align-items: center !important;
             justify-content: center !important;
             gap: 8px !important;
-            box-shadow: var(--btn-shadow, 0 4px 16px rgba(139, 92, 246, 0.35), 0 0 8px rgba(217, 70, 239, 0.15)) !important;
+            box-shadow: var(--btn-shadow, 0 6px 20px rgba(99, 102, 241, 0.32)) !important;
             cursor: pointer !important;
             font-family: 'Space Grotesk', system-ui, sans-serif !important;
             text-transform: uppercase !important;
             letter-spacing: 0.8px !important;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
             position: relative !important;
             overflow: hidden !important;
             z-index: 2 !important;
+        }
+        #auth-gate-screen .btn-auth-submit {
+            margin-top: 8px !important;
+            min-height: 48px !important;
+            background: linear-gradient(135deg, #6366f1 0%, #7c3aed 100%) !important;
+            box-shadow: 0 8px 22px rgba(99, 102, 241, 0.32) !important;
+            text-transform: none !important;
+            letter-spacing: 0.1px !important;
+            font-size: 0.94rem !important;
+            font-weight: 700 !important;
+        }
+        #auth-gate-screen .btn-auth-submit:hover:not(:disabled) {
+            filter: brightness(1.08) !important;
+            box-shadow: 0 10px 26px rgba(99, 102, 241, 0.44) !important;
         }
         .btn-supabase-action::after, .btn-auth-submit::after {
             content: '';
@@ -2867,13 +2905,13 @@
             transition: 0s;
         }
         .btn-supabase-action:hover:not(:disabled), .btn-auth-submit:hover:not(:disabled) {
-            transform: translateY(-2px) scale(1.02) !important;
-            box-shadow: var(--btn-shadow-hover, 0 6px 22px rgba(139, 92, 246, 0.5), 0 0 12px rgba(217, 70, 239, 0.35)) !important;
-            filter: brightness(1.2);
+            transform: translateY(-2px) scale(1.01) !important;
+            box-shadow: var(--btn-shadow-hover, 0 8px 24px rgba(99, 102, 241, 0.42)) !important;
+            filter: brightness(1.1);
         }
         .btn-supabase-action:active:not(:disabled), .btn-auth-submit:active:not(:disabled) {
-            transform: translateY(1px) scale(0.97) !important;
-            box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3) !important;
+            transform: translateY(1px) scale(0.98) !important;
+            box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3) !important;
         }
         .btn-supabase-action:disabled, .btn-auth-submit:disabled {
             opacity: 0.65 !important;
@@ -3628,60 +3666,76 @@
                 </div>
 
                 <div id="auth-username-container" class="auth-input-group" style="display: none;">
-                    <label class="auth-input-label">Nome de Usuário</label>
+                    <label class="auth-input-label" for="auth-username">Nome de Usuário</label>
                     <div class="auth-input-wrapper">
-                        <span class="auth-input-icon">👤</span>
+                        <span class="auth-input-icon" aria-hidden="true">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </span>
                         <input type="text" id="auth-username" class="form-control" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" placeholder="Ex: Maria Silva" value="">
                     </div>
                     <div id="auth-username-error" class="auth-error-text" style="display: none;"></div>
                 </div>
 
                 <div id="auth-email-container" class="auth-input-group">
-                    <label class="auth-input-label">E-mail</label>
+                    <label class="auth-input-label" for="auth-email">E-mail</label>
                     <div class="auth-input-wrapper">
-                        <span class="auth-input-icon">✉️</span>
+                        <span class="auth-input-icon" aria-hidden="true">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                        </span>
                         <input type="email" id="auth-email" class="form-control" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" placeholder="usuario@provedor.com" value="">
                     </div>
                     <div id="auth-email-error" class="auth-error-text" style="display: none;"></div>
                 </div>
 
                 <div id="auth-password-container" class="auth-input-group">
-                    <label id="auth-password-label" class="auth-input-label">Senha de Acesso</label>
+                    <label id="auth-password-label" class="auth-input-label" for="auth-password">Senha de Acesso</label>
                     <div class="auth-input-wrapper">
-                        <span class="auth-input-icon">🔑</span>
-                        <input type="text" id="auth-password" class="form-control password-masked" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" placeholder="Mínimo 6 caracteres" value="" autocomplete="off" style="padding-right: 76px;">
-                        <button type="button" class="auth-copy-btn" onclick="copyInputField('auth-password', this)" title="Copiar Senha">📋</button>
-                        <button type="button" class="auth-password-toggle" onclick="togglePasswordVisibility('auth-password', this)" title="Exibir/Ocultar Senha">👁️</button>
+                        <span class="auth-input-icon" aria-hidden="true">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </span>
+                        <input type="text" id="auth-password" class="form-control password-masked" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" placeholder="Mínimo 6 caracteres" value="" autocomplete="off" style="padding-right: 78px;">
+                        <button type="button" class="auth-copy-btn" onclick="copyInputField('auth-password', this)" title="Copiar Senha" aria-label="Copiar Senha">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                        </button>
+                        <button type="button" class="auth-password-toggle" data-svg-toggle="1" onclick="togglePasswordVisibility('auth-password', this)" title="Exibir/Ocultar Senha" aria-label="Exibir ou ocultar senha">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
                     </div>
                     <div id="auth-password-error" class="auth-error-text" style="display: none;"></div>
                 </div>
 
                 <div id="auth-confirm-password-container" class="auth-input-group" style="display: none;">
-                    <label class="auth-input-label">Confirmar Nova Senha</label>
+                    <label class="auth-input-label" for="auth-confirm-password">Confirmar Nova Senha</label>
                     <div class="auth-input-wrapper">
-                        <span class="auth-input-icon">🔐</span>
-                        <input type="text" id="auth-confirm-password" class="form-control password-masked" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" placeholder="Confirme sua nova senha" value="" autocomplete="off" style="padding-right: 76px;">
-                        <button type="button" class="auth-copy-btn" onclick="copyInputField('auth-confirm-password', this)" title="Copiar Senha">📋</button>
-                        <button type="button" class="auth-password-toggle" onclick="togglePasswordVisibility('auth-confirm-password', this)" title="Exibir/Ocultar Senha">👁️</button>
+                        <span class="auth-input-icon" aria-hidden="true">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                        </span>
+                        <input type="text" id="auth-confirm-password" class="form-control password-masked" oninput="validateAuthFieldsRealtime()" onkeydown="handleAuthKeydown(event)" placeholder="Confirme sua nova senha" value="" autocomplete="off" style="padding-right: 78px;">
+                        <button type="button" class="auth-copy-btn" onclick="copyInputField('auth-confirm-password', this)" title="Copiar Senha" aria-label="Copiar Senha">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                        </button>
+                        <button type="button" class="auth-password-toggle" data-svg-toggle="1" onclick="togglePasswordVisibility('auth-confirm-password', this)" title="Exibir/Ocultar Senha" aria-label="Exibir ou ocultar senha">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
                     </div>
                     <div id="auth-confirm-password-error" class="auth-error-text" style="display: none;"></div>
                 </div>
 
-                <div id="auth-forgot-password-link" style="text-align: right; margin-top: -4px;">
-                    <a href="#" onclick="setAuthTab('recover'); return false;" style="font-size: 0.75rem; color: #a78bfa; text-decoration: none; font-weight: 600; opacity: 0.85; transition: all 0.2s;" onmouseover="this.style.opacity='1'; this.style.textDecoration='underline'" onmouseout="this.style.opacity='0.85'; this.style.textDecoration='none'">Esqueceu sua senha?</a>
+                <div id="auth-forgot-password-link" style="text-align: right; margin-top: -2px;">
+                    <a href="#" onclick="setAuthTab('recover'); return false;" style="font-size: 0.76rem; color: #a5b4fc; text-decoration: none; font-weight: 600; opacity: 0.9; transition: all 0.2s;" onmouseover="this.style.opacity='1'; this.style.textDecoration='underline'" onmouseout="this.style.opacity='0.9'; this.style.textDecoration='none'">Esqueceu sua senha?</a>
                 </div>
 
                 <button class="btn-supabase-action btn-auth-submit" onclick="executeSupabaseAuth()" id="auth-btn-submit">
-                    🔌 Fazer Login
+                    Entrar na conta
                 </button>
 
-                <div id="auth-divider" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin: 4px 0; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
-                    <span style="flex: 1; height: 1px; background: rgba(255,255,255,0.08);"></span>
+                <div id="auth-divider" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin: 4px 0; font-size: 0.74rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px;">
+                    <span style="flex: 1; height: 1px; background: rgba(148, 163, 184, 0.14);"></span>
                     <span>ou</span>
-                    <span style="flex: 1; height: 1px; background: rgba(255,255,255,0.08);"></span>
+                    <span style="flex: 1; height: 1px; background: rgba(148, 163, 184, 0.14);"></span>
                 </div>
 
-                <button id="auth-btn-google" onclick="signInWithGoogle()" class="btn-universal" style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 44px; padding: 10px 16px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; background: #ffffff; color: #1f2937; border: 1px solid #e5e7eb; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); outline: none; margin-top: 2px;" onmouseover="this.style.background='#f9fafb'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='#ffffff'; this.style.transform='translateY(0)';">
+                <button id="auth-btn-google" onclick="signInWithGoogle()" class="btn-universal" style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 46px; padding: 10px 16px; border-radius: 13px; font-size: 0.86rem; font-weight: 600; background: rgba(255, 255, 255, 0.06); color: #f8fafc; border: 1px solid rgba(255, 255, 255, 0.14); cursor: pointer; transition: all 0.2s; outline: none; margin-top: 2px;" onmouseover="this.style.background='rgba(255, 255, 255, 0.11)'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='rgba(255, 255, 255, 0.06)'; this.style.transform='translateY(0)';">
                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
                         <path d="M17.64 9.2c0-.65-.06-1.28-.16-1.88H9v3.56h4.84c-.21 1.12-.84 2.07-1.8 2.71v2.24h2.91c1.7-1.57 2.69-3.88 2.69-6.63z" fill="#4285F4"/>
                         <path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.91-2.24c-.8.54-1.84.86-3.05.86-2.34 0-4.32-1.58-5.03-3.71H1.03v2.3C2.51 15.98 5.52 18 9 18z" fill="#34A853"/>
@@ -3693,7 +3747,8 @@
             </div>
 
             <div class="auth-gate-footer">
-                🔒 Conexão segura
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span>Conexão segura e criptografada</span>
             </div>
         </div>
     </div>
@@ -12048,7 +12103,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=28')
+                navigator.serviceWorker.register('./sw.js?v=29')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -24327,23 +24382,35 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             triggerPulse();
             const input = document.getElementById(id);
             if (!input) return;
+
+            const useSvg = btn && btn.dataset && btn.dataset.svgToggle === '1';
+            const eyeOpenSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+            const eyeOffSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>';
+            const setVisibleIcon = (isVisible) => {
+                if (!btn) return;
+                if (useSvg) {
+                    btn.innerHTML = isVisible ? eyeOffSvg : eyeOpenSvg;
+                } else {
+                    btn.innerText = isVisible ? '🙈' : '👁️';
+                }
+            };
             
             // Suporte para mascaramento moderno por CSS
             if (input.classList.contains('password-masked')) {
                 input.classList.remove('password-masked');
-                btn.innerText = '🙈';
+                setVisibleIcon(true);
                 addLog(`Exibindo caracteres do campo invisível.`, "info");
             } else if (input.type === 'password') {
                 input.type = 'text';
-                btn.innerText = '🙈';
+                setVisibleIcon(true);
                 addLog(`Exibindo caracteres do campo invisível.`, "info");
             } else if (input.type === 'text' && !input.classList.contains('password-masked') && (id === 'auth-password' || id === 'auth-confirm-password' || id === 'telegram-token' || id === 'tg-api-key' || id === 'api-key' || id === 'supabase-key' || id === 'new-account-password')) {
                 input.classList.add('password-masked');
-                btn.innerText = '👁️';
+                setVisibleIcon(false);
                 addLog(`Ocultando caracteres do campo.`, "info");
             } else {
                 input.type = 'password';
-                btn.innerText = '👁️';
+                setVisibleIcon(false);
                 addLog(`Ocultando caracteres do campo.`, "info");
             }
         }
@@ -24581,7 +24648,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     if (descEl) descEl.innerText = 'Sua IA, pronta para você.';
                     
                     if (submitBtn) {
-                        submitBtn.innerHTML = '🔌 Fazer Login';
+                        submitBtn.textContent = 'Entrar na conta';
                     }
                     const passInput = document.getElementById('auth-password');
                     if (passInput) passInput.placeholder = 'Sua senha';
@@ -24600,7 +24667,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     if (descEl) descEl.innerText = 'Comece em segundos.';
                     
                     if (submitBtn) {
-                        submitBtn.innerHTML = '✨ Criar Conta';
+                        submitBtn.textContent = 'Criar conta';
                     }
                     const passInput = document.getElementById('auth-password');
                     if (passInput) passInput.placeholder = 'Mínimo de 6 caracteres';
@@ -24616,7 +24683,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     if (descEl) descEl.innerText = 'Enviaremos um link de acesso.';
                     
                     if (submitBtn) {
-                        submitBtn.innerHTML = '✉️ Enviar Link';
+                        submitBtn.textContent = 'Enviar link de recuperação';
                     }
                     if (userContainer) userContainer.style.display = 'none';
                     if (emailContainer) emailContainer.style.display = 'block';
@@ -24629,7 +24696,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     if (descEl) descEl.innerText = 'Escolha uma senha segura.';
                     
                     if (submitBtn) {
-                        submitBtn.innerHTML = '💾 Salvar Nova Senha';
+                        submitBtn.textContent = 'Salvar nova senha';
                     }
                     const passInput = document.getElementById('auth-password');
                     if (passInput) passInput.placeholder = 'Mínimo de 6 caracteres';
@@ -24650,7 +24717,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         backToLoginBtn.id = 'auth-reset-cancel';
                         backToLoginBtn.style.textAlign = 'center';
                         backToLoginBtn.style.marginTop = '12px';
-                        backToLoginBtn.innerHTML = `<a href="#" onclick="setAuthTab('signin'); return false;" style="font-size: 0.78rem; color: #a78bfa; text-decoration: none; font-weight: 600; opacity: 0.85; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.85'">← Voltar para o Login</a>`;
+                        backToLoginBtn.innerHTML = `<a href="#" onclick="setAuthTab('signin'); return false;" style="font-size: 0.78rem; color: #a5b4fc; text-decoration: none; font-weight: 600; opacity: 0.9; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.9'">← Voltar para o Login</a>`;
                         submitBtn.parentNode.insertBefore(backToLoginBtn, submitBtn.nextSibling);
                     } else {
                         backToLoginBtn.style.display = 'block';
@@ -24733,7 +24800,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 setAuthFieldsDisabled(false);
                 if (submitBtn) {
                     submitBtn.disabled = false;
-                    submitBtn.innerHTML = "✉️ Enviar Link de Recuperação";
+                    submitBtn.textContent = "Enviar link de recuperação";
                 }
             }
         }
@@ -24802,7 +24869,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 setAuthFieldsDisabled(false);
                 if (submitBtn) {
                     submitBtn.disabled = false;
-                    submitBtn.innerHTML = "💾 Salvar Nova Senha";
+                    submitBtn.textContent = "Salvar nova senha";
                 }
             }
         }
@@ -24957,9 +25024,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 submitBtn.disabled = false;
                 // Preserve whichever tab is currently active instead of resetting to signup
                 if (authMode === 'signup') {
-                    submitBtn.innerText = "✨ Criar Conta";
+                    submitBtn.innerText = "Criar conta";
                 } else {
-                    submitBtn.innerText = "🔌 Fazer Login";
+                    submitBtn.innerText = "Entrar na conta";
                 }
             }
         }
@@ -25022,9 +25089,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 isAuthLoading = false;
                 submitBtn.disabled = false;
                 if (authMode === 'signin') {
-                    submitBtn.innerText = "🔌 Fazer Login";
+                    submitBtn.innerText = "Entrar na conta";
                 } else {
-                    submitBtn.innerText = "✨ Criar Conta";
+                    submitBtn.innerText = "Criar conta";
                 }
             }
         }
