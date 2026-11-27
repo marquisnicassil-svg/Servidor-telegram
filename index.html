@@ -12048,7 +12048,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=27')
+                navigator.serviceWorker.register('./sw.js?v=28')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -12110,7 +12110,10 @@ WITH CHECK (true);</code>
                 // 2. Verifica solicitação externa da Central de Contas e recupera sessão
                 updateSplashStatus(60, "Validando credenciais...");
                 if (typeof initSynapseAuthPortalParams === 'function') {
-                    initSynapseAuthPortalParams();
+                    const portalReq = initSynapseAuthPortalParams();
+                    if (portalReq && typeof enterSynapsePortalUiMode === 'function') {
+                        enterSynapsePortalUiMode();
+                    }
                 }
                 checkSupabaseAuthSession();
                 await new Promise(resolve => setTimeout(resolve, 120));
@@ -25542,6 +25545,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 }
             } else {
                 // Deslogado
+                const portalOverlay = document.getElementById('synapse-auth-portal-overlay');
+                if (portalOverlay) portalOverlay.style.display = 'none';
                 if (formContainer) formContainer.style.display = 'block';
                 if (userContainer) userContainer.style.display = 'none';
                 if (loggedOutMsg) loggedOutMsg.style.display = 'block';
@@ -28723,6 +28728,12 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 });
             });
 
+            if (typeof initSynapseAuthPortalParams === 'function') {
+                const portalReq = initSynapseAuthPortalParams();
+                if (portalReq && typeof enterSynapsePortalUiMode === 'function') {
+                    enterSynapsePortalUiMode();
+                }
+            }
             if (typeof renderConnectedAppsList === 'function') {
                 renderConnectedAppsList();
             }
@@ -28732,6 +28743,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
         // 13. Central de Contas Synapse (SSO Portal & Credenciais para Outros Apps)
         // ==========================================================================
         const SYNAPSE_HUB_APPS_KEY = 'synapse_connected_apps_v1';
+        const SYNAPSE_PENDING_PORTAL_KEY = 'synapse_pending_portal_request_v1';
         window.pendingSynapsePortalRequest = window.pendingSynapsePortalRequest || null;
         window.activeSynapsePortalContext = window.activeSynapsePortalContext || null;
         let lastPortalSandboxCopyPayload = '';
@@ -28909,8 +28921,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
         function buildSynapseCredentialPayload(app) {
             const cfg = getSynapsePublicAuthConfig();
-            const callbackHint = app.redirectUri || 'Use a URL atual do app (ex: window.location.origin + window.location.pathname)';
-            const portalExampleUrl = `${cfg.portalUrl}?synapse_auth=1&app_id=${encodeURIComponent(app.id)}&app_name=${encodeURIComponent(app.name)}&redirect_uri=<URL_ATUAL_DO_APP>&state=<TOKEN_ALEATORIO>`;
+            const callbackHint = app.redirectUri || 'Use window.location.origin + window.location.pathname (se http/https)';
+            const portalBaseUrl = `${cfg.portalUrl}?synapse_auth=1&app_id=${encodeURIComponent(app.id)}&app_name=${encodeURIComponent(app.name)}`;
             return [
                 'Conecte o sistema de login deste aplicativo à minha Central de Contas do Synapse usando a credencial abaixo.',
                 'Quero que o usuário possa clicar em "Entrar com Synapse" para fazer login com a mesma conta que já usa no Synapse (e também fazer login/cadastro direto, se aplicável).',
@@ -28927,13 +28939,14 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 '=== FIM DA CREDENCIAL ===',
                 '',
                 'O QUE VOCÊ DEVE FAZER NESTE APLICATIVO:',
-                '1. Botão "Entrar com Synapse" (Login em 1 clique via Portal SSO):',
-                '   - Ao clicar no botão, gere um `state` aleatório, salve em `sessionStorage` para validar na volta e redirecione (ou abra popup) para:',
-                `     ${portalExampleUrl}`,
-                '   - Quando o usuário autorizar no Synapse, ele será redirecionado de volta para `redirect_uri` com os dados da sessão no hash da URL (#):',
-                '     #synapse_access_token=...&synapse_refresh_token=...&synapse_uid=...&synapse_email=...&synapse_name=...&synapse_app_id=...&state=...',
-                '   - Se usar `mode=popup`, também pode receber os mesmos campos via `window.addEventListener("message", ...)` validando `event.origin` igual à origem do `SYNAPSE_PORTAL_URL` (`type === "SYNAPSE_AUTH_SUCCESS"`).',
-                '   - Ao receber o retorno: valide se o `state` confere com o salvo em `sessionStorage`, limpe o hash da URL com `history.replaceState` e salve a sessão do usuário autenticado (`synapse_uid`, `synapse_email`, `synapse_name`, `synapse_access_token`).',
+                '1. Botão "Entrar com Synapse" (Login SSO):',
+                '   - Gere um `state` aleatório e salve em `sessionStorage` para validação na volta.',
+                '   - Defina `redirectUri`: use `window.location.origin + window.location.pathname` (se começar com `http:` ou `https:`) ou use a `CALLBACK_URL` acima.',
+                `   - Monte a URL do portal: \`${portalBaseUrl}&redirect_uri=\${encodeURIComponent(redirectUri)}&state=\${encodeURIComponent(state)}&mode=popup\``,
+                '   - IMPORTANTE (para funcionar mesmo dentro de preview/iframe): tente primeiro abrir um popup `window.open(url, "synapse_login", "width=460,height=680")`. Se o popup abrir, escute `window.addEventListener("message", ...)` validando `event.origin` igual à origem de `SYNAPSE_PORTAL_URL` e `event.data?.type === "SYNAPSE_AUTH_SUCCESS"`.',
+                '   - Se o navegador bloquear o popup (ou se preferir redirecionamento na mesma aba), troque `mode=popup` por `mode=redirect` e redirecione a janela principal (`(window.top || window).location.href = urlRedirect`).',
+                '   - No retorno por redirect, leia `window.location.hash`: `#synapse_access_token=...&synapse_refresh_token=...&synapse_uid=...&synapse_email=...&synapse_name=...&synapse_app_id=...&state=...`.',
+                '   - Valide se o `state` retornado confere com o salvo em `sessionStorage`, limpe o hash da URL com `history.replaceState` e salve a sessão do usuário autenticado (`synapse_uid`, `synapse_email`, `synapse_name`, `synapse_access_token`).',
                 '',
                 '2. (Opcional) Login e cadastro direto por e-mail/senha compartilhando a mesma conta Synapse:',
                 `   - Login: POST ${cfg.supabaseUrl}/auth/v1/token?grant_type=password (header "apikey: ${cfg.anonKey}", JSON { email, password })`,
@@ -28988,29 +29001,74 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             });
         }
 
+        function enterSynapsePortalUiMode() {
+            const splash = document.getElementById('splash-screen');
+            if (splash) {
+                splash.style.display = 'none';
+                splash.style.opacity = '0';
+                splash.style.pointerEvents = 'none';
+                splash.style.zIndex = '-99999';
+            }
+            const authGate = document.getElementById('auth-gate-screen');
+            if (authGate) {
+                authGate.style.zIndex = '199999';
+            }
+        }
+
+        function exitSynapsePortalUiMode() {
+            try {
+                sessionStorage.removeItem(SYNAPSE_PENDING_PORTAL_KEY);
+            } catch (e) {}
+            const authGate = document.getElementById('auth-gate-screen');
+            if (authGate) {
+                authGate.style.zIndex = '9998';
+            }
+        }
+
         function initSynapseAuthPortalParams() {
             try {
-                const params = new URLSearchParams(window.location.search);
-                const isPortal = params.get('synapse_auth') === '1' || params.get('synapse_connect') === '1';
+                const searchParams = new URLSearchParams(window.location.search || '');
+                const hashRaw = (window.location.hash || '').replace(/^#/, '');
+                const hashParams = hashRaw.includes('=') ? new URLSearchParams(hashRaw) : new URLSearchParams('');
+                const getParam = (k) => searchParams.get(k) ?? hashParams.get(k);
+
+                const authFlag = (getParam('synapse_auth') || '').toLowerCase();
+                const connectFlag = (getParam('synapse_connect') || '').toLowerCase();
+                const rawAppId = (getParam('app_id') || '').trim();
+                const rawRedirectParam = getParam('redirect_uri') || '';
+
+                const isPortal =
+                    authFlag === '1' ||
+                    authFlag === 'true' ||
+                    connectFlag === '1' ||
+                    connectFlag === 'true' ||
+                    (rawAppId.startsWith('syn_app_') && !!rawRedirectParam);
+
                 if (!isPortal) {
+                    try {
+                        const savedRaw = sessionStorage.getItem(SYNAPSE_PENDING_PORTAL_KEY);
+                        if (savedRaw) {
+                            const saved = JSON.parse(savedRaw);
+                            if (saved && saved.appId) {
+                                window.pendingSynapsePortalRequest = saved;
+                                updateAuthPortalBanner();
+                                return saved;
+                            }
+                        }
+                    } catch (e) {}
                     window.pendingSynapsePortalRequest = null;
                     return null;
                 }
 
-                const appId = (params.get('app_id') || 'app_externo').trim().slice(0, 80);
-                const appName = (params.get('app_name') || 'Aplicativo Externo').trim().slice(0, 60);
-                const rawRedirect = params.get('redirect_uri') || '';
-                const redirectUri = sanitizeSynapseRedirectUri(rawRedirect);
-                const state = (params.get('state') || '').trim().slice(0, 128);
-                const mode = params.get('mode') === 'popup' ? 'popup' : 'redirect';
-
-                if (!redirectUri) {
-                    if (typeof showAppToast === 'function') {
-                        showAppToast('Solicitação externa ignorada: URL de retorno inválida.', 'error');
-                    }
-                    window.pendingSynapsePortalRequest = null;
-                    return null;
+                const appId = (rawAppId || 'app_externo').slice(0, 80);
+                const registeredApp = getConnectedApps().find(a => a.id === appId);
+                const appName = (getParam('app_name') || (registeredApp && registeredApp.name) || 'Aplicativo Externo').trim().slice(0, 60);
+                let redirectUri = sanitizeSynapseRedirectUri(rawRedirectParam);
+                if (!redirectUri && registeredApp && registeredApp.redirectUri) {
+                    redirectUri = sanitizeSynapseRedirectUri(registeredApp.redirectUri);
                 }
+                const state = (getParam('state') || '').trim().slice(0, 128);
+                const mode = getParam('mode') === 'popup' || !!window.opener ? 'popup' : 'redirect';
 
                 window.pendingSynapsePortalRequest = {
                     appId: appId,
@@ -29018,8 +29076,12 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     redirectUri: redirectUri,
                     state: state,
                     mode: mode,
-                    isTestMode: false
+                    isTestMode: !redirectUri && !window.opener
                 };
+                try {
+                    sessionStorage.setItem(SYNAPSE_PENDING_PORTAL_KEY, JSON.stringify(window.pendingSynapsePortalRequest));
+                } catch (e) {}
+
                 updateAuthPortalBanner();
                 return window.pendingSynapsePortalRequest;
             } catch (e) {
@@ -29040,11 +29102,13 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 return;
             }
 
-            let hostLabel = 'Modo de Teste Interativo (Sandbox)';
+            let hostLabel = 'Conexão externa pronta para autorizar após o login';
             if (req.redirectUri) {
                 try {
                     hostLabel = `Destino: ${new URL(req.redirectUri).host}`;
                 } catch (e) {}
+            } else if (req.isTestMode) {
+                hostLabel = 'Modo Sandbox (nenhuma URL de retorno informada)';
             }
 
             if (titleEl) titleEl.textContent = `${req.appName} solicitou entrar com sua conta Synapse`;
@@ -29084,6 +29148,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             const overlay = document.getElementById('synapse-auth-portal-overlay');
             if (!overlay) return;
 
+            enterSynapsePortalUiMode();
             window.activeSynapsePortalContext = req;
 
             const appNameEl = document.getElementById('portal-app-name');
@@ -29201,7 +29266,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 return;
             }
 
-            if (req.mode === 'popup' && window.opener) {
+            if ((req.mode === 'popup' || window.opener) && window.opener) {
                 try {
                     const targetOrigin = new URL(validTarget).origin;
                     window.opener.postMessage({
@@ -29216,6 +29281,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     }, targetOrigin);
                     window.pendingSynapsePortalRequest = null;
                     window.activeSynapsePortalContext = null;
+                    exitSynapsePortalUiMode();
                     window.close();
                     return;
                 } catch (e) {
@@ -29225,6 +29291,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
             window.pendingSynapsePortalRequest = null;
             window.activeSynapsePortalContext = null;
+            exitSynapsePortalUiMode();
             const cleanTarget = validTarget.split('#')[0];
             window.location.href = `${cleanTarget}#${hashParams.toString()}`;
         }
@@ -29243,7 +29310,13 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             const overlay = document.getElementById('synapse-auth-portal-overlay');
             if (overlay) overlay.style.display = 'none';
             window.pendingSynapsePortalRequest = req;
+            if (req) {
+                try {
+                    sessionStorage.setItem(SYNAPSE_PENDING_PORTAL_KEY, JSON.stringify(req));
+                } catch (e) {}
+            }
             supabaseSignOut();
+            enterSynapsePortalUiMode();
             updateAuthPortalBanner();
         }
 
@@ -29252,6 +29325,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             if (overlay) overlay.style.display = 'none';
             window.pendingSynapsePortalRequest = null;
             window.activeSynapsePortalContext = null;
+            exitSynapsePortalUiMode();
             updateAuthPortalBanner();
 
             try {
@@ -29337,7 +29411,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
     </div>
 
     <!-- MODAL DA CENTRAL DE CONTAS (CONSENTIMENTO SSO "ENTRAR COM SYNAPSE") -->
-    <div id="synapse-auth-portal-overlay" style="display: none; position: fixed; inset: 0; z-index: 15000; background: rgba(4, 7, 15, 0.84); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); align-items: center; justify-content: center; padding: 18px; box-sizing: border-box;">
+    <div id="synapse-auth-portal-overlay" style="display: none; position: fixed; inset: 0; z-index: 200000; background: radial-gradient(circle at 50% 20%, rgba(18, 16, 36, 0.98), rgba(4, 7, 15, 0.99)); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); align-items: center; justify-content: center; padding: 18px; box-sizing: border-box;">
         <div style="width: 100%; max-width: 440px; max-height: 92vh; overflow-y: auto; background: linear-gradient(155deg, rgba(17, 24, 39, 0.98), rgba(9, 13, 24, 0.99)); border: 1px solid rgba(139, 92, 246, 0.35); border-radius: 24px; padding: 22px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65); color: #f8fafc;">
             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
                 <img src="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg" alt="Synapse" style="width: 42px; height: 42px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(139, 92, 246, 0.5);">
