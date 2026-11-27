@@ -1,8 +1,8 @@
-const CACHE_NAME = 'console-ia-cache-v24';
+const CACHE_NAME = 'console-ia-cache-v25';
 const urlsToCache = [
   './',
   './index.html',
-  './manifest.json?v=6',
+  './manifest.json?v=7',
   './app/src/main/res/drawable/synapse_logo_1781452080476.jpg'
 ];
 

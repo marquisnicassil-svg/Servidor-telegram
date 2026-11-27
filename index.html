@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#000000" id="theme-color-meta">
+    <meta name="theme-color" content="#060913" id="theme-color-meta">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg">
     <link rel="icon" type="image/jpeg" href="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg">
-    <link rel="manifest" href="./manifest.json?v=6">
+    <link rel="manifest" href="./manifest.json?v=7">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
@@ -72,40 +72,47 @@
            1. Variáveis Nativas & CSS Reset
            ========================================================================== */
         :root {
-            /* Padrão: Super Black AMOLED (Pixels apagados) */
-            --bg-color: #000000;
-            --bg-rgb: 0, 0, 0;
-            --bg-gradient: none;
-            --card-bg-primary: #000000;
-            --card-bg-secondary: #0a0a0a;
+            /* Padrão Moderno: Space Slate Refinado (Sobrescrito ao carregar tema salvo) */
+            --bg-color: #060913;
+            --bg-rgb: 6, 9, 19;
+            --bg-gradient: radial-gradient(circle at 18% 0%, rgba(129, 140, 248, 0.08) 0%, transparent 48%);
+            --card-bg-primary: #0c1222;
+            --card-bg-secondary: #131c31;
+            --card-bg-rgb: 12, 18, 34;
             --card-bg-primary-grad: none;
             --card-bg-secondary-grad: none;
-            --border-color: #1a1a1a;
-            --text-main: #f5f5f5;
-            --text-muted: #737373;
+            --border-color: rgba(148, 163, 184, 0.16);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
             
-            /* Detalhes de Destaque - Sem Azul Inicialmente */
-            --primary: #ffffff; 
-            --primary-rgb: 255, 255, 255;
-            --primary-bg: rgba(255, 255, 255, 0.1);
+            /* Detalhes de Destaque */
+            --primary: #818cf8; 
+            --primary-rgb: 129, 140, 248;
+            --primary-contrast: #ffffff;
+            --primary-bg: rgba(129, 140, 248, 0.14);
             
             /* Utils */
             --success: #10b981;
             --error: #ef4444;
-            --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Arial, sans-serif;
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
             
             /* Safe area insets (Notch de iPhone/Android nativo) */
             --safe-top: env(safe-area-inset-top, 0px);
             --safe-bottom: env(safe-area-inset-bottom, 0px);
 
             /* Parâmetros de customização estética */
-            --btn-border-radius: 16px;
-            --card-border-radius: 20px;
+            --btn-border-radius: 14px;
+            --card-border-radius: 18px;
             --input-border-radius: 12px;
-            --glow-shadow: none;
+            --glow-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
             --border-weight: 1px;
-            --backdrop-filter: none;
+            --backdrop-filter: blur(14px);
             --global-saturation: 100%;
+        }
+
+        h1, h2, h3, .brand h1, #topbar-section-title, .section-header h2, .auth-gate-logo h2, .splash-title {
+            font-family: 'Space Grotesk', var(--font-family);
+            letter-spacing: -0.02em;
         }
 
         /* ==========================================================================
@@ -557,8 +564,14 @@
             flex-direction: column;
         }
 
-        /* Ocultar barra de rolagem (Look de App) */
-        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        /* Ocultar barra de rolagem em touch; sutil e elegante em desktop */
+        ::-webkit-scrollbar { width: 0px; height: 0px; background: transparent; }
+        @media (pointer: fine) {
+            ::-webkit-scrollbar { width: 6px; height: 6px; }
+            ::-webkit-scrollbar-track { background: transparent; }
+            ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.22); border-radius: 999px; }
+            ::-webkit-scrollbar-thumb:hover { background: rgba(var(--primary-rgb, 129, 140, 248), 0.5); }
+        }
 
         .tab-section {
             display: none;
@@ -703,20 +716,27 @@
 
         /* Markdown Styles */
         .chat-message.bot pre {
-            background-color: var(--card-bg-primary);
-            padding: 12px;
+            background-color: rgba(var(--bg-rgb, 6, 9, 19), 0.85);
+            padding: 12px 14px;
             border-radius: 12px;
             overflow-x: auto;
-            margin-top: 10px;
-            margin-bottom: 10px;
+            margin: 10px 0;
             border: 1px solid var(--border-color);
+            font-family: 'Fira Code', Menlo, Monaco, Consolas, monospace;
+            font-size: 0.84em;
+            line-height: 1.5;
         }
         .chat-message.bot code {
-            font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
-            background-color: var(--card-bg-primary);
-            padding: 3px 6px;
+            font-family: 'Fira Code', Menlo, Monaco, Consolas, "Courier New", monospace;
+            background-color: rgba(var(--primary-rgb, 129, 140, 248), 0.12);
+            color: var(--text-main);
+            padding: 2px 6px;
             border-radius: 6px;
             font-size: 0.86em;
+        }
+        .chat-message.bot pre code {
+            background: transparent;
+            padding: 0;
         }
         .chat-message.bot p {
             margin-bottom: 8px;
@@ -726,6 +746,58 @@
         }
         .chat-message.bot strong {
             font-weight: 700;
+        }
+        .chat-message.bot ul,
+        .chat-message.bot ol {
+            margin: 8px 0 8px 18px;
+            padding-left: 4px;
+        }
+        .chat-message.bot li {
+            margin-bottom: 4px;
+        }
+        .chat-message.bot blockquote {
+            margin: 8px 0;
+            padding: 6px 12px;
+            border-left: 3px solid var(--primary);
+            background: rgba(var(--primary-rgb, 129, 140, 248), 0.08);
+            border-radius: 0 8px 8px 0;
+            color: var(--text-muted);
+        }
+        .chat-message.bot h1,
+        .chat-message.bot h2,
+        .chat-message.bot h3,
+        .chat-message.bot h4 {
+            margin: 10px 0 6px;
+            line-height: 1.3;
+            color: var(--text-main);
+        }
+        .chat-message.bot a {
+            color: var(--primary);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+        .chat-message.bot table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 0.85em;
+            overflow-x: auto;
+            display: block;
+        }
+        .chat-message.bot th,
+        .chat-message.bot td {
+            border: 1px solid var(--border-color);
+            padding: 6px 10px;
+            text-align: left;
+        }
+        .chat-message.bot th {
+            background: rgba(var(--primary-rgb, 129, 140, 248), 0.12);
+            font-weight: 700;
+        }
+        .chat-message.bot hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 10px 0;
         }
 
         .chat-input-area {
@@ -1355,7 +1427,7 @@
             font-size: 0.95rem;
             font-weight: 800;
             color: var(--text-main);
-            font-family: Menlo, Monaco, monospace;
+            font-family: 'Fira Code', Menlo, Monaco, monospace;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1449,18 +1521,18 @@
 
         /* Painel Digital do Terminal */
         .logs-panel {
-            background-color: #050608;
+            background-color: rgba(var(--bg-rgb, 5, 6, 8), 0.92);
             border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 12px !important; /* Mais largo, dando mais espaço para as mensagens */
             flex: 1;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+            font-family: 'Fira Code', Menlo, Monaco, Consolas, "Courier New", monospace;
             font-size: 0.82rem;
             color: #d1d5db;
             min-height: 0;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            box-shadow: inset 0 0 24px rgba(0,0,0,0.65);
             border-left: 3px solid var(--primary);
         }
 
@@ -1524,7 +1596,7 @@
         .terminal-cli-container {
             display: flex;
             align-items: center;
-            background-color: #050608;
+            background-color: rgba(var(--bg-rgb, 5, 6, 8), 0.92);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 8px 12px;
@@ -1534,7 +1606,7 @@
 
         .cli-prompt {
             color: var(--primary);
-            font-family: Menlo, Monaco, monospace;
+            font-family: 'Fira Code', Menlo, Monaco, monospace;
             font-size: 0.8rem;
             font-weight: bold;
             user-select: none;
@@ -1546,7 +1618,7 @@
             border: none;
             outline: none;
             color: #d1d5db;
-            font-family: Menlo, Monaco, monospace;
+            font-family: 'Fira Code', Menlo, Monaco, monospace;
             font-size: 0.8rem;
             flex: 1;
             min-width: 0;
@@ -2375,10 +2447,46 @@
             border: 1px solid var(--primary);
         }
         
-        /* Ajuste fino do header principal */
+        /* Ajuste fino do header principal (vidro translúcido reativo ao tema) */
         header {
-            background-color: #000000 !important;
-            padding: calc(0.6rem + var(--safe-top)) 1.2rem 0.6rem !important;
+            background-color: rgba(var(--bg-rgb, 6, 9, 19), 0.78) !important;
+            backdrop-filter: blur(18px) !important;
+            -webkit-backdrop-filter: blur(18px) !important;
+            border-bottom: 1px solid var(--border-color) !important;
+            padding: calc(0.55rem + var(--safe-top)) 1rem 0.55rem !important;
+            position: sticky !important;
+            top: 0;
+            z-index: 900;
+        }
+
+        /* Abas de categoria da Aparência + Botão Voltar */
+        .appearance-tab-btn.active {
+            background: var(--btn-gradient, var(--primary)) !important;
+            color: var(--primary-contrast, #ffffff) !important;
+            box-shadow: 0 4px 14px rgba(var(--primary-rgb, 129, 140, 248), 0.28) !important;
+        }
+        .btn-back:hover {
+            background: rgba(var(--primary-rgb, 129, 140, 248), 0.12) !important;
+            border-color: rgba(var(--primary-rgb, 129, 140, 248), 0.4) !important;
+            color: var(--text-main) !important;
+        }
+
+        /* Enquadramento elegante em telas médias e desktop */
+        @media (min-width: 900px) {
+            #tab-chat .chat-wrapper,
+            #tab-config,
+            #tab-context-browser,
+            #tab-pdf-to-link,
+            #tab-interview-simulator,
+            #tab-admin,
+            #tab-logs .terminal-wrapper {
+                max-width: 940px;
+                width: 100%;
+                margin-inline: auto;
+            }
+            #tab-chat {
+                padding: 10px 16px calc(12px + var(--safe-bottom)) !important;
+            }
         }
 
         /* ==========================================================================
@@ -2389,43 +2497,42 @@
         .tab-section.active {
             display: flex;
             flex-direction: column;
-            animation: tabEnter 0.38s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            animation: tabEnter 0.32s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
 
         @keyframes tabEnter {
             from {
                 opacity: 0;
-                transform: scale(0.975) translateY(16px);
+                transform: translateY(10px);
             }
             to {
                 opacity: 1;
-                transform: scale(1) translateY(0);
+                transform: translateY(0);
             }
         }
 
         /* 2. Animações e Microinterações de Cartões e Botões */
         .supabase-card, .stat-card, .rb-mode-card, .card, .agent-card, .dashboard-action-card, .activity-row, .config-index-item, .chat-message.bot, .chat-message.user {
-            transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), 
-                        box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), 
-                        background-color 0.25s ease, 
-                        border-color 0.25s ease !important;
-            will-change: transform, box-shadow;
+            transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), 
+                        box-shadow 0.24s cubic-bezier(0.16, 1, 0.3, 1), 
+                        background-color 0.22s ease, 
+                        border-color 0.22s ease !important;
         }
 
         /* Touch & Hover animation ao interagir com os cartões */
         .supabase-card:active, .stat-card:active, .rb-mode-card:active, .card:active, .agent-card:active, .dashboard-action-card:active, .config-index-item:active {
-            transform: scale(0.975) translateY(1px) !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+            transform: scale(0.985) translateY(1px) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28) !important;
         }
 
         @media (hover: hover) {
             .supabase-card:hover, .stat-card:hover, .rb-mode-card:hover, .card:hover, .agent-card:hover, .dashboard-action-card:hover, .config-index-item:hover {
-                transform: scale(1.025) translateY(-4px) !important;
-                box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45), 0 0 15px rgba(138, 92, 246, 0.15) !important;
-                border-color: rgba(138, 92, 246, 0.35) !important;
+                transform: translateY(-2px) !important;
+                box-shadow: 0 10px 26px rgba(0, 0, 0, 0.38), 0 0 14px rgba(var(--primary-rgb, 129, 140, 248), 0.14) !important;
+                border-color: rgba(var(--primary-rgb, 129, 140, 248), 0.36) !important;
             }
             .activity-row:hover {
-                transform: scale(1.015) translateY(-1px) !important;
+                transform: translateX(3px) !important;
                 background-color: rgba(255, 255, 255, 0.04) !important;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
             }
@@ -2433,26 +2540,26 @@
 
         /* Animação suave e scale ao clicar em botões */
         button, .btn, .btn-universal, .tab-btn, .drawer-item, .reader-btn, .chat-btn-send {
-            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
+            transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), 
                         background-color 0.2s ease, 
                         border-color 0.2s ease, 
                         box-shadow 0.2s ease !important;
         }
         button:active, .btn:active, .btn-universal:active, .tab-btn:active, .drawer-item:active, .reader-btn:active, .chat-btn-send:active {
-            transform: scale(0.94) translateY(0) !important;
+            transform: scale(0.96) !important;
         }
 
         @media (hover: hover) {
             button:hover, .btn:hover, .btn-universal:hover, .reader-btn:hover, .chat-btn-send:hover {
-                transform: scale(1.04) translateY(-1px) !important;
-                box-shadow: 0 4px 12px rgba(138, 92, 246, 0.28) !important;
+                transform: translateY(-1px) !important;
+                box-shadow: 0 4px 14px rgba(var(--primary-rgb, 129, 140, 248), 0.26) !important;
             }
             .tab-btn:hover:not(.active) {
-                transform: scale(1.04) translateY(-1px) !important;
+                transform: translateY(-1px) !important;
                 background-color: rgba(255, 255, 255, 0.05) !important;
             }
             .drawer-item:hover {
-                transform: scale(1.02) translateX(4px) !important;
+                transform: translateX(4px) !important;
                 background-color: rgba(255, 255, 255, 0.04) !important;
             }
         }
@@ -2814,10 +2921,10 @@
             flex-shrink: 0 !important;
         }
         .chat-input-action-btn:hover {
-            background: rgba(138, 92, 246, 0.12) !important;
-            border-color: rgba(138, 92, 246, 0.4) !important;
+            background: rgba(var(--primary-rgb, 129, 140, 248), 0.14) !important;
+            border-color: rgba(var(--primary-rgb, 129, 140, 248), 0.42) !important;
             color: var(--primary) !important;
-            transform: scale(1.06);
+            transform: scale(1.05);
         }
         .chat-input-action-btn:active {
             transform: scale(0.95);
@@ -2828,8 +2935,8 @@
             width: 34px !important;
             height: 34px !important;
             margin: 5px !important;
-            background: radial-gradient(circle at 30% 30%, #38bdf8, #8b5cf6, #06b6d4) !important;
-            box-shadow: 0 0 12px rgba(139, 92, 246, 0.8), inset -1px -1px 3px rgba(0,0,0,0.4), inset 1px 1px 3px rgba(255,255,255,0.4) !important;
+            background: radial-gradient(circle at 30% 30%, #38bdf8, var(--primary, #8b5cf6), #06b6d4) !important;
+            box-shadow: 0 0 12px rgba(var(--primary-rgb, 139, 92, 246), 0.8), inset -1px -1px 3px rgba(0,0,0,0.4), inset 1px 1px 3px rgba(255,255,255,0.4) !important;
             border-color: transparent !important;
             color: #ffffff !important;
             animation: micOrbePulse 1.2s ease-in-out infinite, orbeRotate 4s linear infinite !important;
@@ -2838,11 +2945,11 @@
         @keyframes micOrbePulse {
             0%, 100% {
                 transform: scale(0.85) !important;
-                box-shadow: 0 0 8px rgba(139, 92, 246, 0.6), inset -1px -1px 2px rgba(0,0,0,0.4);
+                box-shadow: 0 0 8px rgba(var(--primary-rgb, 139, 92, 246), 0.6), inset -1px -1px 2px rgba(0,0,0,0.4);
             }
             50% {
                 transform: scale(1.05) !important;
-                box-shadow: 0 0 16px rgba(var(--primary-rgb), 0.9), inset -1px -1px 2px rgba(0,0,0,0.4);
+                box-shadow: 0 0 16px rgba(var(--primary-rgb, 139, 92, 246), 0.9), inset -1px -1px 2px rgba(0,0,0,0.4);
             }
         }
         
@@ -2852,17 +2959,18 @@
             position: absolute;
             bottom: 58px;
             left: 0;
-            background: rgba(15, 18, 28, 0.96) !important;
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            background: rgba(var(--card-bg-rgb, 15, 23, 42), 0.96) !important;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid var(--border-color) !important;
             border-radius: 16px !important;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6) !important;
-            width: 200px !important;
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6) !important;
+            width: 210px !important;
             padding: 8px !important;
             z-index: 1000 !important;
             flex-direction: column;
             gap: 4px;
-            transform: scale(0.9) translateY(10px);
+            transform: scale(0.92) translateY(10px);
             opacity: 0;
             transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), 
                         opacity 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
@@ -2880,7 +2988,7 @@
             padding: 10px 14px !important;
             border: none !important;
             background: transparent !important;
-            color: #ffffff !important;
+            color: var(--text-main, #ffffff) !important;
             font-size: 0.88rem !important;
             font-weight: 500 !important;
             text-align: left !important;
@@ -2889,7 +2997,7 @@
             transition: all 0.2s ease !important;
         }
         .attachment-menu-item:hover {
-            background: rgba(138, 92, 246, 0.15) !important;
+            background: rgba(var(--primary-rgb, 129, 140, 248), 0.16) !important;
             color: var(--primary) !important;
             transform: translateX(4px);
         }
@@ -3583,53 +3691,53 @@
     <!-- Cabeçalho Fixo Nativo -->
     <!-- Cabeçalho Principal Unificado -->
     <header style="position: relative;">
-        <div class="header-container" style="display: flex; align-items: center; justify-content: space-between; position: relative;">
-            <button id="menu-drawer-btn" onclick="toggleDrawer(true)" style="background: transparent; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; outline: none; margin-right: 8px; flex-shrink: 0;">
-                ☰
+        <div class="header-container" style="display: flex; align-items: center; justify-content: space-between; position: relative; gap: 8px;">
+            <button id="menu-drawer-btn" onclick="toggleDrawer(true)" aria-label="Abrir menu" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 11px; color: var(--text-main); cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; outline: none; flex-shrink: 0;">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="14" y2="17"></line></svg>
             </button>
 
             <!-- Título padrão para abas secundárias (não-chat) -->
             <h1 id="topbar-section-title" style="display: none; font-size: 1.05rem; font-weight: 700; text-align: center; margin: 0; flex: 1; color: var(--text-main);">💬 Conversas</h1>
 
             <!-- Seletor Rápido de Agente Unificado do Chat -->
-            <div id="chat-agent-selector-btn" onclick="toggleChatAgentDropdown(event)" style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; cursor: pointer; padding: 4px 6px; border-radius: 12px; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'" title="Toque para trocar de agente">
-                <div id="chat-active-agent-icon" style="font-size: 1.15rem; background: rgba(var(--primary-rgb, 139, 92, 246), 0.15); border: 1px solid rgba(var(--primary-rgb, 139, 92, 246), 0.3); border-radius: 10px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">🤖</div>
+            <div id="chat-agent-selector-btn" onclick="toggleChatAgentDropdown(event)" style="display: flex; align-items: center; gap: 9px; flex: 1; min-width: 0; cursor: pointer; padding: 4px 10px 4px 5px; border-radius: 13px; border: 1px solid transparent; transition: background 0.2s, border-color 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'; this.style.borderColor='var(--border-color)'" onmouseout="this.style.background='transparent'; this.style.borderColor='transparent'" title="Toque para trocar de agente">
+                <div id="chat-active-agent-icon" style="font-size: 1.15rem; background: rgba(var(--primary-rgb, 129, 140, 248), 0.14); border: 1px solid rgba(var(--primary-rgb, 129, 140, 248), 0.32); border-radius: 10px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">🤖</div>
                 <div style="display: flex; flex-direction: column; min-width: 0;">
                     <div style="display: flex; align-items: center; gap: 4px;">
-                        <h3 id="chat-active-agent-name" style="margin: 0; font-size: 0.92rem; font-weight: 750; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: -0.2px;">Geral</h3>
-                        <svg viewBox="0 0 24 24" width="13" height="13" fill="var(--text-muted)" style="flex-shrink: 0; opacity: 0.7;"><path d="M7 10l5 5 5-5z"/></svg>
+                        <h3 id="chat-active-agent-name" style="margin: 0; font-size: 0.94rem; font-weight: 700; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: -0.2px;">Geral</h3>
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="var(--text-muted)" style="flex-shrink: 0; opacity: 0.75;"><path d="M7 10l5 5 5-5z"/></svg>
                     </div>
                     <!-- Único Indicador Online -->
-                    <span style="font-size: 0.65rem; color: var(--text-muted); line-height: 1; margin-top: 1px; display: flex; align-items: center; gap: 4px;">
-                        <span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981; display: inline-block;"></span> Online
+                    <span style="font-size: 0.66rem; color: var(--text-muted); line-height: 1.1; margin-top: 1px; display: flex; align-items: center; gap: 5px;">
+                        <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px rgba(16,185,129,0.65); display: inline-block;"></span> Online
                     </span>
                 </div>
             </div>
 
             <!-- Dropdown de Troca Rápida de Agente ancorado ao seletor -->
-            <div id="chat-agent-dropdown" style="display: none; position: absolute; top: calc(100% + 4px); left: 50px; z-index: 12000; background: #0e1224; border: 1px solid var(--border-color); border-radius: 14px; padding: 6px; box-shadow: 0 12px 32px rgba(0,0,0,0.7); min-width: 230px; max-width: calc(100vw - 70px); max-height: 300px; overflow-y: auto; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);"></div>
+            <div id="chat-agent-dropdown" style="display: none; position: absolute; top: calc(100% + 6px); left: 52px; z-index: 12000; background: rgba(var(--card-bg-rgb, 15, 23, 42), 0.96); border: 1px solid var(--border-color); border-radius: 16px; padding: 6px; box-shadow: 0 16px 38px rgba(0,0,0,0.65); min-width: 235px; max-width: calc(100vw - 70px); max-height: 310px; overflow-y: auto; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);"></div>
 
             <!-- Ações do Cabeçalho do Chat -->
             <div style="display: flex; align-items: center; gap: 6px; min-width: 60px; justify-content: flex-end; flex-shrink: 0;">
                 <!-- Botão Discreto de Nova Sessão / Reiniciar Chat -->
-                <button id="btn-chat-new-session" onclick="startNewChatSession()" class="chat-header-btn" title="Nova Sessão / Conversa" style="display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 10px; background: rgba(var(--primary-rgb, 139, 92, 246), 0.12); border: 1px solid rgba(var(--primary-rgb, 139, 92, 246), 0.28); color: var(--primary); font-size: 0.85rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                    🔄
+                <button id="btn-chat-new-session" onclick="startNewChatSession()" class="chat-header-btn" title="Nova Sessão / Conversa" aria-label="Nova sessão" style="display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 11px; background: rgba(var(--primary-rgb, 129, 140, 248), 0.12); border: 1px solid rgba(var(--primary-rgb, 129, 140, 248), 0.28); color: var(--primary); cursor: pointer; transition: all 0.2s;">
+                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
                 </button>
 
                 <!-- Menu de Três Pontos (Opções) Sincronizado -->
                 <div id="header-three-dots-container" style="position: relative; display: inline-block;">
-                    <button id="three-dots-btn" onclick="toggleThreeDotsMenu()" style="background: transparent; border: none; color: var(--text-main); font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; outline: none; opacity: 0.8; transition: opacity 0.2s;" title="Mais Opções" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
-                        ⋮
+                    <button id="three-dots-btn" onclick="toggleThreeDotsMenu()" aria-label="Mais opções" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 11px; color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; outline: none; opacity: 0.9; transition: opacity 0.2s;" title="Mais Opções" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.9'">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><circle cx="12" cy="5" r="1.75"/><circle cx="12" cy="12" r="1.75"/><circle cx="12" cy="19" r="1.75"/></svg>
                     </button>
-                    <div id="three-dots-dropdown" style="display: none; position: absolute; right: 0; top: 40px; background-color: #0c0a0f; border: 1px solid var(--border-color); border-radius: 12px; width: 180px; z-index: 10001; box-shadow: 0 4px 20px rgba(0,0,0,0.8); overflow: hidden;">
-                        <button onclick="clearChat(); toggleThreeDotsMenu()" style="width: 100%; padding: 12px; background: transparent; border: none; color: #fff; text-align: left; cursor: pointer; font-size: 0.85rem; display: block; border-bottom: 1px solid var(--border-color); transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.05)'" onmouseout="this.style.backgroundColor='transparent'">
-                            💬 Reiniciar Chat
+                    <div id="three-dots-dropdown" style="display: none; position: absolute; right: 0; top: 42px; background-color: rgba(var(--card-bg-rgb, 15, 23, 42), 0.96); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid var(--border-color); border-radius: 14px; width: 190px; z-index: 10001; box-shadow: 0 12px 32px rgba(0,0,0,0.65); overflow: hidden;">
+                        <button onclick="clearChat(); toggleThreeDotsMenu()" style="width: 100%; padding: 12px 14px; background: transparent; border: none; color: var(--text-main); text-align: left; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-color); transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.06)'" onmouseout="this.style.backgroundColor='transparent'">
+                            <span>💬</span><span>Reiniciar Chat</span>
                         </button>
-                        <button onclick="simulateActivity(); toggleThreeDotsMenu()" style="width: 100%; padding: 12px; background: transparent; border: none; color: #fff; text-align: left; cursor: pointer; font-size: 0.85rem; display: block; border-bottom: 1px solid var(--border-color); transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.05)'" onmouseout="this.style.backgroundColor='transparent'">
-                            ⚡ Simular Chamadas
+                        <button onclick="simulateActivity(); toggleThreeDotsMenu()" style="width: 100%; padding: 12px 14px; background: transparent; border: none; color: var(--text-main); text-align: left; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-color); transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.06)'" onmouseout="this.style.backgroundColor='transparent'">
+                            <span>⚡</span><span>Simular Chamadas</span>
                         </button>
-                        <button onclick="clearTerminalReal(); toggleThreeDotsMenu()" style="width: 100%; padding: 12px; background: transparent; border: none; color: #fff; text-align: left; cursor: pointer; font-size: 0.85rem; display: block; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.05)'" onmouseout="this.style.backgroundColor='transparent'">
-                            🖥️ Limpar Terminal
+                        <button onclick="clearTerminalReal(); toggleThreeDotsMenu()" style="width: 100%; padding: 12px 14px; background: transparent; border: none; color: var(--text-main); text-align: left; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.06)'" onmouseout="this.style.backgroundColor='transparent'">
+                            <span>🖥️</span><span>Limpar Terminal</span>
                         </button>
                     </div>
                 </div>
@@ -3768,10 +3876,10 @@
         
         <!-- ABA 1: CONSOLE DE CHAT (Playground) -->
         <section id="tab-chat" class="tab-section active">
-            <div class="chat-wrapper" style="border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--border-color); background: rgba(12, 15, 29, 0.45); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25); position: relative;">
+            <div class="chat-wrapper" style="border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--border-color); background: rgba(var(--card-bg-rgb, 12, 18, 34), 0.52); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); box-shadow: 0 12px 36px rgba(0, 0, 0, 0.28); position: relative;">
                 <div class="chat-messages" id="chat-messages" style="flex: 1;">
                     <div class="chat-message bot has-avatar">
-                        <div class="chat-msg-avatar" style="position: absolute; left: 8px; top: 8px; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(var(--primary-rgb, 139, 92, 246), 0.15); border: 1.5px solid var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.3); z-index: 2;">
+                        <div class="chat-msg-avatar" style="position: absolute; left: 8px; top: 8px; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(var(--primary-rgb, 129, 140, 248), 0.16); border: 1.5px solid var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.3); z-index: 2;">
                             <span style="font-size: 0.85rem; line-height: 1;">🤖</span>
                         </div>
                         <div>
@@ -3780,11 +3888,11 @@
                         <button class="reader-btn" data-text="Olá! Como posso ajudar você hoje?" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 6px; bottom: 6px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 50%; color: var(--text-muted); cursor: pointer; font-size: 0.85rem; width: 26px; height: 26px; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; opacity: 0.75; transition: all 0.2s ease;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">🔊</button>
                     </div>
                 </div>
-                <div id="chat-input-area" class="chat-input-area" style="position: relative; display: flex; align-items: center; gap: 8px; padding: 8px 10px 10px 10px; background: rgba(14, 18, 36, 0.75); border-top: 1px solid var(--border-color); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-radius: 0 0 18px 18px;">
+                <div id="chat-input-area" class="chat-input-area" style="position: relative; display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: rgba(var(--card-bg-rgb, 12, 18, 34), 0.84); border-top: 1px solid var(--border-color); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 0 0 18px 18px;">
                     <!-- Botão de Anexos (Lado Esquerdo) -->
                     <div style="position: relative; display: flex; align-items: center; flex-shrink: 0; order: 1 !important;">
-                        <button id="btn-attachments" onclick="toggleAttachmentMenu(event)" class="chat-input-action-btn" title="Anexar arquivos" style="outline: none; width: 38px !important; height: 38px !important;">
-                            📎
+                        <button id="btn-attachments" onclick="toggleAttachmentMenu(event)" class="chat-input-action-btn" title="Anexar arquivos" aria-label="Anexar arquivos" style="outline: none; width: 38px !important; height: 38px !important;">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                         </button>
                         
                         <!-- Menu de Anexos Popup -->
@@ -3825,11 +3933,11 @@
                     </button>
 
                     <!-- Barra de Gravação Ativa -->
-                    <div id="recording-bar" style="display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: #0b0d19; border: 1px solid var(--primary); border-radius: 18px; z-index: 150; align-items: center; justify-content: space-between; padding: 0 14px; box-shadow: 0 0 15px rgba(138, 92, 246, 0.4); animation: slideInUp 0.2s cubic-bezier(0.1, 0.9, 0.2, 1); height: 100%; box-sizing: border-box;">
+                    <div id="recording-bar" style="display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: rgba(var(--card-bg-rgb, 11, 13, 25), 0.96); border: 1px solid var(--primary); border-radius: 18px; z-index: 150; align-items: center; justify-content: space-between; padding: 0 14px; box-shadow: 0 0 18px rgba(var(--primary-rgb, 129, 140, 248), 0.35); animation: slideInUp 0.2s cubic-bezier(0.1, 0.9, 0.2, 1); height: 100%; box-sizing: border-box;">
                         <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;">
                             <!-- Red Recording dot -->
                             <div class="recording-indicator-dot"></div>
-                            <span id="recording-timer" style="font-family: monospace; font-size: 0.9rem; color: #fff; min-width: 45px; font-weight: bold;">00:00</span>
+                            <span id="recording-timer" style="font-family: 'Fira Code', monospace; font-size: 0.9rem; color: var(--text-main); min-width: 45px; font-weight: bold;">00:00</span>
                             
                             <!-- Voice Wave bars -->
                             <div class="voice-wave-container" style="flex: 1; min-width: 0; max-width: 200px;">
@@ -3849,7 +3957,7 @@
                             <button onclick="cancelRecording(event)" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; border-radius: 20px; padding: 6px 12px; font-size: 0.8rem; font-weight: bold; cursor: pointer; transition: all 0.2s; white-space: nowrap;">
                                 Cancelar
                             </button>
-                            <button onclick="stopRecordingAndConvert(event)" style="background: var(--primary); border: none; color: #000; border-radius: 20px; padding: 6px 14px; font-size: 0.8rem; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 10px rgba(138, 92, 246, 0.4); white-space: nowrap;">
+                            <button onclick="stopRecordingAndConvert(event)" style="background: var(--primary); border: none; color: var(--primary-contrast, #000); border-radius: 20px; padding: 6px 14px; font-size: 0.8rem; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 12px rgba(var(--primary-rgb, 129, 140, 248), 0.38); white-space: nowrap;">
                                 Concluir 📥
                             </button>
                         </div>
@@ -3869,7 +3977,7 @@
                         Crie, edite e organize seus agentes de IA personalizados.
                     </p>
                 </div>
-                <button class="btn-universal" style="background: var(--btn-gradient, var(--primary)); color: #fff; border: none; border-radius: 12px; padding: 9px 16px; font-size: 0.84rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(var(--primary-rgb, 139, 92, 246), 0.25);" onclick="toggleAgentForm(true)" data-i18n="agents_new_btn">
+                <button class="btn-universal" style="background: var(--btn-gradient, var(--primary)); color: var(--primary-contrast, #fff); border: none; border-radius: 12px; padding: 9px 16px; font-size: 0.84rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(var(--primary-rgb, 129, 140, 248), 0.25);" onclick="toggleAgentForm(true)" data-i18n="agents_new_btn">
                     + Criar agente
                 </button>
             </div>
@@ -3943,7 +4051,7 @@
                         <button type="button" class="btn-universal" style="background-color: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 10px; padding: 9px 18px; font-size: 0.82rem; font-weight: 600; cursor: pointer;" onclick="toggleAgentForm(false)" data-i18n="btn_cancel">
                             Cancelar
                         </button>
-                        <button type="button" class="btn-universal" style="background: var(--btn-gradient, var(--primary)); color: #fff; border: none; border-radius: 10px; padding: 9px 20px; font-size: 0.82rem; font-weight: 700; cursor: pointer;" onclick="saveAgent()" data-i18n="agent_btn_save">
+                        <button type="button" class="btn-universal" style="background: var(--btn-gradient, var(--primary)); color: var(--primary-contrast, #fff); border: none; border-radius: 10px; padding: 9px 20px; font-size: 0.82rem; font-weight: 700; cursor: pointer;" onclick="saveAgent()" data-i18n="agent_btn_save">
                             Salvar Agente ✓
                         </button>
                     </div>
@@ -3989,7 +4097,7 @@
                 <span style="font-size: 3rem;">⚠️</span>
                 <h3 style="color: #fff; margin: 0; font-size: 1.2rem;">Não foi possível carregar os dados do Dashboard</h3>
                 <p id="dashboard-error-message" style="color: var(--text-muted); font-size: 0.9rem; margin: 0; max-width: 400px; line-height: 1.4;">Ocorreu um erro ao processar as informações locais do workspace.</p>
-                <button class="btn-universal" onclick="retryDashboardLoad()" style="background-color: var(--primary); color: #000; border: none; border-radius: 20px; padding: 10px 24px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                <button class="btn-universal" onclick="retryDashboardLoad()" style="background-color: var(--primary); color: var(--primary-contrast, #000); border: none; border-radius: 20px; padding: 10px 24px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
                     🔄 Tentar Novamente
                 </button>
             </div>
@@ -4033,7 +4141,7 @@
                     left: 0;
                     right: 0;
                     bottom: 0;
-                    background: radial-gradient(circle at 12% 12%, rgba(139, 92, 246, 0.08), transparent 60%);
+                    background: radial-gradient(circle at 12% 12%, rgba(var(--primary-rgb, 129, 140, 248), 0.1), transparent 60%);
                     pointer-events: none;
                 }
 
@@ -4538,16 +4646,16 @@
                     <!-- Input Box do Link Gerado -->
                     <div>
                         <label style="display: block; font-size: 0.75rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase; margin-bottom: 6px;">Link Compartilhável Gerado:</label>
-                        <div style="display: flex; gap: 8px;">
-                            <input type="text" id="pdf-result-link" class="form-control" readonly style="background: rgba(0, 0, 0, 0.2); font-size: 0.82rem; height: 42px;" onclick="this.select()">
-                            <button class="btn-universal" style="background-color: var(--primary); color: #000; font-weight: bold; border: none; padding: 0 16px; border-radius: 10px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 4px;" onclick="copyPdfLink()">
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <input type="text" id="pdf-result-link" class="form-control" readonly style="background: rgba(0, 0, 0, 0.2); font-size: 0.82rem; height: 42px; flex: 1; min-width: 180px;" onclick="this.select()">
+                            <button class="btn-universal" style="background-color: var(--primary); color: var(--primary-contrast, #000); font-weight: bold; border: none; padding: 0 16px; height: 42px; border-radius: 10px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 4px;" onclick="copyPdfLink()">
                                 📋 <span style="font-size: 0.75rem;">Copiar</span>
                             </button>
                         </div>
                     </div>
 
                     <!-- Ações de visualização e exclusão -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 4px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 8px; margin-top: 4px;">
                         <button class="btn-universal" style="background-color: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); color: #60a5fa; font-weight: 500; padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 6px; justify-content: center; font-size: 0.75rem;" onclick="openUploadedPdf()">
                             <span>👁️</span> Abrir PDF
                         </button>
@@ -4599,7 +4707,7 @@
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;">
                         <div>
                             <label style="display:block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Área Profissional:</label>
                             <select id="int-select-area" class="form-control" style="background: #0f172a; color: #fff; border: 1px solid var(--border-color); height: 48px; border-radius: 12px; padding: 0 14px;" onchange="updateIntAreaIcon()">
@@ -4623,7 +4731,7 @@
                     </div>
                 </div>
 
-                <button class="btn-universal" style="background-color: var(--primary); color: #000; border: none; border-radius: 24px; padding: 14px; font-size: 0.95rem; font-weight: 600; cursor: pointer; text-align: center; display: block; width: 100%; transition: opacity 0.2s; margin-top: 10px;" onclick="startWebInterview()">🔥 INICIAR ENTREVISTA COM IA</button>
+                <button class="btn-universal" style="background-color: var(--primary); color: var(--primary-contrast, #000); border: none; border-radius: 24px; padding: 14px; font-size: 0.95rem; font-weight: 600; cursor: pointer; text-align: center; display: block; width: 100%; transition: opacity 0.2s; margin-top: 10px;" onclick="startWebInterview()">🔥 INICIAR ENTREVISTA COM IA</button>
 
                 <!-- History panel -->
                 <div id="int-history-root" style="margin-top: 20px;">
@@ -4635,7 +4743,7 @@
             </div>
 
             <!-- Chat playing container -->
-            <div id="int-chat-container" style="display: none; flex-direction: column; height: 500px; border: 1px solid var(--border-color); border-radius: 16px; background: rgba(var(--bg-rgb, 0,0,0), 0.22); overflow: hidden;">
+            <div id="int-chat-container" style="display: none; flex-direction: column; height: min(540px, 68dvh); border: 1px solid var(--border-color); border-radius: 16px; background: rgba(var(--bg-rgb, 0,0,0), 0.22); overflow: hidden;">
                 <div style="background: rgba(var(--primary-rgb, 255,255,255), 0.03); padding: 14px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <h4 id="int-chat-title" style="margin: 0; font-size: 1rem; color: var(--text-main);">Entrevista em Curso</h4>
@@ -4733,9 +4841,9 @@
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <button class="btn-universal" style="background-color: var(--primary); color: #000; border: none; border-radius: 20px; padding: 12px; font-weight: 600; cursor: pointer;" onclick="retakeWebInterview()">Refazer Treino</button>
-                    <button class="btn-universal" style="background-color: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-color); border-radius: 20px; padding: 12px; font-weight: 600; cursor: pointer;" onclick="shareWebReport()">Compartilhar</button>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">
+                    <button class="btn-universal" style="background-color: var(--primary); color: var(--primary-contrast, #000); border: none; border-radius: 20px; padding: 12px; font-weight: 600; cursor: pointer;" onclick="retakeWebInterview()">Refazer Treino</button>
+                    <button class="btn-universal" style="background-color: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 20px; padding: 12px; font-weight: 600; cursor: pointer;" onclick="shareWebReport()">Compartilhar</button>
                 </div>
 
                 <button class="btn-universal" style="background-color: transparent; color: var(--text-muted); border: 1px solid var(--border-color); border-radius: 20px; padding: 12px; font-weight: 500; cursor: pointer;" onclick="closeWebResult()">Voltar ao Simulador</button>
@@ -4792,6 +4900,11 @@
                     display: grid;
                     grid-template-columns: 1fr 1fr;
                     gap: 12px;
+                }
+                @media (max-width: 540px) {
+                    .rb-row {
+                        grid-template-columns: 1fr;
+                    }
                 }
                 .rb-repeater-item {
                     background: rgba(255, 255, 255, 0.01);
@@ -5360,7 +5473,7 @@
                         <input type="url" id="context-url-input" class="form-control" style="border-radius: 10px; padding: 12px; font-size: 0.9rem;" placeholder="https://exemplo.com/noticia-tecnologia-futebol">
                     </div>
                     
-                    <button class="btn-universal" onclick="processContextUrlWeb()" style="background-color: var(--primary); color: var(--bg-color); border: none; font-weight: bold; border-radius: 12px; height: 48px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <button class="btn-universal" onclick="processContextUrlWeb()" style="background-color: var(--primary); color: var(--primary-contrast, #000); border: none; font-weight: bold; border-radius: 12px; height: 48px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
                         ⚡ Extrair e Resumir no Chat
                     </button>
                 </div>
@@ -5376,16 +5489,16 @@
                     <!-- Adicionar recurso inline -->
                     <div style="background-color: var(--card-bg-secondary); padding: 12px; border-radius: 10px; border: 1px dashed var(--border-color);">
                         <span style="font-size: 0.75rem; color: var(--primary); font-weight: bold; display: block; margin-bottom: 8px; text-transform: uppercase;">➕ Cadastrar Novo Recurso / Portal de Notícia</span>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr 100px; gap: 8px; margin-bottom: 8px;">
-                            <input type="text" id="new-resource-name" class="form-control" placeholder="Nome do Portal" style="font-size: 0.8rem; height: 36px; padding: 6px 10px; border-radius: 6px;">
-                            <input type="url" id="new-resource-url" class="form-control" placeholder="URL do Portal (ex: https://site.com)" style="font-size: 0.8rem; height: 36px; padding: 6px 10px; border-radius: 6px;">
-                            <select id="new-resource-category" class="form-control" style="font-size: 0.8rem; height: 36px; padding: 6px; border-radius: 6px; background-color: var(--bg-color); color: #fff; border: 1px solid var(--border-color);">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-bottom: 8px;">
+                            <input type="text" id="new-resource-name" class="form-control" placeholder="Nome do Portal" style="font-size: 0.8rem; height: 38px; padding: 6px 10px; border-radius: 8px;">
+                            <input type="url" id="new-resource-url" class="form-control" placeholder="URL do Portal (ex: https://site.com)" style="font-size: 0.8rem; height: 38px; padding: 6px 10px; border-radius: 8px;">
+                            <select id="new-resource-category" class="form-control" style="font-size: 0.8rem; height: 38px; padding: 6px; border-radius: 8px; background-color: var(--bg-color); color: var(--text-main); border: 1px solid var(--border-color);">
                                 <option value="Tecnologia">💻 Tech</option>
                                 <option value="Futebol">⚽ Futebol</option>
                                 <option value="Geral">🌐 Geral</option>
                             </select>
                         </div>
-                        <button class="btn-universal" onclick="addNewResourceWeb()" style="padding: 6px 12px; font-size: 0.75rem; border-radius: 6px; background-color: var(--card-bg); border: 1px solid var(--border-color); color: var(--primary); font-weight: bold; cursor: pointer; width: 100%; display: block;">
+                        <button class="btn-universal" onclick="addNewResourceWeb()" style="padding: 8px 12px; font-size: 0.75rem; border-radius: 8px; background-color: var(--card-bg); border: 1px solid var(--border-color); color: var(--primary); font-weight: bold; cursor: pointer; width: 100%; display: block;">
                             Adicionar nas Minhas Fontes de Notícias
                         </button>
                     </div>
@@ -5401,16 +5514,16 @@
                     <!-- Barra de busca no recurso -->
                     <div>
                         <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 6px;">O que deseja pesquisar nessa fonte?</label>
-                        <div style="display: flex; gap: 8px; position: relative; z-index: 10;">
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; position: relative; z-index: 10;">
                             <input type="text" 
                                    id="news-search-query" 
                                    class="form-control" 
                                    placeholder="Digite palavras-chave (ex: Flamengo, Inteligência Artificial, Gols, VAR...)" 
-                                   style="border-radius: 8px; padding: 14px 12px; font-size: 0.9rem; flex: 1; background-color: var(--card-bg-primary); border: 2px solid var(--border-color); color: #fff; pointer-events: auto !important; -webkit-user-select: text !important; user-select: text !important; position: relative; z-index: 100; cursor: text;"
+                                   style="border-radius: 8px; padding: 12px; font-size: 0.9rem; flex: 1; min-width: 180px; background-color: var(--card-bg-primary); border: 2px solid var(--border-color); color: var(--text-main); pointer-events: auto !important; -webkit-user-select: text !important; user-select: text !important; position: relative; z-index: 100; cursor: text;"
                                    onfocus="this.style.borderColor='var(--primary)';" 
                                    onblur="this.style.borderColor='var(--border-color)';"
                                    autocomplete="off">
-                            <button class="btn-universal" onclick="performNewsSearchWeb()" style="background-color: var(--primary); color: var(--bg-color); padding: 0 16px; border-radius: 8px; font-size: 0.85rem; font-weight: bold; border: none; cursor: pointer; position: relative; z-index: 15;">
+                            <button class="btn-universal" onclick="performNewsSearchWeb()" style="background-color: var(--primary); color: var(--primary-contrast, #000); padding: 0 18px; min-height: 44px; border-radius: 8px; font-size: 0.85rem; font-weight: bold; border: none; cursor: pointer; position: relative; z-index: 15;">
                                 🔍 Buscar
                             </button>
                         </div>
@@ -5428,7 +5541,7 @@
             </div>
 
             <div class="supabase-card" id="context-browser-status-card" style="display: none; border-color: var(--primary);">
-                <div class="supabase-card-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div class="supabase-card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; width: 100%;">
                     <span class="supabase-card-title" style="color: var(--primary); display: flex; align-items: center; gap: 8px; margin: 0;">📊 Status da Extração</span>
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <button class="btn-universal" onclick="clearExtractionHistory()" style="background-color: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 4px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.backgroundColor='rgba(239, 68, 68, 0.25)'" onmouseout="this.style.backgroundColor='rgba(239, 68, 68, 0.15)'">
@@ -5476,7 +5589,7 @@
                         <button type="button" onclick="togglePasswordVisibility('admin-pin-input', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Senha">👁️</button>
                     </div>
                 </div>
-                <button class="btn-universal" onclick="tryUnlockAdminPanel()" style="background-color: var(--primary); color: var(--bg-color); border: none; font-weight: bold; border-radius: 12px; height: 48px; width: 100%; cursor: pointer;">
+                <button class="btn-universal" onclick="tryUnlockAdminPanel()" style="background-color: var(--primary); color: var(--primary-contrast, #000); border: none; font-weight: bold; border-radius: 12px; height: 48px; width: 100%; cursor: pointer;">
                     🔓 Desbloquear Painel
                 </button>
                 <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 15px; line-height: 1.4;">
@@ -7564,12 +7677,12 @@ CREATE TRIGGER on_synapse_user_signed_up
                     </div>
                 </div>
 
-                <div class="form-group" style="display: flex; gap: 10px;">
-                    <div style="flex: 1;">
+                <div class="form-group" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    <div style="flex: 1; min-width: 190px;">
                         <label>Endpoint URL</label>
                         <input type="text" id="base-url" class="form-control" value="https://generativelanguage.googleapis.com/">
                     </div>
-                    <div style="width: 38%; min-width: 150px;">
+                    <div style="flex: 1; min-width: 170px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                             <label style="margin-bottom: 0;">Modelo</label>
                             <button type="button" class="btn-quick-sync-inline" onclick="syncProviderModels(apiType, false)" title="Sincronizar modelos do provedor ativo agora">
@@ -7656,12 +7769,12 @@ CREATE TRIGGER on_synapse_user_signed_up
                     </div>
 
                     <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <div style="display: flex; gap: 8px;">
-                            <div style="flex: 1;">
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            <div style="flex: 1; min-width: 190px;">
                                 <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">URL do Projeto</label>
                                 <input type="text" id="supabase-url" class="form-control" style="border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;" placeholder="https://seu-slug.supabase.co" value="https://hqnlyksuprjdabcgpqdl.supabase.co">
                             </div>
-                            <div style="width: 35%;">
+                            <div style="flex: 0.6; min-width: 130px;">
                                 <label style="font-size: 0.70rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Tabela</label>
                                 <input type="text" id="supabase-table" class="form-control" style="border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;" placeholder="chat_backups" value="chat_backups">
                             </div>
@@ -8054,22 +8167,22 @@ WITH CHECK (true);</code>
                     </div>
 
                     <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px;">
-                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px;">
+                            <div style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 170px;">
                                 <span style="font-size: 0.82rem; font-weight: 600; color: #fff;">Limpar Cache da Aplicação</span>
                                 <span style="font-size: 0.7rem; color: var(--text-muted);">Redefine caches locais e força atualização de componentes</span>
                             </div>
-                            <button onclick="forceAppUpdateAndClearCache()" style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; border-radius: 8px; padding: 6px 12px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.2s;">
+                            <button onclick="forceAppUpdateAndClearCache()" style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; border-radius: 8px; padding: 7px 12px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.2s; white-space: nowrap;">
                                 🔄 Limpar Cache
                             </button>
                         </div>
 
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px;">
-                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px;">
+                            <div style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 170px;">
                                 <span style="font-size: 0.82rem; font-weight: 600; color: #fff;">Instalação PWA</span>
                                 <span style="font-size: 0.7rem; color: var(--text-muted);">Instalar o Synapse como Progressive Web App no dispositivo</span>
                             </div>
-                            <button onclick="installPWA()" style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa; border-radius: 8px; padding: 6px 12px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.2s;">
+                            <button onclick="installPWA()" style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa; border-radius: 8px; padding: 7px 12px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.2s; white-space: nowrap;">
                                 ⬇️ Instalar PWA
                             </button>
                         </div>
@@ -11892,7 +12005,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=24')
+                navigator.serviceWorker.register('./sw.js?v=25')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
