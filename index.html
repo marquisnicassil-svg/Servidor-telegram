@@ -1376,16 +1376,23 @@
             to { transform: scale(1.25); opacity: 1; box-shadow: 0 0 6px var(--primary); }
         }
 
+        @media (max-width: 480px) {
+            .terminal-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         /* Barra de Ações do Terminal */
         .terminal-toolbar {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
             background-color: var(--card-bg-secondary);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 8px 12px;
-            gap: 10px;
+            gap: 8px 10px;
             flex-shrink: 0;
         }
 
@@ -1496,18 +1503,20 @@
         .badge-sys { background: rgba(255,255,255,0.08); color: #9ca3af; border: 1px solid rgba(255,255,255,0.15); }
         .badge-info { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
         .badge-success { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+        .badge-warning { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
         .badge-error { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
 
         .log-content {
             flex: 1;
             min-width: 0;
             word-break: normal !important;
-            overflow-wrap: normal !important;
+            overflow-wrap: break-word !important;
             white-space: pre-wrap !important;
             margin-left: 3px; /* Pequeno respiro separando o texto da tag */
         }
 
         .log-success-text { color: #34d399; }
+        .log-warning-text { color: #fbbf24; }
         .log-info-text { color: #d1d5db; }
         .log-error-text { color: #f87171; font-weight: bold; }
 
@@ -1529,6 +1538,7 @@
             font-size: 0.8rem;
             font-weight: bold;
             user-select: none;
+            flex-shrink: 0;
         }
 
         .cli-input {
@@ -1539,6 +1549,7 @@
             font-family: Menlo, Monaco, monospace;
             font-size: 0.8rem;
             flex: 1;
+            min-width: 0;
             padding: 0;
             caret-color: var(--primary);
         }
@@ -8019,7 +8030,7 @@ WITH CHECK (true);</code>
                     </div>
 
                     <!-- Card Terminal -->
-                    <div class="config-index-item" onclick="switchTab('terminal')" style="margin-bottom: 0; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; cursor: pointer; transition: 0.2s;">
+                    <div class="config-index-item" onclick="switchTab('tab-logs')" style="margin-bottom: 0; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; cursor: pointer; transition: 0.2s;">
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <div style="display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; background: rgba(59, 130, 246, 0.12); flex-shrink: 0;">
                                 <span style="font-size: 1.2rem;">💻</span>
@@ -8102,7 +8113,7 @@ WITH CHECK (true);</code>
                     </div>
 
                     <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                        <button onclick="switchTab('terminal')" style="flex: 1; min-width: 140px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); color: #fff; padding: 8px 14px; border-radius: 10px; font-size: 0.78rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                        <button onclick="switchTab('tab-logs')" style="flex: 1; min-width: 140px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); color: #fff; padding: 8px 14px; border-radius: 10px; font-size: 0.78rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
                             🖥️ Abrir Terminal
                         </button>
                         <button onclick="openConfigSubView('database')" style="flex: 1; min-width: 140px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); color: #fff; padding: 8px 14px; border-radius: 10px; font-size: 0.78rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
@@ -8166,7 +8177,7 @@ WITH CHECK (true);</code>
                 <!-- Painel de Linha de Comando (CLI) Interativo -->
                 <div class="terminal-cli-container">
                     <span class="cli-prompt">sys@core:~$</span>
-                    <input type="text" id="cli-input" class="cli-input" placeholder="Digite comandos (ex: /help)..." onkeydown="if(event.key==='Enter') executeCliCommand()">
+                    <input type="text" id="cli-input" class="cli-input" placeholder="Digite comandos (ex: /help)...">
                 </div>
 
             </div>
@@ -8624,6 +8635,10 @@ WITH CHECK (true);</code>
 
         // --- 1. Navegação de Abas Fluida ---
         function switchTab(tabId) {
+            if (tabId === 'terminal') tabId = 'tab-logs';
+            const targetSection = document.getElementById(tabId);
+            if (!targetSection) return;
+
             triggerPulse();
             try {
                 playSynthSound('menu');
@@ -8631,7 +8646,7 @@ WITH CHECK (true);</code>
             document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             
-            document.getElementById(tabId).classList.add('active');
+            targetSection.classList.add('active');
             const btnEl = document.getElementById('btn-' + tabId);
             if (btnEl) btnEl.classList.add('active');
             
@@ -14213,6 +14228,9 @@ WITH CHECK (true);</code>
             if (logObj.type === "success") {
                 badgeClass = "badge-success";
                 contentClass = "log-success-text";
+            } else if (logObj.type === "warning") {
+                badgeClass = "badge-warning";
+                contentClass = "log-warning-text";
             } else if (logObj.type === "error") {
                 badgeClass = "badge-error";
                 contentClass = "log-error-text";
@@ -14221,11 +14239,21 @@ WITH CHECK (true);</code>
                 contentClass = "log-info-text";
             }
 
-            div.innerHTML = `
-                <span class="log-timestamp">[${logObj.time}]</span>
-                <span class="log-badge ${badgeClass}">${logObj.type}</span>
-                <span class="log-content ${contentClass}">${logObj.text}</span>
-            `;
+            const tsSpan = document.createElement('span');
+            tsSpan.className = 'log-timestamp';
+            tsSpan.textContent = `[${logObj.time}]`;
+
+            const badgeSpan = document.createElement('span');
+            badgeSpan.className = `log-badge ${badgeClass}`;
+            badgeSpan.textContent = logObj.type;
+
+            const contentSpan = document.createElement('span');
+            contentSpan.className = `log-content ${contentClass}`;
+            contentSpan.textContent = logObj.text;
+
+            div.appendChild(tsSpan);
+            div.appendChild(badgeSpan);
+            div.appendChild(contentSpan);
             
             // Auto-Scroll Inteligente: Verifica se o scroll já está perto do fim
             const threshold = 50; // pixels de tolerancia

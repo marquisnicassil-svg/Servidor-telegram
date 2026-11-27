@@ -71,6 +71,7 @@ fun LogsTab(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .imePadding()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -91,7 +92,7 @@ fun LogsTab(
                             }
                         },
                         modifier = Modifier
-                            .size(44.dp)
+                            .size(48.dp)
                             .clip(RoundedCornerShape(12.dp))
                             .background(colors.cardSurface)
                             .border(1.dp, colors.borderSubtle, RoundedCornerShape(12.dp))
@@ -109,7 +110,7 @@ fun LogsTab(
                             onClearLogs()
                         },
                         modifier = Modifier
-                            .size(44.dp)
+                            .size(48.dp)
                             .clip(RoundedCornerShape(12.dp))
                             .background(colors.danger.copy(alpha = 0.1f))
                             .border(1.dp, colors.danger.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
