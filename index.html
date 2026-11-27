@@ -3608,6 +3608,17 @@
                 <p>Sua IA, pronta para você.</p>
             </div>
 
+            <div id="auth-portal-request-banner" style="display: none; margin-bottom: 14px; padding: 12px 14px; border-radius: 14px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.16), rgba(59, 130, 246, 0.1)); border: 1px solid rgba(139, 92, 246, 0.35); text-align: left;">
+                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                    <span style="font-size: 1.2rem; line-height: 1.2;">🔗</span>
+                    <div style="flex: 1; min-width: 0;">
+                        <div id="auth-portal-request-title" style="font-size: 0.84rem; font-weight: 800; color: #ffffff; line-height: 1.3;">Aplicativo solicitando login Synapse</div>
+                        <div id="auth-portal-request-host" style="font-size: 0.72rem; color: #c4b5fd; margin-top: 2px; word-break: break-all;"></div>
+                    </div>
+                </div>
+                <button type="button" onclick="cancelSynapseAuthPortal()" style="margin-top: 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #cbd5e1; border-radius: 8px; padding: 5px 10px; font-size: 0.72rem; font-weight: 600; cursor: pointer;">Cancelar conexão externa</button>
+            </div>
+
             <!-- Formulário de Login / Cadastro / Recuperação Unificado -->
             <div id="auth-form-container" style="display: flex; flex-direction: column; gap: 10px;">
                 <div class="auth-tabs-container">
@@ -8112,6 +8123,35 @@ WITH CHECK (true);</code>
                         </div>
                     </div>
                 </div>
+
+                <!-- CENTRAL DE CONTAS (CONECTAR OUTROS APLICATIVOS) -->
+                <div class="supabase-card" id="account-hub-card" style="margin-bottom: 24px; text-align: left; padding: 18px; border: 1px solid rgba(139, 92, 246, 0.28); background: linear-gradient(145deg, rgba(139, 92, 246, 0.07) 0%, rgba(15, 23, 42, 0.55) 100%);">
+                    <div class="supabase-card-header" style="margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                        <span class="supabase-card-title">🔗 Central de Contas (Conectar Apps)</span>
+                        <span style="font-size: 0.65rem; font-weight: 800; color: #c4b5fd; background: rgba(139, 92, 246, 0.16); border: 1px solid rgba(139, 92, 246, 0.3); padding: 3px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.4px;">SSO & Auth</span>
+                    </div>
+                    <p style="font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; margin: 0 0 14px 0;">
+                        Crie uma credencial pública para qualquer novo aplicativo seu, copie e cole na outra conversa para permitir login usando sua conta Synapse (sem configurar Supabase do zero).
+                    </p>
+
+                    <div style="display: flex; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 14px; margin-bottom: 14px;">
+                        <div>
+                            <label for="hub-app-name" style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 5px;">Nome do Aplicativo</label>
+                            <input type="text" id="hub-app-name" class="form-control" style="border-radius: 10px; padding: 10px 12px; font-size: 0.85rem; width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.28); border: 1px solid var(--border-color);" placeholder="Ex: Meu Novo App de Tarefas" maxlength="60" autocomplete="off">
+                        </div>
+                        <div>
+                            <label for="hub-app-redirect" style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 5px;">URL do App / Callback (Opcional)</label>
+                            <input type="url" id="hub-app-redirect" class="form-control" style="border-radius: 10px; padding: 10px 12px; font-size: 0.85rem; width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.28); border: 1px solid var(--border-color);" placeholder="https://seuusuario.github.io/outro-app/" autocomplete="off">
+                        </div>
+                        <button type="button" id="btn-create-hub-app" class="btn-supabase-action" onclick="createConnectedAppCredential()" style="border-color: var(--primary); background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(79, 70, 229, 0.18)); color: #fff; font-size: 0.84rem; padding: 11px 14px; border-radius: 12px; font-weight: 800; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px;">
+                            <span>✨</span> <span>+ Criar Credencial de Conexão</span>
+                        </button>
+                    </div>
+
+                    <div id="hub-apps-list" style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Lista de aplicativos conectados renderizada por renderConnectedAppsList() -->
+                    </div>
+                </div>
             </div>
 
             <!-- SUB-VIEW: AVANÇADO (Supabase, Conexões Técnicas, Cache e Recursos Dev) -->
@@ -8853,6 +8893,9 @@ WITH CHECK (true);</code>
                 if (typeof updateIntegrationHubStatusBadges === 'function') {
                     updateIntegrationHubStatusBadges();
                 }
+            }
+            if (viewId === 'account' && typeof renderConnectedAppsList === 'function') {
+                renderConnectedAppsList();
             }
             if (typeof syncDrawerActiveStates === 'function') syncDrawerActiveStates();
         }
@@ -12005,7 +12048,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=25')
+                navigator.serviceWorker.register('./sw.js?v=26')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -12064,8 +12107,11 @@ WITH CHECK (true);</code>
                 }
                 await new Promise(resolve => setTimeout(resolve, 120));
 
-                // 2. Tenta recuperar sessão do Supabase Auth
+                // 2. Verifica solicitação externa da Central de Contas e recupera sessão
                 updateSplashStatus(60, "Validando credenciais...");
+                if (typeof initSynapseAuthPortalParams === 'function') {
+                    initSynapseAuthPortalParams();
+                }
                 checkSupabaseAuthSession();
                 await new Promise(resolve => setTimeout(resolve, 120));
 
@@ -25401,10 +25447,15 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
         function showAuthGateScreen() {
             const authGate = document.getElementById('auth-gate-screen');
             if (authGate) {
+                authGate.classList.remove('fade-out');
                 authGate.style.display = 'flex';
+                authGate.style.pointerEvents = 'auto';
                 authGate.offsetHeight; // force reflow (for transitions)
                 authGate.style.opacity = '1';
                 authGate.style.transform = 'scale(1)';
+            }
+            if (typeof updateAuthPortalBanner === 'function') {
+                updateAuthPortalBanner();
             }
         }
 
@@ -25479,6 +25530,16 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         authGate.style.display = 'none';
                     }, 400);
                 }
+
+                if (typeof updateAuthPortalBanner === 'function') updateAuthPortalBanner();
+                if (typeof renderConnectedAppsList === 'function') renderConnectedAppsList();
+                if (window.pendingSynapsePortalRequest && typeof openSynapseAuthPortalModal === 'function') {
+                    setTimeout(() => {
+                        if (window.pendingSynapsePortalRequest) {
+                            openSynapseAuthPortalModal(window.pendingSynapsePortalRequest);
+                        }
+                    }, 180);
+                }
             } else {
                 // Deslogado
                 if (formContainer) formContainer.style.display = 'block';
@@ -25516,6 +25577,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 
                 // Exibe o gate se não autenticado
                 showAuthGateScreen();
+                if (typeof renderConnectedAppsList === 'function') renderConnectedAppsList();
             }
         }
 
@@ -28660,7 +28722,534 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     }
                 });
             });
+
+            if (typeof renderConnectedAppsList === 'function') {
+                renderConnectedAppsList();
+            }
         });
+
+        // ==========================================================================
+        // 13. Central de Contas Synapse (SSO Portal & Credenciais para Outros Apps)
+        // ==========================================================================
+        const SYNAPSE_HUB_APPS_KEY = 'synapse_connected_apps_v1';
+        window.pendingSynapsePortalRequest = window.pendingSynapsePortalRequest || null;
+        window.activeSynapsePortalContext = window.activeSynapsePortalContext || null;
+        let lastPortalSandboxCopyPayload = '';
+
+        function escapeSynapseHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function sanitizeSynapseRedirectUri(rawUri) {
+            if (!rawUri || typeof rawUri !== 'string') return '';
+            const trimmed = rawUri.trim();
+            if (!trimmed) return '';
+            try {
+                const parsed = new URL(trimmed);
+                if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+                    return parsed.toString();
+                }
+            } catch (e) {}
+            return '';
+        }
+
+        function generateSynapseAppId() {
+            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            let suffix = '';
+            if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
+                const bytes = new Uint8Array(12);
+                window.crypto.getRandomValues(bytes);
+                for (let i = 0; i < bytes.length; i++) {
+                    suffix += chars[bytes[i] % chars.length];
+                }
+            } else {
+                for (let i = 0; i < 12; i++) {
+                    suffix += chars[Math.floor(Math.random() * chars.length)];
+                }
+            }
+            return `syn_app_${suffix}`;
+        }
+
+        function getConnectedApps() {
+            try {
+                const raw = localStorage.getItem(SYNAPSE_HUB_APPS_KEY);
+                const parsed = raw ? JSON.parse(raw) : [];
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveConnectedApps(apps) {
+            try {
+                localStorage.setItem(SYNAPSE_HUB_APPS_KEY, JSON.stringify(apps));
+            } catch (e) {
+                console.error('Erro ao salvar aplicativos conectados:', e);
+            }
+        }
+
+        function getSynapsePublicAuthConfig() {
+            const urlInput = document.getElementById('supabase-url');
+            const keyInput = document.getElementById('supabase-key');
+            const supabaseUrl = (urlInput && urlInput.value.trim()) || 'https://hqnlyksuprjdabcgpqdl.supabase.co';
+            const anonKey = (keyInput && keyInput.value.trim()) || 'sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa';
+            const cleanSupabaseUrl = supabaseUrl.replace(/\/+$/, '');
+            const portalUrl = `${window.location.origin}${window.location.pathname}`;
+            return {
+                supabaseUrl: cleanSupabaseUrl,
+                anonKey: anonKey,
+                portalUrl: portalUrl
+            };
+        }
+
+        function createConnectedAppCredential() {
+            if (typeof triggerPulse === 'function') triggerPulse();
+            const nameEl = document.getElementById('hub-app-name');
+            const redirectEl = document.getElementById('hub-app-redirect');
+
+            const name = nameEl ? nameEl.value.trim() : '';
+            const rawRedirect = redirectEl ? redirectEl.value.trim() : '';
+
+            if (!name) {
+                if (typeof showAppToast === 'function') {
+                    showAppToast('Digite um nome para identificar o aplicativo.', 'warning');
+                }
+                if (nameEl) nameEl.focus();
+                return;
+            }
+
+            let validRedirect = '';
+            if (rawRedirect) {
+                validRedirect = sanitizeSynapseRedirectUri(rawRedirect);
+                if (!validRedirect) {
+                    if (typeof showAppToast === 'function') {
+                        showAppToast('A URL do app precisa começar com http:// ou https://', 'warning');
+                    }
+                    if (redirectEl) redirectEl.focus();
+                    return;
+                }
+            }
+
+            const newApp = {
+                id: generateSynapseAppId(),
+                name: name.slice(0, 60),
+                redirectUri: validRedirect,
+                createdAt: new Date().toISOString()
+            };
+
+            const apps = getConnectedApps();
+            apps.unshift(newApp);
+            saveConnectedApps(apps);
+
+            if (nameEl) nameEl.value = '';
+            if (redirectEl) redirectEl.value = '';
+
+            renderConnectedAppsList();
+            copyConnectedAppCredential(newApp.id, true);
+            if (typeof addLog === 'function') {
+                addLog(`Central de Contas: Credencial criada para "${newApp.name}" (${newApp.id}).`, 'success');
+            }
+        }
+
+        function deleteConnectedApp(appId) {
+            if (typeof triggerPulse === 'function') triggerPulse();
+            const apps = getConnectedApps();
+            const target = apps.find(a => a.id === appId);
+            const updated = apps.filter(a => a.id !== appId);
+            saveConnectedApps(updated);
+            renderConnectedAppsList();
+            if (typeof showAppToast === 'function') {
+                showAppToast(target ? `Credencial "${target.name}" removida.` : 'Credencial removida.', 'info');
+            }
+        }
+
+        function renderConnectedAppsList() {
+            const container = document.getElementById('hub-apps-list');
+            if (!container) return;
+
+            const apps = getConnectedApps();
+            if (!apps.length) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 18px 12px; border: 1px dashed rgba(255,255,255,0.12); border-radius: 12px; background: rgba(255,255,255,0.015);">
+                        <div style="font-size: 1.4rem; margin-bottom: 6px;">🪪</div>
+                        <div style="font-size: 0.82rem; font-weight: 700; color: #e2e8f0;">Nenhum aplicativo conectado ainda</div>
+                        <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; line-height: 1.4;">Crie acima para gerar sua primeira credencial e testar o portal "Entrar com Synapse".</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = apps.map(app => {
+                const safeId = escapeSynapseHtml(app.id);
+                const safeName = escapeSynapseHtml(app.name);
+                const safeRedirect = app.redirectUri ? escapeSynapseHtml(app.redirectUri) : 'Callback dinâmico (detectado automaticamente pelo app)';
+                return `
+                    <div style="background: rgba(15, 23, 42, 0.72); border: 1px solid rgba(139, 92, 246, 0.22); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+                        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;">
+                            <div style="min-width: 0; flex: 1;">
+                                <div style="font-size: 0.92rem; font-weight: 800; color: #ffffff; word-break: break-word;">${safeName}</div>
+                                <div style="font-size: 0.72rem; color: #c4b5fd; font-family: monospace; margin-top: 3px; word-break: break-all;">ID: ${safeId}</div>
+                                <div style="font-size: 0.69rem; color: var(--text-muted); margin-top: 3px; word-break: break-all;">🌐 ${safeRedirect}</div>
+                            </div>
+                            <button type="button" onclick="deleteConnectedApp('${safeId}')" title="Remover credencial" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: #fca5a5; border-radius: 10px; padding: 8px 10px; font-size: 0.85rem; cursor: pointer; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center;">🗑️</button>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <button type="button" onclick="copyConnectedAppCredential('${safeId}')" style="background: rgba(139, 92, 246, 0.14); border: 1px solid rgba(139, 92, 246, 0.35); color: #e9d5ff; border-radius: 10px; padding: 10px 8px; font-size: 0.76rem; font-weight: 700; cursor: pointer; min-height: 44px;">📋 Copiar Credencial</button>
+                            <button type="button" onclick="testConnectedAppPortal('${safeId}')" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.32); color: #6ee7b7; border-radius: 10px; padding: 10px 8px; font-size: 0.76rem; font-weight: 700; cursor: pointer; min-height: 44px;">🧪 Testar Portal</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function buildSynapseCredentialPayload(app) {
+            const cfg = getSynapsePublicAuthConfig();
+            const callbackHint = app.redirectUri || 'SUA_URL_ATUAL_DO_APP (ex: window.location.origin + window.location.pathname)';
+            return [
+                '=== SYNAPSE ACCOUNT CREDENTIAL ===',
+                `APP_NAME=${app.name}`,
+                `APP_ID=${app.id}`,
+                `CALLBACK_URL=${callbackHint}`,
+                `SYNAPSE_PORTAL_URL=${cfg.portalUrl}`,
+                `AUTH_API_URL=${cfg.supabaseUrl}`,
+                `PUBLIC_ANON_KEY=${cfg.anonKey}`,
+                '',
+                'INSTRUÇÕES PARA CONECTAR ESTE APP À CENTRAL DE CONTAS DO SYNAPSE:',
+                '1. Para login com 1 clique ("Entrar com Synapse"):',
+                `   Redirecione (ou abra popup) para: ${cfg.portalUrl}?synapse_auth=1&app_id=${encodeURIComponent(app.id)}&app_name=${encodeURIComponent(app.name)}&redirect_uri=<URL_DESTE_APP>&state=<TOKEN_ALEATORIO>`,
+                '   Após o usuário autorizar, o Synapse retorna para redirect_uri com os parâmetros no hash (#):',
+                '   #synapse_access_token=...&synapse_refresh_token=...&synapse_uid=...&synapse_email=...&synapse_name=...&synapse_app_id=...&state=...',
+                '   Valide o "state" retornado, limpe o hash da URL com history.replaceState e salve a sessão do usuário.',
+                '2. Para login/cadastro direto dentro deste app usando a mesma conta do Synapse:',
+                `   - Login: POST ${cfg.supabaseUrl}/auth/v1/token?grant_type=password (header apikey: PUBLIC_ANON_KEY)`,
+                `   - Cadastro: POST ${cfg.supabaseUrl}/auth/v1/signup (header apikey: PUBLIC_ANON_KEY)`,
+                '=== FIM DA CREDENCIAL ==='
+            ].join('\n');
+        }
+
+        function copyTextToClipboardWithFallback(text) {
+            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                return navigator.clipboard.writeText(text).catch(() => fallbackCopyTextarea(text));
+            }
+            return Promise.resolve(fallbackCopyTextarea(text));
+        }
+
+        function fallbackCopyTextarea(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            try {
+                document.execCommand('copy');
+            } finally {
+                ta.remove();
+            }
+        }
+
+        function copyConnectedAppCredential(appId, fromCreate = false) {
+            const app = getConnectedApps().find(a => a.id === appId);
+            if (!app) return;
+            const payload = buildSynapseCredentialPayload(app);
+            copyTextToClipboardWithFallback(payload).then(() => {
+                if (typeof showAppToast === 'function') {
+                    showAppToast(
+                        fromCreate
+                            ? `Credencial de "${app.name}" criada e copiada! Cole na outra conversa.`
+                            : `Credencial de "${app.name}" copiada! Cole na outra conversa.`,
+                        'success'
+                    );
+                }
+            }).catch(() => {
+                if (typeof showAppToast === 'function') {
+                    showAppToast('Não foi possível copiar automaticamente.', 'warning');
+                }
+            });
+        }
+
+        function initSynapseAuthPortalParams() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const isPortal = params.get('synapse_auth') === '1' || params.get('synapse_connect') === '1';
+                if (!isPortal) {
+                    window.pendingSynapsePortalRequest = null;
+                    return null;
+                }
+
+                const appId = (params.get('app_id') || 'app_externo').trim().slice(0, 80);
+                const appName = (params.get('app_name') || 'Aplicativo Externo').trim().slice(0, 60);
+                const rawRedirect = params.get('redirect_uri') || '';
+                const redirectUri = sanitizeSynapseRedirectUri(rawRedirect);
+                const state = (params.get('state') || '').trim().slice(0, 128);
+                const mode = params.get('mode') === 'popup' ? 'popup' : 'redirect';
+
+                if (!redirectUri) {
+                    if (typeof showAppToast === 'function') {
+                        showAppToast('Solicitação externa ignorada: URL de retorno inválida.', 'error');
+                    }
+                    window.pendingSynapsePortalRequest = null;
+                    return null;
+                }
+
+                window.pendingSynapsePortalRequest = {
+                    appId: appId,
+                    appName: appName,
+                    redirectUri: redirectUri,
+                    state: state,
+                    mode: mode,
+                    isTestMode: false
+                };
+                updateAuthPortalBanner();
+                return window.pendingSynapsePortalRequest;
+            } catch (e) {
+                console.error('Erro ao ler parâmetros do Portal Synapse:', e);
+                return null;
+            }
+        }
+
+        function updateAuthPortalBanner() {
+            const banner = document.getElementById('auth-portal-request-banner');
+            const titleEl = document.getElementById('auth-portal-request-title');
+            const hostEl = document.getElementById('auth-portal-request-host');
+            if (!banner) return;
+
+            const req = window.pendingSynapsePortalRequest;
+            if (!req) {
+                banner.style.display = 'none';
+                return;
+            }
+
+            let hostLabel = 'Modo de Teste Interativo (Sandbox)';
+            if (req.redirectUri) {
+                try {
+                    hostLabel = `Destino: ${new URL(req.redirectUri).host}`;
+                } catch (e) {}
+            }
+
+            if (titleEl) titleEl.textContent = `${req.appName} solicitou entrar com sua conta Synapse`;
+            if (hostEl) hostEl.textContent = hostLabel;
+            banner.style.display = 'block';
+        }
+
+        function testConnectedAppPortal(appId) {
+            if (typeof triggerPulse === 'function') triggerPulse();
+            const app = getConnectedApps().find(a => a.id === appId);
+            if (!app) return;
+
+            const cfg = getSynapsePublicAuthConfig();
+            const req = {
+                appId: app.id,
+                appName: app.name,
+                redirectUri: app.redirectUri || cfg.portalUrl,
+                state: 'teste_sandbox_' + Math.random().toString(36).slice(2, 8),
+                mode: 'redirect',
+                isTestMode: true
+            };
+
+            window.pendingSynapsePortalRequest = req;
+            if (supabaseSession && supabaseSession.user) {
+                openSynapseAuthPortalModal(req);
+            } else {
+                updateAuthPortalBanner();
+                showAuthGateScreen();
+                if (typeof showAppToast === 'function') {
+                    showAppToast('Entre na sua conta Synapse primeiro para concluir o teste do portal.', 'info');
+                }
+            }
+        }
+
+        function openSynapseAuthPortalModal(req) {
+            if (!req) return;
+            const overlay = document.getElementById('synapse-auth-portal-overlay');
+            if (!overlay) return;
+
+            window.activeSynapsePortalContext = req;
+
+            const appNameEl = document.getElementById('portal-app-name');
+            const appIdEl = document.getElementById('portal-app-id');
+            const appHostEl = document.getElementById('portal-app-host');
+            const userAvatarEl = document.getElementById('portal-user-avatar');
+            const userNameEl = document.getElementById('portal-user-name');
+            const userEmailEl = document.getElementById('portal-user-email');
+            const sandboxBox = document.getElementById('portal-sandbox-result');
+            const approveBtn = document.getElementById('btn-portal-approve');
+
+            if (appNameEl) appNameEl.textContent = req.appName;
+            if (appIdEl) appIdEl.textContent = `App ID: ${req.appId}`;
+
+            let hostDisplay = 'Modo de Teste Interativo (Sandbox)';
+            if (!req.isTestMode && req.redirectUri) {
+                try {
+                    hostDisplay = `Retorno autorizado: ${new URL(req.redirectUri).origin}`;
+                } catch (e) {
+                    hostDisplay = req.redirectUri;
+                }
+            } else if (req.isTestMode && req.redirectUri) {
+                try {
+                    hostDisplay = `Sandbox • Destino simulado: ${new URL(req.redirectUri).host}`;
+                } catch (e) {}
+            }
+            if (appHostEl) appHostEl.textContent = hostDisplay;
+
+            const user = supabaseSession && supabaseSession.user ? supabaseSession.user : null;
+            const email = user ? (user.email || '') : '';
+            const displayName = user && typeof getDisplayName === 'function'
+                ? (getDisplayName(supabaseSession) || email.split('@')[0] || 'Usuário Synapse')
+                : (email.split('@')[0] || 'Usuário Synapse');
+
+            if (userAvatarEl) userAvatarEl.textContent = displayName.trim().charAt(0).toUpperCase() || 'S';
+            if (userNameEl) userNameEl.textContent = displayName;
+            if (userEmailEl) userEmailEl.textContent = email || 'Sessão ativa';
+
+            if (sandboxBox) sandboxBox.style.display = 'none';
+            if (approveBtn) {
+                approveBtn.disabled = false;
+                approveBtn.textContent = '✅ Autorizar e Conectar';
+            }
+
+            overlay.style.display = 'flex';
+        }
+
+        function approveSynapseAuthPortal() {
+            const req = window.activeSynapsePortalContext || window.pendingSynapsePortalRequest;
+            if (!req) return;
+
+            if (!supabaseSession || !supabaseSession.user || !supabaseSession.access_token) {
+                updateAuthPortalBanner();
+                showAuthGateScreen();
+                return;
+            }
+
+            const user = supabaseSession.user;
+            const email = user.email || '';
+            const displayName = typeof getDisplayName === 'function'
+                ? (getDisplayName(supabaseSession) || email.split('@')[0] || 'Usuário Synapse')
+                : (email.split('@')[0] || 'Usuário Synapse');
+
+            const hashParams = new URLSearchParams();
+            hashParams.set('synapse_access_token', supabaseSession.access_token);
+            if (supabaseSession.refresh_token) {
+                hashParams.set('synapse_refresh_token', supabaseSession.refresh_token);
+            }
+            hashParams.set('synapse_uid', user.id || '');
+            hashParams.set('synapse_email', email);
+            hashParams.set('synapse_name', displayName);
+            hashParams.set('synapse_app_id', req.appId);
+            if (req.state) {
+                hashParams.set('state', req.state);
+            }
+
+            if (req.isTestMode) {
+                const baseRedirect = req.redirectUri || getSynapsePublicAuthConfig().portalUrl;
+                const cleanBase = baseRedirect.split('#')[0];
+                const simulatedUrl = `${cleanBase}#${hashParams.toString()}`;
+                const previewObj = {
+                    status: 'authorized',
+                    app_id: req.appId,
+                    app_name: req.appName,
+                    state: req.state,
+                    user: {
+                        uid: user.id || '',
+                        email: email,
+                        name: displayName
+                    },
+                    token_preview: `${supabaseSession.access_token.slice(0, 18)}...`,
+                    callback_url: simulatedUrl
+                };
+                lastPortalSandboxCopyPayload = JSON.stringify(previewObj, null, 2);
+
+                const sandboxBox = document.getElementById('portal-sandbox-result');
+                const sandboxPre = document.getElementById('portal-sandbox-output');
+                if (sandboxPre) {
+                    sandboxPre.textContent = lastPortalSandboxCopyPayload;
+                }
+                if (sandboxBox) {
+                    sandboxBox.style.display = 'block';
+                }
+                if (typeof showAppToast === 'function') {
+                    showAppToast('Teste concluído! Sessão autorizada com sucesso no Sandbox.', 'success');
+                }
+                return;
+            }
+
+            const validTarget = sanitizeSynapseRedirectUri(req.redirectUri);
+            if (!validTarget) {
+                if (typeof showAppToast === 'function') {
+                    showAppToast('URL de retorno inválida. Operação cancelada por segurança.', 'error');
+                }
+                return;
+            }
+
+            if (req.mode === 'popup' && window.opener) {
+                try {
+                    const targetOrigin = new URL(validTarget).origin;
+                    window.opener.postMessage({
+                        type: 'SYNAPSE_AUTH_SUCCESS',
+                        synapse_access_token: supabaseSession.access_token,
+                        synapse_refresh_token: supabaseSession.refresh_token || '',
+                        synapse_uid: user.id || '',
+                        synapse_email: email,
+                        synapse_name: displayName,
+                        synapse_app_id: req.appId,
+                        state: req.state || ''
+                    }, targetOrigin);
+                    window.pendingSynapsePortalRequest = null;
+                    window.activeSynapsePortalContext = null;
+                    window.close();
+                    return;
+                } catch (e) {
+                    console.warn('Fallback de popup para redirect:', e);
+                }
+            }
+
+            window.pendingSynapsePortalRequest = null;
+            window.activeSynapsePortalContext = null;
+            const cleanTarget = validTarget.split('#')[0];
+            window.location.href = `${cleanTarget}#${hashParams.toString()}`;
+        }
+
+        function copyPortalSandboxResult() {
+            if (!lastPortalSandboxCopyPayload) return;
+            copyTextToClipboardWithFallback(lastPortalSandboxCopyPayload).then(() => {
+                if (typeof showAppToast === 'function') {
+                    showAppToast('Retorno de teste copiado!', 'success');
+                }
+            });
+        }
+
+        function switchAccountForSynapsePortal() {
+            const req = window.activeSynapsePortalContext || window.pendingSynapsePortalRequest;
+            const overlay = document.getElementById('synapse-auth-portal-overlay');
+            if (overlay) overlay.style.display = 'none';
+            window.pendingSynapsePortalRequest = req;
+            supabaseSignOut();
+            updateAuthPortalBanner();
+        }
+
+        function cancelSynapseAuthPortal() {
+            const overlay = document.getElementById('synapse-auth-portal-overlay');
+            if (overlay) overlay.style.display = 'none';
+            window.pendingSynapsePortalRequest = null;
+            window.activeSynapsePortalContext = null;
+            updateAuthPortalBanner();
+
+            try {
+                const url = new URL(window.location.href);
+                if (url.searchParams.has('synapse_auth') || url.searchParams.has('synapse_connect')) {
+                    ['synapse_auth', 'synapse_connect', 'app_id', 'app_name', 'redirect_uri', 'state', 'mode'].forEach(k => {
+                        url.searchParams.delete(k);
+                    });
+                    window.history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+                }
+            } catch (e) {}
+        }
     </script>
 
     <!-- NOVA TELA INTERNA DE PRÉ-VISUALIZAÇÃO EM TELA CHEIA (SANDBOX SEGURO) -->
@@ -28728,6 +29317,58 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     <span class="prog-console-time">[00:00:00]</span>
                     <span class="prog-console-tag">INFO</span>
                     <span class="prog-console-text">Console pronto. Todos os logs e exceções JavaScript aparecem aqui.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DA CENTRAL DE CONTAS (CONSENTIMENTO SSO "ENTRAR COM SYNAPSE") -->
+    <div id="synapse-auth-portal-overlay" style="display: none; position: fixed; inset: 0; z-index: 15000; background: rgba(4, 7, 15, 0.84); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); align-items: center; justify-content: center; padding: 18px; box-sizing: border-box;">
+        <div style="width: 100%; max-width: 440px; max-height: 92vh; overflow-y: auto; background: linear-gradient(155deg, rgba(17, 24, 39, 0.98), rgba(9, 13, 24, 0.99)); border: 1px solid rgba(139, 92, 246, 0.35); border-radius: 24px; padding: 22px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65); color: #f8fafc;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                <img src="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg" alt="Synapse" style="width: 42px; height: 42px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(139, 92, 246, 0.5);">
+                <div>
+                    <div style="font-size: 0.7rem; font-weight: 800; color: #c4b5fd; text-transform: uppercase; letter-spacing: 0.6px;">Central de Contas Synapse</div>
+                    <h3 style="margin: 2px 0 0 0; font-size: 1.08rem; font-weight: 800; color: #ffffff;">Autorizar Conexão</h3>
+                </div>
+            </div>
+
+            <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.28); border-radius: 14px; padding: 12px 14px; margin-bottom: 14px;">
+                <div style="font-size: 0.72rem; color: #cbd5e1;">Aplicativo solicitante:</div>
+                <div id="portal-app-name" style="font-size: 1rem; font-weight: 800; color: #ffffff; margin-top: 2px; word-break: break-word;">Meu Aplicativo</div>
+                <div id="portal-app-id" style="font-size: 0.7rem; font-family: monospace; color: #c4b5fd; margin-top: 3px; word-break: break-all;"></div>
+                <div id="portal-app-host" style="font-size: 0.72rem; color: #93c5fd; margin-top: 4px; word-break: break-all;"></div>
+            </div>
+
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 12px;">
+                <div id="portal-user-avatar" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #8b5cf6, #4f46e5); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; font-size: 1rem; flex-shrink: 0;">S</div>
+                <div style="min-width: 0; flex: 1;">
+                    <div id="portal-user-name" style="font-size: 0.88rem; font-weight: 700; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Usuário Synapse</div>
+                    <div id="portal-user-email" style="font-size: 0.76rem; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <div style="font-size: 0.72rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 6px;">Permissões desta conexão</div>
+                <div style="display: flex; flex-direction: column; gap: 5px; font-size: 0.78rem; color: #e2e8f0;">
+                    <div>• Identificação básica do perfil (nome e e-mail)</div>
+                    <div>• Autenticação compartilhada com sua conta Synapse</div>
+                </div>
+            </div>
+
+            <div id="portal-sandbox-result" style="display: none; margin-bottom: 16px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 12px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px;">
+                    <span style="font-size: 0.76rem; font-weight: 800; color: #34d399;">✅ Retorno Simulado (Sandbox)</span>
+                    <button type="button" onclick="copyPortalSandboxResult()" style="background: rgba(16, 185, 129, 0.16); border: 1px solid rgba(16, 185, 129, 0.35); color: #a7f3d0; border-radius: 8px; padding: 4px 8px; font-size: 0.7rem; font-weight: 700; cursor: pointer;">📋 Copiar</button>
+                </div>
+                <pre id="portal-sandbox-output" style="margin: 0; font-size: 0.68rem; color: #d1fae5; white-space: pre-wrap; word-break: break-all; max-height: 150px; overflow-y: auto; font-family: monospace;"></pre>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button type="button" id="btn-portal-approve" onclick="approveSynapseAuthPortal()" style="width: 100%; min-height: 46px; border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.6); background: linear-gradient(135deg, #8b5cf6, #4f46e5); color: #ffffff; font-size: 0.88rem; font-weight: 800; cursor: pointer;">✅ Autorizar e Conectar</button>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <button type="button" id="btn-portal-switch" onclick="switchAccountForSynapsePortal()" style="min-height: 44px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.05); color: #e2e8f0; font-size: 0.78rem; font-weight: 700; cursor: pointer;">🔄 Trocar Conta</button>
+                    <button type="button" id="btn-portal-cancel" onclick="cancelSynapseAuthPortal()" style="min-height: 44px; border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.28); background: rgba(239, 68, 68, 0.1); color: #fca5a5; font-size: 0.78rem; font-weight: 700; cursor: pointer;">Cancelar</button>
                 </div>
             </div>
         </div>
