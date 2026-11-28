@@ -153,6 +153,9 @@
             animation: none !important;
             transform: none !important;
         }
+        body.reduce-motion .ripple-effect {
+            display: none !important;
+        }
 
         @keyframes shimmer {
             0% { background-position: -200% 0; }
@@ -172,17 +175,8 @@
             cursor: pointer;
             transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .dashboard-action-card:hover {
-            transform: translateY(-4px);
-            background: rgba(255, 255, 255, 0.035) !important;
-            border-color: var(--primary) !important;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.45);
-        }
-        .dashboard-action-card:hover .dashboard-card-glow {
-            opacity: 1 !important;
-        }
         .dashboard-action-card:active {
-            transform: translateY(-1px);
+            transform: scale(0.988);
         }
         .activity-row {
             display: flex;
@@ -196,10 +190,21 @@
             transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
             text-align: left;
         }
-        .activity-row:hover {
-            background: rgba(255, 255, 255, 0.03) !important;
-            border-color: rgba(255, 255, 255, 0.15) !important;
-            transform: translateX(4px);
+        @media (hover: hover) {
+            .dashboard-action-card:hover {
+                transform: translateY(-4px);
+                background: rgba(255, 255, 255, 0.035) !important;
+                border-color: var(--primary) !important;
+                box-shadow: 0 12px 30px rgba(0,0,0,0.45);
+            }
+            .dashboard-action-card:hover .dashboard-card-glow {
+                opacity: 1 !important;
+            }
+            .activity-row:hover {
+                background: rgba(255, 255, 255, 0.03) !important;
+                border-color: rgba(255, 255, 255, 0.15) !important;
+                transform: translateX(4px);
+            }
         }
         .pulse-indicator {
             animation: pulse-dot-key 2s infinite alternate;
@@ -341,14 +346,16 @@
             cursor: pointer;
             min-height: 72px;
         }
-        .config-index-item:hover {
-            background: var(--card-bg-secondary) !important;
-            border-color: var(--primary) !important;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25), 0 0 10px rgba(var(--primary-rgb, 255, 255, 255), 0.15) !important;
+        @media (hover: hover) {
+            .config-index-item:hover {
+                background: var(--card-bg-secondary) !important;
+                border-color: var(--primary) !important;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25), 0 0 10px rgba(var(--primary-rgb, 255, 255, 255), 0.15) !important;
+            }
         }
         .config-index-item:active {
-            transform: translateY(0);
+            transform: scale(0.988);
         }
 
         .chat-message {
@@ -1095,15 +1102,17 @@
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .btn-universal:hover {
-            box-shadow: var(--btn-shadow-hover, var(--btn-shadow, var(--glow-shadow)));
-            transform: translateY(-2px);
-            opacity: 0.95;
+        @media (hover: hover) {
+            .btn-universal:hover {
+                box-shadow: var(--btn-shadow-hover, var(--btn-shadow, var(--glow-shadow)));
+                transform: translateY(-2px);
+                opacity: 0.95;
+            }
         }
 
         .btn-universal:active {
-            transform: translateY(0px) scale(0.98);
-            opacity: 0.8;
+            transform: scale(0.985);
+            opacity: 0.9;
         }
 
         /* Botão de Salvar Aparência Premium */
@@ -1136,13 +1145,15 @@
             transform: translateY(0);
         }
 
-        #btn-save-appearance.dirty:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.35);
+        @media (hover: hover) {
+            #btn-save-appearance.dirty:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.35);
+            }
         }
 
         #btn-save-appearance.dirty:active {
-            transform: translateY(0);
+            transform: scale(0.985);
         }
 
         #btn-save-appearance.saving {
@@ -1181,14 +1192,16 @@
             box-shadow: 0 4px 16px rgba(var(--primary-rgb), 0.2);
         }
 
-        .btn-save-premium:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.35);
-            opacity: 0.95;
+        @media (hover: hover) {
+            .btn-save-premium:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.35);
+                opacity: 0.95;
+            }
         }
 
         .btn-save-premium:active {
-            transform: translateY(0);
+            transform: scale(0.985);
         }
 
         .btn-save-premium.saving {
@@ -1281,14 +1294,16 @@
             user-select: none;
             outline: none;
         }
-        .btn-sync-model-premium:hover {
-            transform: translateY(-2px);
-            background: linear-gradient(135deg, rgba(var(--sync-accent-rgb), 0.38) 0%, rgba(var(--sync-accent-rgb), 0.16) 100%);
-            border-color: rgba(var(--sync-accent-rgb), 0.7);
-            box-shadow: 0 8px 25px rgba(var(--sync-accent-rgb), 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+        @media (hover: hover) {
+            .btn-sync-model-premium:hover {
+                transform: translateY(-2px);
+                background: linear-gradient(135deg, rgba(var(--sync-accent-rgb), 0.38) 0%, rgba(var(--sync-accent-rgb), 0.16) 100%);
+                border-color: rgba(var(--sync-accent-rgb), 0.7);
+                box-shadow: 0 8px 25px rgba(var(--sync-accent-rgb), 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+            }
         }
         .btn-sync-model-premium:active {
-            transform: translateY(0) scale(0.98);
+            transform: scale(0.985);
         }
         .btn-sync-model-premium.is-syncing {
             pointer-events: none;
@@ -1353,11 +1368,13 @@
             gap: 6px;
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .provider-chip-btn:hover {
-            background: rgba(var(--sync-accent-rgb), 0.16);
-            border-color: rgba(var(--sync-accent-rgb), 0.45);
-            color: #ffffff;
-            transform: translateY(-1px);
+        @media (hover: hover) {
+            .provider-chip-btn:hover {
+                background: rgba(var(--sync-accent-rgb), 0.16);
+                border-color: rgba(var(--sync-accent-rgb), 0.45);
+                color: #ffffff;
+                transform: translateY(-1px);
+            }
         }
 
         /* Botão de Instalação PWA */
@@ -1627,58 +1644,60 @@
         }
 
         /* ==========================================================================
-           8. Splash / Loading Screen
+           8. Splash / Loading Screen (Modern Obsidian + Indigo Orbital Reveal)
            ========================================================================== */
         #splash-screen {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(135deg, #030406 0%, #080a10 50%, #030406 100%);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            inset: 0;
+            background: radial-gradient(circle at 50% 38%, rgba(99, 102, 241, 0.14) 0%, #060916 48%, #02040a 100%);
             z-index: 99999;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
             overflow: hidden;
-            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: opacity 0.52s cubic-bezier(0.16, 1, 0.3, 1), transform 0.52s cubic-bezier(0.16, 1, 0.3, 1), filter 0.52s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .splash-grid-lines {
+        .splash-aurora {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
-            background-position: center;
-            opacity: 0.5;
+            width: 420px;
+            height: 420px;
+            border-radius: 50%;
             pointer-events: none;
-            z-index: 1;
+            filter: blur(72px);
+            opacity: 0.45;
+            z-index: 0;
+            will-change: transform, opacity;
         }
-        .splash-scanner {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 3px;
-            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.4), transparent);
-            box-shadow: 0 0 12px rgba(139, 92, 246, 0.6);
-            animation: scanMove 4s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 2;
+        .splash-aurora-1 {
+            top: 18%;
+            left: 50%;
+            transform: translate(-65%, -20%);
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.48) 0%, transparent 70%);
+            animation: splashAuroraFloat 7s ease-in-out infinite alternate;
         }
-        @keyframes scanMove {
-            0% { top: -5%; }
-            100% { top: 105%; }
+        .splash-aurora-2 {
+            bottom: 12%;
+            left: 50%;
+            transform: translate(-35%, 20%);
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.38) 0%, rgba(56, 189, 248, 0.14) 45%, transparent 72%);
+            animation: splashAuroraFloatReverse 8.5s ease-in-out infinite alternate;
+        }
+        @keyframes splashAuroraFloat {
+            0% { transform: translate(-65%, -20%) scale(0.94); opacity: 0.38; }
+            100% { transform: translate(-55%, -10%) scale(1.08); opacity: 0.58; }
+        }
+        @keyframes splashAuroraFloatReverse {
+            0% { transform: translate(-35%, 20%) scale(1.05); opacity: 0.32; }
+            100% { transform: translate(-45%, 10%) scale(0.92); opacity: 0.5; }
         }
         .splash-particle {
             position: absolute;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(199, 210, 254, 0.85) 0%, rgba(99, 102, 241, 0.25) 60%, transparent 100%);
             border-radius: 50%;
             pointer-events: none;
             will-change: transform, opacity;
-            z-index: 2;
+            z-index: 1;
         }
         .splash-content {
             position: relative;
@@ -1686,35 +1705,54 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 24px;
-            animation: splash-intro 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            gap: 20px;
+            padding: 24px;
+            animation: splash-intro 0.78s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes splash-intro {
+            0% { transform: translateY(14px) scale(0.92); opacity: 0; filter: blur(8px); }
+            100% { transform: translateY(0) scale(1); opacity: 1; filter: blur(0); }
         }
         .splash-icon-container {
             position: relative;
+            width: 136px;
+            height: 136px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 16px;
         }
-        .splash-icon-container::before {
-            content: '';
+        .splash-orbit-ring {
             position: absolute;
-            top: 6px; left: 6px; right: 6px; bottom: 6px;
-            border-radius: 36px;
-            border: 2px dashed rgba(139, 92, 246, 0.4);
-            animation: techRotate 15s linear infinite;
+            inset: 0;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent 0deg, rgba(129, 140, 248, 0.75) 75deg, rgba(56, 189, 248, 0.55) 120deg, transparent 175deg, transparent 360deg);
+            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px));
+            mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px));
+            animation: techRotate 2.8s linear infinite;
             pointer-events: none;
             z-index: 1;
         }
-        .splash-icon-container::after {
-            content: '';
+        .splash-orbit-ring-inner {
             position: absolute;
-            top: 0px; left: 0px; right: 0px; bottom: 0px;
-            border-radius: 42px;
-            border: 1px solid rgba(236, 72, 153, 0.2);
-            animation: techRotateOpposite 10s linear infinite;
+            inset: 11px;
+            border-radius: 50%;
+            border: 1px solid rgba(148, 163, 184, 0.14);
+            animation: techRotateOpposite 12s linear infinite;
             pointer-events: none;
             z-index: 1;
+        }
+        .splash-pulse-wave {
+            position: absolute;
+            inset: 16px;
+            border-radius: 28px;
+            border: 1px solid rgba(99, 102, 241, 0.45);
+            animation: splashSonar 2.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        @keyframes splashSonar {
+            0% { transform: scale(0.92); opacity: 0.75; }
+            100% { transform: scale(1.42); opacity: 0; }
         }
         @keyframes techRotate {
             0% { transform: rotate(0deg); }
@@ -1726,147 +1764,135 @@
         }
         .splash-icon {
             position: relative;
-            width: 110px;
-            height: 110px;
-            background: rgba(3, 4, 6, 0.6);
-            box-shadow: 0 0 35px rgba(139, 92, 246, 0.35), inset 0 0 15px rgba(139, 92, 246, 0.2);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            border-radius: 26px;
-            padding: 4px;
-            animation: logoBreath 3.5s infinite ease-in-out;
+            width: 92px;
+            height: 92px;
+            background: linear-gradient(145deg, rgba(17, 24, 42, 0.92), rgba(7, 10, 20, 0.98));
+            box-shadow: 0 18px 44px rgba(0, 0, 0, 0.65), 0 0 32px rgba(99, 102, 241, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(165, 180, 252, 0.28);
+            border-radius: 24px;
+            padding: 5px;
+            animation: logoBreath 3.2s ease-in-out infinite;
             will-change: transform, box-shadow;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            z-index: 2;
         }
         .splash-icon img {
-            width: 100px;
-            height: 100px;
-            object-fit: contain;
-            border-radius: 22px;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 19px;
             z-index: 2;
         }
         .splash-logo-shimmer {
             position: absolute;
-            top: 0; left: -150%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-            transform: skewX(-25deg);
-            animation: logoShimmerSweep 4s infinite ease-in-out;
+            top: 0; left: -140%;
+            width: 90%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+            transform: skewX(-22deg);
+            animation: logoShimmerSweep 3.4s ease-in-out infinite;
             pointer-events: none;
             z-index: 3;
         }
         @keyframes logoShimmerSweep {
-            0% { left: -150%; }
-            30% { left: 150%; }
+            0% { left: -140%; }
+            35% { left: 150%; }
             100% { left: 150%; }
         }
         @keyframes logoBreath {
-            0% { transform: scale(1); box-shadow: 0 0 35px rgba(139, 92, 246, 0.35), inset 0 0 15px rgba(139, 92, 246, 0.2); }
-            50% { transform: scale(1.04); box-shadow: 0 0 50px rgba(139, 92, 246, 0.55), inset 0 0 25px rgba(139, 92, 246, 0.3); }
-            100% { transform: scale(1); box-shadow: 0 0 35px rgba(139, 92, 246, 0.35), inset 0 0 15px rgba(139, 92, 246, 0.2); }
+            0%, 100% { transform: scale(1); box-shadow: 0 18px 44px rgba(0, 0, 0, 0.65), 0 0 28px rgba(99, 102, 241, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.14); }
+            50% { transform: scale(1.03); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 42px rgba(99, 102, 241, 0.44), inset 0 1px 0 rgba(255, 255, 255, 0.2); }
         }
         .splash-title-wrapper {
             position: relative;
-            overflow: hidden;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+            gap: 6px;
+            animation: splash-text-slide 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
         .splash-title {
-            font-size: 2.1rem;
-            font-weight: 900;
-            letter-spacing: 1px;
-            background: linear-gradient(90deg, #ffffff 0%, #d8b4fe 50%, #ffffff 100%);
-            background-size: 200% auto;
+            font-size: 1.85rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            background: linear-gradient(120deg, #ffffff 0%, #e0e7ff 45%, #a5b4fc 75%, #ffffff 100%);
+            background-size: 220% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             text-fill-color: transparent;
-            animation: textShine 3.5s infinite linear, splash-text-slide 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            font-family: system-ui, -apple-system, sans-serif;
+            animation: textShine 4s linear infinite;
+            font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
             text-transform: uppercase;
-            text-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+            line-height: 1.1;
+        }
+        .splash-subtitle-pill {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: #94a3b8;
+            opacity: 0.88;
         }
         @keyframes textShine {
             0% { background-position: 0% center; }
-            100% { background-position: 200% center; }
+            100% { background-position: 220% center; }
         }
         @keyframes splash-text-slide {
-            0% { transform: translateY(12px); opacity: 0; }
+            0% { transform: translateY(10px); opacity: 0; }
             100% { transform: translateY(0); opacity: 1; }
         }
-        @keyframes splash-intro {
-            0% { transform: scale(0.95); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
         .splash-progress-container {
-            width: 220px;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
+            width: 196px;
+            height: 4px;
+            background: rgba(148, 163, 184, 0.14);
+            border-radius: 999px;
             overflow: hidden;
             position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.02);
-            margin-top: 12px;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
+            margin-top: 4px;
         }
         .splash-progress-bar {
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, #8b5cf6 0%, #a78bfa 50%, #ec4899 100%);
-            border-radius: 10px;
-            transition: width 0.25s cubic-bezier(0.1, 0.8, 0.2, 1);
+            background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 55%, #38bdf8 100%);
+            border-radius: 999px;
+            transition: width 0.32s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
-            box-shadow: 0 0 12px rgba(139, 92, 246, 0.8), 0 0 4px rgba(236, 72, 153, 0.6);
+            box-shadow: 0 0 14px rgba(99, 102, 241, 0.65);
         }
         .splash-progress-bar::after {
             content: '';
             position: absolute;
-            top: 0; right: 0; bottom: 0; left: 0;
-            background: linear-gradient(90deg, 
-                rgba(255, 255, 255, 0) 0%, 
-                rgba(255, 255, 255, 0.4) 50%, 
-                rgba(255, 255, 255, 0) 100%
-            );
+            inset: 0;
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.45) 50%, rgba(255,255,255,0) 100%);
             background-size: 200% 100%;
-            animation: barPulse 1.8s infinite linear;
+            animation: barPulse 1.6s infinite linear;
         }
         @keyframes barPulse {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
         }
         .splash-status-wrapper {
-            height: 24px;
+            min-height: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 8px;
         }
         .splash-status-text-anim {
-            background: linear-gradient(90deg, #a78bfa, #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-fill-color: transparent;
-            font-size: 0.85rem;
-            font-family: 'Fira Code', 'JetBrains Mono', monospace, system-ui, sans-serif;
-            letter-spacing: 1px;
-            font-weight: bold;
-            text-transform: uppercase;
-            animation: splashTextPulse 1.5s infinite ease-in-out;
+            color: #94a3b8;
+            font-size: 0.78rem;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            letter-spacing: 0.02em;
+            font-weight: 500;
             opacity: 1;
-            transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @keyframes splashTextPulse {
-            0% { opacity: 0.65; filter: drop-shadow(0 0 2px rgba(139, 92, 246, 0.2)); }
-            50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5)); }
-            100% { opacity: 0.65; filter: drop-shadow(0 0 2px rgba(139, 92, 246, 0.2)); }
+            transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .splash-status-fadeout {
             opacity: 0 !important;
-            transform: translateY(-6px);
+            transform: translateY(-4px);
         }
         .splash-status-fadein {
             opacity: 1 !important;
@@ -1874,17 +1900,17 @@
         }
         @keyframes splashParticleFloat {
             0% {
-                transform: translateY(0) translateX(0) scale(0.6);
+                transform: translateY(0) translateX(0) scale(0.7);
                 opacity: 0;
             }
-            15% {
-                opacity: 1;
+            20% {
+                opacity: 0.8;
             }
-            85% {
-                opacity: 1;
+            80% {
+                opacity: 0.7;
             }
             100% {
-                transform: translateY(-110vh) translateX(30px) scale(1.1);
+                transform: translateY(-105vh) translateX(18px) scale(1.05);
                 opacity: 0;
             }
         }
@@ -2535,22 +2561,21 @@
             }
         }
 
-        /* 2. Animações e Microinterações de Cartões e Botões */
+        /* 2. Animações e Microinterações de Cartões e Botões (sem mover containers de formulário) */
         .supabase-card, .stat-card, .rb-mode-card, .card, .agent-card, .dashboard-action-card, .activity-row, .config-index-item, .chat-message.bot, .chat-message.user {
-            transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), 
-                        box-shadow 0.24s cubic-bezier(0.16, 1, 0.3, 1), 
+            transition: box-shadow 0.22s ease, 
                         background-color 0.22s ease, 
                         border-color 0.22s ease !important;
         }
 
-        /* Touch & Hover animation ao interagir com os cartões */
-        .supabase-card:active, .stat-card:active, .rb-mode-card:active, .card:active, .agent-card:active, .dashboard-action-card:active, .config-index-item:active {
-            transform: scale(0.985) translateY(1px) !important;
+        /* Feedback tátil apenas em cartões realmente clicáveis (nunca em containers de formulários como .supabase-card/.card) */
+        .rb-mode-card:active, .agent-card:active, .dashboard-action-card:active, .config-index-item:active {
+            transform: scale(0.988) !important;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28) !important;
         }
 
         @media (hover: hover) {
-            .supabase-card:hover, .stat-card:hover, .rb-mode-card:hover, .card:hover, .agent-card:hover, .dashboard-action-card:hover, .config-index-item:hover {
+            .rb-mode-card:hover, .agent-card:hover, .dashboard-action-card:hover, .config-index-item:hover {
                 transform: translateY(-2px) !important;
                 box-shadow: 0 10px 26px rgba(0, 0, 0, 0.38), 0 0 14px rgba(var(--primary-rgb, 129, 140, 248), 0.14) !important;
                 border-color: rgba(var(--primary-rgb, 129, 140, 248), 0.36) !important;
@@ -2562,15 +2587,15 @@
             }
         }
 
-        /* Animação suave e scale ao clicar em botões */
+        /* Transição limpa sem trepidação ao clicar em botões */
         button, .btn, .btn-universal, .tab-btn, .drawer-item, .reader-btn, .chat-btn-send {
-            transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), 
+            transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), 
                         background-color 0.2s ease, 
                         border-color 0.2s ease, 
                         box-shadow 0.2s ease !important;
         }
         button:active, .btn:active, .btn-universal:active, .tab-btn:active, .drawer-item:active, .reader-btn:active, .chat-btn-send:active {
-            transform: scale(0.96) !important;
+            transform: scale(0.985) !important;
         }
 
         @media (hover: hover) {
@@ -2609,19 +2634,32 @@
             background-color: rgba(255, 255, 255, 0.01) !important;
         }
 
-        /* 3. Ripple Effect interativo para todos os elementos clicáveis */
+        /* Remoção de flash/contorno nativo ao tocar em qualquer botão */
+        button, .btn, .btn-universal, .btn-supabase-action, .btn-auth-submit, .btn-save-premium, .tab-btn, .drawer-item, .reader-btn, .chat-btn-send {
+            -webkit-tap-highlight-color: transparent !important;
+        }
+        button:focus:not(:focus-visible), .btn:focus:not(:focus-visible), .btn-universal:focus:not(:focus-visible), .btn-supabase-action:focus:not(:focus-visible), .tab-btn:focus:not(:focus-visible) {
+            outline: none !important;
+        }
+
+        /* 3. Ripple Effect interativo seguro para todos os elementos clicáveis */
         .ripple-effect {
             position: absolute;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.16);
             transform: scale(0);
-            animation: ripple-animation 0.55s cubic-bezier(0.1, 0.8, 0.3, 1);
+            opacity: 0.75;
+            animation: ripple-animation 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             pointer-events: none;
-            z-index: 999;
+            z-index: 1;
         }
         @keyframes ripple-animation {
-            to {
-                transform: scale(3.5);
+            0% {
+                transform: scale(0);
+                opacity: 0.75;
+            }
+            100% {
+                transform: scale(2.4);
                 opacity: 0;
             }
         }
@@ -2881,37 +2919,20 @@
             font-size: 0.94rem !important;
             font-weight: 700 !important;
         }
-        #auth-gate-screen .btn-auth-submit:hover:not(:disabled) {
-            filter: brightness(1.08) !important;
-            box-shadow: 0 10px 26px rgba(99, 102, 241, 0.44) !important;
-        }
-        .btn-supabase-action::after, .btn-auth-submit::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
-            transform: translate(-50%, -50%) scale(0);
-            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
-            pointer-events: none;
-            opacity: 0;
-            z-index: -1;
-        }
-        .btn-supabase-action:active::after, .btn-auth-submit:active::after {
-            transform: translate(-50%, -50%) scale(1);
-            opacity: 1;
-            transition: 0s;
-        }
-        .btn-supabase-action:hover:not(:disabled), .btn-auth-submit:hover:not(:disabled) {
-            transform: translateY(-2px) scale(1.01) !important;
-            box-shadow: var(--btn-shadow-hover, 0 8px 24px rgba(99, 102, 241, 0.42)) !important;
-            filter: brightness(1.1);
+        @media (hover: hover) {
+            #auth-gate-screen .btn-auth-submit:hover:not(:disabled) {
+                filter: brightness(1.08) !important;
+                box-shadow: 0 10px 26px rgba(99, 102, 241, 0.44) !important;
+            }
+            .btn-supabase-action:hover:not(:disabled), .btn-auth-submit:hover:not(:disabled) {
+                transform: translateY(-2px) scale(1.01) !important;
+                box-shadow: var(--btn-shadow-hover, 0 8px 24px rgba(99, 102, 241, 0.42)) !important;
+                filter: brightness(1.08);
+            }
         }
         .btn-supabase-action:active:not(:disabled), .btn-auth-submit:active:not(:disabled) {
-            transform: translateY(1px) scale(0.98) !important;
-            box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3) !important;
+            transform: scale(0.988) !important;
+            box-shadow: 0 3px 10px rgba(99, 102, 241, 0.28) !important;
         }
         .btn-supabase-action:disabled, .btn-auth-submit:disabled {
             opacity: 0.65 !important;
@@ -3606,33 +3627,35 @@
 
     <!-- Splash Screen Dinâmica -->
     <div id="splash-screen">
-        <!-- Digital elements overlays -->
-        <div class="splash-grid-lines"></div>
-        <div class="splash-scanner"></div>
-        
-        <!-- Floating particles container -->
+        <!-- Mesh Aurora ambient glows -->
+        <div class="splash-aurora splash-aurora-1"></div>
+        <div class="splash-aurora splash-aurora-2"></div>
+
+        <!-- Subtle floating neural motes -->
         <div id="splash-particles-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 1;"></div>
-        
+
         <div class="splash-content">
             <div class="splash-icon-container">
+                <div class="splash-pulse-wave"></div>
+                <div class="splash-orbit-ring"></div>
+                <div class="splash-orbit-ring-inner"></div>
                 <div class="splash-icon">
                     <img src="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg" alt="Synapse Console Icon">
                     <div class="splash-logo-shimmer"></div>
                 </div>
             </div>
-            
+
             <div class="splash-title-wrapper">
-                <div class="splash-title">Synapse Console</div>
+                <div class="splash-title">Synapse</div>
+                <div class="splash-subtitle-pill">Console IA</div>
             </div>
-            
-            <!-- Premium progress bar -->
+
             <div class="splash-progress-container">
                 <div id="splash-progress-bar" class="splash-progress-bar"></div>
             </div>
-            
-            <!-- Dynamic Status do Sistema -->
+
             <div class="splash-status-wrapper">
-                <span id="splash-status-text" class="splash-status-text-anim">Inicializando IA...</span>
+                <span id="splash-status-text" class="splash-status-text-anim">Inicializando...</span>
             </div>
         </div>
     </div>
@@ -8695,6 +8718,7 @@ WITH CHECK (true);</code>
                 triggerPulse();
                 if (isOn) {
                     document.body.classList.add('reduce-motion');
+                    document.querySelectorAll('.ripple-effect').forEach(el => el.remove());
                     addLog(`Modo reduzir movimento ativado.`, "info");
                 } else {
                     document.body.classList.remove('reduce-motion');
@@ -8767,6 +8791,7 @@ WITH CHECK (true);</code>
                     `;
                     document.head.appendChild(style);
                 }
+                document.querySelectorAll('.ripple-effect').forEach(el => el.remove());
                 addLog("Efeitos de transição visual desabilitados globalmente.", "info");
             } else {
                 const style = document.getElementById('no-transitions-style');
@@ -11495,10 +11520,15 @@ WITH CHECK (true);</code>
             
             if (selectedVisualDepth) {
                 css += `
-                    .supabase-card:hover, .config-subview-card:hover {
-                        transform: translateY(-3px) scale(1.01) !important;
-                        box-shadow: 0 12px 28px rgba(0,0,0,0.5) !important;
-                        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease !important;
+                    .supabase-card, .config-subview-card {
+                        box-shadow: 0 10px 26px rgba(0,0,0,0.42) !important;
+                    }
+                    @media (hover: hover) {
+                        .dashboard-action-card:hover, .config-index-item:hover {
+                            transform: translateY(-2px) !important;
+                            box-shadow: 0 12px 28px rgba(0,0,0,0.5) !important;
+                            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease !important;
+                        }
                     }
                 `;
             }
@@ -12063,20 +12093,20 @@ WITH CHECK (true);</code>
             const container = document.getElementById('splash-particles-container');
             if (!container) return;
             container.innerHTML = '';
-            const count = 18;
+            const count = 16;
             for (let i = 0; i < count; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'splash-particle';
-                const size = Math.random() * 8 + 4;
-                const left = Math.random() * 100;
-                const duration = Math.random() * 6 + 4;
-                const delay = Math.random() * 5;
-                const opacity = Math.random() * 0.25 + 0.1;
+                const size = (Math.random() * 2.5 + 1.8).toFixed(1);
+                const left = (Math.random() * 96 + 2).toFixed(1);
+                const duration = (Math.random() * 7 + 5).toFixed(1);
+                const delay = (Math.random() * 4).toFixed(1);
+                const opacity = (Math.random() * 0.35 + 0.15).toFixed(2);
                 
                 particle.style.width = size + 'px';
                 particle.style.height = size + 'px';
                 particle.style.left = left + '%';
-                particle.style.bottom = '-20px';
+                particle.style.bottom = '-12px';
                 particle.style.opacity = opacity;
                 particle.style.animation = `splashParticleFloat ${duration}s ${delay}s infinite linear`;
                 container.appendChild(particle);
@@ -12122,7 +12152,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=30')
+                navigator.serviceWorker.register('./sw.js?v=32')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -12242,25 +12272,25 @@ WITH CHECK (true);</code>
                 if (splash) {
                     const icon = splash.querySelector('.splash-icon');
                     if (icon) {
-                        // Brilho final espetacular no logo antes de sumir
-                        icon.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
-                        icon.style.boxShadow = '0 0 75px rgba(139, 92, 246, 0.95), inset 0 0 40px rgba(139, 92, 246, 0.7)';
-                        icon.style.transform = 'scale(1.15)';
+                        icon.style.transition = 'transform 0.42s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.42s cubic-bezier(0.16, 1, 0.3, 1)';
+                        icon.style.boxShadow = '0 22px 54px rgba(0, 0, 0, 0.72), 0 0 56px rgba(99, 102, 241, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.28)';
+                        icon.style.transform = 'scale(1.04)';
                     }
                     
-                    await new Promise(resolve => setTimeout(resolve, 300));
+                    await new Promise(resolve => setTimeout(resolve, 220));
                     
-                    splash.style.transition = 'opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)';
+                    splash.style.transition = 'opacity 0.52s cubic-bezier(0.16, 1, 0.3, 1), transform 0.52s cubic-bezier(0.16, 1, 0.3, 1), filter 0.52s cubic-bezier(0.16, 1, 0.3, 1)';
                     splash.style.opacity = '0';
                     splash.style.pointerEvents = 'none';
-                    splash.style.transform = 'scale(1.06)'; // Suave recuo de câmera
+                    splash.style.transform = 'scale(1.03)';
+                    splash.style.filter = 'blur(6px)';
                     
                     if (typeof addLog === 'function') {
                         addLog("[STEP 2] Widgets renderizados - Splash screen removido, elementos visuais renderizados na viewport.", "info");
                     }
                     
                     // Espera a animação de fade-out concluir e remove o elemento do DOM
-                    await new Promise(resolve => setTimeout(resolve, 750));
+                    await new Promise(resolve => setTimeout(resolve, 560));
                     try { splash.remove(); } catch(err){}
                 }
             } catch (splashErr) {
@@ -22833,28 +22863,29 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             const cancelBtn = card.querySelector('#confirm-btn-cancel');
             const okBtn = card.querySelector('#confirm-btn-ok');
 
+            const canHover = window.matchMedia && window.matchMedia('(hover: hover)').matches;
             cancelBtn.onmouseenter = () => {
+                if (!canHover) return;
                 cancelBtn.style.background = 'rgba(255, 255, 255, 0.08)';
                 cancelBtn.style.color = 'var(--text-main, #ffffff)';
                 cancelBtn.style.borderColor = 'var(--primary, #ffffff)';
-                cancelBtn.style.transform = 'translateY(-1px)';
             };
             cancelBtn.onmouseleave = () => {
+                if (!canHover) return;
                 cancelBtn.style.background = 'rgba(255, 255, 255, 0.03)';
                 cancelBtn.style.color = 'var(--text-muted, rgba(255, 255, 255, 0.8))';
                 cancelBtn.style.borderColor = 'var(--border-color, rgba(255, 255, 255, 0.08))';
-                cancelBtn.style.transform = 'translateY(0)';
             };
 
             okBtn.onmouseenter = () => {
-                okBtn.style.opacity = '0.85';
+                if (!canHover) return;
+                okBtn.style.opacity = '0.9';
                 okBtn.style.boxShadow = '0 6px 20px var(--primary-bg, rgba(255, 255, 255, 0.35))';
-                okBtn.style.transform = 'translateY(-1px)';
             };
             okBtn.onmouseleave = () => {
+                if (!canHover) return;
                 okBtn.style.opacity = '1';
                 okBtn.style.boxShadow = '0 4px 15px var(--primary-bg, rgba(255, 255, 255, 0.2))';
-                okBtn.style.transform = 'translateY(0)';
             };
 
             cancelBtn.onclick = () => {
@@ -29058,29 +29089,74 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             document.addEventListener('click', function(e) {
                 const target = e.target.closest('button, .btn, .btn-universal, .tab-btn, .drawer-item, .reader-btn, .dashboard-action-card, .activity-row, .config-index-item');
                 if (!target) return;
-                
+
+                // Remove any orphaned ripple spans inside this element so they never stack into white blobs
+                target.querySelectorAll('.ripple-effect').forEach(el => el.remove());
+
+                // Skip ripple when animations/transitions are disabled or reduced by OS/settings
+                const animationsDisabled =
+                    document.body.classList.contains('reduce-motion') ||
+                    !!document.getElementById('no-transitions-style') ||
+                    (typeof accessReduceAnimations !== 'undefined' && accessReduceAnimations) ||
+                    (typeof selectedAnimationIntensity !== 'undefined' && selectedAnimationIntensity === 'disabled') ||
+                    (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+                if (animationsDisabled) return;
+
+                // Skip ripple on disabled buttons or tiny floating/absolute icon controls
+                if (target.disabled || target.getAttribute('aria-disabled') === 'true') return;
+                if (target.classList.contains('input-copy-btn') || target.classList.contains('auth-copy-btn') || target.classList.contains('auth-password-toggle') || target.classList.contains('reader-btn')) {
+                    return;
+                }
+
                 const rect = target.getBoundingClientRect();
+                if (!rect || rect.width < 28 || rect.height < 28) return;
+
+                const computedStyle = window.getComputedStyle(target);
+                if (computedStyle.position === 'absolute') return;
+
                 const size = Math.max(rect.width, rect.height);
-                
-                const originalPosition = window.getComputedStyle(target).position;
-                if (originalPosition === 'static') {
+                const hadStaticPos = computedStyle.position === 'static';
+                const hadVisibleOverflow = computedStyle.overflow === 'visible';
+                const prevInlinePos = target.style.position;
+                const prevInlineOverflow = target.style.overflow;
+
+                if (hadStaticPos) {
                     target.style.position = 'relative';
                 }
-                
+                if (hadVisibleOverflow) {
+                    target.style.overflow = 'hidden';
+                }
+
+                const rippleId = `r_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+                target.dataset.activeRippleId = rippleId;
+
+                const isKeyboardClick = (e.clientX === 0 && e.clientY === 0);
+                const originX = isKeyboardClick ? (rect.width / 2) : (e.clientX - rect.left);
+                const originY = isKeyboardClick ? (rect.height / 2) : (e.clientY - rect.top);
+
                 const ripple = document.createElement('span');
                 ripple.className = 'ripple-effect';
                 ripple.style.width = ripple.style.height = `${size}px`;
-                ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
-                ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
-                
+                ripple.style.left = `${originX - size / 2}px`;
+                ripple.style.top = `${originY - size / 2}px`;
+
                 target.appendChild(ripple);
-                
-                ripple.addEventListener('animationend', () => {
+
+                let cleaned = false;
+                const cleanupRipple = () => {
+                    if (cleaned) return;
+                    cleaned = true;
                     ripple.remove();
-                    if (originalPosition === 'static') {
-                        target.style.position = '';
+                    if (target.dataset.activeRippleId === rippleId) {
+                        if (hadStaticPos) target.style.position = prevInlinePos;
+                        if (hadVisibleOverflow) target.style.overflow = prevInlineOverflow;
+                        delete target.dataset.activeRippleId;
                     }
-                });
+                };
+
+                ripple.addEventListener('animationend', cleanupRipple, { once: true });
+                ripple.addEventListener('animationcancel', cleanupRipple, { once: true });
+                setTimeout(cleanupRipple, 500);
             });
 
             if (typeof initSynapseAuthPortalParams === 'function') {
