@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#060913" id="theme-color-meta">
+    <meta name="theme-color" content="#000000" id="theme-color-meta">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -73,18 +73,18 @@
            1. Variáveis Nativas & CSS Reset
            ========================================================================== */
         :root {
-            /* Padrão Moderno: Space Slate Refinado (Sobrescrito ao carregar tema salvo) */
-            --bg-color: #060913;
-            --bg-rgb: 6, 9, 19;
-            --bg-gradient: radial-gradient(circle at 18% 0%, rgba(129, 140, 248, 0.08) 0%, transparent 48%);
-            --card-bg-primary: #0c1222;
-            --card-bg-secondary: #131c31;
-            --card-bg-rgb: 12, 18, 34;
+            /* Padrão Principal: Preto Super AMOLED (Pixels totalmente apagados) */
+            --bg-color: #000000;
+            --bg-rgb: 0, 0, 0;
+            --bg-gradient: none;
+            --card-bg-primary: #070709;
+            --card-bg-secondary: #0d0d11;
+            --card-bg-rgb: 7, 7, 9;
             --card-bg-primary-grad: none;
             --card-bg-secondary-grad: none;
-            --border-color: rgba(148, 163, 184, 0.16);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.10);
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
             
             /* Detalhes de Destaque */
             --primary: #818cf8; 
@@ -215,12 +215,19 @@
             100% { transform: scale(1.05); opacity: 1; }
         }
 
-        /* Tema Cinza Escuro (Opção Alternativa Secundária) */
+        /* Tema Escuro Unificado (Sempre Preto Super AMOLED #000000) */
         :root[data-theme="dark"] {
-            --bg-color: #0f1115;
-            --card-bg-primary: #161920;
-            --card-bg-secondary: #20242d;
-            --border-color: #2b303b;
+            --bg-color: #000000;
+            --bg-rgb: 0, 0, 0;
+            --bg-gradient: none;
+            --card-bg-primary: #070709;
+            --card-bg-secondary: #0d0d11;
+            --card-bg-rgb: 7, 7, 9;
+            --card-bg-primary-grad: none;
+            --card-bg-secondary-grad: none;
+            --border-color: rgba(255, 255, 255, 0.10);
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
         }
 
         /* Classes de herança estética global para alteração instantânea */
@@ -623,7 +630,7 @@
             padding: 0;
             overflow: hidden;
             display: none;
-            background: radial-gradient(ellipse 85% 42% at 50% 0%, rgba(var(--primary-rgb, 129, 140, 248), 0.08) 0%, transparent 72%);
+            background: var(--bg-color, #000000);
             height: 100%;
         }
 
@@ -1031,7 +1038,7 @@
             flex-shrink: 0;
             width: 100%;
             padding: 4px max(12px, calc((100% - 760px) / 2)) calc(8px + var(--safe-bottom));
-            background: linear-gradient(180deg, transparent 0%, rgba(var(--bg-rgb, 6, 9, 19), 0.72) 28%, rgba(var(--bg-rgb, 6, 9, 19), 0.96) 100%);
+            background: linear-gradient(180deg, transparent 0%, rgba(var(--bg-rgb, 0, 0, 0), 0.85) 28%, rgba(var(--bg-rgb, 0, 0, 0), 1) 100%);
         }
 
         .chat-input-area {
@@ -1040,12 +1047,12 @@
             align-items: flex-end;
             gap: 8px;
             padding: 8px 9px 8px 10px;
-            background: rgba(var(--card-bg-rgb, 15, 23, 42), 0.9);
-            border: 1px solid rgba(148, 163, 184, 0.22);
+            background: rgba(var(--card-bg-rgb, 7, 7, 9), 0.96);
+            border: 1px solid rgba(255, 255, 255, 0.14);
             border-radius: 26px;
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.05);
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
@@ -1517,8 +1524,8 @@
         .provider-sync-card {
             --sync-accent-rgb: 56, 189, 248;
             --sync-accent-color: #38bdf8;
-            background: linear-gradient(135deg, rgba(var(--sync-accent-rgb), 0.06) 0%, rgba(var(--sync-accent-rgb), 0.015) 100%), rgba(15, 23, 42, 0.45);
-            border: 1px solid rgba(var(--sync-accent-rgb), 0.28);
+            background: var(--card-bg-primary, #070709);
+            border: 1px solid rgba(var(--sync-accent-rgb), 0.25);
             border-radius: 16px;
             padding: 16px 18px;
             display: flex;
@@ -1932,7 +1939,7 @@
         #splash-screen {
             position: fixed;
             inset: 0;
-            background: radial-gradient(circle at 50% 38%, rgba(99, 102, 241, 0.14) 0%, #060916 48%, #02040a 100%);
+            background: #000000;
             z-index: 99999;
             display: flex;
             justify-content: center;
@@ -1943,27 +1950,27 @@
         }
         .splash-aurora {
             position: absolute;
-            width: 420px;
-            height: 420px;
+            width: 340px;
+            height: 340px;
             border-radius: 50%;
             pointer-events: none;
-            filter: blur(72px);
-            opacity: 0.45;
+            filter: blur(80px);
+            opacity: 0.22;
             z-index: 0;
             will-change: transform, opacity;
         }
         .splash-aurora-1 {
-            top: 18%;
+            top: 22%;
             left: 50%;
             transform: translate(-65%, -20%);
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.48) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.36) 0%, transparent 70%);
             animation: splashAuroraFloat 7s ease-in-out infinite alternate;
         }
         .splash-aurora-2 {
-            bottom: 12%;
+            bottom: 16%;
             left: 50%;
             transform: translate(-35%, 20%);
-            background: radial-gradient(circle, rgba(124, 58, 237, 0.38) 0%, rgba(56, 189, 248, 0.14) 45%, transparent 72%);
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.28) 0%, transparent 70%);
             animation: splashAuroraFloatReverse 8.5s ease-in-out infinite alternate;
         }
         @keyframes splashAuroraFloat {
@@ -2205,12 +2212,12 @@
             --auth-accent: #6366f1;
             --auth-accent-2: #7c3aed;
             --auth-accent-soft: #a5b4fc;
-            --auth-muted: #94a3b8;
-            --auth-border: rgba(148, 163, 184, 0.14);
-            --text-muted: #94a3b8;
+            --auth-muted: #9ca3af;
+            --auth-border: rgba(255, 255, 255, 0.10);
+            --text-muted: #9ca3af;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 50% 15%, rgba(99, 102, 241, 0.16) 0%, #050814 55%, #02040a 100%);
+            background: #000000;
             z-index: 9998; /* Just below splash but hiding everything else */
             display: none;
             flex-direction: column;
@@ -2238,14 +2245,14 @@
         .auth-gate-wrapper {
             width: 100%;
             max-width: 392px;
-            background: linear-gradient(180deg, rgba(17, 24, 42, 0.92) 0%, rgba(10, 14, 26, 0.96) 100%);
+            background: #070709;
             border: 1px solid var(--auth-border);
             border-radius: 26px;
             padding: 30px 24px 24px;
             display: flex;
             flex-direction: column;
             gap: 20px;
-            box-shadow: 0 28px 64px rgba(0, 0, 0, 0.78), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            box-shadow: 0 28px 64px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.06);
             backdrop-filter: blur(22px);
             -webkit-backdrop-filter: blur(22px);
             animation: gate-intro 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -2549,7 +2556,7 @@
             left: -290px;
             width: 290px;
             height: 100%;
-            background-color: var(--bg-color, #0a0a0c);
+            background-color: var(--bg-color, #000000);
             border-right: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
             z-index: 10000;
             transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -2782,7 +2789,7 @@
         
         /* Ajuste fino do header principal (vidro translúcido reativo ao tema) */
         header {
-            background-color: rgba(var(--bg-rgb, 6, 9, 19), 0.78) !important;
+            background-color: rgba(var(--bg-rgb, 0, 0, 0), 0.90) !important;
             backdrop-filter: blur(18px) !important;
             -webkit-backdrop-filter: blur(18px) !important;
             border-bottom: 1px solid var(--border-color) !important;
@@ -3147,12 +3154,12 @@
 
         /* Refinamentos do Portal de Acesso e Inputs de Autenticação */
         #auth-form-container .form-control {
-            border: 1px solid rgba(148, 163, 184, 0.14) !important;
-            background-color: rgba(15, 23, 42, 0.68) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            background-color: #0d0d11 !important;
             border-radius: 13px !important;
             padding: 13px 14px 13px 42px !important;
             font-size: 0.9rem !important;
-            color: #f8fafc !important;
+            color: #ffffff !important;
             transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
             outline: none !important;
             width: 100% !important;
@@ -4097,10 +4104,10 @@
 
             <!-- Seletor Rápido de Agente Unificado do Chat -->
             <div id="chat-agent-selector-btn" onclick="toggleChatAgentDropdown(event)" style="display: flex; align-items: center; gap: 9px; flex: 1; min-width: 0; cursor: pointer; padding: 4px 10px 4px 5px; border-radius: 13px; border: 1px solid transparent; transition: background 0.2s, border-color 0.2s;" title="Toque para trocar de agente">
-                <div id="chat-active-agent-icon" style="font-size: 1.15rem; background: rgba(var(--primary-rgb, 129, 140, 248), 0.14); border: 1px solid rgba(var(--primary-rgb, 129, 140, 248), 0.32); border-radius: 10px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">🤖</div>
+                <div id="chat-active-agent-icon" style="font-size: 1.15rem; background: rgba(var(--primary-rgb, 129, 140, 248), 0.14); border: 1px solid rgba(var(--primary-rgb, 129, 140, 248), 0.32); border-radius: 10px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 0;"><img src="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg" alt="Synapse" style="width: 100%; height: 100%; object-fit: cover;"></div>
                 <div style="display: flex; flex-direction: column; min-width: 0;">
                     <div style="display: flex; align-items: center; gap: 4px;">
-                        <h3 id="chat-active-agent-name" style="margin: 0; font-size: 0.94rem; font-weight: 700; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: -0.2px;">Geral</h3>
+                        <h3 id="chat-active-agent-name" style="margin: 0; font-size: 0.94rem; font-weight: 700; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: -0.2px;">Synapse</h3>
                         <svg viewBox="0 0 24 24" width="14" height="14" fill="var(--text-muted)" style="flex-shrink: 0; opacity: 0.75;"><path d="M7 10l5 5 5-5z"/></svg>
                     </div>
                     <span style="font-size: 0.66rem; color: var(--text-muted); line-height: 1.15; margin-top: 1px; display: flex; align-items: center; gap: 5px; min-width: 0;">
@@ -4506,7 +4513,7 @@
                 }
 
                 .dashboard-v2-header {
-                    background: rgba(15, 23, 42, 0.45);
+                    background: var(--card-bg-primary, #070709);
                     border: 1px solid var(--border-color);
                     border-radius: 20px;
                     padding: 24px;
@@ -5078,11 +5085,11 @@
                         <label style="display:block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Cargo Desejado:</label>
                         <div style="position: relative; display: flex; align-items: center;">
                             <span style="position: absolute; left: 14px; font-size: 1.15rem; color: var(--text-muted); line-height: 1; user-select: none;" id="int-cargo-icon">💻</span>
-                            <input id="int-input-cargo" type="text" class="form-control" value="Desenvolvedor Mobile Android" placeholder="Digite para buscar profissão... Ex: med, des, adv..." style="padding-left: 42px; width: 100%; border-radius: 12px; height: 48px; background: #0f172a; color: #fff; border: 1px solid var(--border-color);" autocomplete="off" onfocus="showIntAutocomplete()" oninput="filterIntAutocomplete()">
+                            <input id="int-input-cargo" type="text" class="form-control" value="Desenvolvedor Mobile Android" placeholder="Digite para buscar profissão... Ex: med, des, adv..." style="padding-left: 42px; width: 100%; border-radius: 12px; height: 48px; background: var(--card-bg-secondary, #0d0d11); color: #fff; border: 1px solid var(--border-color);" autocomplete="off" onfocus="showIntAutocomplete()" oninput="filterIntAutocomplete()">
                         </div>
                         
                         <!-- Painel Dropdown de Autocomplete -->
-                        <div id="int-autocomplete-panel" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #090d16; border: 1px solid var(--border-color); border-radius: 12px; z-index: 1000; max-height: 280px; overflow-y: auto; box-shadow: 0 12px 36px rgba(0,0,0,0.7); margin-top: 6px; padding: 4px;">
+                        <div id="int-autocomplete-panel" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--card-bg-primary, #070709); border: 1px solid var(--border-color); border-radius: 12px; z-index: 1000; max-height: 280px; overflow-y: auto; box-shadow: 0 12px 36px rgba(0,0,0,0.85); margin-top: 6px; padding: 4px;">
                             <!-- Carregado via JS -->
                         </div>
                     </div>
@@ -5098,7 +5105,7 @@
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;">
                         <div>
                             <label style="display:block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Área Profissional:</label>
-                            <select id="int-select-area" class="form-control" style="background: #0f172a; color: #fff; border: 1px solid var(--border-color); height: 48px; border-radius: 12px; padding: 0 14px;" onchange="updateIntAreaIcon()">
+                            <select id="int-select-area" class="form-control" style="background: var(--card-bg-secondary, #0d0d11); color: #fff; border: 1px solid var(--border-color); height: 48px; border-radius: 12px; padding: 0 14px;" onchange="updateIntAreaIcon()">
                                 <option value="Tecnologia">💻 Tecnologia</option>
                                 <option value="Saúde">⚕️ Saúde</option>
                                 <option value="Jurídico">⚖️ Jurídico</option>
@@ -5109,7 +5116,7 @@
                         </div>
                         <div>
                             <label style="display:block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Nível de Experiência:</label>
-                            <select id="int-select-nivel" class="form-control" style="background: #0f172a; color: #fff; border: 1px solid var(--border-color); height: 48px; border-radius: 12px; padding: 0 14px;">
+                            <select id="int-select-nivel" class="form-control" style="background: var(--card-bg-secondary, #0d0d11); color: #fff; border: 1px solid var(--border-color); height: 48px; border-radius: 12px; padding: 0 14px;">
                                 <option value="Estágio">Estágio</option>
                                 <option value="Júnior">Júnior</option>
                                 <option value="Pleno" selected>Pleno</option>
@@ -5161,7 +5168,7 @@
                             <h3 id="int-res-cargo" style="margin: 4px 0 0 0; font-size: 1.25rem;">Nome do Cargo</h3>
                             <small id="int-res-meta" style="color: var(--text-muted);"></small>
                         </div>
-                        <div id="int-res-circle" style="width: 64px; height: 64px; border-radius: 50%; border: 3px solid #10b981; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #0f172a;">
+                        <div id="int-res-circle" style="width: 64px; height: 64px; border-radius: 50%; border: 3px solid #10b981; display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--card-bg-secondary, #0d0d11);">
                             <span id="int-res-nota" style="font-size: 1.3rem; font-weight: 900; color: #10b981;">85</span>
                             <span style="font-size: 0.5rem; color: var(--text-muted); font-weight: bold;">NOTA</span>
                         </div>
@@ -5556,7 +5563,7 @@
 
                             <div class="rb-input-group">
                                 <label class="rb-input-label">Possui Experiência Profissional Anterior? <span style="color:var(--primary);">*</span>:</label>
-                                <select id="rb-q-has-experience" class="form-control" onchange="toggleExperienceField(this.value)" style="background: #0f172a; color: #fff; border: 1px solid var(--border-color); height: 44px; border-radius: 10px; padding: 0 12px; font-size: 0.85rem;">
+                                <select id="rb-q-has-experience" class="form-control" onchange="toggleExperienceField(this.value)" style="background: var(--card-bg-secondary, #0d0d11); color: #fff; border: 1px solid var(--border-color); height: 44px; border-radius: 10px; padding: 0 12px; font-size: 0.85rem;">
                                     <option value="no" selected>❌ Não possuo experiência (Focar em Primeiro Emprego / Jovem Aprendiz)</option>
                                     <option value="yes">✔️ Sim, possuo experiência profissional anterior</option>
                                 </select>
@@ -5598,7 +5605,7 @@
 
                             <div class="rb-input-group" style="margin-top: 4px;">
                                 <label class="rb-input-label" style="color: var(--primary); font-weight: bold;">Nível de Experiência <span style="color:var(--primary);">*</span>:</label>
-                                <select id="rb-input-level" class="form-control" onchange="updateResumePreview()" style="background: #0f172a; color: #fff; border: 1px solid var(--border-color); height: 44px; border-radius: 10px; padding: 0 12px; font-size: 0.85rem;">
+                                <select id="rb-input-level" class="form-control" onchange="updateResumePreview()" style="background: var(--card-bg-secondary, #0d0d11); color: #fff; border: 1px solid var(--border-color); height: 44px; border-radius: 10px; padding: 0 12px; font-size: 0.85rem;">
                                     <option value="">-- Selecione seu Nível --</option>
                                     <option value="Estudante">🎓 Estudante (Focado em projetos acadêmicos, sem experiência anterior)</option>
                                     <option value="Estagiário">🟢 Estagiário (Experiência profissional inicial supervisionada)</option>
@@ -5733,7 +5740,7 @@
                         <div class="rb-row">
                             <div class="rb-input-group">
                                 <label class="rb-input-label">Preservar Modelo:</label>
-                                <select id="rb-style-preset" class="form-control" onchange="changeResumeStylePreset(this.value)" style="background: #0f172a; color: #fff; border: 1px solid var(--border-color); height: 40px; border-radius: 8px; padding: 0 10px; font-size: 0.82rem;">
+                                <select id="rb-style-preset" class="form-control" onchange="changeResumeStylePreset(this.value)" style="background: var(--card-bg-secondary, #0d0d11); color: #fff; border: 1px solid var(--border-color); height: 40px; border-radius: 8px; padding: 0 10px; font-size: 0.82rem;">
                                     <option value="modern" selected>Moderno (Lateral de Destaque) 🌟</option>
                                     <option value="professional">Profissional (Alinhamento Corporativo) 👔</option>
                                     <option value="executive">Executivo (Serifado Elegante) 💼</option>
@@ -5743,7 +5750,7 @@
                             </div>
                             <div class="rb-input-group">
                                 <label class="rb-input-label">Fonte de Texto:</label>
-                                <select id="rb-style-font" class="form-control" onchange="updateResumePreview()" style="background: #0f172a; color: #fff; border: 1px solid var(--border-color); height: 40px; border-radius: 8px; padding: 0 10px; font-size: 0.82rem;">
+                                <select id="rb-style-font" class="form-control" onchange="updateResumePreview()" style="background: var(--card-bg-secondary, #0d0d11); color: #fff; border: 1px solid var(--border-color); height: 40px; border-radius: 8px; padding: 0 10px; font-size: 0.82rem;">
                                     <option value="sans-serif">Sans-Serif (Limpo, Moderno)</option>
                                     <option value="serif">Serif (Clássico, Formal)</option>
                                     <option value="monospace">Monospace (Técnico, Dev)</option>
@@ -5766,7 +5773,7 @@
                         <div class="rb-row">
                             <div class="rb-input-group">
                                 <label class="rb-input-label">Margens e Espaço:</label>
-                                <select id="rb-style-spacing" class="form-control" onchange="updateResumePreview()" style="background: #0f172a; color: #fff; border: 1px solid var(--border-color); height: 40px; border-radius: 8px; padding: 0 10px; font-size: 0.82rem;">
+                                <select id="rb-style-spacing" class="form-control" onchange="updateResumePreview()" style="background: var(--card-bg-secondary, #0d0d11); color: #fff; border: 1px solid var(--border-color); height: 40px; border-radius: 8px; padding: 0 10px; font-size: 0.82rem;">
                                     <option value="compact">Compacto (Mais densidade)</option>
                                     <option value="normal" selected>Normal (Padrão)</option>
                                     <option value="spacious">Espaçoso (Leitura leve)</option>
@@ -5774,7 +5781,7 @@
                             </div>
                             <div class="rb-input-group">
                                 <label class="rb-input-label">Bordas Divisórias:</label>
-                                <select id="rb-style-header-borders" class="form-control" onchange="updateResumePreview()" style="background: #0f172a; color: #fff; border: 1px solid var(--border-color); height: 40px; border-radius: 8px; padding: 0 10px; font-size: 0.82rem;">
+                                <select id="rb-style-header-borders" class="form-control" onchange="updateResumePreview()" style="background: var(--card-bg-secondary, #0d0d11); color: #fff; border: 1px solid var(--border-color); height: 40px; border-radius: 8px; padding: 0 10px; font-size: 0.82rem;">
                                     <option value="bottom" selected>Sublinhado nas Seções</option>
                                     <option value="solid">Fundo Sólido nos Títulos</option>
                                     <option value="left">Faixa à Esquerda</option>
@@ -6820,7 +6827,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
                             <label style="font-size: 0.8rem; font-weight: 700; color: #fff;">Cor de Destaque Principal</label>
                             <div style="display: flex; align-items: center; gap: 12px;">
-                                <input type="color" id="custom-theme-primary" value="#dfb15b" style="width: 56px; height: 42px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="onPrimaryColorInput(this.value)">
+                                <input type="color" id="custom-theme-primary" value="#818cf8" style="width: 56px; height: 42px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="onPrimaryColorInput(this.value)">
                                 <div style="display: flex; flex-direction: column; gap: 2px;">
                                     <span style="font-size: 0.72rem; color: #fff; font-weight: 600;">Selecione o tom base</span>
                                     <span style="font-size: 0.66rem; color: var(--text-muted);">As outras cores se harmonizarão a esta se o Smart Sync estiver ativo.</span>
@@ -6840,7 +6847,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                             
                             <!-- Segunda Cor do Degradê (Visível apenas se o toggle estiver ativo) -->
                             <div id="custom-theme-second-color-container" style="display: none; align-items: center; gap: 12px; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 10px; margin-top: 2px;">
-                                <input type="color" id="custom-theme-primary-second" value="#0000ff" style="width: 50px; height: 38px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="onSecondColorInput(this.value)">
+                                <input type="color" id="custom-theme-primary-second" value="#a855f7" style="width: 50px; height: 38px; border: 1px solid var(--border-color); border-radius: 8px; background: none; cursor: pointer; padding: 0;" oninput="onSecondColorInput(this.value)">
                                 <div style="display: flex; flex-direction: column; gap: 2px;">
                                     <span style="font-size: 0.72rem; color: #fff; font-weight: 600;">Segunda Cor do Degradê</span>
                                     <span style="font-size: 0.66rem; color: var(--text-muted);">Define o tom de encerramento do degradê.</span>
@@ -6854,7 +6861,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                                 <span style="font-weight: 700; font-size: 0.8rem; color: #fff;">Efeito de Brilho Neon (Glow)</span>
                                 <span style="color: var(--text-muted); font-size: 0.68rem;">Ativa sombreados e destaques com brilho fluorescente.</span>
                             </div>
-                            <div class="toggle-switch on" id="custom-theme-neon-toggle"></div>
+                            <div class="toggle-switch" id="custom-theme-neon-toggle"></div>
                         </div>
 
                         <!-- SEÇÃO AVANÇADA (Ocultada se Sincronização estiver ativa) -->
@@ -6865,7 +6872,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
                                 <label style="font-size: 0.78rem; font-weight: 700; color: #fff;">Cor de Fundo da Tela (Principal)</label>
                                 <div style="display: flex; align-items: center; gap: 10px;">
-                                    <input type="color" id="custom-theme-bg" value="#0a0a0c" style="width: 44px; height: 34px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
+                                    <input type="color" id="custom-theme-bg" value="#000000" style="width: 44px; height: 34px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
                                     <span style="font-size: 0.68rem; color: var(--text-muted);">Cor de fundo principal de todo o aplicativo.</span>
                                 </div>
                             </div>
@@ -6874,7 +6881,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
                                 <label style="font-size: 0.78rem; font-weight: 700; color: #fff;">Cor do Brilho Glow</label>
                                 <div style="display: flex; align-items: center; gap: 10px;">
-                                    <input type="color" id="custom-theme-glow-color" value="#dfb15b" style="width: 44px; height: 34px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
+                                    <input type="color" id="custom-theme-glow-color" value="#818cf8" style="width: 44px; height: 34px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
                                     <span style="font-size: 0.68rem; color: var(--text-muted);">Tom da aura luminosa nos botões e bordas.</span>
                                 </div>
                             </div>
@@ -6884,11 +6891,11 @@ CREATE TRIGGER on_synapse_user_signed_up
                                 <label style="font-size: 0.78rem; font-weight: 700; color: #fff;">Cores dos Cartões (Tons de Fundo)</label>
                                 <div style="display: flex; gap: 12px; flex-wrap: wrap;">
                                     <div style="display: flex; align-items: center; gap: 6px;">
-                                        <input type="color" id="custom-theme-card1" value="#0a0a0a" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
+                                        <input type="color" id="custom-theme-card1" value="#070709" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
                                         <span style="font-size: 0.68rem; color: var(--text-main);">Card Primário</span>
                                     </div>
                                     <div style="display: flex; align-items: center; gap: 6px;">
-                                        <input type="color" id="custom-theme-card2" value="#121212" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
+                                        <input type="color" id="custom-theme-card2" value="#0d0d11" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
                                         <span style="font-size: 0.68rem; color: var(--text-main);">Card Secundário</span>
                                     </div>
                                 </div>
@@ -6899,11 +6906,11 @@ CREATE TRIGGER on_synapse_user_signed_up
                                 <label style="font-size: 0.78rem; font-weight: 700; color: #fff;">Degradê do Botão Principal</label>
                                 <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 4px;">
                                     <div style="display: flex; align-items: center; gap: 6px;">
-                                        <input type="color" id="custom-theme-grad-start" value="#dfb15b" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
+                                        <input type="color" id="custom-theme-grad-start" value="#6366f1" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
                                         <span style="font-size: 0.68rem; color: var(--text-muted);">Início</span>
                                     </div>
                                     <div style="display: flex; align-items: center; gap: 6px;">
-                                        <input type="color" id="custom-theme-grad-end" value="#8a6f27" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
+                                        <input type="color" id="custom-theme-grad-end" value="#a855f7" style="width: 38px; height: 32px; border: 1px solid var(--border-color); border-radius: 6px; background: none; cursor: pointer; padding: 0;" oninput="onAdvancedColorInput()">
                                         <span style="font-size: 0.68rem; color: var(--text-muted);">Fim</span>
                                     </div>
                                 </div>
@@ -6947,7 +6954,7 @@ CREATE TRIGGER on_synapse_user_signed_up
 
                     <!-- Hidden container to preserve legacy element IDs and ensure 100% backward compatibility -->
                     <div style="display: none;">
-                        <input type="color" id="manual-accent-picker" value="#dfb15b">
+                        <input type="color" id="manual-accent-picker" value="#818cf8">
                         <div id="manual-accent-gradient-switch" class="toggle-switch"></div>
                         <div id="manual-accent-end-container">
                             <input type="color" id="manual-accent-gradient-end" value="#0000ff">
@@ -7213,7 +7220,7 @@ CREATE TRIGGER on_synapse_user_signed_up
             <div id="config-subview-telegram" class="config-subview" style="display: none;">
                 
                 <!-- LOADER OVERLAY FOR TRANSITIONS -->
-                <div id="integration-loading-screen" style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); z-index: 999; flex-direction: column; align-items: center; justify-content: center; border-radius: 20px; gap: 16px; transition: opacity 0.2s ease-out; opacity: 0; pointer-events: none;">
+                <div id="integration-loading-screen" style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.90); backdrop-filter: blur(12px); z-index: 999; flex-direction: column; align-items: center; justify-content: center; border-radius: 20px; gap: 16px; transition: opacity 0.2s ease-out; opacity: 0; pointer-events: none;">
                     <div class="integration-loader-spinner"></div>
                     <span style="color: #c084fc; font-weight: bold; font-size: 0.9rem;" id="integration-loading-text">Carregando...</span>
                 </div>
@@ -7232,7 +7239,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         <!-- Search Bar -->
                         <div class="search-box-wrapper" style="position: relative; display: flex; align-items: center; width: 100%;">
                             <span style="position: absolute; left: 14px; font-size: 1rem; color: #94a3b8; user-select: none; pointer-events: none;">🔍</span>
-                            <input type="text" id="integration-search-input" placeholder="Pesquisar integração..." oninput="handleIntegrationSearchAndFilter()" style="width: 100%; height: 46px; padding: 0 40px 0 42px; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); color: #fff; font-size: 0.88rem; outline: none; transition: 0.2s; box-sizing: border-box;" />
+                            <input type="text" id="integration-search-input" placeholder="Pesquisar integração..." oninput="handleIntegrationSearchAndFilter()" style="width: 100%; height: 46px; padding: 0 40px 0 42px; border-radius: 12px; background: var(--card-bg-secondary, #0d0d11); border: 1px solid var(--border-color); color: #fff; font-size: 0.88rem; outline: none; transition: 0.2s; box-sizing: border-box;" />
                             <button id="search-clear-btn" onclick="clearIntegrationSearch()" style="display: none; position: absolute; right: 14px; background: none; border: none; color: #94a3b8; font-size: 1rem; cursor: pointer; padding: 4px; line-height: 1;">✕</button>
                         </div>
                         <!-- Filter Chips -->
@@ -7267,12 +7274,12 @@ CREATE TRIGGER on_synapse_user_signed_up
                         </div>
                     </div>
 
-                    <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: #0F172A; border: 1px solid var(--border-color); border-radius: 16px;">
+                    <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: var(--card-bg-primary, #070709); border: 1px solid var(--border-color); border-radius: 16px;">
                         <div style="padding: 16px; display: flex; flex-direction: column; gap: 14px;">
                             <div class="form-group">
                                 <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Token do Bot (Telegram)</label>
                                 <div style="position: relative; display: flex; align-items: center;">
-                                    <input type="text" id="telegram-token" class="form-control password-masked" style="padding-right: 76px; border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" placeholder="Insira o token gerado pelo @BotFather..." autocomplete="off" oninput="saveConfiguration(); updateIntegrationHubStatusBadges();">
+                                    <input type="text" id="telegram-token" class="form-control password-masked" style="padding-right: 76px; border-radius: 10px; background: var(--card-bg-secondary, #0d0d11); border: 1px solid var(--border-color);" placeholder="Insira o token gerado pelo @BotFather..." autocomplete="off" oninput="saveConfiguration(); updateIntegrationHubStatusBadges();">
                                     <button type="button" class="input-copy-btn" onclick="copyInputField('telegram-token', this)" title="Copiar Token">📋</button>
                                     <button type="button" onclick="togglePasswordVisibility('telegram-token', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Token">👁️</button>
                                 </div>
@@ -7285,7 +7292,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                             <div class="form-group" style="margin-top: 6px;">
                                 <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">🔗 URL de End-Point de webhook</label>
                                 <div style="display: flex; gap: 8px; align-items: center;">
-                                    <input type="text" id="telegram-webhook" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); flex: 1;" placeholder="Nenhum webhook ativo (Recomendado para Polling)">
+                                    <input type="text" id="telegram-webhook" class="form-control" style="border-radius: 10px; background: var(--card-bg-secondary, #0d0d11); border: 1px solid var(--border-color); flex: 1;" placeholder="Nenhum webhook ativo (Recomendado para Polling)">
                                     <button type="button" onclick="deleteTelegramWebhook()" class="btn-universal" style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #f87171; height: 38px; padding: 0 16px; font-size: 0.75rem; font-weight: bold; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; border: 1px solid #ef4444; width: auto; margin-top: 0; white-space: nowrap;">
                                         🗑️ Limpar Webhook
                                     </button>
@@ -7309,7 +7316,7 @@ CREATE TRIGGER on_synapse_user_signed_up
 
                     <!-- CÉREBRO DO BOT (PROVEDOR DE IA) -->
                     <h3 style="font-size: 1rem; color: #a855f7; font-weight: bold; margin-top: 20px; margin-bottom: 10px; text-align: left;">🧠 Cérebro do Bot (Inteligência Artificial)</h3>
-                    <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: #0F172A; border: 1px solid var(--border-color); border-radius: 16px;">
+                    <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: var(--card-bg-primary, #070709); border: 1px solid var(--border-color); border-radius: 16px;">
                         <div style="padding: 16px; display: flex; flex-direction: column; gap: 14px;">
                             <span style="color: #94a3b8; font-size: 0.75rem; text-align: left; line-height: 1.4; display: block; margin-top: -4px;">
                                 Defina qual cérebro de Inteligência Artificial o seu bot utilizará para responder às mensagens no Telegram.
@@ -7336,7 +7343,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                             <div class="form-group">
                                 <label id="tg-api-key-label" style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Chave de API / Token do Provedor</label>
                                 <div style="position: relative; display: flex; align-items: center;">
-                                    <input type="text" id="tg-api-key" class="form-control password-masked" style="padding-right: 76px; border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff;" placeholder="Cole sua API Key aqui..." oninput="syncTelegramApiKeysFromInput(this.value)" autocomplete="off">
+                                    <input type="text" id="tg-api-key" class="form-control password-masked" style="padding-right: 76px; border-radius: 10px; background: var(--card-bg-secondary, #0d0d11); border: 1px solid var(--border-color); color: #fff;" placeholder="Cole sua API Key aqui..." oninput="syncTelegramApiKeysFromInput(this.value)" autocomplete="off">
                                     <button type="button" class="input-copy-btn" onclick="copyInputField('tg-api-key', this)" title="Copiar Chave">📋</button>
                                     <button type="button" onclick="togglePasswordVisibility('tg-api-key', this)" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Exibir/Ocultar Chave">👁️</button>
                                 </div>
@@ -7345,7 +7352,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                             <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 4px;">
                                 <div style="flex: 1;">
                                     <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; color: #fff;">Endpoint URL</label>
-                                    <input type="text" id="tg-base-url" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff;" value="https://generativelanguage.googleapis.com/" oninput="syncTelegramBaseUrlFromInput(this.value)">
+                                    <input type="text" id="tg-base-url" class="form-control" style="border-radius: 10px; background: var(--card-bg-secondary, #0d0d11); border: 1px solid var(--border-color); color: #fff;" value="https://generativelanguage.googleapis.com/" oninput="syncTelegramBaseUrlFromInput(this.value)">
                                 </div>
                                 <div style="width: 38%; min-width: 150px;">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -7354,7 +7361,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                                             <span>🔄 Sincronizar</span>
                                         </button>
                                     </div>
-                                    <select id="tg-model-name" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); color: #fff; height: 38px;" onchange="syncTelegramModelFromInput(this.value)">
+                                    <select id="tg-model-name" class="form-control" style="border-radius: 10px; background: var(--card-bg-secondary, #0d0d11); border: 1px solid var(--border-color); color: #fff; height: 38px;" onchange="syncTelegramModelFromInput(this.value)">
                                         <option value="gemini-1.5-flash">gemini-1.5-flash • 🟢 Grátis</option>
                                         <option value="gemini-2.5-flash">gemini-2.5-flash • 🟢 Grátis</option>
                                         <option value="gemini-1.5-pro">gemini-1.5-pro • 🔴 Pago</option>
@@ -7416,7 +7423,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         </div>
                     </div>
 
-                    <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: #0F172A; border: 1px solid var(--border-color); border-radius: 16px;">
+                    <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: var(--card-bg-primary, #070709); border: 1px solid var(--border-color); border-radius: 16px;">
                         <div style="padding: 16px; display: flex; flex-direction: column; gap: 14px;">
                             
                             <!-- Header Status Toggle -->
@@ -7437,19 +7444,19 @@ CREATE TRIGGER on_synapse_user_signed_up
                             <!-- Nome do Webhook -->
                             <div class="form-group">
                                 <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #94a3b8;">Nome do Webhook</label>
-                                <input type="text" id="html-webhook-name" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" value="Synapse Production Webhook">
+                                <input type="text" id="html-webhook-name" class="form-control" style="border-radius: 10px; background: var(--card-bg-secondary, #0d0d11); border: 1px solid var(--border-color);" value="Synapse Production Webhook">
                             </div>
 
                             <!-- Descrição do Webhook -->
                             <div class="form-group">
                                 <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #94a3b8;">Descrição (Opcional)</label>
-                                <input type="text" id="html-webhook-description" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" value="Canal integrado para recepção de logs e eventos">
+                                <input type="text" id="html-webhook-description" class="form-control" style="border-radius: 10px; background: var(--card-bg-secondary, #0d0d11); border: 1px solid var(--border-color);" value="Canal integrado para recepção de logs e eventos">
                             </div>
 
                             <!-- URL do Webhook -->
                             <div class="form-group">
                                 <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #94a3b8;">URL do Webhook Gerada</label>
-                                <input type="text" id="html-webhook-url" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color); font-family: monospace; font-size: 0.75rem; color: #10b981;" readonly value="https://ais-pre-czylyfbapj56qz6hoxll75-727445671983.us-east1.run.app/api/v1/webhooks/synapse-8c9df1">
+                                <input type="text" id="html-webhook-url" class="form-control" style="border-radius: 10px; background: var(--card-bg-secondary, #0d0d11); border: 1px solid var(--border-color); font-family: monospace; font-size: 0.75rem; color: #10b981;" readonly value="https://ais-pre-czylyfbapj56qz6hoxll75-727445671983.us-east1.run.app/api/v1/webhooks/synapse-8c9df1">
                             </div>
 
                             <!-- Buttons Row -->
@@ -7475,7 +7482,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                             <!-- Last trigger monitoring container -->
                             <div style="margin-top: 10px;">
                                 <span style="font-size: 0.8rem; font-weight: bold; color: #94a3b8; display: block; margin-bottom: 6px;">Monitoramento - Última Requisição Recebida</span>
-                                <div id="html-webhook-last-request-box" style="background: #020617; border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; font-family: monospace; font-size: 0.75rem;">
+                                <div id="html-webhook-last-request-box" style="background: var(--card-bg-secondary, #0d0d11); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; font-family: monospace; font-size: 0.75rem;">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                         <div style="display: flex; gap: 6px;">
                                             <span style="background: rgba(16,185,129,0.2); border: 1px solid #10b981; color: #10b981; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">POST</span>
@@ -7511,18 +7518,18 @@ CREATE TRIGGER on_synapse_user_signed_up
                         <span class="integration-status-badge integration-status-development">Em desenvolvimento</span>
                     </div>
 
-                    <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: #0F172A; border: 1px solid var(--border-color); border-radius: 16px; padding: 20px;">
+                    <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: var(--card-bg-primary, #070709); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px;">
                         <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 16px;">
                             ⚙️ Esta integração está sendo preparada para as próximas versões. A estrutura de configuração abaixo está pronta para implementação futura.
                         </p>
                         <div style="display: flex; flex-direction: column; gap: 14px; opacity: 0.5; pointer-events: none;">
                             <div class="form-group">
                                 <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">Token / API Key</label>
-                                <input type="text" class="form-control password-masked" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" placeholder="Ex: sk-proj-..." disabled autocomplete="off">
+                                <input type="text" class="form-control password-masked" style="border-radius: 10px; background: var(--card-bg-secondary, #0d0d11); border: 1px solid var(--border-color);" placeholder="Ex: sk-proj-..." disabled autocomplete="off">
                             </div>
                             <div class="form-group">
                                 <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;">Endpoint URL</label>
-                                <input type="text" class="form-control" style="border-radius: 10px; background: #020617; border: 1px solid var(--border-color);" placeholder="Ex: https://api.exemplo.com/v1" disabled>
+                                <input type="text" class="form-control" style="border-radius: 10px; background: var(--card-bg-secondary, #0d0d11); border: 1px solid var(--border-color);" placeholder="Ex: https://api.exemplo.com/v1" disabled>
                             </div>
                         </div>
                         <div style="display: flex; gap: 8px; margin-top: 20px;">
@@ -7543,7 +7550,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         margin-bottom: 24px;
                     }
                     .integration-card {
-                        background: rgba(15, 23, 42, 0.45);
+                        background: var(--card-bg-primary, #070709);
                         border: 1px solid var(--border-color);
                         border-radius: 18px;
                         padding: 16px;
@@ -7558,9 +7565,9 @@ CREATE TRIGGER on_synapse_user_signed_up
                     }
                     .integration-card:hover {
                         transform: translateY(-4px) scale(1.02);
-                        background: rgba(15, 23, 42, 0.75);
+                        background: var(--card-bg-secondary, #0d0d11);
                         border-color: var(--primary) !important;
-                        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.2), 0 0 12px rgba(139, 92, 246, 0.15) !important;
+                        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55) !important;
                     }
                     .integration-card:active {
                         transform: translateY(-2px) scale(0.98);
@@ -8276,25 +8283,26 @@ WITH CHECK (true);</code>
                         </div>
                     </div>
 
-                    <!-- Configuração Nova: Escolha do Modelo de Voz TTS -->
+                    <!-- Configuração: Filtro de Perfil das Vozes Synapse -->
                     <div class="form-group">
-                        <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;" data-i18n="ai_voice_gender_lbl">👤 Perfil de Voz da IA</label>
+                        <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;" data-i18n="ai_voice_gender_lbl">👤 Perfil de Voz do Synapse</label>
                         <select id="ai-voice-gender-select" class="form-control" style="background: rgba(255,255,255,0.03); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="populateVoices(); saveConfiguration();">
-                            <option value="female" selected data-i18n="gender_female">♀️ Feminina (Female)</option>
-                            <option value="male" data-i18n="gender_male">♂️ Masculina (Male)</option>
-                            <option value="neutral" data-i18n="gender_neutral">⚧️ Neutra / Padrão (Neutral / Default)</option>
+                            <option value="all" selected data-i18n="gender_all">✨ Todas as Vozes Synapse</option>
+                            <option value="female" data-i18n="gender_female">♀️ Femininas</option>
+                            <option value="male" data-i18n="gender_male">♂️ Masculinas</option>
+                            <option value="neutral" data-i18n="gender_neutral">🌌 Neutras</option>
                         </select>
                     </div>
 
-                    <!-- Configuração Nova: Escolha do Modelo de Voz TTS -->
+                    <!-- Configuração: Vozes Próprias Humanizadas do Synapse -->
                     <div class="form-group">
-                        <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;" data-i18n="tts_voice_lbl">🗣️ Modelo de Voz Narradora (Web Speech TTS)</label>
+                        <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px; color: #fff;" data-i18n="tts_voice_lbl">🎙️ Voz Personalizada do Synapse</label>
                         <select id="speech-voice" class="form-control" style="background: rgba(255,255,255,0.03); color: #fff; border: 1px solid var(--border-color); border-radius: 10px; width: 100%; height: 42px; padding: 0 12px; cursor: pointer;" onchange="handleVoiceChange(this.value); saveConfiguration();">
-                            <option value="">Carregando vozes do sistema...</option>
+                            <option value="synapse_aurora">✨ Aurora • Acolhedora e Humana</option>
                         </select>
-                        <span style="color: var(--text-muted); font-size: 0.68rem; margin-top: 4px; display: block; margin-bottom: 8px;" data-i18n="tts_voice_desc">Selecione um dos modelos de voz instalados no seu dispositivo/navegador.</span>
+                        <span style="color: var(--text-muted); font-size: 0.68rem; margin-top: 4px; display: block; margin-bottom: 8px;" data-i18n="tts_voice_desc">Vozes próprias humanizadas com entonação natural, pausas respiratórias e suporte Neural HD automático.</span>
                         <button type="button" class="btn-universal" id="btn-test-voice" onclick="testSelectedVoice(); playSynthSound('click');" style="background: rgba(56, 189, 248, 0.1); border: 1px solid var(--primary); color: var(--primary); font-weight: bold; font-size: 0.8rem; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; width: 100%; margin-top: 4px;">
-                            🔊 <span data-i18n="test_voice_btn">Testar Tom e Velocidade da Voz</span>
+                            🔊 <span data-i18n="test_voice_btn">Ouvir Amostra da Voz</span>
                         </button>
                     </div>
 
@@ -8512,7 +8520,7 @@ WITH CHECK (true);</code>
                 </div>
 
                 <!-- CENTRAL DE CONTAS (CONECTAR OUTROS APLICATIVOS) -->
-                <div class="supabase-card" id="account-hub-card" style="margin-bottom: 24px; text-align: left; padding: 18px; border: 1px solid rgba(139, 92, 246, 0.28); background: linear-gradient(145deg, rgba(139, 92, 246, 0.07) 0%, rgba(15, 23, 42, 0.55) 100%);">
+                <div class="supabase-card" id="account-hub-card" style="margin-bottom: 24px; text-align: left; padding: 18px; border: 1px solid var(--border-color); background: var(--card-bg-primary, #070709);">
                     <div class="supabase-card-header" style="margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
                         <span class="supabase-card-title">🔗 Central de Contas (Conectar Apps)</span>
                         <span style="font-size: 0.65rem; font-weight: 800; color: #c4b5fd; background: rgba(139, 92, 246, 0.16); border: 1px solid rgba(139, 92, 246, 0.3); padding: 3px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.4px;">SSO & Auth</span>
@@ -8557,7 +8565,7 @@ WITH CHECK (true);</code>
                 <!-- Hub de Acesso Rápido Avançado -->
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 20px;">
                     <!-- Card Supabase / Banco -->
-                    <div class="config-index-item" onclick="openConfigSubView('database')" style="margin-bottom: 0; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; cursor: pointer; transition: 0.2s;">
+                    <div class="config-index-item" onclick="openConfigSubView('database')" style="margin-bottom: 0; background: var(--card-bg-primary, #070709); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; cursor: pointer; transition: 0.2s;">
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <div style="display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; background: rgba(16, 185, 129, 0.12); flex-shrink: 0;">
                                 <span style="font-size: 1.2rem;">☁️</span>
@@ -8570,7 +8578,7 @@ WITH CHECK (true);</code>
                     </div>
 
                     <!-- Card Terminal -->
-                    <div class="config-index-item" onclick="switchTab('tab-logs')" style="margin-bottom: 0; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; cursor: pointer; transition: 0.2s;">
+                    <div class="config-index-item" onclick="switchTab('tab-logs')" style="margin-bottom: 0; background: var(--card-bg-primary, #070709); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; cursor: pointer; transition: 0.2s;">
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <div style="display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; background: rgba(59, 130, 246, 0.12); flex-shrink: 0;">
                                 <span style="font-size: 1.2rem;">💻</span>
@@ -8584,7 +8592,7 @@ WITH CHECK (true);</code>
                 </div>
 
                 <!-- Painel 1: Cache, Armazenamento Local e Performance -->
-                <div class="supabase-card" style="margin-bottom: 18px; text-align: left; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px;">
+                <div class="supabase-card" style="margin-bottom: 18px; text-align: left; background: var(--card-bg-primary, #070709); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px;">
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
                         <span style="font-size: 1.15rem;">⚡</span>
                         <div style="display: flex; flex-direction: column; gap: 2px;">
@@ -8617,7 +8625,7 @@ WITH CHECK (true);</code>
                 </div>
 
                 <!-- Painel 2: APIs Técnicas e Conexões de Rede -->
-                <div class="supabase-card" style="margin-bottom: 18px; text-align: left; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px;">
+                <div class="supabase-card" style="margin-bottom: 18px; text-align: left; background: var(--card-bg-primary, #070709); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px;">
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
                         <span style="font-size: 1.15rem;">🌐</span>
                         <div style="display: flex; flex-direction: column; gap: 2px;">
@@ -8643,7 +8651,7 @@ WITH CHECK (true);</code>
                 </div>
 
                 <!-- Painel 3: Recursos de Desenvolvedor -->
-                <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px;">
+                <div class="supabase-card" style="margin-bottom: 24px; text-align: left; background: var(--card-bg-primary, #070709); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px;">
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
                         <span style="font-size: 1.15rem;">👨‍💻</span>
                         <div style="display: flex; flex-direction: column; gap: 2px;">
@@ -8898,28 +8906,6 @@ WITH CHECK (true);</code>
 
         let hoverNarratorActive = false;
         let hoverNarratorInitialized = false;
-
-        function speakText(text) {
-            try {
-                if (!window.speechSynthesis) return;
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                const rateInput = document.getElementById('speech-rate');
-                const pitchInput = document.getElementById('speech-pitch');
-                if (rateInput) utterance.rate = parseFloat(rateInput.value);
-                if (pitchInput) utterance.pitch = parseFloat(pitchInput.value);
-                
-                const selectedVoiceName = document.getElementById('speech-voice')?.value;
-                if (selectedVoiceName) {
-                    const voices = window.speechSynthesis.getVoices();
-                    const voice = voices.find(v => v.name === selectedVoiceName);
-                    if (voice) utterance.voice = voice;
-                }
-                window.speechSynthesis.speak(utterance);
-            } catch(e) {
-                console.error("Erro ao narrar:", e);
-            }
-        }
 
         function initHoverNarrator() {
             if (hoverNarratorInitialized) return;
@@ -9578,10 +9564,11 @@ WITH CHECK (true);</code>
                 "menu_advanced_desc": "Supabase, banco de dados, conexões técnicas, cache e ferramentas dev",
                 "config_voice_lang_title": "🎤 Voz e Idioma",
                 "config_voice_lang_desc": "Configure o idioma do sistema, o estilo de voz da IA e o tom",
-                "ai_voice_gender_lbl": "👤 Perfil de Voz da IA",
-                "gender_female": "♀️ Feminina",
-                "gender_male": "♂️ Masculina",
-                "gender_neutral": "⚧️ Neutra / Padrão",
+                "ai_voice_gender_lbl": "👤 Perfil de Voz do Synapse",
+                "gender_all": "✨ Todas as Vozes Synapse",
+                "gender_female": "♀️ Femininas",
+                "gender_male": "♂️ Masculinas",
+                "gender_neutral": "🌌 Neutras",
                 "live_mode_btn": "Modo Live",
                 "exit_live": "Sair do Live",
                 "live_mode_title": "Modo Live • Synapse",
@@ -9597,11 +9584,11 @@ WITH CHECK (true);</code>
                 "idiomas_title": "🌐 Idiomas do Sistema (System Languages)",
                 "idiomas_subtitle": "Escolha o idioma de exibição do console, configurações, botões e controles nativos.",
                 "selecionar_idioma_lbl": "Selecione seu Idioma / Select Language",
-                "speech_rate_lbl": "⚡ Velocidade de Leitura por Voz (TTS)",
+                "speech_rate_lbl": "⚡ Velocidade de Leitura por Voz",
                 "speech_pitch_lbl": "🎼 Tom de Voz da Narração",
-                "tts_voice_lbl": "🗣️ Modelo de Voz Narradora (Web Speech TTS)",
-                "tts_voice_desc": "Selecione um dos modelos de voz instalados no seu dispositivo/navegador.",
-                "test_voice_btn": "Testar Tom e Velocidade da Voz",
+                "tts_voice_lbl": "🎙️ Voz Personalizada do Synapse",
+                "tts_voice_desc": "Vozes próprias humanizadas com entonação natural, pausas respiratórias e suporte Neural HD automático.",
+                "test_voice_btn": "Ouvir Amostra da Voz",
                 "chat_font_size_lbl": "🔎 Tamanho do Texto das Conversas",
                 "chat_font_size_small": "Pequeno (Compacto)",
                 "chat_font_size_normal": "Normal (Padrão)",
@@ -9676,10 +9663,11 @@ WITH CHECK (true);</code>
                 "menu_advanced_desc": "Supabase, database, technical connections, cache, and dev tools",
                 "config_voice_lang_title": "🎤 Voice & Language",
                 "config_voice_lang_desc": "Customize system language, AI voice profile and pitch",
-                "ai_voice_gender_lbl": "👤 AI Voice Profile",
+                "ai_voice_gender_lbl": "👤 Synapse Voice Profile",
+                "gender_all": "✨ All Synapse Voices",
                 "gender_female": "♀️ Female",
                 "gender_male": "♂️ Male",
-                "gender_neutral": "⚧️ Neutral / Default",
+                "gender_neutral": "🌌 Neutral",
                 "live_mode_btn": "Live Mode",
                 "exit_live": "Exit Live",
                 "live_mode_title": "Live Mode • Synapse",
@@ -9695,11 +9683,11 @@ WITH CHECK (true);</code>
                 "idiomas_title": "🌐 System Languages (Idioma)",
                 "idiomas_subtitle": "Configure interface tags, labels, and terminal outputs for your workspace.",
                 "selecionar_idioma_lbl": "Select workspace lang:",
-                "speech_rate_lbl": "⚡ Voice Reading Speed Rate (TTS)",
+                "speech_rate_lbl": "⚡ Voice Reading Speed",
                 "speech_pitch_lbl": "🎼 Narration Pitch Tone",
-                "tts_voice_lbl": "🗣️ System Narration Speaker (Web TTS)",
-                "tts_voice_desc": "Select from available native speech synthesizer models detected by your device.",
-                "test_voice_btn": "Test Voice Pitch & Speed Rate",
+                "tts_voice_lbl": "🎙️ Custom Synapse Voice",
+                "tts_voice_desc": "Proprietary humanized voices with natural intonation, breath pauses, and automatic Neural HD support.",
+                "test_voice_btn": "Play Voice Sample",
                 "chat_font_size_lbl": "🔎 Conversation Typography Font Size",
                 "chat_font_size_small": "Compact Space (Small)",
                 "chat_font_size_normal": "Standard Space (Regular)",
@@ -9774,10 +9762,11 @@ WITH CHECK (true);</code>
                 "menu_advanced_desc": "Supabase, base de datos, conexiones técnicas, caché y herramientas dev",
                 "config_voice_lang_title": "🎤 Voz e Idioma",
                 "config_voice_lang_desc": "Personaliza el idioma del sistema, el estilo de voz de la IA y el tono",
-                "ai_voice_gender_lbl": "👤 Perfil de Voz de la IA",
-                "gender_female": "♀️ Femenina",
-                "gender_male": "♂️ Masculina",
-                "gender_neutral": "⚧️ Neutra / Por defecto",
+                "ai_voice_gender_lbl": "👤 Perfil de Voz de Synapse",
+                "gender_all": "✨ Todas las Voces Synapse",
+                "gender_female": "♀️ Femeninas",
+                "gender_male": "♂️ Masculinas",
+                "gender_neutral": "🌌 Neutras",
                 "live_mode_btn": "Modo Live",
                 "exit_live": "Salir del Live",
                 "live_mode_title": "Modo Live • Synapse",
@@ -9791,11 +9780,11 @@ WITH CHECK (true);</code>
                 "idiomas_title": "🌐 Idiama General del Sistema",
                 "idiomas_subtitle": "Defina el idioma para los textos, indicadores y avisos del aplicativo.",
                 "selecionar_idioma_lbl": "Seleccione su idioma actual:",
-                "speech_rate_lbl": "⚡ Agilidad de la Locución por Voz (TTS)",
-                "speech_pitch_lbl": "🎼 Modulación de Tono Hablado",
-                "tts_voice_lbl": "🗣️ Altavoz del Sintetizador local (TTS)",
-                "tts_voice_desc": "Escoja uno de los locutores interactivos preinstalados en su sistema.",
-                "test_voice_btn": "Probar Modulación y Agilidad de Voz",
+                "speech_rate_lbl": "⚡ Velocidad de Locución",
+                "speech_pitch_lbl": "🎼 Tono de Narración",
+                "tts_voice_lbl": "🎙️ Voz Personalizada de Synapse",
+                "tts_voice_desc": "Voces propias humanizadas con entonación natural, pausas respiratorias y soporte Neural HD automático.",
+                "test_voice_btn": "Escuchar Muestra de Voz",
                 "chat_font_size_lbl": "🔎 Tamaño tipográfico de las Conversaciones",
                 "chat_font_size_small": "Compacto (Pequeño)",
                 "chat_font_size_normal": "Estándar (Regular)",
@@ -10160,108 +10149,217 @@ WITH CHECK (true);</code>
             return 'neutral';
         }
 
+        // Catálogo de Vozes Próprias Personalizadas e Humanizadas do Synapse
+        const SYNAPSE_CUSTOM_VOICES = [
+            {
+                id: 'synapse_aurora',
+                icon: '✨',
+                name: 'Aurora',
+                tagline: 'Acolhedora e Humana',
+                gender: 'female',
+                baseRate: 1.0,
+                basePitch: 1.06,
+                pitchVariance: 0.032,
+                pauseFactor: 1.05,
+                geminiVoice: 'Aoede',
+                openaiVoice: 'nova',
+                acousticHints: ['francisca', 'luciana', 'thalita', 'leila', 'vitoria', 'natural', 'online', 'neural', 'female']
+            },
+            {
+                id: 'synapse_sofia',
+                icon: '🌸',
+                name: 'Sofia',
+                tagline: 'Conversacional Natural',
+                gender: 'female',
+                baseRate: 1.03,
+                basePitch: 1.02,
+                pitchVariance: 0.028,
+                pauseFactor: 0.95,
+                geminiVoice: 'Leda',
+                openaiVoice: 'shimmer',
+                acousticHints: ['maria', 'raquel', 'camila', 'samantha', 'natural', 'neural', 'online', 'female']
+            },
+            {
+                id: 'synapse_clara',
+                icon: '🎙️',
+                name: 'Clara',
+                tagline: 'Estúdio e Clareza',
+                gender: 'female',
+                baseRate: 0.98,
+                basePitch: 0.99,
+                pitchVariance: 0.022,
+                pauseFactor: 1.12,
+                geminiVoice: 'Kore',
+                openaiVoice: 'nova',
+                acousticHints: ['helena', 'heloisa', 'luciana', 'natural', 'neural', 'female']
+            },
+            {
+                id: 'synapse_helena',
+                icon: '💎',
+                name: 'Helena',
+                tagline: 'Serena e Elegante',
+                gender: 'female',
+                baseRate: 0.94,
+                basePitch: 0.94,
+                pitchVariance: 0.024,
+                pauseFactor: 1.18,
+                geminiVoice: 'Sulafat',
+                openaiVoice: 'shimmer',
+                acousticHints: ['maria', 'francisca', 'clara', 'online', 'female']
+            },
+            {
+                id: 'synapse_rafael',
+                icon: '🎧',
+                name: 'Rafael',
+                tagline: 'Profundo e Calmo',
+                gender: 'male',
+                baseRate: 0.96,
+                basePitch: 0.88,
+                pitchVariance: 0.024,
+                pauseFactor: 1.12,
+                geminiVoice: 'Charon',
+                openaiVoice: 'onyx',
+                acousticHints: ['antonio', 'daniel', 'felipe', 'ricardo', 'natural', 'neural', 'online', 'male']
+            },
+            {
+                id: 'synapse_lucas',
+                icon: '⚡',
+                name: 'Lucas',
+                tagline: 'Jovem e Expressivo',
+                gender: 'male',
+                baseRate: 1.04,
+                basePitch: 0.96,
+                pitchVariance: 0.036,
+                pauseFactor: 0.95,
+                geminiVoice: 'Puck',
+                openaiVoice: 'echo',
+                acousticHints: ['humberto', 'fabio', 'julio', 'daniel', 'felipe', 'male']
+            },
+            {
+                id: 'synapse_mateus',
+                icon: '🧭',
+                name: 'Mateus',
+                tagline: 'Narrador Executivo',
+                gender: 'male',
+                baseRate: 0.99,
+                basePitch: 0.91,
+                pitchVariance: 0.022,
+                pauseFactor: 1.08,
+                geminiVoice: 'Orus',
+                openaiVoice: 'fable',
+                acousticHints: ['nicolau', 'valerio', 'daniel', 'antonio', 'male']
+            },
+            {
+                id: 'synapse_vega',
+                icon: '🌌',
+                name: 'Vega',
+                tagline: 'Assinatura Synapse',
+                gender: 'neutral',
+                baseRate: 1.0,
+                basePitch: 1.0,
+                pitchVariance: 0.026,
+                pauseFactor: 1.05,
+                geminiVoice: 'Zephyr',
+                openaiVoice: 'alloy',
+                acousticHints: ['natural', 'online', 'neural', 'luciana', 'francisca', 'daniel']
+            }
+        ];
+
+        function getSynapseVoicePersona(voiceId) {
+            return SYNAPSE_CUSTOM_VOICES.find(v => v.id === voiceId) || SYNAPSE_CUSTOM_VOICES[0];
+        }
+
+        function handleVoiceChange(voiceId) {
+            if (!voiceId) return;
+            try {
+                localStorage.setItem('speech_voice_selected', voiceId);
+            } catch (e) {}
+        }
+
+        function refreshCustomSelectWrapper(selectId, customTitle) {
+            const select = document.getElementById(selectId);
+            if (!select || typeof setupInteractiveCustomSelect !== 'function') return;
+            const oldWrapper = document.getElementById(selectId + '-custom-wrapper');
+            if (oldWrapper) {
+                if (select._updateDisplayHandler) {
+                    select.removeEventListener('change', select._updateDisplayHandler);
+                }
+                oldWrapper.remove();
+            }
+            select.style.display = '';
+            const options = [];
+            select.querySelectorAll('option').forEach(opt => {
+                let label = opt.textContent.trim();
+                const val = opt.value;
+                let icon = '✦';
+                const emojiMatch = label.match(/^[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}]+/u);
+                if (emojiMatch) {
+                    icon = emojiMatch[0];
+                    label = label.replace(icon, '').trim();
+                }
+                options.push({ value: val, label: label, icon: icon });
+            });
+            setupInteractiveCustomSelect(selectId, customTitle || 'Voz Personalizada Synapse', options);
+        }
+
         function populateVoices() {
-            if (typeof window === 'undefined' || !window.speechSynthesis) return;
             const select = document.getElementById('speech-voice');
             if (!select) return;
 
-            let voices = window.speechSynthesis.getVoices();
-            select.innerHTML = '';
-
-            const loadingText = currentLanguage === 'en' ? 'Loading system voices...' : currentLanguage === 'es' ? 'Cargando voces del sistema...' : 'Carregando vozes...';
-            
-            if (voices.length === 0) {
-                const opt = document.createElement('option');
-                opt.value = '';
-                opt.textContent = loadingText;
-                select.appendChild(opt);
-                return;
-            }
-
-            // Recupera a voz salva no início
             let savedVoice = '';
             try {
-                savedVoice = localStorage.getItem('speech_voice_selected');
+                savedVoice = localStorage.getItem('speech_voice_selected') || '';
                 if (!savedVoice) {
                     const savedSettings = localStorage.getItem('ai_console_settings');
                     if (savedSettings) {
                         const data = JSON.parse(savedSettings);
-                        savedVoice = data.speechVoice;
+                        savedVoice = data.speechVoice || '';
                     }
                 }
             } catch (err) {
                 console.error("Falha ao ler voz salva:", err);
             }
 
-            // Detecta gênero preferido
+            // Migra automaticamente qualquer nome antigo de voz do sistema Android para uma voz própria Synapse
+            if (!SYNAPSE_CUSTOM_VOICES.some(v => v.id === savedVoice)) {
+                savedVoice = 'synapse_aurora';
+            }
+
             const mainGenderSelect = document.getElementById('ai-voice-gender-select');
             const preferredGender = mainGenderSelect ? mainGenderSelect.value : 'all';
 
-            // Filtra e ordena vozes de forma inteligente
-            let sortedVoices = [...voices];
-            if (preferredGender !== 'all') {
-                sortedVoices = voices.filter(v => getVoiceGender(v.name) === preferredGender);
-                
-                // Se a voz salva existir no sistema mas foi filtrada pelo gênero, adicione de volta para preservar a seleção do usuário
-                if (savedVoice) {
-                    const savedVoiceObj = voices.find(v => v.name === savedVoice);
-                    if (savedVoiceObj && !sortedVoices.some(v => v.name === savedVoice)) {
-                        sortedVoices.push(savedVoiceObj);
-                    }
-                }
-            }
-            
-            // Ordenação: idioma atual primeiro
-            sortedVoices.sort((a, b) => {
-                const aLang = a.lang.startsWith(currentLanguage);
-                const bLang = b.lang.startsWith(currentLanguage);
-                if (aLang && !bLang) return -1;
-                if (!aLang && bLang) return 1;
-                return 0;
-            });
-
-            function getVoiceLangFlag(l) {
-                if (!l) return "🌐";
-                if (l.startsWith("pt")) return "🇧🇷";
-                if (l.startsWith("en")) return "🇺🇸";
-                if (l.startsWith("es")) return "🇪🇸";
-                if (l.startsWith("fr")) return "🇫🇷";
-                if (l.startsWith("de")) return "🇩🇪";
-                if (l.startsWith("it")) return "🇮🇹";
-                if (l.startsWith("zh")) return "🇨🇳";
-                if (l.startsWith("ja")) return "🇯🇵";
-                if (l.startsWith("ru")) return "🇷🇺";
-                if (l.startsWith("ko")) return "🇰🇷";
-                if (l.startsWith("ar")) return "🇸🇦";
-                if (l.startsWith("hi")) return "🇮🇳";
-                if (l.startsWith("nl")) return "🇳🇱";
-                if (l.startsWith("pl")) return "🇵🇱";
-                if (l.startsWith("tr")) return "🇹🇷";
-                if (l.startsWith("vi")) return "🇻🇳";
-                if (l.startsWith("sv")) return "🇸🇪";
-                return "🌐";
+            let filteredVoices = SYNAPSE_CUSTOM_VOICES;
+            if (preferredGender && preferredGender !== 'all') {
+                const byGender = SYNAPSE_CUSTOM_VOICES.filter(v => v.gender === preferredGender);
+                if (byGender.length > 0) filteredVoices = byGender;
             }
 
-            sortedVoices.forEach((voice) => {
+            select.innerHTML = '';
+            filteredVoices.forEach((voice) => {
                 const opt = document.createElement('option');
-                opt.value = voice.name;
-                const flag = getVoiceLangFlag(voice.lang);
-                opt.textContent = `${flag} ${voice.name} (${voice.lang})${voice.default ? ' [Padrão]' : ''}`;
-                
+                opt.value = voice.id;
+                opt.textContent = `${voice.icon} ${voice.name} • ${voice.tagline}`;
                 select.appendChild(opt);
             });
 
-            // Restaura seleção de voz salva
-            if (savedVoice) {
+            if (filteredVoices.some(v => v.id === savedVoice)) {
                 select.value = savedVoice;
+            } else if (filteredVoices.length > 0) {
+                select.value = filteredVoices[0].id;
+                handleVoiceChange(select.value);
             }
+
+            refreshCustomSelectWrapper('speech-voice', 'Voz Personalizada Synapse');
         }
 
-        if (typeof window !== 'undefined' && window.speechSynthesis) {
-            window.speechSynthesis.onvoiceschanged = () => {
-                populateVoices();
-            };
-            setTimeout(populateVoices, 100);
+        if (typeof window !== 'undefined') {
+            if (window.speechSynthesis) {
+                window.speechSynthesis.onvoiceschanged = () => {
+                    // Atualiza silenciosamente cache de timbres disponíveis sem expor vozes do sistema na UI
+                    try { window.speechSynthesis.getVoices(); } catch (e) {}
+                };
+            }
+            setTimeout(populateVoices, 80);
         }
 
 
@@ -10323,124 +10421,181 @@ WITH CHECK (true);</code>
 
         const availableThemes = {
             milky_way: {
-                name: "🌌 Via Láctea (Padrão)",
-                desc: "Identidade visual principal do Synapse Console. Inspirado no universo, com fundo espacial profundo, tons de azul celestial, violeta estelar e glow nebuloso sofisticado.",
-                bg: "#02030d",
+                name: "🖤 Preto AMOLED (Principal)",
+                desc: "Tema padrão oficial com preto absoluto (#000000), pixels apagados e cartões limpos, igual à tela inicial.",
+                bg: "#000000",
                 gradientBg: "none",
-                cardBg1: "#060817",
-                cardBg2: "#0d102e",
-                gradientCard1: "linear-gradient(135deg, rgba(8, 10, 29, 0.98) 0%, rgba(2, 3, 11, 0.99) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(16, 21, 56, 0.98) 0%, rgba(7, 9, 26, 0.99) 100%)",
-                border: "rgba(129, 140, 248, 0.32)",
+                cardBg1: "#070709",
+                cardBg2: "#0d0d11",
+                gradientCard1: "none",
+                gradientCard2: "none",
+                border: "rgba(255, 255, 255, 0.10)",
                 textMain: "#ffffff",
-                textMuted: "#a5b4fc",
+                textMuted: "#9ca3af",
                 primary: "#818cf8",
                 success: "#10b981",
                 error: "#ef4444",
                 font: 'system-ui, -apple-system, sans-serif',
-                amoled: false,
-                neon: true,
-                neonGlowColor: "rgba(99, 102, 241, 0.45)",
+                amoled: true,
+                neon: false,
+                neonGlowColor: "rgba(129, 140, 248, 0.32)",
                 btnGradient: "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)"
             },
             cyan_blue_neon: {
-                name: "👑 Ouro Obsidian Imperial",
-                desc: "Tema premium do sistema. Fundo AMOLED preto absoluto combinado com acentos luxuosos de ouro escovado e auras quentes.",
+                name: "👑 Ouro Obsidian (AMOLED)",
+                desc: "Preto Super AMOLED (#000000) com detalhes em ouro escovado, texto neutro e visual organizado.",
                 bg: "#000000",
                 gradientBg: "none",
-                cardBg1: "#0a0a0a",
-                cardBg2: "#121212",
-                gradientCard1: "linear-gradient(135deg, rgba(13, 13, 13, 0.98) 0%, rgba(5, 5, 5, 0.99) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(22, 22, 22, 0.98) 0%, rgba(12, 12, 12, 0.99) 100%)",
-                border: "rgba(223, 177, 91, 0.22)",
+                cardBg1: "#070709",
+                cardBg2: "#0d0d11",
+                gradientCard1: "none",
+                gradientCard2: "none",
+                border: "rgba(255, 255, 255, 0.10)",
                 textMain: "#ffffff",
-                textMuted: "#dfb15b",
+                textMuted: "#9ca3af",
                 primary: "#dfb15b",
                 success: "#10b981",
                 error: "#ef4444",
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: true,
-                neon: true,
-                neonGlowColor: "rgba(223, 177, 91, 0.35)",
+                neon: false,
+                neonGlowColor: "rgba(223, 177, 91, 0.30)",
                 btnGradient: "linear-gradient(135deg, #dfb15b 0%, #8a6f27 100%)"
             },
             amethyst_twilight: {
-                name: "🔮 Ametista Real & Ultravioleta",
-                desc: "Estética mística e luxuosa. Fundo AMOLED escuro com detalhes em violeta vibrante e degradê de neon púrpura.",
+                name: "🔮 Ametista Real (AMOLED)",
+                desc: "Preto Super AMOLED (#000000) com destaques em violeta elegante e cartões neutros.",
                 bg: "#000000",
                 gradientBg: "none",
-                cardBg1: "#080510",
-                cardBg2: "#110b22",
-                gradientCard1: "linear-gradient(135deg, rgba(12, 8, 24, 0.98) 0%, rgba(5, 3, 10, 0.99) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(22, 14, 44, 0.98) 0%, rgba(10, 6, 20, 0.99) 100%)",
-                border: "rgba(168, 85, 247, 0.25)",
+                cardBg1: "#070709",
+                cardBg2: "#0d0d11",
+                gradientCard1: "none",
+                gradientCard2: "none",
+                border: "rgba(255, 255, 255, 0.10)",
                 textMain: "#ffffff",
-                textMuted: "#c084fc",
+                textMuted: "#9ca3af",
                 primary: "#a855f7",
                 success: "#10b981",
                 error: "#ef4444",
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: true,
-                neon: true,
-                neonGlowColor: "rgba(168, 85, 247, 0.4)",
+                neon: false,
+                neonGlowColor: "rgba(168, 85, 247, 0.32)",
                 btnGradient: "linear-gradient(135deg, #a855f7 0%, #6366f1 100%)"
             },
             deep_emerald: {
-                name: "🌲 Esmeralda Imperial & Jade",
-                desc: "Elegância orgânica inspirada em alta joalheria. Fundo preto absoluto com tons verde-esmeralda ricos e refinados.",
+                name: "🌲 Esmeralda Jade (AMOLED)",
+                desc: "Preto Super AMOLED (#000000) combinado com acentos em verde esmeralda e contraste limpo.",
                 bg: "#000000",
                 gradientBg: "none",
-                cardBg1: "#020a06",
-                cardBg2: "#05140c",
-                gradientCard1: "linear-gradient(135deg, rgba(3, 13, 8, 0.98) 0%, rgba(1, 4, 3, 0.99) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(7, 26, 16, 0.98) 0%, rgba(3, 10, 6, 0.99) 100%)",
-                border: "rgba(16, 185, 129, 0.25)",
+                cardBg1: "#070709",
+                cardBg2: "#0d0d11",
+                gradientCard1: "none",
+                gradientCard2: "none",
+                border: "rgba(255, 255, 255, 0.10)",
                 textMain: "#ffffff",
-                textMuted: "#34d399",
+                textMuted: "#9ca3af",
                 primary: "#10b981",
                 success: "#10b981",
                 error: "#ef4444",
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: true,
-                neon: true,
-                neonGlowColor: "rgba(16, 185, 129, 0.4)",
+                neon: false,
+                neonGlowColor: "rgba(16, 185, 129, 0.32)",
                 btnGradient: "linear-gradient(135deg, #10b981 0%, #064e3b 100%)"
             },
             cyberpunk_crimson: {
-                name: "🔴 Eclipse Escarlate & Carmesim",
-                desc: "Alta intensidade e contraste cinematográfico. Combinação de vermelho sangue brilhante com bordas em chamas escuras.",
+                name: "🔴 Eclipse Carmesim (AMOLED)",
+                desc: "Preto Super AMOLED (#000000) com detalhes vermelhos nítidos e estética minimalista.",
                 bg: "#000000",
                 gradientBg: "none",
-                cardBg1: "#0c0202",
-                cardBg2: "#180404",
-                gradientCard1: "linear-gradient(135deg, rgba(16, 3, 3, 0.98) 0%, rgba(5, 1, 1, 0.99) 100%)",
-                gradientCard2: "linear-gradient(135deg, rgba(28, 6, 6, 0.98) 0%, rgba(12, 2, 2, 0.99) 100%)",
-                border: "rgba(239, 68, 68, 0.25)",
+                cardBg1: "#070709",
+                cardBg2: "#0d0d11",
+                gradientCard1: "none",
+                gradientCard2: "none",
+                border: "rgba(255, 255, 255, 0.10)",
                 textMain: "#ffffff",
-                textMuted: "#f87171",
+                textMuted: "#9ca3af",
                 primary: "#ef4444",
                 success: "#10b981",
                 error: "#ef4444",
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: true,
-                neon: true,
-                neonGlowColor: "rgba(239, 68, 68, 0.4)",
+                neon: false,
+                neonGlowColor: "rgba(239, 68, 68, 0.32)",
                 btnGradient: "linear-gradient(135deg, #ef4444 0%, #991b1b 100%)"
+            },
+            cyber_cyan_amoled: {
+                name: "⚡ Ciano Neural (AMOLED)",
+                desc: "Preto Super AMOLED (#000000) com acentos em ciano cristalino e superfície uniforme.",
+                bg: "#000000",
+                gradientBg: "none",
+                cardBg1: "#070709",
+                cardBg2: "#0d0d11",
+                gradientCard1: "none",
+                gradientCard2: "none",
+                border: "rgba(255, 255, 255, 0.10)",
+                textMain: "#ffffff",
+                textMuted: "#9ca3af",
+                primary: "#38bdf8",
+                success: "#10b981",
+                error: "#ef4444",
+                font: 'system-ui, -apple-system, sans-serif',
+                amoled: true,
+                neon: false,
+                neonGlowColor: "rgba(56, 189, 248, 0.32)",
+                btnGradient: "linear-gradient(135deg, #38bdf8 0%, #2563eb 100%)"
             }
         };
 
-        // Carrega temas customizados salvos pelo usuário do localStorage
+        function isDarkHexColor(hex) {
+            try {
+                if (!hex || typeof hex !== 'string') return true;
+                let clean = hex.trim().replace('#', '');
+                if (clean.length === 3) clean = clean[0]+clean[0]+clean[1]+clean[1]+clean[2]+clean[2];
+                if (clean.length < 6) return true;
+                const r = parseInt(clean.substring(0, 2), 16);
+                const g = parseInt(clean.substring(2, 4), 16);
+                const b = parseInt(clean.substring(4, 6), 16);
+                const hsp = Math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b));
+                return hsp < 128;
+            } catch (e) {
+                return true;
+            }
+        }
+
+        function normalizeAmoledDarkTheme(themeObj) {
+            if (!themeObj || typeof themeObj !== 'object') return availableThemes.milky_way;
+            const darkBg = isDarkHexColor(themeObj.bg || '#000000');
+            if (!darkBg) return themeObj;
+            return {
+                ...themeObj,
+                bg: '#000000',
+                gradientBg: 'none',
+                cardBg1: '#070709',
+                cardBg2: '#0d0d11',
+                gradientCard1: 'none',
+                gradientCard2: 'none',
+                border: 'rgba(255, 255, 255, 0.10)',
+                textMain: '#ffffff',
+                textMuted: '#9ca3af',
+                amoled: true,
+                neon: Boolean(themeObj.neon)
+            };
+        }
+
+        // Carrega temas customizados salvos pelo usuário do localStorage (normalizando temas escuros para AMOLED)
         try {
             const savedCustomThemes = localStorage.getItem('ai_console_custom_themes');
             if (savedCustomThemes) {
                 const customThemes = JSON.parse(savedCustomThemes);
                 Object.keys(customThemes).forEach(key => {
-                    availableThemes[key] = customThemes[key];
+                    availableThemes[key] = normalizeAmoledDarkTheme(customThemes[key]);
                 });
             }
             const savedActiveTheme = localStorage.getItem('ai_console_custom_active_theme');
             if (savedActiveTheme) {
-                availableThemes['custom_active'] = JSON.parse(savedActiveTheme);
+                availableThemes['custom_active'] = normalizeAmoledDarkTheme(JSON.parse(savedActiveTheme));
             }
         } catch (e) {
             console.error("Erro ao carregar temas customizados:", e);
@@ -10452,42 +10607,41 @@ WITH CHECK (true);</code>
         function updateCustomActiveTheme() {
             if (isConfigLoading) return;
 
-            const primaryColor = document.getElementById('custom-theme-primary')?.value || '#dfb15b';
-            const borderGlowColor = document.getElementById('custom-theme-glow-color')?.value || '#dfb15b';
-            const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? true;
-            const cardBg1Color = document.getElementById('custom-theme-card1')?.value || '#0a0a0a';
-            const cardBg2Color = document.getElementById('custom-theme-card2')?.value || '#121212';
-            const gradientAngle = document.getElementById('custom-theme-angle')?.value || 90;
-            const gradientColor1 = document.getElementById('custom-theme-grad-start')?.value || '#dfb15b';
-            const gradientColor2 = document.getElementById('custom-theme-grad-end')?.value || '#8a6f27';
+            const primaryColor = document.getElementById('custom-theme-primary')?.value || '#818cf8';
+            const borderGlowColor = document.getElementById('custom-theme-glow-color')?.value || primaryColor;
+            const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? false;
+            const cardBg1Color = document.getElementById('custom-theme-card1')?.value || '#070709';
+            const cardBg2Color = document.getElementById('custom-theme-card2')?.value || '#0d0d11';
+            const gradientAngle = document.getElementById('custom-theme-angle')?.value || 135;
+            const gradientColor1 = document.getElementById('custom-theme-grad-start')?.value || '#6366f1';
+            const gradientColor2 = document.getElementById('custom-theme-grad-end')?.value || '#a855f7';
 
-            const amoledOn = document.getElementById('amoled-switch')?.classList.contains('on') ?? false;
-
-            // Harmonize background and muted text color with the primary color
-            const primaryHsl = hexToHsl(primaryColor);
-            const textMutedColor = hslToHex(primaryHsl.h, Math.min(primaryHsl.s, 25), 78);
-            const nonAmoledBg = hslToHex(primaryHsl.h, Math.min(primaryHsl.s, 14), 4.5);
-            const customBgColor = document.getElementById('custom-theme-bg')?.value || (amoledOn ? "#000000" : nonAmoledBg);
+            const rawBgColor = document.getElementById('custom-theme-bg')?.value || '#000000';
+            const isDark = isDarkHexColor(rawBgColor);
+            const amoledOn = isDark ? true : (document.getElementById('amoled-switch')?.classList.contains('on') ?? true);
+            const resolvedBg = isDark ? '#000000' : rawBgColor;
+            const resolvedCard1 = isDark ? '#070709' : cardBg1Color;
+            const resolvedCard2 = isDark ? '#0d0d11' : cardBg2Color;
 
             availableThemes['custom_active'] = {
                 name: "🎨 Tema Personalizado",
-                desc: `Tema personalizado ativo. Cor de destaque: ${primaryColor}.`,
-                bg: customBgColor,
+                desc: `Tema personalizado AMOLED. Destaque: ${primaryColor}.`,
+                bg: resolvedBg,
                 gradientBg: "none",
-                cardBg1: cardBg1Color,
-                cardBg2: cardBg2Color,
-                gradientCard1: `linear-gradient(135deg, ${cardBg1Color}ee 0%, #000000ff 100%)`,
-                gradientCard2: `linear-gradient(135deg, ${cardBg2Color}ee 0%, #000000ff 100%)`,
-                border: borderGlowColor + "73",
+                cardBg1: resolvedCard1,
+                cardBg2: resolvedCard2,
+                gradientCard1: "none",
+                gradientCard2: "none",
+                border: "rgba(255, 255, 255, 0.10)",
                 textMain: "#ffffff",
-                textMuted: textMutedColor,
+                textMuted: "#9ca3af",
                 primary: primaryColor,
-                success: "#22c55e",
+                success: "#10b981",
                 error: "#ef4444",
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: amoledOn,
                 neon: neonOn,
-                neonGlowColor: borderGlowColor + "a6",
+                neonGlowColor: borderGlowColor + "80",
                 btnGradient: `linear-gradient(${gradientAngle}deg, ${gradientColor1}, ${gradientColor2})`
             };
 
@@ -10522,7 +10676,7 @@ WITH CHECK (true);</code>
                 isCohesiveSyncActive = true;
                 if (advContainer) advContainer.style.display = 'none';
                 // Trigger instant sync with current primary color
-                const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#dfb15b';
+                const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#818cf8';
                 onPrimaryColorInput(currentPrimary);
             }
             updateCustomActiveTheme();
@@ -10546,7 +10700,7 @@ WITH CHECK (true);</code>
                 if (secondColorContainer) secondColorContainer.style.display = 'flex';
             }
             // Trigger instant update of current primary color to update gradient end
-            const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#dfb15b';
+            const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#818cf8';
             onPrimaryColorInput(currentPrimary);
             updateCustomActiveTheme();
             if (!isConfigLoading) {
@@ -10556,7 +10710,7 @@ WITH CHECK (true);</code>
 
         function onSecondColorInput(hexColor) {
             if (!hexColor) return;
-            const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#dfb15b';
+            const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#818cf8';
             onPrimaryColorInput(currentPrimary);
             updateCustomActiveTheme();
             if (!isConfigLoading) {
@@ -10576,7 +10730,7 @@ WITH CHECK (true);</code>
             }
             // Trigger update
             if (isCohesiveSyncActive) {
-                const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#dfb15b';
+                const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#818cf8';
                 onPrimaryColorInput(currentPrimary);
             } else {
                 onAdvancedColorInput();
@@ -10670,12 +10824,12 @@ WITH CHECK (true);</code>
 
         function onPrimaryColorInput(hexColor) {
             if (!hexColor) return;
-            const amoledOn = document.getElementById('amoled-switch')?.classList.contains('on') ?? false;
+            const amoledOn = true;
             
             if (isCohesiveSyncActive) {
                 const hsl = hexToHsl(hexColor);
                 
-                // 1. Calculate matching colors
+                // 1. Calculate matching accent colors while keeping pure Super AMOLED #000000 surfaces clean
                 const glowColor = hexColor;
                 const gradStart = hexColor;
                 
@@ -10683,28 +10837,14 @@ WITH CHECK (true);</code>
                 const isTwoColorOn = document.getElementById('custom-theme-two-color-toggle')?.classList.contains('on') ?? false;
                 let gradEnd;
                 if (isTwoColorOn) {
-                    gradEnd = document.getElementById('custom-theme-primary-second')?.value || '#0000ff';
+                    gradEnd = document.getElementById('custom-theme-primary-second')?.value || '#a855f7';
                 } else {
                     gradEnd = hslToHex(hsl.h, hsl.s, Math.max(8, hsl.l - 22));
                 }
                 
-                // Cards backgrounds are extremely dark slate matching the primary color's hue
-                let card1, card2;
-                if (amoledOn) {
-                    card1 = '#000000';
-                    card2 = hslToHex(hsl.h, Math.min(20, hsl.s), 2.2);
-                } else {
-                    card1 = hslToHex(hsl.h, Math.min(25, hsl.s), 1.8);
-                    card2 = hslToHex(hsl.h, Math.min(25, hsl.s), 3.8);
-                }
-
-                // Main screen background matching the primary color's hue
-                let bg;
-                if (amoledOn) {
-                    bg = '#000000';
-                } else {
-                    bg = hslToHex(hsl.h, Math.min(14, hsl.s), 4.5);
-                }
+                const card1 = '#070709';
+                const card2 = '#0d0d11';
+                const bg = '#000000';
                 
                 // 2. Set values in input controls (silently)
                 const bgInput = document.getElementById('custom-theme-bg');
@@ -10734,8 +10874,8 @@ WITH CHECK (true);</code>
                     cardBg1: card1,
                     cardBg2: card2,
                     bg: bg,
-                    angle: document.getElementById('custom-theme-angle')?.value || 90,
-                    neonOn: document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? true,
+                    angle: document.getElementById('custom-theme-angle')?.value || 135,
+                    neonOn: document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? false,
                     amoledOn: amoledOn
                 });
             } else {
@@ -10747,8 +10887,7 @@ WITH CHECK (true);</code>
                 document.documentElement.style.setProperty('--primary-bg', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`);
                 document.documentElement.style.setProperty('--primary-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
                 
-                // Update glowing and border colors if sync is off but glow toggle is on
-                const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? true;
+                const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? false;
                 if (neonOn) {
                     const glowColor = document.getElementById('custom-theme-glow-color')?.value || hexColor;
                     document.documentElement.style.setProperty('--glow-shadow', `0 0 15px ${glowColor}`);
@@ -10767,16 +10906,18 @@ WITH CHECK (true);</code>
             // Triggered when editing custom pickers individually with sync off
             updateCustomThemePreview();
             
-            const amoledOn = document.getElementById('amoled-switch')?.classList.contains('on') ?? false;
-            const primaryColor = document.getElementById('custom-theme-primary')?.value || '#dfb15b';
-            const glowColor = document.getElementById('custom-theme-glow-color')?.value || '#dfb15b';
-            const gradStart = document.getElementById('custom-theme-grad-start')?.value || '#dfb15b';
-            const gradEnd = document.getElementById('custom-theme-grad-end')?.value || '#8a6f27';
-            const cardBg1 = document.getElementById('custom-theme-card1')?.value || '#0a0a0a';
-            const cardBg2 = document.getElementById('custom-theme-card2')?.value || '#121212';
-            const bg = document.getElementById('custom-theme-bg')?.value || '#0a0a0c';
-            const angle = document.getElementById('custom-theme-angle')?.value || 90;
-            const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? true;
+            const primaryColor = document.getElementById('custom-theme-primary')?.value || '#818cf8';
+            const glowColor = document.getElementById('custom-theme-glow-color')?.value || primaryColor;
+            const gradStart = document.getElementById('custom-theme-grad-start')?.value || '#6366f1';
+            const gradEnd = document.getElementById('custom-theme-grad-end')?.value || '#a855f7';
+            const rawBg = document.getElementById('custom-theme-bg')?.value || '#000000';
+            const isDark = isDarkHexColor(rawBg);
+            const amoledOn = isDark ? true : (document.getElementById('amoled-switch')?.classList.contains('on') ?? true);
+            const bg = isDark ? '#000000' : rawBg;
+            const cardBg1 = isDark ? '#070709' : (document.getElementById('custom-theme-card1')?.value || '#070709');
+            const cardBg2 = isDark ? '#0d0d11' : (document.getElementById('custom-theme-card2')?.value || '#0d0d11');
+            const angle = document.getElementById('custom-theme-angle')?.value || 135;
+            const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? false;
 
             applyLiveColors({
                 primary: primaryColor,
@@ -10813,30 +10954,34 @@ WITH CHECK (true);</code>
             document.documentElement.style.setProperty('--primary-bg', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`);
             document.documentElement.style.setProperty('--primary-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
 
-            // Main Background and RGB variable calculations
-            if (colors.bg) {
-                document.documentElement.style.setProperty('--bg-color', colors.bg);
-                const bgRgb = hexToRgb(colors.bg);
-                document.documentElement.style.setProperty('--bg-rgb', `${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}`);
-            }
+            // Main Background and RGB variable calculations (dark themes always enforce #000000 AMOLED)
+            const effectiveBg = isDarkHexColor(colors.bg || '#000000') ? '#000000' : colors.bg;
+            document.documentElement.style.setProperty('--bg-color', effectiveBg);
+            document.documentElement.style.setProperty('--bg-gradient', 'none');
+            const bgRgb = hexToRgb(effectiveBg);
+            document.documentElement.style.setProperty('--bg-rgb', `${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}`);
+            const metaThemeColor = document.getElementById('theme-color-meta');
+            if (metaThemeColor) metaThemeColor.setAttribute('content', effectiveBg);
 
-            // Cards backgrounds and RGB variable calculations
+            // Cards backgrounds and RGB variable calculations (clean uniform surfaces)
             document.documentElement.style.setProperty('--card-bg-primary', colors.cardBg1);
-            document.documentElement.style.setProperty('--card-bg-primary-grad', colors.cardBg1);
+            document.documentElement.style.setProperty('--card-bg-primary-grad', 'none');
             document.documentElement.style.setProperty('--card-bg-secondary', colors.cardBg2);
-            document.documentElement.style.setProperty('--card-bg-secondary-grad', colors.cardBg2);
+            document.documentElement.style.setProperty('--card-bg-secondary-grad', 'none');
             if (colors.cardBg1) {
                 const cardRgb = hexToRgb(colors.cardBg1);
                 document.documentElement.style.setProperty('--card-bg-rgb', `${cardRgb.r}, ${cardRgb.g}, ${cardRgb.b}`);
             }
 
-            // Borders - Use a nice transparent border color of primary
-            document.documentElement.style.setProperty('--border-color', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.45)`);
+            // Neutral text and subtle border to prevent color soup
+            document.documentElement.style.setProperty('--text-main', '#ffffff');
+            document.documentElement.style.setProperty('--text-muted', '#9ca3af');
+            document.documentElement.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.10)');
 
             // Glow Shadows
             if (colors.neonOn) {
                 document.documentElement.style.setProperty('--glow-shadow', `0 0 15px ${adjustedGlow}`);
-                document.documentElement.style.setProperty('--border-weight', `1.5px`);
+                document.documentElement.style.setProperty('--border-weight', `1.25px`);
                 document.documentElement.style.setProperty('--btn-shadow', `0 4px 16px ${adjustedGlow}, 0 0 8px ${adjustedGlow}`);
                 document.documentElement.style.setProperty('--btn-shadow-hover', `0 6px 22px ${adjustedGlow}, 0 0 15px ${adjustedGlow}`);
             } else {
@@ -10857,11 +11002,11 @@ WITH CHECK (true);</code>
         function updateCustomThemePreview() {
             const btn = document.getElementById('custom-theme-btn-preview');
             if (!btn) return;
-            const angle = document.getElementById('custom-theme-angle')?.value || 90;
-            const c1 = document.getElementById('custom-theme-grad-start')?.value || '#dfb15b';
-            const c2 = document.getElementById('custom-theme-grad-end')?.value || '#8a6f27';
-            const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? true;
-            const glowColor = document.getElementById('custom-theme-glow-color')?.value || '#dfb15b';
+            const angle = document.getElementById('custom-theme-angle')?.value || 135;
+            const c1 = document.getElementById('custom-theme-grad-start')?.value || '#6366f1';
+            const c2 = document.getElementById('custom-theme-grad-end')?.value || '#a855f7';
+            const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? false;
+            const glowColor = document.getElementById('custom-theme-glow-color')?.value || '#818cf8';
 
             btn.style.background = `linear-gradient(${angle}deg, ${c1}, ${c2})`;
             if (neonOn) {
@@ -10879,14 +11024,12 @@ WITH CHECK (true);</code>
                 return;
             }
 
-            const primaryColor = document.getElementById('custom-theme-primary')?.value || '#dfb15b';
-            const borderGlowColor = document.getElementById('custom-theme-glow-color')?.value || '#dfb15b';
-            const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? true;
-            const cardBg1Color = document.getElementById('custom-theme-card1')?.value || '#0a0a0a';
-            const cardBg2Color = document.getElementById('custom-theme-card2')?.value || '#121212';
-            const gradientAngle = document.getElementById('custom-theme-angle')?.value || 90;
-            const gradientColor1 = document.getElementById('custom-theme-grad-start')?.value || '#dfb15b';
-            const gradientColor2 = document.getElementById('custom-theme-grad-end')?.value || '#8a6f27';
+            const primaryColor = document.getElementById('custom-theme-primary')?.value || '#818cf8';
+            const borderGlowColor = document.getElementById('custom-theme-glow-color')?.value || primaryColor;
+            const neonOn = document.getElementById('custom-theme-neon-toggle')?.classList.contains('on') ?? false;
+            const gradientAngle = document.getElementById('custom-theme-angle')?.value || 135;
+            const gradientColor1 = document.getElementById('custom-theme-grad-start')?.value || '#6366f1';
+            const gradientColor2 = document.getElementById('custom-theme-grad-end')?.value || '#a855f7';
 
             // Check if a custom theme with the same name already exists to update it instead of creating duplicates
             let customThemeKey = null;
@@ -10904,31 +11047,32 @@ WITH CHECK (true);</code>
                 customThemeKey = 'custom_theme_' + themeName.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now();
             }
 
-            const amoledOn = document.getElementById('amoled-switch')?.classList.contains('on') ?? false;
-            const primaryHsl = hexToHsl(primaryColor);
-            const textMutedColor = hslToHex(primaryHsl.h, Math.min(primaryHsl.s, 25), 78);
-            const nonAmoledBg = hslToHex(primaryHsl.h, Math.min(primaryHsl.s, 14), 4.5);
-            const customBgColor = document.getElementById('custom-theme-bg')?.value || (amoledOn ? "#000000" : nonAmoledBg);
+            const rawBg = document.getElementById('custom-theme-bg')?.value || '#000000';
+            const isDark = isDarkHexColor(rawBg);
+            const customBgColor = isDark ? '#000000' : rawBg;
+            const cardBg1Color = isDark ? '#070709' : (document.getElementById('custom-theme-card1')?.value || '#070709');
+            const cardBg2Color = isDark ? '#0d0d11' : (document.getElementById('custom-theme-card2')?.value || '#0d0d11');
+            const amoledOn = isDark ? true : (document.getElementById('amoled-switch')?.classList.contains('on') ?? true);
 
             const customTheme = {
                 name: "🎨 " + themeName,
-                desc: `Tema personalizado. Cor de destaque: ${primaryColor}.`,
+                desc: `Tema personalizado AMOLED. Destaque: ${primaryColor}.`,
                 bg: customBgColor,
                 gradientBg: "none",
                 cardBg1: cardBg1Color,
                 cardBg2: cardBg2Color,
-                gradientCard1: `linear-gradient(135deg, ${cardBg1Color}ee 0%, #000000ff 100%)`,
-                gradientCard2: `linear-gradient(135deg, ${cardBg2Color}ee 0%, #000000ff 100%)`,
-                border: borderGlowColor + "73", // add opacity
+                gradientCard1: "none",
+                gradientCard2: "none",
+                border: "rgba(255, 255, 255, 0.10)",
                 textMain: "#ffffff",
-                textMuted: textMutedColor,
+                textMuted: "#9ca3af",
                 primary: primaryColor,
-                success: "#22c55e",
+                success: "#10b981",
                 error: "#ef4444",
                 font: 'system-ui, -apple-system, sans-serif',
                 amoled: amoledOn,
                 neon: neonOn,
-                neonGlowColor: borderGlowColor + "a6",
+                neonGlowColor: borderGlowColor + "80",
                 btnGradient: `linear-gradient(${gradientAngle}deg, ${gradientColor1}, ${gradientColor2})`
             };
 
@@ -10986,8 +11130,17 @@ WITH CHECK (true);</code>
             if (!container) return;
             container.innerHTML = '';
             
-            Object.keys(availableThemes).forEach(key => {
-                if (key.startsWith('custom_theme_') || key === 'custom_active') return; // Skip custom themes
+            const presetOrder = ['milky_way', 'cyan_blue_neon', 'amethyst_twilight', 'deep_emerald', 'cyberpunk_crimson', 'cyber_cyan_amoled'];
+            const customKeys = Object.keys(availableThemes).filter(k => k.startsWith('custom_theme_'));
+            const orderedKeys = [
+                ...presetOrder.filter(k => Boolean(availableThemes[k])),
+                ...customKeys
+            ];
+            if (selectedThemeId === 'custom_active' && availableThemes['custom_active']) {
+                orderedKeys.push('custom_active');
+            }
+
+            orderedKeys.forEach(key => {
                 const item = availableThemes[key];
                 const isActive = (selectedThemeId === key);
                 
@@ -10997,14 +11150,14 @@ WITH CHECK (true);</code>
                 card.style.flexDirection = 'column';
                 card.style.justifyContent = 'space-between';
                 card.style.padding = '12px 14px';
-                card.style.background = isActive ? 'linear-gradient(135deg, rgba(var(--primary-rgb), 0.16) 0%, rgba(var(--primary-rgb), 0.05) 100%)' : 'rgba(255, 255, 255, 0.02)';
-                card.style.border = isActive ? '1.5px solid var(--primary, #38bdf8)' : '1px solid var(--border-color)';
+                card.style.background = isActive ? 'var(--card-bg-secondary, #0d0d11)' : 'var(--card-bg-primary, #070709)';
+                card.style.border = isActive ? '1.5px solid var(--primary, #818cf8)' : '1px solid var(--border-color, rgba(255,255,255,0.10))';
                 card.style.borderRadius = '14px';
                 card.style.cursor = 'pointer';
                 card.style.transition = 'all 0.22s cubic-bezier(0.4, 0, 0.2, 1)';
                 card.style.position = 'relative';
                 card.style.minHeight = '92px';
-                card.style.boxShadow = isActive ? '0 4px 18px rgba(var(--primary-rgb), 0.22)' : 'none';
+                card.style.boxShadow = isActive ? '0 4px 18px rgba(var(--primary-rgb, 129, 140, 248), 0.18)' : 'none';
                 
                 if (key === 'custom_active') {
                     card.onclick = () => { showAppToast("Você já está usando seu tema personalizado! Salve-o na galeria abaixo se desejar guardá-lo. 💾", "info"); };
@@ -11012,16 +11165,19 @@ WITH CHECK (true);</code>
                     card.onclick = () => { applyThemePreset(key, true); };
                 }
 
-                // Paleta de amostras de cor
-                const primaryColor = item.primary || '#ffffff';
-                const bgPreview = item.gradientBg || item.bg || '#0f172a';
+                // Paleta limpa de amostras: Preto AMOLED + Superfície + Cor de Destaque
+                const primaryColor = item.primary || '#818cf8';
+                const surfacePreview = item.cardBg1 || '#070709';
+                const bgPreview = (item.gradientBg && item.gradientBg !== 'none') ? item.gradientBg : (item.bg || '#000000');
                 
                 card.innerHTML = `
                     <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 6px;">
                         <span style="font-weight: 700; font-size: 0.85rem; color: #ffffff; display: flex; align-items: center; gap: 6px; line-height: 1.2;">
                             ${item.name}
                         </span>
-                        ${isActive ? '<span style="background: var(--primary, #38bdf8); color: #000; font-size: 0.62rem; font-weight: 800; padding: 2px 7px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0;">Ativo</span>' : ''}
+                        ${isActive
+                            ? '<span style="background: var(--primary, #818cf8); color: var(--primary-contrast, #000); font-size: 0.62rem; font-weight: 800; padding: 2px 7px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0;">Ativo</span>'
+                            : '<span style="background: #000000; color: #9ca3af; border: 1px solid rgba(255,255,255,0.12); font-size: 0.58rem; font-weight: 700; padding: 2px 6px; border-radius: 999px; letter-spacing: 0.4px; flex-shrink: 0;">AMOLED</span>'}
                     </div>
                     
                     <span style="font-size: 0.70rem; color: var(--text-muted); line-height: 1.25; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
@@ -11030,10 +11186,11 @@ WITH CHECK (true);</code>
 
                     <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); margin-top: auto;">
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <span style="width: 14px; height: 14px; border-radius: 50%; background-color: ${primaryColor}; border: 1.5px solid rgba(255,255,255,0.8); box-shadow: 0 0 8px ${primaryColor}66; display: inline-block;" title="Destaque"></span>
-                            <span style="width: 14px; height: 14px; border-radius: 50%; background: ${bgPreview}; border: 1px solid rgba(255,255,255,0.25); display: inline-block;" title="Fundo"></span>
+                            <span style="width: 14px; height: 14px; border-radius: 50%; background: ${bgPreview}; border: 1.5px solid rgba(255,255,255,0.28); display: inline-block;" title="Fundo AMOLED"></span>
+                            <span style="width: 14px; height: 14px; border-radius: 50%; background: ${surfacePreview}; border: 1px solid rgba(255,255,255,0.22); display: inline-block;" title="Cartão"></span>
+                            <span style="width: 14px; height: 14px; border-radius: 50%; background-color: ${primaryColor}; border: 1.5px solid rgba(255,255,255,0.85); display: inline-block;" title="Destaque"></span>
                         </div>
-                        <span style="font-size: 0.65rem; color: ${isActive ? 'var(--primary, #38bdf8)' : 'var(--text-muted)'}; font-weight: 600;">
+                        <span style="font-size: 0.65rem; color: ${isActive ? 'var(--primary, #818cf8)' : 'var(--text-muted)'}; font-weight: 600;">
                             ${isActive ? '✓ Selecionado' : 'Aplicar'}
                         </span>
                     </div>
@@ -11143,7 +11300,7 @@ WITH CHECK (true);</code>
         }
 
         function ensureHexColor(colorStr) {
-            if (!colorStr) return '#dfb15b';
+            if (!colorStr) return '#818cf8';
             colorStr = colorStr.trim();
             if (colorStr.startsWith('#')) {
                 if (colorStr.length === 9) {
@@ -11162,7 +11319,7 @@ WITH CHECK (true);</code>
                     return `#${r}${g}${b}`;
                 }
             }
-            return '#dfb15b';
+            return '#818cf8';
         }
 
         function applyThemePreset(themeId, userClicked = false) {
@@ -11170,7 +11327,8 @@ WITH CHECK (true);</code>
             if (!availableThemes[themeId]) themeId = 'milky_way';
             
             selectedThemeId = themeId;
-            const theme = availableThemes[themeId];
+            const theme = normalizeAmoledDarkTheme(availableThemes[themeId]);
+            availableThemes[themeId] = theme;
 
             // Clear manual accent overrides when a theme preset is applied
             isManualAccentOverrideActive = false;
@@ -11361,18 +11519,22 @@ WITH CHECK (true);</code>
             const picker = document.getElementById('manual-accent-picker');
             if (picker) picker.value = theme.primary;
 
-            // Handle AMOLED switch representation
+            // Handle AMOLED switch representation (all dark themes enforce pure #000000 Super AMOLED)
             const sw = document.getElementById('amoled-switch');
-            if (sw) {
-                if (theme.amoled) {
-                    if (!sw.classList.contains('on')) sw.classList.add('on');
-                    document.documentElement.removeAttribute('data-theme');
-                    document.getElementById('theme-color-meta').setAttribute('content', '#000000');
-                } else {
-                    if (sw.classList.contains('on')) sw.classList.remove('on');
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    document.getElementById('theme-color-meta').setAttribute('content', theme.bg);
-                }
+            const isDarkTheme = (theme.amoled !== false) || isDarkHexColor(theme.bg);
+            if (isDarkTheme) {
+                document.documentElement.style.setProperty('--bg-color', '#000000');
+                document.documentElement.style.setProperty('--bg-gradient', 'none');
+                document.documentElement.style.setProperty('--bg-rgb', '0, 0, 0');
+                document.documentElement.removeAttribute('data-theme');
+                const metaThemeColor = document.getElementById('theme-color-meta');
+                if (metaThemeColor) metaThemeColor.setAttribute('content', '#000000');
+                if (sw && !sw.classList.contains('on')) sw.classList.add('on');
+            } else {
+                if (sw && sw.classList.contains('on')) sw.classList.remove('on');
+                document.documentElement.setAttribute('data-theme', 'dark');
+                const metaThemeColor = document.getElementById('theme-color-meta');
+                if (metaThemeColor) metaThemeColor.setAttribute('content', theme.bg);
             }
 
             // Forced borders option
@@ -11401,38 +11563,44 @@ WITH CHECK (true);</code>
             const sw = document.getElementById('amoled-switch');
             if (!sw) return;
             const isOn = sw.classList.contains('on');
+            const theme = normalizeAmoledDarkTheme(availableThemes[selectedThemeId] || availableThemes['milky_way']);
+            const isDark = isDarkHexColor(theme.bg || '#000000');
             
-            if(isOn) {
+            if (isOn && !isDark) {
                 sw.classList.remove('on');
                 document.documentElement.setAttribute('data-theme', 'dark');
-                // Adjust variables in active theme if matching amoled switch
-                const theme = availableThemes[selectedThemeId] || availableThemes['milky_way'];
-                document.documentElement.style.setProperty('--bg-color', theme.bg !== '#000000' ? theme.bg : '#0f1115');
+                document.documentElement.style.setProperty('--bg-color', theme.bg || '#000000');
                 document.documentElement.style.setProperty('--bg-gradient', theme.gradientBg || 'none');
                 document.documentElement.style.setProperty('--card-bg-primary', theme.cardBg1);
                 document.documentElement.style.setProperty('--card-bg-primary-grad', theme.gradientCard1 || 'none');
                 document.documentElement.style.setProperty('--card-bg-secondary', theme.cardBg2);
                 document.documentElement.style.setProperty('--card-bg-secondary-grad', theme.gradientCard2 || 'none');
                 document.documentElement.style.setProperty('--border-color', theme.border);
-                document.getElementById('theme-color-meta').setAttribute('content', theme.bg);
+                document.getElementById('theme-color-meta')?.setAttribute('content', theme.bg || '#000000');
             } else {
-                sw.classList.add('on');
+                if (!sw.classList.contains('on')) sw.classList.add('on');
                 document.documentElement.removeAttribute('data-theme');
-                const theme = availableThemes[selectedThemeId] || availableThemes['milky_way'];
                 document.documentElement.style.setProperty('--bg-color', '#000000');
+                document.documentElement.style.setProperty('--bg-rgb', '0, 0, 0');
                 document.documentElement.style.setProperty('--bg-gradient', 'none');
-                document.documentElement.style.setProperty('--card-bg-primary', '#000000');
+                document.documentElement.style.setProperty('--card-bg-primary', '#070709');
                 document.documentElement.style.setProperty('--card-bg-primary-grad', 'none');
-                document.documentElement.style.setProperty('--card-bg-secondary', '#050505');
+                document.documentElement.style.setProperty('--card-bg-secondary', '#0d0d11');
                 document.documentElement.style.setProperty('--card-bg-secondary-grad', 'none');
-                document.documentElement.style.setProperty('--border-color', '#111111');
-                document.getElementById('theme-color-meta').setAttribute('content', '#000000');
+                document.documentElement.style.setProperty('--card-bg-rgb', '7, 7, 9');
+                document.documentElement.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.10)');
+                document.documentElement.style.setProperty('--text-main', '#ffffff');
+                document.documentElement.style.setProperty('--text-muted', '#9ca3af');
+                document.getElementById('theme-color-meta')?.setAttribute('content', '#000000');
+                if (isOn && isDark) {
+                    showAppToast("Todos os temas escuros utilizam Preto Super AMOLED (#000000).", "info");
+                }
             }
             if (isCohesiveSyncActive) {
-                const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#dfb15b';
+                const currentPrimary = document.getElementById('custom-theme-primary')?.value || '#818cf8';
                 onPrimaryColorInput(currentPrimary);
             }
-            addLog(`Modo AMOLED Super Black ${!isOn ? 'Ativado' : 'Desativado'}`, "info");
+            addLog("Modo AMOLED Super Black (#000000) ativo", "info");
             if (!isConfigLoading) {
                 checkAppearanceChanges();
             }
@@ -12693,7 +12861,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=33')
+                navigator.serviceWorker.register('./sw.js?v=35')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -13040,12 +13208,10 @@ WITH CHECK (true);</code>
                     if (data.baseUrl) safeSetVal('tg-base-url', data.baseUrl);
                     if (data.modelName) safeSetVal('tg-model-name', data.modelName);
                     
-                    // Restaura estado do Switch AMOLED
-                    if (data.isAmoled === false) {
-                        const sw = document.getElementById('amoled-switch');
-                        if (sw && sw.classList.contains('on')) {
-                            toggleAmoled(); // Desliga se estiver on
-                        }
+                    // Todos os temas escuros usam Super AMOLED (#000000) por padrão
+                    const sw = document.getElementById('amoled-switch');
+                    if (sw && !sw.classList.contains('on')) {
+                        sw.classList.add('on');
                     }
 
                     // Restaura Supabase Fields (com fallback seguro se salvo vazio)
@@ -13182,12 +13348,14 @@ WITH CHECK (true);</code>
                         updateAppLanguage(defaultLang);
                     }
                     
-                    if (data.speechVoice !== undefined) {
-                        safeSetVal('speech-voice', data.speechVoice);
-                        localStorage.setItem('speech_voice_selected', data.speechVoice);
-                    }
                     if (data.aiVoiceGender !== undefined) {
                         safeSetVal('ai-voice-gender-select', data.aiVoiceGender);
+                    }
+                    if (data.speechVoice !== undefined && SYNAPSE_CUSTOM_VOICES.some(v => v.id === data.speechVoice)) {
+                        localStorage.setItem('speech_voice_selected', data.speechVoice);
+                    }
+                    if (typeof populateVoices === 'function') {
+                        populateVoices();
                     }
 
                     // Se temos dados válidos, testa conexão e atualiza indicadores em background após o boot
@@ -15571,8 +15739,8 @@ WITH CHECK (true);</code>
                 transitionsOn: document.getElementById('transitions-switch').classList.contains('on'),
                 soundEffectsOn: document.getElementById('sound-effects-switch')?.classList.contains('on') ?? false,
                 currentLanguage: currentLanguage,
-                speechVoice: document.getElementById('speech-voice')?.value || '',
-                aiVoiceGender: document.getElementById('ai-voice-gender-select')?.value || 'female',
+                speechVoice: document.getElementById('speech-voice')?.value || 'synapse_aurora',
+                aiVoiceGender: document.getElementById('ai-voice-gender-select')?.value || 'all',
 
                 // Parâmetros estéticos persistidos
                 selectedThemeId: selectedThemeId,
@@ -16451,8 +16619,9 @@ WITH CHECK (true);</code>
         const smartAssistants = [
             {
                 id: 'geral',
-                icon: '🧠',
-                names: { pt: 'Geral', en: 'General', es: 'General' },
+                icon: '✨',
+                avatar: './app/src/main/res/drawable/synapse_logo_1781452080476.jpg',
+                names: { pt: 'Synapse', en: 'Synapse', es: 'Synapse' },
                 roles: {
                     pt: 'Núcleo de inteligência geral Synapse.',
                     en: 'Synapse general intelligence core.',
@@ -16755,7 +16924,7 @@ WITH CHECK (true);</code>
                         description: description,
                         prompt: a.prompt,
                         welcome: a.welcome,
-                        avatar: '',
+                        avatar: a.avatar || '',
                         color: color,
                         category: category,
                         isCustom: false
@@ -16955,8 +17124,8 @@ WITH CHECK (true);</code>
             
             const allAgents = getAllAgents();
             const activeAssis = allAgents.find(a => a.id === id) || allAgents[0];
-            const activeName = activeAssis ? activeAssis.name : 'Geral';
-            const activeIcon = (activeAssis && activeAssis.icon) ? activeAssis.icon : '🤖';
+            const activeName = activeAssis ? activeAssis.name : 'Synapse';
+            const activeIcon = (activeAssis && activeAssis.icon) ? activeAssis.icon : '✨';
             let welcomeMsg = (activeAssis && activeAssis.welcome) ? activeAssis.welcome : `Olá! Sou seu assistente ${activeName}. Como posso ajudar hoje?`;
             if (id === 'geral') {
                 const uName = getUserDisplayName();
@@ -18148,7 +18317,7 @@ WITH CHECK (true);</code>
                     prompt: 'Monte um plano prático de foco e produtividade em 5 passos para eu render mais hoje.'
                 },
                 {
-                    icon: '🧠',
+                    icon: '🚀',
                     title: 'Brainstorm de ideias',
                     desc: 'Soluções criativas para projetos',
                     prompt: 'Me dê 5 ideias criativas de projetos digitais úteis que eu posso começar ainda esta semana.'
@@ -18225,7 +18394,7 @@ WITH CHECK (true);</code>
                 </div>
                 <div class="chat-msg-prose">${formattedHtml}${extraFooterHtml}</div>
                 <div class="chat-msg-actions">
-                    <button type="button" class="reader-btn chat-action-pill" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" title="Ouvir resposta" aria-label="Ouvir resposta">
+                    <button type="button" class="reader-btn chat-action-pill" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'), this)" title="Ouvir resposta" aria-label="Ouvir resposta">
                         <span>🔊</span><span>Ouvir</span>
                     </button>
                     <button type="button" class="chat-action-pill" onclick="copyBotMessageFromBtn(this)" title="Copiar resposta" aria-label="Copiar resposta">
@@ -18257,9 +18426,9 @@ WITH CHECK (true);</code>
                     }
                 });
 
-                // Se a conversa salva só possui saudação sem nenhuma mensagem do usuário, moderniza para a tela Hero estilo Gemini
+                // Se a conversa salva só possui saudação sem nenhuma mensagem do usuário, mantém o Hero sincronizado com o ícone/nome atual do app
                 const userMessagesCount = container.querySelectorAll('.chat-message.user').length;
-                if (userMessagesCount === 0 && !container.querySelector('#chat-welcome-hero')) {
+                if (userMessagesCount === 0) {
                     container.innerHTML = buildChatWelcomeHeroHtml(activeId);
                     modified = true;
                 }
@@ -18354,12 +18523,14 @@ WITH CHECK (true);</code>
             if (activeAssis) {
                 if (iconEl) {
                     if (activeAssis.avatar) {
-                        iconEl.innerHTML = `<img src="${activeAssis.avatar}" style="width: 100%; height: 100%; border-radius: 8px; object-fit: cover;">`;
+                        iconEl.style.padding = '0';
+                        iconEl.style.overflow = 'hidden';
+                        iconEl.innerHTML = `<img src="${activeAssis.avatar}" alt="${escapeChatAttr(activeAssis.name || 'Synapse')}" style="width: 100%; height: 100%; border-radius: 9px; object-fit: cover;">`;
                     } else {
-                        iconEl.textContent = activeAssis.icon || '🤖';
+                        iconEl.textContent = activeAssis.icon || '✨';
                     }
                 }
-                if (nameEl) nameEl.textContent = activeAssis.name;
+                if (nameEl) nameEl.textContent = activeAssis.name || 'Synapse';
             }
 
             if (modelPillEl) {
@@ -18774,7 +18945,7 @@ WITH CHECK (true);</code>
             
             if (validSessions.length === 0) {
                 container.innerHTML = `
-                    <div class="activity-card-v2 activity-row" style="cursor: default; background: rgba(15, 23, 42, 0.25) !important; border-style: dashed !important; border: 1px dashed var(--border-color) !important; width: 100%;">
+                    <div class="activity-card-v2 activity-row" style="cursor: default; background: var(--card-bg-primary, #070709) !important; border-style: dashed !important; border: 1px dashed var(--border-color) !important; width: 100%;">
                         <div style="display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0;">
                             <div class="dashboard-v2-card-icon-wrapper" style="width: 42px; height: 42px; font-size: 1.2rem; margin-bottom: 0; flex-shrink: 0; background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.15); color: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
                                 💬
@@ -20305,74 +20476,441 @@ WITH CHECK (true);</code>
 
             }, 600);
         }
-        // --- 5. Reconhecimento de Voz (STT) e Leitura em Voz Alta (TTS) ---
-        function speakText(text) {
-            triggerPulse();
-            if (!text) return;
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // Para fala atual
-                const utterance = new SpeechSynthesisUtterance(text);
-                
-                // Extrai velocidade e tom de voz configurados em tempo real ou assume o padrão estrito
-                const inputRate = document.getElementById('speech-rate');
-                const inputPitch = document.getElementById('speech-pitch');
-                utterance.rate = inputRate ? parseFloat(inputRate.value) : 1.05;
-                utterance.pitch = inputPitch ? parseFloat(inputPitch.value) : 1.0;
-                
-                // Resolve selected speech voice
-                const voiceSelect = document.getElementById('speech-voice') || document.getElementById('live-speech-voice');
-                let selectedVoiceName = voiceSelect?.value || localStorage.getItem('speech_voice_selected') || '';
-                
-                const voices = window.speechSynthesis.getVoices();
-                let chosenVoice = null;
+        // --- 5. Reconhecimento de Voz (STT) e Motor Próprio Humanizado de Voz Synapse ---
+        const synapseSpeechCache = new Map();
+        let activeSpeechToken = 0;
+        let activeAudioPlayer = null;
+        let activeSpeechBtn = null;
+        let activeSpeechPauseTimer = null;
 
-                if (selectedVoiceName) {
-                    chosenVoice = voices.find(v => v.name === selectedVoiceName);
+        function resetSpeechTriggerButton() {
+            if (activeSpeechBtn) {
+                if (activeSpeechBtn.dataset.origSpeechHtml) {
+                    activeSpeechBtn.innerHTML = activeSpeechBtn.dataset.origSpeechHtml;
                 }
-
-                if (!chosenVoice) {
-                    // Tenta achar pelo gênero preferido e pelo idioma atual
-                    const genderVal = document.getElementById('ai-voice-gender-select')?.value || localStorage.getItem('voice_gender_preferred') || 'all';
-                    const langVoices = voices.filter(v => v.lang.toLowerCase().startsWith(currentLanguage.toLowerCase()) || v.lang.toLowerCase().replace('_', '-').startsWith(currentLanguage.toLowerCase()));
-                    
-                    if (genderVal !== 'all' && langVoices.length > 0) {
-                        const matches = langVoices.filter(v => getVoiceGender(v.name) === genderVal);
-                        if (matches.length > 0) {
-                            chosenVoice = matches[0];
-                        }
-                    }
-                    
-                    // Se não achou com gênero, pega qualquer uma do idioma atual
-                    if (!chosenVoice && langVoices.length > 0) {
-                        chosenVoice = langVoices.find(v => v.localService) || langVoices[0];
-                    }
-                }
-
-                if (chosenVoice) {
-                    utterance.voice = chosenVoice;
-                    if (voiceSelect && voiceSelect.value !== chosenVoice.name) {
-                        voiceSelect.value = chosenVoice.name;
-                    }
-                }
-                
-                window.speechSynthesis.speak(utterance);
-                addLog(`Leitura por voz ativada. (Voz: ${chosenVoice ? chosenVoice.name : 'Padrão'}, Velocidade: ${utterance.rate}x, Tom: ${utterance.pitch})`, "info");
-            } else {
-                addLog("API de voz não suportada neste navegador.", "error");
-                showAppToast("Seu navegador não suporta leitura de voz embutida.", "error");
+                activeSpeechBtn = null;
             }
         }
 
-        function testSelectedVoice() {
-            let testMsg = "Olá! Este é um teste da minha nova voz de narração. O tom e a velocidade estão adequados?";
-            if (typeof currentLanguage !== 'undefined') {
-                if (currentLanguage === 'en') {
-                    testMsg = "Hello! This is a test of my new narration voice. Are the pitch and speed suitable?";
-                } else if (currentLanguage === 'es') {
-                    testMsg = "¡Hola! Esta es una prueba de mi nueva voz de narración. ¿El tono y la velocidad son adecuados?";
+        function stopSynapseSpeech() {
+            activeSpeechToken++;
+            if (activeSpeechPauseTimer) {
+                clearTimeout(activeSpeechPauseTimer);
+                activeSpeechPauseTimer = null;
+            }
+            if (activeAudioPlayer) {
+                try {
+                    activeAudioPlayer.pause();
+                    activeAudioPlayer.src = '';
+                } catch (e) {}
+                activeAudioPlayer = null;
+            }
+            if (typeof window !== 'undefined' && window.speechSynthesis) {
+                try {
+                    window.speechSynthesis.cancel();
+                } catch (e) {}
+            }
+            resetSpeechTriggerButton();
+        }
+
+        function cleanTextForHumanSpeech(rawText) {
+            let txt = String(rawText || '');
+            // Remove blocos de código extensos ou simplifica menção
+            txt = txt.replace(/```[\s\S]*?```/g, ' bloco de código. ');
+            txt = txt.replace(/`([^`]+)`/g, '$1');
+            // Markdown links -> texto do link
+            txt = txt.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '$1');
+            txt = txt.replace(/https?:\/\/[^\s]+/gi, ' link ');
+            // Remove marcações markdown
+            txt = txt.replace(/[*_#~>]+/g, ' ');
+            // Converte listas em pausas faladas suaves
+            txt = txt.replace(/^\s*[-•*]\s+/gm, '. ');
+            txt = txt.replace(/^\s*(\d+)\.\s+/gm, '$1, ');
+            // Remove emojis para evitar leitura literal ("rosto sorridente", "foguete")
+            try {
+                txt = txt.replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu, ' ');
+            } catch (e) {}
+            // Expansões naturais para PT/EN/ES
+            txt = txt
+                .replace(/R\$\s*(\d+)/gi, '$1 reais')
+                .replace(/US\$\s*(\d+)/gi, '$1 dólares')
+                .replace(/(\d+)\s*%/g, '$1 por cento')
+                .replace(/\bDr\.\s*/g, 'Doutor ')
+                .replace(/\bDra\.\s*/g, 'Doutora ')
+                .replace(/\bSr\.\s*/g, 'Senhor ')
+                .replace(/\bSra\.\s*/g, 'Senhora ')
+                .replace(/\bProf\.\s*/g, 'Professor ')
+                .replace(/\betc\./gi, 'etcétera')
+                .replace(/\bvs\./gi, 'versus')
+                .replace(/\bex\.\s*/gi, 'por exemplo ');
+            txt = txt.replace(/\s+/g, ' ').replace(/\.\s*\./g, '.').trim();
+            return txt;
+        }
+
+        function segmentSpeechClauses(cleanText) {
+            if (!cleanText) return [];
+            const rawSentences = cleanText
+                .split(/(?<=[.!?;:\n])\s+/)
+                .map(s => s.trim())
+                .filter(Boolean);
+
+            const chunks = [];
+            rawSentences.forEach(sentence => {
+                if (sentence.length <= 125) {
+                    chunks.push(sentence);
+                } else {
+                    const subParts = sentence.split(/(?<=,)\s+|\s+(?=(?:mas|porém|porque|então|however|because|pero|porque)\b)/i);
+                    let buffer = '';
+                    subParts.forEach(part => {
+                        const cleanPart = part.trim();
+                        if (!cleanPart) return;
+                        if ((buffer + ' ' + cleanPart).trim().length > 125 && buffer) {
+                            chunks.push(buffer.trim());
+                            buffer = cleanPart;
+                        } else {
+                            buffer = (buffer + ' ' + cleanPart).trim();
+                        }
+                    });
+                    if (buffer) chunks.push(buffer.trim());
+                }
+            });
+            return chunks.filter(c => c.replace(/[.,!?;:\s]/g, '').length > 0);
+        }
+
+        function selectBestAcousticBackendVoice(persona, langCode) {
+            if (typeof window === 'undefined' || !window.speechSynthesis) return null;
+            const voices = window.speechSynthesis.getVoices() || [];
+            if (!voices.length) return null;
+
+            const langPrefix = (langCode || 'pt').toLowerCase().substring(0, 2);
+            const langPool = voices.filter(v => {
+                const l = (v.lang || '').toLowerCase().replace('_', '-');
+                return l.startsWith(langPrefix);
+            });
+            const pool = langPool.length ? langPool : voices;
+
+            let bestVoice = pool[0];
+            let bestScore = -999;
+            const hints = persona.acousticHints || [];
+
+            pool.forEach(v => {
+                const vName = (v.name || '').toLowerCase();
+                let score = 0;
+                if ((v.lang || '').toLowerCase().replace('_', '-').startsWith('pt-br')) score += 14;
+                if (vName.includes('natural') || vName.includes('neural') || vName.includes('online')) score += 25;
+                if (!v.localService) score += 8; // Vozes online costumam soar bem mais naturais
+
+                const detectedGender = typeof getVoiceGender === 'function' ? getVoiceGender(v.name) : 'neutral';
+                if (persona.gender !== 'neutral' && detectedGender === persona.gender) score += 18;
+                if (persona.gender !== 'neutral' && detectedGender !== 'neutral' && detectedGender !== persona.gender) score -= 18;
+
+                hints.forEach((hint, idx) => {
+                    if (vName.includes(hint)) score += (16 - idx);
+                });
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestVoice = v;
+                }
+            });
+
+            return bestVoice;
+        }
+
+        function pcmL16ToWavBlobUrl(base64Pcm, sampleRate = 24000) {
+            const binary = atob(base64Pcm);
+            const pcmLength = binary.length;
+            const buffer = new ArrayBuffer(44 + pcmLength);
+            const view = new DataView(buffer);
+
+            const writeStr = (offset, str) => {
+                for (let i = 0; i < str.length; i++) {
+                    view.setUint8(offset + i, str.charCodeAt(i));
+                }
+            };
+
+            writeStr(0, 'RIFF');
+            view.setUint32(4, 36 + pcmLength, true);
+            writeStr(8, 'WAVE');
+            writeStr(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // PCM
+            view.setUint16(22, 1, true); // Mono
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeStr(36, 'data');
+            view.setUint32(40, pcmLength, true);
+
+            const bytes = new Uint8Array(buffer, 44);
+            for (let i = 0; i < pcmLength; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            const blob = new Blob([buffer], { type: 'audio/wav' });
+            return URL.createObjectURL(blob);
+        }
+
+        async function synthesizeCloudNeuralAudio(cleanText, persona, rateScale) {
+            const cacheKey = `${persona.id}::${cleanText}`;
+            if (synapseSpeechCache.has(cacheKey)) {
+                return synapseSpeechCache.get(cacheKey);
+            }
+
+            const geminiKey = (localStorage.getItem('apiKey_GEMINI') || '').trim();
+            const openAiKey = (localStorage.getItem('apiKey_OPENAI') || '').trim();
+            const textChunk = cleanText.substring(0, 900);
+
+            if (geminiKey) {
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), 6500);
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${encodeURIComponent(geminiKey)}`, {
+                        method: 'POST',
+                        signal: controller.signal,
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: textChunk }] }],
+                            generationConfig: {
+                                responseModalities: ['AUDIO'],
+                                speechConfig: {
+                                    voiceConfig: {
+                                        prebuiltVoiceConfig: { voiceName: persona.geminiVoice || 'Aoede' }
+                                    }
+                                }
+                            }
+                        })
+                    });
+                    clearTimeout(timer);
+                    if (res.ok) {
+                        const data = await res.json();
+                        const inlinePart = data?.candidates?.[0]?.content?.parts?.find(p => p.inlineData && p.inlineData.data);
+                        if (inlinePart && inlinePart.inlineData.data) {
+                            const mime = inlinePart.inlineData.mimeType || '';
+                            let audioUrl = '';
+                            if (mime.includes('L16') || mime.includes('pcm')) {
+                                const rateMatch = mime.match(/rate=(\d+)/);
+                                const sr = rateMatch ? parseInt(rateMatch[1], 10) : 24000;
+                                audioUrl = pcmL16ToWavBlobUrl(inlinePart.inlineData.data, sr);
+                            } else {
+                                const bin = atob(inlinePart.inlineData.data);
+                                const arr = new Uint8Array(bin.length);
+                                for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+                                audioUrl = URL.createObjectURL(new Blob([arr], { type: mime || 'audio/wav' }));
+                            }
+                            if (synapseSpeechCache.size >= 12) {
+                                const firstKey = synapseSpeechCache.keys().next().value;
+                                synapseSpeechCache.delete(firstKey);
+                            }
+                            synapseSpeechCache.set(cacheKey, audioUrl);
+                            return audioUrl;
+                        }
+                    }
+                } catch (e) {
+                    clearTimeout(timer);
                 }
             }
-            speakText(testMsg);
+
+            if (openAiKey) {
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), 6500);
+                try {
+                    const res = await fetch('https://api.openai.com/v1/audio/speech', {
+                        method: 'POST',
+                        signal: controller.signal,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${openAiKey}`
+                        },
+                        body: JSON.stringify({
+                            model: 'tts-1',
+                            input: textChunk,
+                            voice: persona.openaiVoice || 'nova',
+                            speed: Math.min(Math.max(rateScale, 0.7), 1.6)
+                        })
+                    });
+                    clearTimeout(timer);
+                    if (res.ok) {
+                        const blob = await res.blob();
+                        const audioUrl = URL.createObjectURL(blob);
+                        if (synapseSpeechCache.size >= 12) {
+                            const firstKey = synapseSpeechCache.keys().next().value;
+                            synapseSpeechCache.delete(firstKey);
+                        }
+                        synapseSpeechCache.set(cacheKey, audioUrl);
+                        return audioUrl;
+                    }
+                } catch (e) {
+                    clearTimeout(timer);
+                }
+            }
+            return null;
+        }
+
+        function speakWithHumanizedProsody(cleanText, persona, userRate, userPitch, token) {
+            if (typeof window === 'undefined' || !window.speechSynthesis) {
+                resetSpeechTriggerButton();
+                if (typeof showAppToast === 'function') {
+                    showAppToast('Leitor de voz indisponível neste navegador.', 'error');
+                }
+                return;
+            }
+
+            const chunks = segmentSpeechClauses(cleanText);
+            if (!chunks.length) {
+                resetSpeechTriggerButton();
+                return;
+            }
+
+            const langMap = { pt: 'pt-BR', en: 'en-US', es: 'es-ES' };
+            const targetLang = langMap[currentLanguage] || 'pt-BR';
+            const backendVoice = selectBestAcousticBackendVoice(persona, currentLanguage);
+
+            let idx = 0;
+            const speakNextChunk = () => {
+                if (token !== activeSpeechToken) return;
+                if (idx >= chunks.length) {
+                    resetSpeechTriggerButton();
+                    return;
+                }
+
+                const phrase = chunks[idx];
+                const utt = new SpeechSynthesisUtterance(phrase);
+                utt.lang = (backendVoice && backendVoice.lang) ? backendVoice.lang : targetLang;
+                if (backendVoice) utt.voice = backendVoice;
+
+                // Modulação humanizada de entonação e ritmo por contexto frasal
+                const isQuestion = phrase.endsWith('?');
+                const isExclamation = phrase.endsWith('!');
+                const isAside = /^\(.*\)$/.test(phrase);
+                const drift = ((idx % 3) - 1) * (persona.pitchVariance * 0.65);
+
+                let phrasePitch = persona.basePitch * userPitch + drift;
+                let phraseRate = persona.baseRate * userRate;
+
+                if (isQuestion) {
+                    phrasePitch *= 1.06;
+                    phraseRate *= 0.97;
+                } else if (isExclamation) {
+                    phrasePitch *= 1.03;
+                    phraseRate *= 1.02;
+                } else if (isAside) {
+                    phrasePitch *= 0.95;
+                    phraseRate *= 0.95;
+                }
+
+                utt.pitch = Math.min(Math.max(phrasePitch, 0.72), 1.38);
+                utt.rate = Math.min(Math.max(phraseRate, 0.65), 1.65);
+                utt.volume = 1.0;
+
+                const isSentenceEnd = /[.!?]$/.test(phrase);
+                const pauseMs = Math.round((isSentenceEnd ? 240 : 95) * (persona.pauseFactor || 1.0));
+
+                utt.onend = () => {
+                    if (token !== activeSpeechToken) return;
+                    idx++;
+                    activeSpeechPauseTimer = setTimeout(speakNextChunk, pauseMs);
+                };
+                utt.onerror = () => {
+                    if (token !== activeSpeechToken) return;
+                    idx++;
+                    activeSpeechPauseTimer = setTimeout(speakNextChunk, 60);
+                };
+
+                window.speechSynthesis.speak(utt);
+            };
+
+            speakNextChunk();
+        }
+
+        async function speakText(text, triggerBtn = null) {
+            triggerPulse();
+            if (!text) return;
+
+            // Se tocou no botão que já está narrando, alterna para Parar
+            if (triggerBtn && activeSpeechBtn === triggerBtn) {
+                stopSynapseSpeech();
+                return;
+            }
+
+            stopSynapseSpeech();
+            const token = ++activeSpeechToken;
+
+            if (triggerBtn) {
+                activeSpeechBtn = triggerBtn;
+                if (!triggerBtn.dataset.origSpeechHtml) {
+                    triggerBtn.dataset.origSpeechHtml = triggerBtn.innerHTML;
+                }
+                triggerBtn.innerHTML = triggerBtn.classList.contains('chat-action-pill')
+                    ? '<span>⏹️</span><span>Parar</span>'
+                    : '⏹️';
+            }
+
+            const cleanText = cleanTextForHumanSpeech(text);
+            if (!cleanText) {
+                resetSpeechTriggerButton();
+                return;
+            }
+
+            const voiceSelect = document.getElementById('speech-voice');
+            const selectedId = voiceSelect?.value || localStorage.getItem('speech_voice_selected') || 'synapse_aurora';
+            const persona = getSynapseVoicePersona(selectedId);
+
+            const inputRate = document.getElementById('speech-rate');
+            const inputPitch = document.getElementById('speech-pitch');
+            const userRate = inputRate ? parseFloat(inputRate.value) || 1.0 : 1.0;
+            const userPitch = inputPitch ? parseFloat(inputPitch.value) || 1.0 : 1.0;
+
+            if (typeof addLog === 'function') {
+                addLog(`Voz Synapse ativada: ${persona.name} (${persona.tagline}) • ${userRate.toFixed(1)}x`, "info");
+            }
+
+            // Tenta motor Neural HD em nuvem se chave compatível estiver configurada
+            const neuralUrl = await synthesizeCloudNeuralAudio(cleanText, persona, persona.baseRate * userRate);
+            if (token !== activeSpeechToken) return;
+
+            if (neuralUrl) {
+                try {
+                    const audio = new Audio(neuralUrl);
+                    audio.playbackRate = Math.min(Math.max(userRate, 0.7), 1.6);
+                    activeAudioPlayer = audio;
+                    audio.onended = () => {
+                        if (token === activeSpeechToken) {
+                            activeAudioPlayer = null;
+                            resetSpeechTriggerButton();
+                        }
+                    };
+                    audio.onerror = () => {
+                        if (token === activeSpeechToken) {
+                            activeAudioPlayer = null;
+                            speakWithHumanizedProsody(cleanText, persona, userRate, userPitch, token);
+                        }
+                    };
+                    await audio.play();
+                    return;
+                } catch (playErr) {
+                    activeAudioPlayer = null;
+                }
+            }
+
+            // Fallback instantâneo e offline com motor de prosódia humanizada Synapse
+            speakWithHumanizedProsody(cleanText, persona, userRate, userPitch, token);
+        }
+
+        function testSelectedVoice() {
+            const btn = document.getElementById('btn-test-voice');
+            const voiceId = document.getElementById('speech-voice')?.value || localStorage.getItem('speech_voice_selected') || 'synapse_aurora';
+            const persona = getSynapseVoicePersona(voiceId);
+
+            let testMsg = `Olá! Eu sou ${persona.name}, sua voz personalizada no Synapse. Com pausas naturais e entonação equilibrada, estou pronta para conversar com você.`;
+            if (typeof currentLanguage !== 'undefined') {
+                if (currentLanguage === 'en') {
+                    testMsg = `Hello! I'm ${persona.name}, your custom Synapse voice. With natural pacing and balanced tone, I'm ready to assist you.`;
+                } else if (currentLanguage === 'es') {
+                    testMsg = `¡Hola! Soy ${persona.name}, tu voz personalizada en Synapse. Con pausas naturales y tono equilibrado, estoy lista para ayudarte.`;
+                }
+            }
+            speakText(testMsg, btn);
         }
 
         let recognition = null;
@@ -23926,29 +24464,29 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 styleSheet.innerText = `
                     .app-custom-select-modal {
                         position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-                        background: radial-gradient(circle at 50% 30%, rgba(15, 23, 42, 0.82) 0%, rgba(3, 7, 18, 0.94) 100%);
-                        backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px);
+                        background: rgba(0, 0, 0, 0.88);
+                        backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
                         display: flex; z-index: 120000; opacity: 0; transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
                         box-sizing: border-box;
                     }
                     @media (min-width: 768px) {
                         .app-custom-select-modal { align-items: center; justify-content: center; padding: 28px; }
                         .app-custom-select-card {
-                            background: rgba(11, 15, 25, 0.96);
-                            border: 1px solid rgba(56, 189, 248, 0.22);
+                            background: var(--card-bg-primary, #070709);
+                            border: 1px solid rgba(var(--primary-rgb, 129, 140, 248), 0.24);
                             border-radius: 28px; max-width: 540px; width: 100%; transform: translateY(24px) scale(0.96);
-                            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.95), 0 0 50px rgba(56, 189, 248, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.18);
+                            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.95), inset 0 1px 1px rgba(255, 255, 255, 0.12);
                         }
                     }
                     @media (max-width: 767px) {
                         .app-custom-select-modal { align-items: flex-end; justify-content: center; padding: 0; }
                         .app-custom-select-card {
-                            background: rgba(10, 14, 23, 0.98);
-                            border-top: 1px solid rgba(56, 189, 248, 0.28);
+                            background: var(--card-bg-primary, #070709);
+                            border-top: 1px solid rgba(var(--primary-rgb, 129, 140, 248), 0.28);
                             border-left: none; border-right: none; border-bottom: none;
                             border-top-left-radius: 32px; border-top-right-radius: 32px; width: 100%;
                             transform: translateY(100%);
-                            box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.98), 0 0 40px rgba(56, 189, 248, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.18);
+                            box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.98), inset 0 1px 1px rgba(255, 255, 255, 0.12);
                         }
                     }
                     .app-custom-select-card {
@@ -24538,7 +25076,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     else if (select.id === 'model-name') title = "Modelo de IA / AI Model";
                     else if (select.id === 'config-border-radius') title = "Estilo de Bordas / Border Style";
                     else if (select.id === 'config-visual-finish') title = "Acabamento Visual / Visual Style";
-                    else if (select.id === 'speech-voice') title = "Modelo de Voz / TTS Voice";
+                    else if (select.id === 'speech-voice') title = "Voz Personalizada Synapse";
                     else if (select.id === 'chat-font-size') title = "Tamanho de Fonte / Font Size";
                     else if (select.id === 'rb-style-preset') title = "Estilo do Currículo";
                     else if (select.id === 'rb-style-font') title = "Fonte do Documento";
@@ -26150,13 +26688,13 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     avatarHtml = `<div style="width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.05); box-shadow: 0 0 10px rgba(124, 58, 237, 0.3);">${firstLetter}</div>`;
                 }
 
-                identCard.style.background = "linear-gradient(135deg, rgba(124, 58, 237, 0.12) 0%, rgba(15, 23, 42, 0.6) 100%)";
-                identCard.style.borderColor = "rgba(124, 58, 237, 0.3)";
+                identCard.style.background = "var(--card-bg-primary, #070709)";
+                identCard.style.borderColor = "var(--border-color, rgba(255, 255, 255, 0.10))";
                 identCard.innerHTML = `
                     <div style="display: flex; align-items: center; gap: 14px;">
                         <div style="position: relative; flex-shrink: 0;">
                             ${avatarHtml}
-                            <div style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background-color: #10b981; border: 2px solid #0f172a; border-radius: 50%; box-shadow: 0 0 6px #10b981;"></div>
+                            <div style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background-color: #10b981; border: 2px solid #000000; border-radius: 50%; box-shadow: 0 0 6px #10b981;"></div>
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0;">
                             <span style="font-size: 1.05rem; font-weight: 800; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; letter-spacing: -0.2px;">${displayName}</span>
@@ -26168,13 +26706,13 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     </div>
                 `;
             } else {
-                identCard.style.background = "linear-gradient(135deg, rgba(239, 68, 68, 0.04) 0%, rgba(15, 23, 42, 0.6) 100%)";
-                identCard.style.borderColor = "rgba(239, 68, 68, 0.15)";
+                identCard.style.background = "var(--card-bg-primary, #070709)";
+                identCard.style.borderColor = "rgba(239, 68, 68, 0.22)";
                 identCard.innerHTML = `
                     <div style="display: flex; align-items: center; gap: 14px;">
                         <div style="position: relative; flex-shrink: 0;">
-                            <div style="width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #475569 0%, #334155 100%); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #94a3b8; border: 2px solid rgba(255,255,255,0.04); box-shadow: 0 0 10px rgba(0,0,0,0.25);">👤</div>
-                            <div style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background-color: #ef4444; border: 2px solid #0f172a; border-radius: 50%; box-shadow: 0 0 6px #ef4444;"></div>
+                            <div style="width: 52px; height: 52px; border-radius: 50%; background: var(--card-bg-secondary, #0d0d11); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: var(--text-muted); border: 2px solid rgba(255,255,255,0.08); box-shadow: 0 0 10px rgba(0,0,0,0.4);">👤</div>
+                            <div style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background-color: #ef4444; border: 2px solid #000000; border-radius: 50%; box-shadow: 0 0 6px #ef4444;"></div>
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0;">
                             <span style="font-size: 1.05rem; font-weight: 800; color: #cbd5e1; display: block;">Modo Visitante</span>
@@ -29976,7 +30514,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 const safeName = escapeSynapseHtml(app.name);
                 const safeRedirect = app.redirectUri ? escapeSynapseHtml(app.redirectUri) : 'Callback dinâmico (detectado automaticamente pelo app)';
                 return `
-                    <div style="background: rgba(15, 23, 42, 0.72); border: 1px solid rgba(139, 92, 246, 0.22); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+                    <div style="background: var(--card-bg-secondary, #0d0d11); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
                         <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;">
                             <div style="min-width: 0; flex: 1;">
                                 <div style="font-size: 0.92rem; font-weight: 800; color: #ffffff; word-break: break-word;">${safeName}</div>
