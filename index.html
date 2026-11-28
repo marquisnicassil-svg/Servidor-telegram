@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#060913" id="theme-color-meta">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg">
     <link rel="icon" type="image/jpeg" href="./app/src/main/res/drawable/synapse_logo_1781452080476.jpg">
-    <link rel="manifest" href="./manifest.json?v=7">
+    <link rel="manifest" href="./manifest.json?v=8">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
@@ -358,10 +359,6 @@
             transform: scale(0.988);
         }
 
-        .chat-message {
-            border-radius: var(--input-border-radius) !important;
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -370,7 +367,8 @@
         }
 
         html, body {
-            overscroll-behavior-y: none; /* Previne "puxar" a página nos limites apenas na raiz */
+            overscroll-behavior: none !important; /* Previne pull-to-refresh e bounce fora do app nativo */
+            touch-action: manipulation;
         }
 
         body {
@@ -395,7 +393,7 @@
             transition: background-color 0.4s, background-image 0.4s;
         }
 
-        /* Desabilita seleção e toque longo nativo em todo o app por padrão */
+        /* Desabilita seleção e toque longo nativo no chrome da interface */
         html, body, *, *::before, *::after {
             -webkit-touch-callout: none !important;
             -webkit-user-select: none !important;
@@ -405,8 +403,9 @@
             user-select: none !important;
         }
 
-        /* Permite interagir, selecionar e digitar em inputs, textareas e elementos de formulário de forma garantida */
-        input, textarea, select, [contenteditable="true"], .form-control {
+        /* Permite selecionar texto nas mensagens do chat e códigos, além de campos de entrada */
+        input, textarea, select, [contenteditable="true"], .form-control,
+        .chat-msg-prose, .chat-msg-prose *, .chat-message.user, .chat-message.bot pre, .chat-message.bot code {
             -webkit-touch-callout: default !important;
             -webkit-user-select: text !important;
             -khtml-user-select: text !important;
@@ -414,6 +413,8 @@
             -ms-user-select: text !important;
             user-select: text !important;
             pointer-events: auto !important;
+        }
+        input, textarea, select, [contenteditable="true"], .form-control {
             cursor: text !important;
         }
 
@@ -425,6 +426,7 @@
         button, a, .tab-btn, .color-circle, .drawer-item, .btn-universal, .chat-btn-send {
             pointer-events: auto !important;
             cursor: pointer !important;
+            touch-action: manipulation;
         }
 
         /* ==========================================================================
@@ -615,13 +617,13 @@
         }
 
         /* ==========================================================================
-           5. Chat / Console de Testes Interno (Modernizado)
+           5. Chat / Console IA (Estilo Gemini / ChatGPT Nativo)
            ========================================================================== */
         #tab-chat {
-            padding: 0 4px var(--safe-bottom) 4px;
+            padding: 0;
             overflow: hidden;
             display: none;
-            background: radial-gradient(circle at 50% 0%, rgba(var(--primary-rgb, 139, 92, 246), 0.05) 0%, transparent 60%);
+            background: radial-gradient(ellipse 85% 42% at 50% 0%, rgba(var(--primary-rgb, 129, 140, 248), 0.08) 0%, transparent 72%);
             height: 100%;
         }
 
@@ -635,57 +637,281 @@
             flex-direction: column;
             flex: 1;
             min-height: 0;
+            width: 100%;
             background: transparent;
+            position: relative;
         }
 
         .chat-messages {
             flex: 1;
             overflow-y: auto;
+            overscroll-behavior-y: contain;
             -webkit-overflow-scrolling: touch;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            padding: 12px 6px 12px 6px;
+            gap: 18px;
+            padding: 18px max(16px, calc((100% - 760px) / 2)) 24px;
             min-height: 0;
             scroll-behavior: smooth;
         }
 
+        /* Tela de Boas-vindas estilo Gemini / ChatGPT */
+        .chat-welcome-hero {
+            margin: auto 0;
+            padding: 20px 4px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 18px;
+            animation: chatHeroFade 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes chatHeroFade {
+            from { opacity: 0; transform: translateY(12px) scale(0.985); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .chat-welcome-emblem {
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(145deg, rgba(var(--primary-rgb, 129, 140, 248), 0.2), rgba(var(--primary-rgb, 129, 140, 248), 0.06));
+            border: 1px solid rgba(var(--primary-rgb, 129, 140, 248), 0.32);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25), 0 0 28px rgba(var(--primary-rgb, 129, 140, 248), 0.2);
+            font-size: 1.65rem;
+            overflow: hidden;
+            position: relative;
+        }
+        .chat-welcome-emblem img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .chat-welcome-heading {
+            font-family: 'Space Grotesk', var(--font-family);
+            font-size: clamp(1.42rem, 4.6vw, 1.95rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.18;
+            background: linear-gradient(120deg, var(--text-main) 25%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+        }
+        .chat-welcome-sub {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            max-width: 440px;
+            line-height: 1.5;
+            margin: -6px 0 2px;
+        }
+        .chat-starter-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            width: 100%;
+            max-width: 620px;
+            margin-top: 4px;
+        }
+        @media (max-width: 480px) {
+            .chat-starter-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+        .chat-starter-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 11px;
+            padding: 13px 14px;
+            border-radius: 16px;
+            background: rgba(var(--card-bg-rgb, 15, 23, 42), 0.56);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.16s ease !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        @media (hover: hover) {
+            .chat-starter-card:hover {
+                background: rgba(var(--primary-rgb, 129, 140, 248), 0.1) !important;
+                border-color: rgba(var(--primary-rgb, 129, 140, 248), 0.42) !important;
+                transform: translateY(-2px);
+            }
+        }
+        .chat-starter-card:active {
+            transform: scale(0.985) !important;
+        }
+        .chat-starter-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 10px;
+            background: rgba(var(--primary-rgb, 129, 140, 248), 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+        .chat-starter-title {
+            font-size: 0.83rem;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.25;
+            margin-bottom: 2px;
+        }
+        .chat-starter-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.35;
+        }
+
         .chat-message {
-            max-width: 88%;
-            padding: 10px 14px;
-            font-size: var(--chat-font-size, 0.93rem);
+            font-size: var(--chat-font-size, 0.96rem);
             word-wrap: break-word;
-            line-height: 1.48;
+            line-height: 1.62;
             flex-shrink: 0;
             position: relative;
             box-sizing: border-box;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
 
         .chat-message.user {
-            background: var(--btn-gradient, var(--primary));
-            color: var(--primary-contrast, #ffffff) !important;
-            font-weight: 500;
+            max-width: min(84%, 560px);
+            padding: 11px 16px;
+            background: rgba(var(--primary-rgb, 129, 140, 248), 0.16);
+            color: var(--text-main) !important;
+            font-weight: 450;
             align-self: flex-end;
-            border-radius: 18px 18px 4px 18px !important;
-            box-shadow: 0 2px 10px rgba(var(--primary-rgb, 139, 92, 246), 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px 20px 6px 20px !important;
+            border: 1px solid rgba(var(--primary-rgb, 129, 140, 248), 0.3);
+            box-shadow: 0 3px 14px rgba(0, 0, 0, 0.12);
+            white-space: pre-wrap;
         }
 
+        /* Estilo editorial limpo (Gemini / ChatGPT) para respostas da IA */
         .chat-message.bot {
-            background: var(--card-bg-secondary);
-            color: var(--text-main);
+            width: 100%;
+            max-width: 100%;
             align-self: flex-start;
-            border-radius: 18px 18px 18px 4px !important;
-            border: 1px solid var(--border-color);
-            padding: 10px 36px 10px 14px;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: transparent !important;
+            color: var(--text-main);
+            border: none !important;
+            border-left: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            padding: 4px 2px 6px 2px;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
         }
 
-        .chat-message.bot.has-avatar {
-            padding-left: 44px !important;
+        /* Compatibilidade limpa com bolhas antigas salvas no cache */
+        .chat-message.bot.has-avatar:not(.chat-msg-turn) {
+            padding: 10px 40px 10px 44px !important;
+            background: rgba(var(--card-bg-rgb, 15, 23, 42), 0.38) !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 16px !important;
+        }
+
+        .chat-msg-meta {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 8px;
+        }
+
+        .chat-msg-avatar-inline {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: rgba(var(--primary-rgb, 129, 140, 248), 0.16);
+            border: 1px solid rgba(var(--primary-rgb, 129, 140, 248), 0.38);
+            flex-shrink: 0;
+            font-size: 0.84rem;
+        }
+
+        .chat-msg-avatar-inline img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .chat-msg-sender {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.01em;
+        }
+
+        .chat-msg-model-tag {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            padding: 1px 7px;
+            border-radius: 999px;
+            max-width: 170px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .chat-msg-prose {
+            font-size: var(--chat-font-size, 0.96rem);
+            line-height: 1.66;
+            color: var(--text-main);
+            padding-left: 2px;
+        }
+
+        .chat-msg-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+            padding-left: 2px;
+        }
+
+        .chat-action-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            min-height: 30px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(148, 163, 184, 0.14);
+            color: var(--text-muted);
+            font-size: 0.74rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease !important;
+        }
+        @media (hover: hover) {
+            .chat-action-pill:hover {
+                background: rgba(var(--primary-rgb, 129, 140, 248), 0.14) !important;
+                border-color: rgba(var(--primary-rgb, 129, 140, 248), 0.35) !important;
+                color: var(--text-main) !important;
+            }
+        }
+        .chat-action-pill:active {
+            transform: scale(0.97) !important;
+        }
+
+        .chat-typing-row {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 6px 2px;
         }
 
         @keyframes agentPulseEffect {
@@ -693,49 +919,42 @@
             100% { transform: scale(1.08); opacity: 0.45; }
         }
 
-        /* Espaçamento interno e margem do botão de áudio nos balões de chat */
-        .chat-message .reader-btn {
+        /* Botão de leitura legado (quando não está dentro da barra moderna) */
+        .chat-message:not(.chat-msg-turn) .reader-btn {
             position: absolute;
-            right: 6px;
-            bottom: 6px;
+            right: 8px;
+            bottom: 8px;
             background: rgba(255, 255, 255, 0.04) !important;
-            border: 1px solid rgba(255, 255, 255, 0.06) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
             border-radius: 50% !important;
             color: var(--text-muted) !important;
             cursor: pointer;
             font-size: 0.85rem;
-            width: 26px !important;
-            height: 26px !important;
+            width: 28px !important;
+            height: 28px !important;
             padding: 0 !important;
             margin: 0 !important;
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0.75;
-            transition: all 0.2s ease;
-        }
-        .chat-message .reader-btn:hover {
-            color: var(--primary) !important;
-            opacity: 1 !important;
-            transform: scale(1.08);
-            background: rgba(var(--primary-rgb, 139, 92, 246), 0.15) !important;
+            opacity: 0.8;
         }
 
         /* Markdown Styles */
         .chat-message.bot pre {
-            background-color: rgba(var(--bg-rgb, 6, 9, 19), 0.85);
-            padding: 12px 14px;
-            border-radius: 12px;
+            background-color: rgba(var(--bg-rgb, 6, 9, 19), 0.88);
+            padding: 13px 15px;
+            border-radius: 14px;
             overflow-x: auto;
-            margin: 10px 0;
+            margin: 12px 0;
             border: 1px solid var(--border-color);
             font-family: 'Fira Code', Menlo, Monaco, Consolas, monospace;
             font-size: 0.84em;
-            line-height: 1.5;
+            line-height: 1.52;
         }
         .chat-message.bot code {
             font-family: 'Fira Code', Menlo, Monaco, Consolas, "Courier New", monospace;
-            background-color: rgba(var(--primary-rgb, 129, 140, 248), 0.12);
+            background-color: rgba(var(--primary-rgb, 129, 140, 248), 0.14);
             color: var(--text-main);
             padding: 2px 6px;
             border-radius: 6px;
@@ -746,7 +965,7 @@
             padding: 0;
         }
         .chat-message.bot p {
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
         .chat-message.bot p:last-child {
             margin-bottom: 0;
@@ -756,37 +975,37 @@
         }
         .chat-message.bot ul,
         .chat-message.bot ol {
-            margin: 8px 0 8px 18px;
+            margin: 8px 0 10px 20px;
             padding-left: 4px;
         }
         .chat-message.bot li {
-            margin-bottom: 4px;
+            margin-bottom: 5px;
         }
         .chat-message.bot blockquote {
-            margin: 8px 0;
-            padding: 6px 12px;
+            margin: 10px 0;
+            padding: 8px 14px;
             border-left: 3px solid var(--primary);
             background: rgba(var(--primary-rgb, 129, 140, 248), 0.08);
-            border-radius: 0 8px 8px 0;
+            border-radius: 0 10px 10px 0;
             color: var(--text-muted);
         }
         .chat-message.bot h1,
         .chat-message.bot h2,
         .chat-message.bot h3,
         .chat-message.bot h4 {
-            margin: 10px 0 6px;
+            margin: 14px 0 6px;
             line-height: 1.3;
             color: var(--text-main);
         }
         .chat-message.bot a {
             color: var(--primary);
             text-decoration: underline;
-            text-underline-offset: 2px;
+            text-underline-offset: 3px;
         }
         .chat-message.bot table {
             width: 100%;
             border-collapse: collapse;
-            margin: 10px 0;
+            margin: 12px 0;
             font-size: 0.85em;
             overflow-x: auto;
             display: block;
@@ -794,7 +1013,7 @@
         .chat-message.bot th,
         .chat-message.bot td {
             border: 1px solid var(--border-color);
-            padding: 6px 10px;
+            padding: 7px 11px;
             text-align: left;
         }
         .chat-message.bot th {
@@ -804,16 +1023,71 @@
         .chat-message.bot hr {
             border: none;
             border-top: 1px solid var(--border-color);
-            margin: 10px 0;
+            margin: 12px 0;
+        }
+
+        /* Composer Flutuante estilo Gemini / ChatGPT */
+        .chat-composer-shell {
+            flex-shrink: 0;
+            width: 100%;
+            padding: 4px max(12px, calc((100% - 760px) / 2)) calc(8px + var(--safe-bottom));
+            background: linear-gradient(180deg, transparent 0%, rgba(var(--bg-rgb, 6, 9, 19), 0.72) 28%, rgba(var(--bg-rgb, 6, 9, 19), 0.96) 100%);
         }
 
         .chat-input-area {
+            position: relative;
             display: flex;
+            align-items: flex-end;
             gap: 8px;
-            padding: 8px 10px 10px 10px;
-            background-color: transparent;
-            flex-shrink: 0;
-            align-items: center;
+            padding: 8px 9px 8px 10px;
+            background: rgba(var(--card-bg-rgb, 15, 23, 42), 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            border-radius: 26px;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .chat-input-area:focus-within {
+            border-color: rgba(var(--primary-rgb, 129, 140, 248), 0.58);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.36), 0 0 0 3px rgba(var(--primary-rgb, 129, 140, 248), 0.14);
+        }
+
+        .chat-textarea-input {
+            width: 100%;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.96rem;
+            line-height: 1.45;
+            padding: 8px 4px;
+            min-height: 38px;
+            max-height: 136px;
+            resize: none;
+            overflow-y: auto;
+            outline: none !important;
+        }
+        .chat-textarea-input:focus {
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+        .chat-textarea-input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.72;
+        }
+
+        .chat-composer-hint {
+            text-align: center;
+            font-size: 0.66rem;
+            color: var(--text-muted);
+            opacity: 0.65;
+            margin-top: 6px;
+            letter-spacing: 0.01em;
         }
 
         .form-control {
@@ -835,9 +1109,9 @@
         }
 
         .chat-btn-send {
-            background: var(--btn-gradient, var(--primary));
-            color: var(--primary-contrast, #ffffff) !important;
-            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-muted) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 50%;
             width: 38px;
             height: 38px;
@@ -846,19 +1120,28 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 10px rgba(var(--primary-rgb, 139, 92, 246), 0.35);
-            transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s, box-shadow 0.3s;
+            transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background 0.22s ease, color 0.22s ease, box-shadow 0.22s ease;
+        }
+
+        .chat-btn-send.is-ready {
+            background: var(--btn-gradient, var(--primary));
+            color: var(--primary-contrast, #ffffff) !important;
+            border-color: transparent;
+            box-shadow: 0 4px 14px rgba(var(--primary-rgb, 129, 140, 248), 0.36);
         }
 
         .chat-btn-send:active {
-            transform: scale(0.92);
+            transform: scale(0.95);
         }
 
         .chat-btn-send svg {
             width: 18px;
             height: 18px;
-            fill: currentColor;
-            margin-left: 2px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         /* ==========================================================================
@@ -2523,7 +2806,6 @@
 
         /* Enquadramento elegante em telas médias e desktop */
         @media (min-width: 900px) {
-            #tab-chat .chat-wrapper,
             #tab-config,
             #tab-context-browser,
             #tab-pdf-to-link,
@@ -2535,7 +2817,7 @@
                 margin-inline: auto;
             }
             #tab-chat {
-                padding: 10px 16px calc(12px + var(--safe-bottom)) !important;
+                padding: 0 !important;
             }
         }
 
@@ -2961,11 +3243,11 @@
             transition: opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1), transform 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
 
-        /* Estilos dos Novos Botões do Chat (Microfone e Anexos) */
+        /* Botões compactos dentro da barra flutuante do Chat */
         .chat-input-action-btn {
             position: relative;
-            background: rgba(255, 255, 255, 0.04) !important;
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.07) !important;
             color: var(--text-muted) !important;
             border-radius: 50% !important;
             width: 38px !important;
@@ -2975,15 +3257,16 @@
             justify-content: center !important;
             font-size: 1.1rem !important;
             cursor: pointer !important;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.16s ease !important;
             outline: none !important;
             flex-shrink: 0 !important;
         }
-        .chat-input-action-btn:hover {
-            background: rgba(var(--primary-rgb, 129, 140, 248), 0.14) !important;
-            border-color: rgba(var(--primary-rgb, 129, 140, 248), 0.42) !important;
-            color: var(--primary) !important;
-            transform: scale(1.05);
+        @media (hover: hover) {
+            .chat-input-action-btn:hover {
+                background: rgba(var(--primary-rgb, 129, 140, 248), 0.14) !important;
+                border-color: rgba(var(--primary-rgb, 129, 140, 248), 0.42) !important;
+                color: var(--primary) !important;
+            }
         }
         .chat-input-action-btn:active {
             transform: scale(0.95);
@@ -3800,24 +4083,29 @@
     <!-- Cabeçalho Principal Unificado -->
     <header style="position: relative;">
         <div class="header-container" style="display: flex; align-items: center; justify-content: space-between; position: relative; gap: 8px;">
-            <button id="menu-drawer-btn" onclick="toggleDrawer(true)" aria-label="Abrir menu" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 11px; color: var(--text-main); cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; outline: none; flex-shrink: 0;">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="14" y2="17"></line></svg>
-            </button>
+            <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                <button id="header-back-btn" onclick="handleHeaderBackClick()" aria-label="Voltar" title="Voltar" style="display: none; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); border-radius: 11px; color: var(--text-main); cursor: pointer; padding: 0; align-items: center; justify-content: center; width: 38px; height: 40px; outline: none; flex-shrink: 0;">
+                    <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                </button>
+                <button id="menu-drawer-btn" onclick="toggleDrawer(true)" aria-label="Abrir menu" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 11px; color: var(--text-main); cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; outline: none; flex-shrink: 0;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="14" y2="17"></line></svg>
+                </button>
+            </div>
 
             <!-- Título padrão para abas secundárias (não-chat) -->
-            <h1 id="topbar-section-title" style="display: none; font-size: 1.05rem; font-weight: 700; text-align: center; margin: 0; flex: 1; color: var(--text-main);">💬 Conversas</h1>
+            <h1 id="topbar-section-title" style="display: none; font-size: 1.05rem; font-weight: 700; text-align: center; margin: 0; flex: 1; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">💬 Conversas</h1>
 
             <!-- Seletor Rápido de Agente Unificado do Chat -->
-            <div id="chat-agent-selector-btn" onclick="toggleChatAgentDropdown(event)" style="display: flex; align-items: center; gap: 9px; flex: 1; min-width: 0; cursor: pointer; padding: 4px 10px 4px 5px; border-radius: 13px; border: 1px solid transparent; transition: background 0.2s, border-color 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'; this.style.borderColor='var(--border-color)'" onmouseout="this.style.background='transparent'; this.style.borderColor='transparent'" title="Toque para trocar de agente">
+            <div id="chat-agent-selector-btn" onclick="toggleChatAgentDropdown(event)" style="display: flex; align-items: center; gap: 9px; flex: 1; min-width: 0; cursor: pointer; padding: 4px 10px 4px 5px; border-radius: 13px; border: 1px solid transparent; transition: background 0.2s, border-color 0.2s;" title="Toque para trocar de agente">
                 <div id="chat-active-agent-icon" style="font-size: 1.15rem; background: rgba(var(--primary-rgb, 129, 140, 248), 0.14); border: 1px solid rgba(var(--primary-rgb, 129, 140, 248), 0.32); border-radius: 10px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">🤖</div>
                 <div style="display: flex; flex-direction: column; min-width: 0;">
                     <div style="display: flex; align-items: center; gap: 4px;">
                         <h3 id="chat-active-agent-name" style="margin: 0; font-size: 0.94rem; font-weight: 700; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: -0.2px;">Geral</h3>
                         <svg viewBox="0 0 24 24" width="14" height="14" fill="var(--text-muted)" style="flex-shrink: 0; opacity: 0.75;"><path d="M7 10l5 5 5-5z"/></svg>
                     </div>
-                    <!-- Único Indicador Online -->
-                    <span style="font-size: 0.66rem; color: var(--text-muted); line-height: 1.1; margin-top: 1px; display: flex; align-items: center; gap: 5px;">
-                        <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px rgba(16,185,129,0.65); display: inline-block;"></span> Online
+                    <span style="font-size: 0.66rem; color: var(--text-muted); line-height: 1.15; margin-top: 1px; display: flex; align-items: center; gap: 5px; min-width: 0;">
+                        <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px rgba(16,185,129,0.65); display: inline-block; flex-shrink: 0;"></span>
+                        <span id="chat-active-model-pill" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Online</span>
                     </span>
                 </div>
             </div>
@@ -3982,94 +4270,86 @@
     <!-- Base Rolável Dinâmica -->
     <main>
         
-        <!-- ABA 1: CONSOLE DE CHAT (Playground) -->
+        <!-- ABA 1: CONSOLE DE CHAT (Estilo Gemini / ChatGPT) -->
         <section id="tab-chat" class="tab-section active">
-            <div class="chat-wrapper" style="border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--border-color); background: rgba(var(--card-bg-rgb, 12, 18, 34), 0.52); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); box-shadow: 0 12px 36px rgba(0, 0, 0, 0.28); position: relative;">
-                <div class="chat-messages" id="chat-messages" style="flex: 1;">
-                    <div class="chat-message bot has-avatar">
-                        <div class="chat-msg-avatar" style="position: absolute; left: 8px; top: 8px; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(var(--primary-rgb, 129, 140, 248), 0.16); border: 1.5px solid var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.3); z-index: 2;">
-                            <span style="font-size: 0.85rem; line-height: 1;">🤖</span>
-                        </div>
-                        <div>
-                            Olá! Como posso ajudar você hoje?
-                        </div>
-                        <button class="reader-btn" data-text="Olá! Como posso ajudar você hoje?" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 6px; bottom: 6px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 50%; color: var(--text-muted); cursor: pointer; font-size: 0.85rem; width: 26px; height: 26px; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; opacity: 0.75; transition: all 0.2s ease;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">🔊</button>
-                    </div>
+            <div class="chat-wrapper">
+                <div class="chat-messages" id="chat-messages">
+                    <!-- Preenchido dinamicamente no carregamento com a tela moderna de boas-vindas ou histórico -->
                 </div>
-                <div id="chat-input-area" class="chat-input-area" style="position: relative; display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: rgba(var(--card-bg-rgb, 12, 18, 34), 0.84); border-top: 1px solid var(--border-color); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 0 0 18px 18px;">
-                    <!-- Botão de Anexos (Lado Esquerdo) -->
-                    <div style="position: relative; display: flex; align-items: center; flex-shrink: 0; order: 1 !important;">
-                        <button id="btn-attachments" onclick="toggleAttachmentMenu(event)" class="chat-input-action-btn" title="Anexar arquivos" aria-label="Anexar arquivos" style="outline: none; width: 38px !important; height: 38px !important;">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                        </button>
-                        
-                        <!-- Menu de Anexos Popup -->
-                        <div id="attachment-menu" class="attachment-menu-popup" style="bottom: 50px !important;">
-                            <button onclick="handleAttachmentOption('camera')" class="attachment-menu-item">
-                                <span>📷</span> <span data-i18n="attach_camera">Tirar foto</span>
+                <div class="chat-composer-shell">
+                    <div id="chat-input-area" class="chat-input-area">
+                        <!-- Botão de Anexos (+) -->
+                        <div style="position: relative; display: flex; align-items: center; flex-shrink: 0; order: 1 !important;">
+                            <button id="btn-attachments" onclick="toggleAttachmentMenu(event)" class="chat-input-action-btn" title="Anexar arquivos" aria-label="Anexar arquivos">
+                                <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                             </button>
-                            <button onclick="handleAttachmentOption('image')" class="attachment-menu-item">
-                                <span>🖼️</span> <span data-i18n="attach_image">Escolher imagem</span>
-                            </button>
-                            <button onclick="handleAttachmentOption('document')" class="attachment-menu-item">
-                                <span>📄</span> <span data-i18n="attach_doc">Selecionar documento</span>
-                            </button>
-                            <button onclick="handleAttachmentOption('video')" class="attachment-menu-item">
-                                <span>🎥</span> <span data-i18n="attach_video">Selecionar vídeo</span>
-                            </button>
-                            <button onclick="handleAttachmentOption('audio')" class="attachment-menu-item">
-                                <span>🎵</span> <span data-i18n="attach_audio">Selecionar áudio</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Campo de Texto Principal (Centro) com destaque -->
-                    <div style="position: relative; flex: 1; min-width: 0; display: flex; align-items: center; order: 2 !important;">
-                        <input type="text" id="chat-input" class="form-control" style="padding-left: 16px; padding-right: 16px; border-radius: 22px; background-color: var(--card-bg-secondary); border: 1.5px solid rgba(255, 255, 255, 0.12); height: 42px; font-size: 0.94rem; color: var(--text-main); pointer-events: auto !important; -webkit-user-select: text !important; user-select: text !important; position: relative; z-index: 100 !important; cursor: text !important; box-shadow: inset 0 1px 3px rgba(0,0,0,0.25);" placeholder="Mensagem..." onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
-                    </div>
-
-                    <!-- Botão de Microfone (Lado Direito) -->
-                    <div style="position: relative; display: flex; align-items: center; order: 3 !important; width: 38px; height: 38px; justify-content: center; flex-shrink: 0;">
-                        <button id="btn-mic-chat" onclick="toggleMic()" class="chat-input-action-btn" title="Ditado por Voz" style="outline: none; width: 38px !important; height: 38px !important;">
-                            <svg class="mic-icon" viewBox="0 0 24 24" width="17" height="17" fill="currentColor" style="transition: transform 0.2s;"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
-                        </button>
-                    </div>
-
-                    <!-- Botão de Enviar (Extrema Direita) -->
-                    <button class="chat-btn-send" onclick="sendMessage()" title="Enviar mensagem" style="order: 4 !important; width: 38px; height: 38px; flex-shrink: 0;">
-                        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-                    </button>
-
-                    <!-- Barra de Gravação Ativa -->
-                    <div id="recording-bar" style="display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: rgba(var(--card-bg-rgb, 11, 13, 25), 0.96); border: 1px solid var(--primary); border-radius: 18px; z-index: 150; align-items: center; justify-content: space-between; padding: 0 14px; box-shadow: 0 0 18px rgba(var(--primary-rgb, 129, 140, 248), 0.35); animation: slideInUp 0.2s cubic-bezier(0.1, 0.9, 0.2, 1); height: 100%; box-sizing: border-box;">
-                        <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;">
-                            <!-- Red Recording dot -->
-                            <div class="recording-indicator-dot"></div>
-                            <span id="recording-timer" style="font-family: 'Fira Code', monospace; font-size: 0.9rem; color: var(--text-main); min-width: 45px; font-weight: bold;">00:00</span>
                             
-                            <!-- Voice Wave bars -->
-                            <div class="voice-wave-container" style="flex: 1; min-width: 0; max-width: 200px;">
-                                <div class="voice-bar bar-1"></div>
-                                <div class="voice-bar bar-2"></div>
-                                <div class="voice-bar bar-3"></div>
-                                <div class="voice-bar bar-4"></div>
-                                <div class="voice-bar bar-5"></div>
-                                <div class="voice-bar bar-6"></div>
-                                <div class="voice-bar bar-7"></div>
-                                <div class="voice-bar bar-8"></div>
-                                <div class="voice-bar bar-9"></div>
-                                <div class="voice-bar bar-10"></div>
+                            <!-- Menu de Anexos Popup -->
+                            <div id="attachment-menu" class="attachment-menu-popup" style="bottom: 54px !important;">
+                                <button onclick="handleAttachmentOption('camera')" class="attachment-menu-item">
+                                    <span>📷</span> <span data-i18n="attach_camera">Tirar foto</span>
+                                </button>
+                                <button onclick="handleAttachmentOption('image')" class="attachment-menu-item">
+                                    <span>🖼️</span> <span data-i18n="attach_image">Escolher imagem</span>
+                                </button>
+                                <button onclick="handleAttachmentOption('document')" class="attachment-menu-item">
+                                    <span>📄</span> <span data-i18n="attach_doc">Selecionar documento</span>
+                                </button>
+                                <button onclick="handleAttachmentOption('video')" class="attachment-menu-item">
+                                    <span>🎥</span> <span data-i18n="attach_video">Selecionar vídeo</span>
+                                </button>
+                                <button onclick="handleAttachmentOption('audio')" class="attachment-menu-item">
+                                    <span>🎵</span> <span data-i18n="attach_audio">Selecionar áudio</span>
+                                </button>
                             </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <button onclick="cancelRecording(event)" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; border-radius: 20px; padding: 6px 12px; font-size: 0.8rem; font-weight: bold; cursor: pointer; transition: all 0.2s; white-space: nowrap;">
-                                Cancelar
-                            </button>
-                            <button onclick="stopRecordingAndConvert(event)" style="background: var(--primary); border: none; color: var(--primary-contrast, #000); border-radius: 20px; padding: 6px 14px; font-size: 0.8rem; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 12px rgba(var(--primary-rgb, 129, 140, 248), 0.38); white-space: nowrap;">
-                                Concluir 📥
+
+                        <!-- Campo de Texto Auto-Expansível (Estilo Gemini / ChatGPT) -->
+                        <div style="position: relative; flex: 1; min-width: 0; display: flex; align-items: center; order: 2 !important;">
+                            <textarea id="chat-input" rows="1" class="chat-textarea-input" placeholder="Pergunte ao Synapse..." oninput="handleChatInputChange(this)" onkeydown="handleChatInputKeydown(event)" autocomplete="off"></textarea>
+                        </div>
+
+                        <!-- Botão de Microfone -->
+                        <div style="position: relative; display: flex; align-items: center; order: 3 !important; width: 38px; height: 38px; justify-content: center; flex-shrink: 0;">
+                            <button id="btn-mic-chat" onclick="toggleMic()" class="chat-input-action-btn" title="Ditado por Voz" aria-label="Ditado por voz">
+                                <svg class="mic-icon" viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
                             </button>
                         </div>
+
+                        <!-- Botão de Enviar (Seta para cima moderna) -->
+                        <button id="btn-chat-send" class="chat-btn-send" onclick="sendMessage()" title="Enviar mensagem" aria-label="Enviar mensagem" style="order: 4 !important;">
+                            <svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                        </button>
+
+                        <!-- Barra de Gravação Ativa -->
+                        <div id="recording-bar" style="display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: rgba(var(--card-bg-rgb, 11, 13, 25), 0.96); border: 1px solid var(--primary); border-radius: 26px; z-index: 150; align-items: center; justify-content: space-between; padding: 0 14px; box-shadow: 0 0 18px rgba(var(--primary-rgb, 129, 140, 248), 0.35); animation: slideInUp 0.2s cubic-bezier(0.1, 0.9, 0.2, 1); height: 100%; box-sizing: border-box;">
+                            <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;">
+                                <div class="recording-indicator-dot"></div>
+                                <span id="recording-timer" style="font-family: 'Fira Code', monospace; font-size: 0.9rem; color: var(--text-main); min-width: 45px; font-weight: bold;">00:00</span>
+                                <div class="voice-wave-container" style="flex: 1; min-width: 0; max-width: 200px;">
+                                    <div class="voice-bar bar-1"></div>
+                                    <div class="voice-bar bar-2"></div>
+                                    <div class="voice-bar bar-3"></div>
+                                    <div class="voice-bar bar-4"></div>
+                                    <div class="voice-bar bar-5"></div>
+                                    <div class="voice-bar bar-6"></div>
+                                    <div class="voice-bar bar-7"></div>
+                                    <div class="voice-bar bar-8"></div>
+                                    <div class="voice-bar bar-9"></div>
+                                    <div class="voice-bar bar-10"></div>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <button onclick="cancelRecording(event)" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; border-radius: 20px; padding: 6px 12px; font-size: 0.8rem; font-weight: bold; cursor: pointer; white-space: nowrap;">
+                                    Cancelar
+                                </button>
+                                <button onclick="stopRecordingAndConvert(event)" style="background: var(--primary); border: none; color: var(--primary-contrast, #000); border-radius: 20px; padding: 6px 14px; font-size: 0.8rem; font-weight: 800; cursor: pointer; box-shadow: 0 0 12px rgba(var(--primary-rgb, 129, 140, 248), 0.38); white-space: nowrap;">
+                                    Concluir 📥
+                                </button>
+                            </div>
+                        </div>
                     </div>
+                    <div class="chat-composer-hint">Synapse IA pode cometer erros. Confira respostas importantes.</div>
                 </div>
             </div>
         </section>
@@ -7672,6 +7952,12 @@ CREATE TRIGGER on_synapse_user_signed_up
                             }
                             
                             updateIntegrationHubStatusBadges();
+                            if (typeof pushAppHistoryState === 'function') {
+                                pushAppHistoryState('integration:' + id);
+                            }
+                            if (typeof syncHeaderBackButton === 'function') {
+                                syncHeaderBackButton();
+                            }
                             
                             // Smoothly fade out the loader screen
                             if (loadingScreen) {
@@ -7690,8 +7976,12 @@ CREATE TRIGGER on_synapse_user_signed_up
                         document.querySelectorAll('.integration-detail-page').forEach(page => {
                             page.style.display = 'none';
                         });
-                        document.getElementById('integrations-hub-main').style.display = 'block';
+                        const hubMain = document.getElementById('integrations-hub-main');
+                        if (hubMain) hubMain.style.display = 'block';
                         updateIntegrationHubStatusBadges();
+                        if (typeof syncHeaderBackButton === 'function') {
+                            syncHeaderBackButton();
+                        }
                     }
 
                     function disconnectTelegram() {
@@ -8807,6 +9097,240 @@ WITH CHECK (true);</code>
             addLog(`Tamanho do texto das conversas definido para ${fontSize}.`, "info");
         }
 
+        // --- Native Back-Button & Tab History Navigation ---
+        const SYNAPSE_ROOT_TAB_ID = 'tab-chat';
+        let tabNavStack = [SYNAPSE_ROOT_TAB_ID];
+        let lastRootBackTs = 0;
+        let isHandlingPopState = false;
+        let synapseHistoryInitialized = false;
+
+        function pushAppHistoryState(marker) {
+            if (isHandlingPopState) return;
+            try {
+                if (window.location.hash && /access_token=|type=recovery|error_code=/i.test(window.location.hash)) {
+                    return;
+                }
+                window.history.pushState(
+                    { synapseGuard: 'active', marker: marker || 'nav', ts: Date.now() },
+                    '',
+                    window.location.href
+                );
+            } catch (e) {}
+        }
+
+        function ensureHistoryBackGuard() {
+            if (isHandlingPopState) return;
+            try {
+                if (window.location.hash && /access_token=|type=recovery|error_code=/i.test(window.location.hash)) {
+                    return;
+                }
+                const st = window.history.state;
+                if (!st || !st.synapseGuard) {
+                    window.history.replaceState({ synapseGuard: 'base', ts: Date.now() }, '', window.location.href);
+                    window.history.pushState({ synapseGuard: 'active', marker: 'root', ts: Date.now() }, '', window.location.href);
+                }
+            } catch (e) {}
+        }
+
+        function isElementCurrentlyVisible(el) {
+            if (!el) return false;
+            try {
+                const cs = window.getComputedStyle(el);
+                return cs.display !== 'none' && cs.visibility !== 'hidden' && cs.opacity !== '0';
+            } catch (e) {
+                return el.style && el.style.display !== 'none';
+            }
+        }
+
+        function syncHeaderBackButton() {
+            const backBtn = document.getElementById('header-back-btn');
+            if (!backBtn) return;
+            const activeTab = document.querySelector('.tab-section.active')?.id || SYNAPSE_ROOT_TAB_ID;
+            const hasConfigSubView = activeTab === 'tab-config' && Array.from(document.querySelectorAll('.config-subview')).some(el => el.style.display === 'block');
+            const hasIntegrationDetail = activeTab === 'tab-config' && Array.from(document.querySelectorAll('.integration-detail-page')).some(el => el.style.display === 'block');
+            const showBack = (activeTab !== SYNAPSE_ROOT_TAB_ID) || hasConfigSubView || hasIntegrationDetail || tabNavStack.length > 1;
+            backBtn.style.display = showBack ? 'flex' : 'none';
+        }
+
+        function handleAppBackNavigation(fromHeaderButton = false) {
+            // 1. Portal de autenticação externa aberto
+            const portalOverlay = document.getElementById('synapse-auth-portal-overlay');
+            if (portalOverlay && portalOverlay.style.display && portalOverlay.style.display !== 'none') {
+                if (typeof cancelSynapseAuthPortal === 'function') {
+                    cancelSynapseAuthPortal();
+                } else {
+                    portalOverlay.style.display = 'none';
+                }
+                return true;
+            }
+
+            // 2. Editor/Preview fullscreen de código aberto
+            const fsModal = document.getElementById('synapse-fullscreen-code-modal');
+            if (fsModal && fsModal.style.display && fsModal.style.display !== 'none') {
+                if (typeof closeProgFullscreenPreview === 'function') {
+                    closeProgFullscreenPreview();
+                } else {
+                    fsModal.style.display = 'none';
+                }
+                return true;
+            }
+
+            // 3. Modais dinâmicos abertos
+            const modalIds = [
+                'premium-msg-menu',
+                'app-confirm-modal',
+                'app-custom-select-modal',
+                'app-share-modal',
+                'memory-manager-modal',
+                'supabase-provider-modal',
+                'user-management-modal'
+            ];
+            for (let i = 0; i < modalIds.length; i++) {
+                const modalEl = document.getElementById(modalIds[i]);
+                if (modalEl) {
+                    modalEl.remove();
+                    return true;
+                }
+            }
+
+            // 4. Gravação de áudio ativa
+            const recBar = document.getElementById('recording-bar');
+            if (recBar && recBar.style.display === 'flex') {
+                if (typeof cancelRecording === 'function') cancelRecording();
+                return true;
+            }
+
+            // 5. Menus e popups abertos
+            const attachMenu = document.getElementById('attachment-menu');
+            if (attachMenu && attachMenu.classList.contains('show')) {
+                attachMenu.classList.remove('show');
+                return true;
+            }
+            const agentDropdown = document.getElementById('chat-agent-dropdown');
+            if (agentDropdown && agentDropdown.style.display === 'block') {
+                agentDropdown.style.display = 'none';
+                return true;
+            }
+            const threeDotsDropdown = document.getElementById('three-dots-dropdown');
+            if (threeDotsDropdown && threeDotsDropdown.style.display === 'block') {
+                threeDotsDropdown.style.display = 'none';
+                return true;
+            }
+
+            // 6. Navigation Drawer aberto
+            const drawer = document.getElementById('drawer');
+            if (drawer && drawer.classList.contains('open')) {
+                toggleDrawer(false);
+                return true;
+            }
+
+            // 7. Tela de autenticação (volta de Criar Conta/Recuperar para Login)
+            const authGate = document.getElementById('auth-gate-screen');
+            if (isElementCurrentlyVisible(authGate)) {
+                const isSignup = document.getElementById('auth-tab-signup')?.classList.contains('active');
+                const isRecover = document.getElementById('auth-tab-recover')?.classList.contains('active');
+                const isReset = document.getElementById('auth-confirm-password-container')?.style.display !== 'none';
+                if ((isSignup || isRecover || isReset) && typeof setAuthTab === 'function') {
+                    window.isPasswordRecoveryPending = false;
+                    setAuthTab('signin');
+                    return true;
+                }
+                if (fromHeaderButton) return true;
+                const nowAuth = Date.now();
+                if (nowAuth - lastRootBackTs < 2000) return false;
+                lastRootBackTs = nowAuth;
+                if (typeof showAppToast === 'function') {
+                    showAppToast('Pressione voltar novamente para sair', 'info');
+                }
+                return true;
+            }
+
+            // 8. Subpágina de detalhes de integração
+            const activeIntegrationDetail = Array.from(document.querySelectorAll('.integration-detail-page')).find(el => el.style.display === 'block');
+            if (activeIntegrationDetail) {
+                if (typeof closeIntegrationPage === 'function') closeIntegrationPage();
+                return true;
+            }
+
+            // 9. Subview de Configurações
+            const activeTabId = document.querySelector('.tab-section.active')?.id || SYNAPSE_ROOT_TAB_ID;
+            if (activeTabId === 'tab-config') {
+                const openSubview = Array.from(document.querySelectorAll('.config-subview')).find(el => el.style.display === 'block');
+                if (openSubview) {
+                    showConfigIndex();
+                    return true;
+                }
+            }
+
+            // 10. Histórico de abas visitadas
+            while (tabNavStack.length > 0 && !document.getElementById(tabNavStack[tabNavStack.length - 1])) {
+                tabNavStack.pop();
+            }
+            if (tabNavStack.length > 1) {
+                tabNavStack.pop();
+                const prevTab = tabNavStack[tabNavStack.length - 1] || SYNAPSE_ROOT_TAB_ID;
+                switchTab(prevTab, { fromHistory: true });
+                return true;
+            }
+            if (activeTabId !== SYNAPSE_ROOT_TAB_ID) {
+                tabNavStack = [SYNAPSE_ROOT_TAB_ID];
+                switchTab(SYNAPSE_ROOT_TAB_ID, { fromHistory: true });
+                return true;
+            }
+
+            if (fromHeaderButton) {
+                syncHeaderBackButton();
+                return true;
+            }
+
+            // 11. Aba raiz: confirmação com duplo clique para não fechar acidentalmente
+            const now = Date.now();
+            if (now - lastRootBackTs < 2000) {
+                return false;
+            }
+            lastRootBackTs = now;
+            if (typeof showAppToast === 'function') {
+                showAppToast('Pressione voltar novamente para sair', 'info');
+            }
+            return true;
+        }
+
+        function handleHeaderBackClick() {
+            triggerPulse();
+            handleAppBackNavigation(true);
+        }
+
+        function initSynapseNativeBackNavigation() {
+            if (synapseHistoryInitialized) return;
+            synapseHistoryInitialized = true;
+
+            ensureHistoryBackGuard();
+            syncHeaderBackButton();
+
+            // Garante que a primeira interação do usuário arme a entrada de histórico (requisito do Chrome para popstate)
+            const armOnGesture = () => ensureHistoryBackGuard();
+            document.addEventListener('pointerdown', armOnGesture, { passive: true });
+            document.addEventListener('keydown', armOnGesture, { passive: true });
+
+            window.addEventListener('popstate', function() {
+                if (isHandlingPopState) return;
+                isHandlingPopState = true;
+                let keepInApp = true;
+                try {
+                    keepInApp = handleAppBackNavigation(false);
+                } catch (err) {
+                    console.warn('Erro ao tratar botão voltar:', err);
+                    keepInApp = true;
+                } finally {
+                    isHandlingPopState = false;
+                }
+                if (keepInApp) {
+                    pushAppHistoryState('guard');
+                }
+                syncHeaderBackButton();
+            });
+        }
+
         // --- Drawer Navigation Menu Helpers ---
         function toggleDrawer(isOpen) {
             triggerPulse();
@@ -8815,6 +9339,7 @@ WITH CHECK (true);</code>
             if (isOpen) {
                 drawer.classList.add('open');
                 overlay.classList.add('open');
+                pushAppHistoryState('drawer');
             } else {
                 drawer.classList.remove('open');
                 overlay.classList.remove('open');
@@ -8886,10 +9411,22 @@ WITH CHECK (true);</code>
         }
 
         // --- 1. Navegação de Abas Fluida ---
-        function switchTab(tabId) {
+        function switchTab(tabId, options = {}) {
             if (tabId === 'terminal') tabId = 'tab-logs';
             const targetSection = document.getElementById(tabId);
             if (!targetSection) return;
+
+            const prevActiveId = document.querySelector('.tab-section.active')?.id || SYNAPSE_ROOT_TAB_ID;
+            if (!options.fromHistory && prevActiveId !== tabId) {
+                if (tabNavStack.length === 0) {
+                    tabNavStack.push(prevActiveId);
+                }
+                if (tabNavStack[tabNavStack.length - 1] !== tabId) {
+                    tabNavStack.push(tabId);
+                    if (tabNavStack.length > 20) tabNavStack = tabNavStack.slice(-20);
+                }
+                pushAppHistoryState('tab:' + tabId);
+            }
 
             triggerPulse();
             try {
@@ -8946,11 +9483,11 @@ WITH CHECK (true);</code>
                 }
             }
 
-            // Foca o input caso volte para o chat
-            if(tabId === 'tab-chat'){
+            // Foca o input apenas em desktop (em celular evita abrir o teclado ao usar Botão Voltar)
+            if (tabId === 'tab-chat' && !options.fromHistory && window.matchMedia && window.matchMedia('(hover: hover)').matches) {
                 setTimeout(() => {
                     const inputEl = document.getElementById('chat-input');
-                    if(inputEl) inputEl.focus();
+                    if (inputEl) inputEl.focus();
                 }, 100);
             }
             // Inicializa ou renderiza visual do gerenciador de agentes
@@ -8972,6 +9509,7 @@ WITH CHECK (true);</code>
             if(tabId === 'tab-admin'){
                 if (typeof updateAdminPanel === 'function') updateAdminPanel();
             }
+            syncHeaderBackButton();
         }
 
         // --- 1B. Navegação de Sub-Views de Configuração ---
@@ -8996,7 +9534,9 @@ WITH CHECK (true);</code>
             if (viewId === 'account' && typeof renderConnectedAppsList === 'function') {
                 renderConnectedAppsList();
             }
+            pushAppHistoryState('config:' + viewId);
             if (typeof syncDrawerActiveStates === 'function') syncDrawerActiveStates();
+            syncHeaderBackButton();
         }
 
         function showConfigIndex() {
@@ -9004,6 +9544,7 @@ WITH CHECK (true);</code>
             document.querySelectorAll('.config-subview').forEach(el => el.style.display = 'none');
             document.getElementById('config-index-view').style.display = 'block';
             if (typeof syncDrawerActiveStates === 'function') syncDrawerActiveStates();
+            syncHeaderBackButton();
         }
 
         // --- 1B. Sistema de Idiomas e Dicionários (i18n) & Vozes TTS ---
@@ -12152,7 +12693,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=32')
+                navigator.serviceWorker.register('./sw.js?v=33')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -12305,17 +12846,18 @@ WITH CHECK (true);</code>
                 }
             }
 
-            // Garante receptadores de teclado nativos robustos para inputs contra ReferenceErrors de inline engine
+            // Inicializa navegação nativa pelo botão voltar do celular e sincroniza compositor do chat
             try {
+                if (typeof initSynapseNativeBackNavigation === 'function') {
+                    initSynapseNativeBackNavigation();
+                }
                 const chatInputEl = document.getElementById('chat-input');
                 if (chatInputEl) {
-                    chatInputEl.addEventListener('keydown', function(event) {
-                        if (event && event.key === 'Enter') {
-                            sendMessage();
-                        }
-                    });
+                    if (typeof handleChatInputChange === 'function') {
+                        handleChatInputChange(chatInputEl);
+                    }
                     if (typeof addLog === 'function') {
-                        addLog("[STEP 3] Eventos registrados - Escutador de clique e teclas do teclado anexados com sucesso ao campo de mensagem.", "info");
+                        addLog("[STEP 3] Eventos registrados - Compositor moderno e navegação nativa anexados com sucesso.", "info");
                     }
                 }
                 const adminPinInputEl = document.getElementById('admin-pin-input');
@@ -16455,12 +16997,7 @@ WITH CHECK (true);</code>
                 const container = document.getElementById('chat-messages');
                 if (container) {
                     window.chatHistoryObjects = [];
-                    window.chatHistoryObjects.push({ role: 'assistant', content: welcomeMsg });
-                    
-                    const escapedForSpeech = welcomeMsg.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
-                    const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 6px; bottom: 6px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 50%; color: var(--text-muted); cursor: pointer; font-size: 0.85rem; width: 26px; height: 26px; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; opacity: 0.75; transition: all 0.2s ease;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">🔊</button>`;
-                    
-                    container.innerHTML = `<div class="chat-message bot has-avatar">${getAgentAvatarHtml(id)}${formatAIResponse(welcomeMsg)}${readerHtml}</div>`;
+                    container.innerHTML = buildChatWelcomeHeroHtml(id, id !== 'geral' ? welcomeMsg : '');
                     scrollToBottom();
                     saveChatSession();
                 }
@@ -16472,10 +17009,8 @@ WITH CHECK (true);</code>
                 } else if (!isDirty) {
                     const container = document.getElementById('chat-messages');
                     if (container) {
-                        window.chatHistoryObjects = [{ role: 'assistant', content: welcomeMsg }];
-                        const escapedForSpeech = welcomeMsg.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
-                        const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 6px; bottom: 6px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 50%; color: var(--text-muted); cursor: pointer; font-size: 0.85rem; width: 26px; height: 26px; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; opacity: 0.75; transition: all 0.2s ease;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">🔊</button>`;
-                        container.innerHTML = `<div class="chat-message bot has-avatar">${getAgentAvatarHtml(id)}${formatAIResponse(welcomeMsg)}${readerHtml}</div>`;
+                        window.chatHistoryObjects = [];
+                        container.innerHTML = buildChatWelcomeHeroHtml(id, id !== 'geral' ? welcomeMsg : '');
                     }
                 }
             }
@@ -17509,60 +18044,239 @@ WITH CHECK (true);</code>
             }
         }
 
+        function escapeChatAttr(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
+        function handleChatInputChange(el) {
+            if (!el) return;
+            el.style.height = 'auto';
+            const nextHeight = Math.min(Math.max(el.scrollHeight || 24, 24), 136);
+            el.style.height = nextHeight + 'px';
+            const sendBtn = document.getElementById('btn-chat-send');
+            if (sendBtn) {
+                sendBtn.classList.toggle('is-ready', el.value.trim().length > 0);
+            }
+        }
+
+        function handleChatInputKeydown(event) {
+            if (event && event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function resetChatInputComposer() {
+            const input = document.getElementById('chat-input');
+            if (input) {
+                input.value = '';
+                input.style.height = 'auto';
+            }
+            const sendBtn = document.getElementById('btn-chat-send');
+            if (sendBtn) sendBtn.classList.remove('is-ready');
+        }
+
+        function sendStarterPrompt(promptText) {
+            triggerPulse();
+            const input = document.getElementById('chat-input');
+            if (!input) return;
+            input.value = promptText || '';
+            handleChatInputChange(input);
+            sendMessage();
+        }
+
+        function copyBotMessageFromBtn(btn) {
+            if (!btn) return;
+            const msgEl = btn.closest('.chat-message');
+            if (!msgEl) return;
+            const cleanText = typeof getCleanMessageText === 'function' ? getCleanMessageText(msgEl) : (msgEl.innerText || '');
+            if (!cleanText) return;
+            if (typeof copyTextToClipboardWithFallback === 'function') {
+                copyTextToClipboardWithFallback(cleanText);
+            } else if (navigator.clipboard) {
+                navigator.clipboard.writeText(cleanText).catch(() => {});
+            }
+            if (!btn.dataset.origHtml) {
+                btn.dataset.origHtml = btn.innerHTML;
+            }
+            btn.innerHTML = '<span>✓</span><span>Copiado</span>';
+            if (typeof showAppToast === 'function') {
+                showAppToast('Resposta copiada!', 'success');
+            }
+            clearTimeout(btn._copyTimer);
+            btn._copyTimer = setTimeout(() => {
+                if (btn.dataset.origHtml) btn.innerHTML = btn.dataset.origHtml;
+            }, 1600);
+        }
+
+        function buildChatWelcomeHeroHtml(agentId, customSubtitle = '') {
+            const allAgents = typeof getAllAgents === 'function' ? getAllAgents() : [];
+            const activeAssis = allAgents.find(a => a.id === agentId) || allAgents[0] || { id: 'geral', name: 'Synapse', icon: '✨', color: '#818cf8' };
+            const uName = typeof getUserDisplayName === 'function' ? getUserDisplayName() : '';
+            const safeUser = uName ? escapeChatAttr(uName) : '';
+            const greetingHeading = safeUser ? `Olá, ${safeUser}` : 'Olá!';
+            const subtitle = customSubtitle
+                ? escapeChatAttr(customSubtitle)
+                : (activeAssis && activeAssis.id !== 'geral' && activeAssis.description
+                    ? escapeChatAttr(activeAssis.description)
+                    : 'Como posso ajudar você hoje?');
+            const emblemInner = activeAssis && activeAssis.avatar
+                ? `<img src="${escapeChatAttr(activeAssis.avatar)}" alt="${escapeChatAttr(activeAssis.name || 'Synapse')}">`
+                : `<span>${escapeChatAttr(activeAssis.icon || '✨')}</span>`;
+
+            const starterPrompts = [
+                {
+                    icon: '💡',
+                    title: 'Explicar um conceito',
+                    desc: 'Resumo claro com exemplos práticos',
+                    prompt: 'Explique de forma simples e direta como funciona a Inteligência Artificial generativa, com exemplos do dia a dia.'
+                },
+                {
+                    icon: '✍️',
+                    title: 'Criar um texto',
+                    desc: 'E-mails, roteiros ou mensagens prontas',
+                    prompt: 'Escreva um modelo de mensagem profissional e elegante para apresentar uma nova ideia a um cliente.'
+                },
+                {
+                    icon: '⚡',
+                    title: 'Plano de produtividade',
+                    desc: 'Organize prioridades do seu dia',
+                    prompt: 'Monte um plano prático de foco e produtividade em 5 passos para eu render mais hoje.'
+                },
+                {
+                    icon: '🧠',
+                    title: 'Brainstorm de ideias',
+                    desc: 'Soluções criativas para projetos',
+                    prompt: 'Me dê 5 ideias criativas de projetos digitais úteis que eu posso começar ainda esta semana.'
+                }
+            ];
+
+            const cardsHtml = starterPrompts.map((item) => `
+                <button type="button" class="chat-starter-card" onclick="sendStarterPrompt(this.getAttribute('data-prompt'))" data-prompt="${escapeChatAttr(item.prompt)}">
+                    <span class="chat-starter-icon">${item.icon}</span>
+                    <span style="min-width: 0;">
+                        <div class="chat-starter-title">${item.title}</div>
+                        <div class="chat-starter-desc">${item.desc}</div>
+                    </span>
+                </button>
+            `).join('');
+
+            return `
+                <div id="chat-welcome-hero" class="chat-welcome-hero">
+                    <div class="chat-welcome-emblem">${emblemInner}</div>
+                    <h2 class="chat-welcome-heading">${greetingHeading}</h2>
+                    <p class="chat-welcome-sub">${subtitle}</p>
+                    <div class="chat-starter-grid">${cardsHtml}</div>
+                </div>
+            `;
+        }
+
+        function buildModernBotTypingHtml(agentId) {
+            const allAgents = typeof getAllAgents === 'function' ? getAllAgents() : [];
+            const agent = allAgents.find(a => a.id === agentId) || allAgents[0] || { name: 'Synapse', icon: '✨', color: '#818cf8' };
+            const color = agent.color || '#818cf8';
+            const avatarInner = agent.avatar
+                ? `<img src="${escapeChatAttr(agent.avatar)}" alt="${escapeChatAttr(agent.name || 'Synapse')}">`
+                : `<span>${escapeChatAttr(agent.icon || '✨')}</span>`;
+            const safeAgentName = escapeChatAttr(agent.name || 'Synapse');
+            return `
+                <div class="chat-msg-meta">
+                    <div class="chat-msg-avatar-inline" style="border-color: ${escapeChatAttr(color)};">${avatarInner}</div>
+                    <span class="chat-msg-sender">${safeAgentName}</span>
+                </div>
+                <div class="chat-typing-row">
+                    <div class="synapse-orbe-inline">
+                        <div class="synapse-orbe" style="width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #38bdf8, #8b5cf6, #06b6d4); box-shadow: 0 0 10px rgba(139, 92, 246, 0.5), inset -2px -2px 6px rgba(0,0,0,0.4), inset 2px 2px 6px rgba(255,255,255,0.4); animation: orbePulse 2s ease-in-out infinite, orbeRotate 6s linear infinite; position: relative;"></div>
+                    </div>
+                    <span class="chat-loading-text-el" style="font-weight: 500; color: var(--text-muted); font-size: 0.9rem;">Pensando...</span>
+                </div>
+            `;
+        }
+
+        function buildModernBotMessageHtml(agentId, rawText, formattedHtml, extraFooterHtml = '') {
+            const allAgents = typeof getAllAgents === 'function' ? getAllAgents() : [];
+            const agent = allAgents.find(a => a.id === agentId) || allAgents[0] || { name: 'Synapse', icon: '✨', color: '#818cf8' };
+            const color = agent.color || '#818cf8';
+            const avatarInner = agent.avatar
+                ? `<img src="${escapeChatAttr(agent.avatar)}" alt="${escapeChatAttr(agent.name || 'Synapse')}">`
+                : `<span>${escapeChatAttr(agent.icon || '✨')}</span>`;
+            const safeAgentName = escapeChatAttr(agent.name || 'Synapse');
+            let modelTag = 'Online';
+            try {
+                if (typeof getActiveApiCredentials === 'function') {
+                    const creds = getActiveApiCredentials();
+                    if (creds && creds.model) {
+                        modelTag = String(creds.model).split('/').pop() || creds.type || 'Online';
+                    } else if (creds && creds.type) {
+                        modelTag = creds.type;
+                    }
+                }
+            } catch (e) {}
+            const escapedForSpeech = String(rawText || '').replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
+            return `
+                <div class="chat-msg-meta">
+                    <div class="chat-msg-avatar-inline" style="border-color: ${escapeChatAttr(color)};">${avatarInner}</div>
+                    <span class="chat-msg-sender">${safeAgentName}</span>
+                    <span class="chat-msg-model-tag">${escapeChatAttr(modelTag)}</span>
+                </div>
+                <div class="chat-msg-prose">${formattedHtml}${extraFooterHtml}</div>
+                <div class="chat-msg-actions">
+                    <button type="button" class="reader-btn chat-action-pill" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" title="Ouvir resposta" aria-label="Ouvir resposta">
+                        <span>🔊</span><span>Ouvir</span>
+                    </button>
+                    <button type="button" class="chat-action-pill" onclick="copyBotMessageFromBtn(this)" title="Copiar resposta" aria-label="Copiar resposta">
+                        <span>📋</span><span>Copiar</span>
+                    </button>
+                    <button type="button" class="chat-action-pill" onclick="const m = this.closest('.chat-message'); if(m && typeof showPremiumMessageMenu === 'function') showPremiumMessageMenu(m);" title="Mais opções" aria-label="Mais opções">
+                        <span>⋯</span>
+                    </button>
+                </div>
+            `;
+        }
+
         function loadChatSession() {
             const saved = localStorage.getItem('ai_console_chat');
             const savedHistory = localStorage.getItem('ai_console_chat_history');
-            
-            if (saved) {
-                document.getElementById('chat-messages').innerHTML = saved;
-                
-                // Clean up any old welcome messages from cached DOM
-                const uName = getUserDisplayName();
-                const cleanText = uName ? `✨ Olá, ${uName}!\n\nComo posso ajudar você hoje?` : `✨ Olá! Como posso ajudar você hoje?`;
-                const escapedForSpeech = cleanText.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
-                const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
-                const activeId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
-                const activeAssis = getAllAgents().find(a => a.id === activeId) || getAllAgents()[0];
-                const activeColor = activeAssis ? (activeAssis.color || '#38BDF8') : '#38BDF8';
+            const container = document.getElementById('chat-messages');
+            const activeId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
 
-                const allBotMessages = document.getElementById('chat-messages').querySelectorAll('.chat-message.bot');
+            if (saved && container) {
+                container.innerHTML = saved;
+
+                // Remove mensagens antigas de erro/reinicialização
+                const allBotMessages = container.querySelectorAll('.chat-message.bot');
                 let modified = false;
                 allBotMessages.forEach(msg => {
-                    if (msg.innerHTML.includes("Sua sessão está ativa") || msg.innerHTML.includes("via Supabase") || msg.innerHTML.includes("Sessão segura ativa") || msg.innerHTML.includes("Sessão segura em nuvem ativa")) {
-                        msg.classList.add('has-avatar');
-                        msg.style.borderLeft = `3px solid ${activeColor}`;
-                        msg.innerHTML = `${getAgentAvatarHtml(activeId)}${formatAIResponse(cleanText)}${readerHtml}`;
-                        modified = true;
-                    }
-                    if (msg.innerText.includes("Memória apagada. Sessão reiniciada.")) {
+                    if (msg.innerText && msg.innerText.includes("Memória apagada. Sessão reiniciada.")) {
                         msg.remove();
                         modified = true;
                     }
                 });
-                
+
+                // Se a conversa salva só possui saudação sem nenhuma mensagem do usuário, moderniza para a tela Hero estilo Gemini
+                const userMessagesCount = container.querySelectorAll('.chat-message.user').length;
+                if (userMessagesCount === 0 && !container.querySelector('#chat-welcome-hero')) {
+                    container.innerHTML = buildChatWelcomeHeroHtml(activeId);
+                    modified = true;
+                }
+
                 if (modified) {
                     saveChatSession();
                 }
-                
+
                 scrollToBottom();
-            } else {
-                const uName = getUserDisplayName();
-                const welcomeText = uName ? `✨ Olá, ${uName}!\n\nComo posso ajudar você hoje?` : `✨ Olá! Como posso ajudar você hoje?`;
-                chatHistoryObjects = [{ role: 'assistant', content: welcomeText }];
-                
-                const escapedForSpeech = welcomeText.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
-                const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
-                
-                const activeId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
-                const activeAssis = getAllAgents().find(a => a.id === activeId) || getAllAgents()[0];
-                const activeColor = activeAssis ? (activeAssis.color || '#38BDF8') : '#38BDF8';
-                document.getElementById('chat-messages').innerHTML = `<div class="chat-message bot has-avatar" style="border-left: 3px solid ${activeColor};">${getAgentAvatarHtml(activeId)}${formatAIResponse(welcomeText)}${readerHtml}</div>`;
+            } else if (container) {
+                chatHistoryObjects = [];
+                container.innerHTML = buildChatWelcomeHeroHtml(activeId);
                 saveChatSession();
             }
             if (savedHistory) {
                 try {
                     chatHistoryObjects = JSON.parse(savedHistory);
-                    // Sanitize memory history as well
                     let modifiedHistory = false;
                     chatHistoryObjects = chatHistoryObjects.filter(obj => {
                         if (obj.role === 'assistant' && (obj.content.startsWith("Erro [") || obj.content.startsWith("Erro Gemini:") || obj.content.startsWith("Falha de conexão"))) {
@@ -17574,9 +18288,8 @@ WITH CHECK (true);</code>
                             return false;
                         }
                         if (obj.role === 'assistant' && (obj.content.includes("Sua sessão está ativa") || obj.content.includes("Sessão segura ativa") || obj.content.includes("via Supabase"))) {
-                            const uName = getUserDisplayName();
-                            obj.content = uName ? `✨ Olá, ${uName}!\n\nComo posso ajudar você hoje?` : `✨ Olá! Como posso ajudar você hoje?`;
                             modifiedHistory = true;
+                            return false;
                         }
                         return true;
                     });
@@ -17585,6 +18298,8 @@ WITH CHECK (true);</code>
                     }
                 } catch(e) { chatHistoryObjects = []; }
             }
+            resetChatInputComposer();
+            if (typeof updateChatHeader === 'function') updateChatHeader();
         }
 
         // --- SISTEMA DE MEMÓRIA CONTEXTUAL & CONTINUIDADE DE SESSÕES ---
@@ -17631,6 +18346,7 @@ WITH CHECK (true);</code>
         function updateChatHeader() {
             const iconEl = document.getElementById('chat-active-agent-icon');
             const nameEl = document.getElementById('chat-active-agent-name');
+            const modelPillEl = document.getElementById('chat-active-model-pill');
             const badgeEl = document.getElementById('chat-memory-count');
             
             const allAgents = getAllAgents();
@@ -17644,6 +18360,21 @@ WITH CHECK (true);</code>
                     }
                 }
                 if (nameEl) nameEl.textContent = activeAssis.name;
+            }
+
+            if (modelPillEl) {
+                let statusText = 'Online';
+                try {
+                    if (typeof getActiveApiCredentials === 'function') {
+                        const creds = getActiveApiCredentials();
+                        if (creds && creds.model) {
+                            statusText = String(creds.model).split('/').pop() || 'Online';
+                        } else if (creds && creds.type) {
+                            statusText = creds.type;
+                        }
+                    }
+                } catch (e) {}
+                modelPillEl.textContent = statusText;
             }
             
             if (badgeEl) {
@@ -18004,16 +18735,12 @@ WITH CHECK (true);</code>
             localStorage.setItem('ai_console_current_session_id', currentSessionId);
             
             chatHistoryObjects = [];
-            const uName = getUserDisplayName();
-            const welcomeText = uName ? `Olá, ${uName}! Como posso ajudar você hoje?` : `Olá! Como posso ajudar você hoje?`;
-            chatHistoryObjects.push({ role: 'assistant', content: welcomeText });
-            
-            const escapedForSpeech = welcomeText.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
-            const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 6px; bottom: 6px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 50%; color: var(--text-muted); cursor: pointer; font-size: 0.85rem; width: 26px; height: 26px; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; opacity: 0.75; transition: all 0.2s ease;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">🔊</button>`;
-            
             const activeId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
-            document.getElementById('chat-messages').innerHTML = `<div class="chat-message bot has-avatar">${getAgentAvatarHtml(activeId)}${formatAIResponse(welcomeText)}${readerHtml}</div>`;
-            
+            const container = document.getElementById('chat-messages');
+            if (container) {
+                container.innerHTML = buildChatWelcomeHeroHtml(activeId);
+            }
+            resetChatInputComposer();
             saveChatSession();
             showAppToast("Nova sessão de chat criada!", "success");
             scrollToBottom();
@@ -19135,18 +19862,12 @@ WITH CHECK (true);</code>
         function clearChat() {
             triggerPulse();
             chatHistoryObjects = [];
-            
-            const uName = getUserDisplayName();
-            const welcomeText = uName ? `Olá, ${uName}! Como posso ajudar você hoje?` : `Olá! Como posso ajudar você hoje?`;
-            
-            chatHistoryObjects.push({ role: 'assistant', content: welcomeText });
-            
-            const escapedForSpeech = welcomeText.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
-            const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 6px; bottom: 6px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 50%; color: var(--text-muted); cursor: pointer; font-size: 0.85rem; width: 26px; height: 26px; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; opacity: 0.75; transition: all 0.2s ease;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">🔊</button>`;
-            
             const activeId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
-            document.getElementById('chat-messages').innerHTML = `<div class="chat-message bot has-avatar">${getAgentAvatarHtml(activeId)}${formatAIResponse(welcomeText)}${readerHtml}</div>`;
-            
+            const container = document.getElementById('chat-messages');
+            if (container) {
+                container.innerHTML = buildChatWelcomeHeroHtml(activeId);
+            }
+            resetChatInputComposer();
             saveChatSession();
             addLog("Memória do chat apagada manualmente.", "info");
             
@@ -19158,7 +19879,7 @@ WITH CHECK (true);</code>
 
         function scrollToBottom() {
             const container = document.getElementById('chat-messages');
-            container.scrollTop = container.scrollHeight;
+            if (container) container.scrollTop = container.scrollHeight;
         }
 
         function requiresRealTimeContext(text) {
@@ -19203,21 +19924,25 @@ WITH CHECK (true);</code>
                 playSynthSound('send');
             } catch(e){}
 
+            // Remove tela de boas-vindas Hero quando a conversa começa
+            const heroEl = document.getElementById('chat-welcome-hero');
+            if (heroEl) heroEl.remove();
+
             // Check if user is banned
             const userEmail = (supabaseSession && supabaseSession.user) ? supabaseSession.user.email : null;
             const banStatus = typeof isUserBanned === 'function' ? isUserBanned(userEmail) : null;
             if (banStatus && banStatus.isBanned) {
-                input.value = "";
+                resetChatInputComposer();
                 showAppToast("Sua conta está suspensa pelo administrador!", "error");
                 const errorMsg = document.createElement('div');
-                errorMsg.className = 'chat-message bot';
-                errorMsg.style.borderColor = '#ef4444';
+                errorMsg.className = 'chat-message bot chat-msg-turn';
                 
                 const expDate = new Date(banStatus.until);
                 const diffMs = expDate - new Date();
                 const diffMin = Math.ceil(diffMs / 60000);
-                
-                errorMsg.innerHTML = `⚠️ <b>Acesso Recusado:</b> Sua conta está suspensa temporariamente pelo administrador do sistema.<br><br><b>Tempo Restante:</b> ${diffMin} minuto(s) (Expiração: ${expDate.toLocaleTimeString()}).`;
+                const warnHtml = `⚠️ <b>Acesso Recusado:</b> Sua conta está suspensa temporariamente pelo administrador do sistema.<br><br><b>Tempo Restante:</b> ${diffMin} minuto(s) (Expiração: ${expDate.toLocaleTimeString()}).`;
+                const activeBanId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
+                errorMsg.innerHTML = buildModernBotMessageHtml(activeBanId, errorMsg.innerText || warnHtml, warnHtml);
                 container.appendChild(errorMsg);
                 scrollToBottom();
                 return;
@@ -19226,18 +19951,18 @@ WITH CHECK (true);</code>
             // Check if user is muted (silenciado)
             const muteStatus = typeof isUserMuted === 'function' ? isUserMuted(userEmail) : null;
             if (muteStatus && muteStatus.isMuted) {
-                input.value = "";
+                resetChatInputComposer();
                 showAppToast("Seu chat está silenciado pelo administrador!", "warning");
                 const errorMsg = document.createElement('div');
-                errorMsg.className = 'chat-message bot';
-                errorMsg.style.borderColor = '#f59e0b';
+                errorMsg.className = 'chat-message bot chat-msg-turn';
                 
                 const expDate = new Date(muteStatus.until);
                 const diffMs = expDate - new Date();
                 const diffMin = Math.ceil(diffMs / 60000);
                 const displayTime = isFinite(diffMin) && diffMin < 1000000 ? `${diffMin} minuto(s)` : "Tempo Indeterminado 🔒";
-                
-                errorMsg.innerHTML = `🔕 <b>Chat Silenciado:</b> O administrador bloqueou temporariamente sua permissão de enviar mensagens no chat.<br><br><b>Tempo Restante:</b> ${displayTime} (Expiração: ${expDate.toLocaleString()}).`;
+                const muteHtml = `🔕 <b>Chat Silenciado:</b> O administrador bloqueou temporariamente sua permissão de enviar mensagens no chat.<br><br><b>Tempo Restante:</b> ${displayTime} (Expiração: ${expDate.toLocaleString()}).`;
+                const activeMuteId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
+                errorMsg.innerHTML = buildModernBotMessageHtml(activeMuteId, muteHtml, muteHtml);
                 container.appendChild(errorMsg);
                 scrollToBottom();
                 return;
@@ -19256,7 +19981,7 @@ WITH CHECK (true);</code>
             }
 
             // Insere msg usuário
-            input.value = "";
+            resetChatInputComposer();
             const usrMsg = document.createElement('div');
             usrMsg.className = 'chat-message user';
             usrMsg.innerText = txt;
@@ -19268,24 +19993,11 @@ WITH CHECK (true);</code>
             scrollToBottom();
             saveChatSession();
 
-            // Insere sinal de processamento (Orbe IA com mensagens dinâmicas)
+            // Insere sinal de processamento editorial moderno (Gemini/ChatGPT style)
             const loader = document.createElement('div');
-            loader.className = 'chat-message bot has-avatar';
+            loader.className = 'chat-message bot chat-msg-turn';
             const activeIdForLoader = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
-            const activeAssisForLoader = getAllAgents().find(a => a.id === activeIdForLoader) || getAllAgents()[0];
-            const activeColorForLoader = activeAssisForLoader ? (activeAssisForLoader.color || '#38BDF8') : '#38BDF8';
-            loader.style.borderLeft = `3px solid ${activeColorForLoader}`;
-            loader.style.display = 'flex';
-            loader.style.alignItems = 'center';
-            loader.style.gap = '12px';
-            loader.style.padding = '14px 20px 14px 52px';
-            loader.innerHTML = `
-                ${getAgentAvatarHtml(activeIdForLoader)}
-                <div class="synapse-orbe-inline">
-                    <div class="synapse-orbe" style="width: 24px; height: 24px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #38bdf8, #8b5cf6, #06b6d4); box-shadow: 0 0 10px rgba(139, 92, 246, 0.5), inset -2px -2px 6px rgba(0,0,0,0.4), inset 2px 2px 6px rgba(255,255,255,0.4); animation: orbePulse 2s ease-in-out infinite, orbeRotate 6s linear infinite; position: relative;"></div>
-                </div>
-                <span class="chat-loading-text-el" style="font-weight: 500; color: var(--text-muted);">Pensando...</span>
-            `;
+            loader.innerHTML = buildModernBotTypingHtml(activeIdForLoader);
             container.appendChild(loader);
             scrollToBottom();
 
@@ -19319,6 +20031,7 @@ WITH CHECK (true);</code>
                 if (contextInputEl) {
                     contextInputEl.value = extractedUrl;
                 }
+                clearInterval(chatInterval);
                 loader.remove();
                 addLog(`URL detectada no chat: ${extractedUrl}. Desviando para o Analisador de Contexto.`, "info");
                 processContextUrlWeb();
@@ -19327,21 +20040,14 @@ WITH CHECK (true);</code>
 
             if (requiresRealTimeContext(txt)) {
                 setTimeout(() => {
+                    clearInterval(chatInterval);
                     const aiReply = "Qual o link para eu analisar agora?";
                     chatHistoryObjects.push({ role: 'assistant', content: aiReply });
                     if (typeof incrementAgentMsgStat === 'function') {
                         incrementAgentMsgStat(selectedAssistantId);
                     }
-                    
-                    const escapedForSpeech = aiReply.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
-                    const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
-                    
-                    loader.style.display = '';
-                    loader.style.alignItems = '';
-                    loader.style.gap = '';
-                    loader.style.padding = '';
-                    loader.style.borderLeft = `3px solid ${activeColorForLoader}`;
-                    loader.innerHTML = getAgentAvatarHtml(activeIdForLoader) + formatAIResponse(aiReply) + readerHtml;
+                    loader.className = 'chat-message bot chat-msg-turn';
+                    loader.innerHTML = buildModernBotMessageHtml(activeIdForLoader, aiReply, formatAIResponse(aiReply));
                     scrollToBottom();
                     saveChatSession();
                     triggerPulse();
@@ -19559,16 +20265,15 @@ WITH CHECK (true);</code>
                     incrementAgentMsgStat(selectedAssistantId);
                 }
 
-                // Injeta bloco processamento e player de voz (TTS)
-                const escapedForSpeech = cleanedAiReply.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
-                const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 12px; bottom: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.15rem; padding: 8px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>`;
-                
+                // Injeta bloco moderno de resposta editorial com barra de ações limpa
+                clearInterval(chatInterval);
+                loader.className = 'chat-message bot chat-msg-turn';
                 loader.style.display = '';
                 loader.style.alignItems = '';
                 loader.style.gap = '';
                 loader.style.padding = '';
-                loader.style.borderLeft = `3px solid ${activeColorForLoader}`;
-                loader.innerHTML = getAgentAvatarHtml(activeIdForLoader) + formatAIResponse(cleanedAiReply) + readerHtml;
+                loader.style.borderLeft = '';
+                loader.innerHTML = buildModernBotMessageHtml(activeIdForLoader, cleanedAiReply, formatAIResponse(cleanedAiReply));
                 scrollToBottom();
                 saveChatSession();
                 triggerPulse();
@@ -19770,6 +20475,7 @@ WITH CHECK (true);</code>
                 const tag = ` [📎 Anexo: ${file.name}] `;
                 if (inputEl.value.indexOf(tag) === -1) {
                     inputEl.value += tag;
+                    handleChatInputChange(inputEl);
                     inputEl.focus();
                 }
             }
@@ -23882,51 +24588,22 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             // 2. Injetar na aba de Chat para garantir visualização
             const container = document.getElementById('chat-messages');
             if (container) {
-                // Remove prompt local se houver
                 const existingPrompt = document.getElementById('local-welcome-prompt-card');
                 if (existingPrompt) existingPrompt.remove();
 
-                const welcomeMsgId = 'auth-welcome-msg-' + displayName.replace(/[^a-zA-Z0-9]/g, '');
-                const cleanText = displayName ? `Olá, ${displayName}! Como posso ajudar você hoje?` : `Olá! Como posso ajudar você hoje?`;
-                const escapedForSpeech = cleanText.replace(/[*_#`~>]/g, '').replace(/"/g, '&quot;');
-                const readerHtml = `<button class="reader-btn" data-text="${escapedForSpeech}" onclick="speakText(this.getAttribute('data-text'))" style="position: absolute; right: 6px; bottom: 6px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 50%; color: var(--text-muted); cursor: pointer; font-size: 0.85rem; width: 26px; height: 26px; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; opacity: 0.75; transition: all 0.2s ease;" title="Ouvir Texto" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">🔊</button>`;
                 const activeId = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
-                
-                // Clean up any old messages containing "Sua sessão" or "Supabase" or "Memória apagada"
                 const allBotMessages = container.querySelectorAll('.chat-message.bot');
                 allBotMessages.forEach(msg => {
-                    if (msg.innerHTML.includes("Sua sessão está ativa") || msg.innerHTML.includes("via Supabase") || msg.innerHTML.includes("Sessão segura ativa") || msg.innerHTML.includes("Sessão segura em nuvem ativa")) {
-                        msg.id = welcomeMsgId;
-                        msg.innerHTML = `${getAgentAvatarHtml(activeId)}${formatAIResponse(cleanText)}${readerHtml}`;
-                    }
-                    if (msg.innerText.includes("Memória apagada. Sessão reiniciada.")) {
+                    if (msg.innerHTML.includes("Sua sessão está ativa") || msg.innerHTML.includes("via Supabase") || msg.innerHTML.includes("Sessão segura ativa") || msg.innerHTML.includes("Sessão segura em nuvem ativa") || msg.innerText.includes("Memória apagada. Sessão reiniciada.")) {
                         msg.remove();
                     }
                 });
 
-                const existingWelcome = document.getElementById(welcomeMsgId);
-                if (existingWelcome) {
-                    existingWelcome.innerHTML = `${getAgentAvatarHtml(activeId)}${formatAIResponse(cleanText)}${readerHtml}`;
-                } else {
-                    const msgHtml = `<div class="chat-message bot has-avatar" id="${welcomeMsgId}">${getAgentAvatarHtml(activeId)}${formatAIResponse(cleanText)}${readerHtml}</div>`;
-
-                    if (isFirstLoad && (!chatHistoryObjects || chatHistoryObjects.length <= 1)) {
-                        container.innerHTML = msgHtml;
-                        chatHistoryObjects = [{ 
-                            role: 'assistant', 
-                            content: cleanText 
-                        }];
-                    } else {
-                        const welcomeDiv = document.createElement('div');
-                        welcomeDiv.id = welcomeMsgId;
-                        welcomeDiv.className = 'chat-message bot has-avatar';
-                        welcomeDiv.innerHTML = `${getAgentAvatarHtml(activeId)}${formatAIResponse(cleanText)}${readerHtml}`;
-                        container.appendChild(welcomeDiv);
-                        
-                        chatHistoryObjects.push({ 
-                            role: 'assistant', 
-                            content: cleanText 
-                        });
+                const hasUserMsgs = container.querySelectorAll('.chat-message.user').length > 0;
+                if (!hasUserMsgs) {
+                    container.innerHTML = buildChatWelcomeHeroHtml(activeId);
+                    if (isFirstLoad) {
+                        chatHistoryObjects = [];
                     }
                 }
                 saveChatSession();
@@ -27162,6 +27839,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             switchTab('tab-chat');
 
             const chatContainer = document.getElementById('chat-messages');
+            const heroElCtx = document.getElementById('chat-welcome-hero');
+            if (heroElCtx) heroElCtx.remove();
             chatHistoryObjects.push({ 
                 role: 'user', 
                 content: `Analisar o link e limpar conteúdo: ${urlVal}` 
@@ -27174,11 +27853,13 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             scrollToBottom();
             saveChatSession();
 
-            // 2. Adiciona o sinalizador de carregamento do bot
+            // 2. Adiciona o sinalizador de carregamento editorial do bot
             const loader = document.createElement('div');
-            loader.className = 'chat-message bot has-avatar';
+            loader.className = 'chat-message bot chat-msg-turn';
             const activeIdForLoader = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
-            loader.innerHTML = `${getAgentAvatarHtml(activeIdForLoader)}<span style="vertical-align: middle;">Processando conteúdo extraído focado na pergunta...</span>`;
+            loader.innerHTML = buildModernBotTypingHtml(activeIdForLoader);
+            const loaderTextEl = loader.querySelector('.chat-loading-text-el');
+            if (loaderTextEl) loaderTextEl.textContent = 'Processando conteúdo extraído focado na pergunta...';
             chatContainer.appendChild(loader);
             scrollToBottom();
 
@@ -27350,42 +28031,10 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 }
 
                 const botMsg = document.createElement('div');
-                botMsg.className = 'chat-message bot has-avatar';
+                botMsg.className = 'chat-message bot chat-msg-turn';
                 const activeIdForBotMsg = typeof selectedAssistantId !== 'undefined' && selectedAssistantId ? selectedAssistantId : 'geral';
-                botMsg.innerHTML = getAgentAvatarHtml(activeIdForBotMsg) + formatAIResponse(summaryReply);
-                
-                // Botão "Abrir Página Original" logo abaixo do resumo gerado
-                const openBtn = document.createElement('a');
-                openBtn.href = urlVal;
-                openBtn.target = '_blank';
-                openBtn.className = 'btn-universal';
-                openBtn.style.display = 'inline-flex';
-                openBtn.style.alignItems = 'center';
-                openBtn.style.justifyContent = 'center';
-                openBtn.style.gap = '6px';
-                openBtn.style.marginTop = '12px';
-                openBtn.style.padding = '8px 16px';
-                openBtn.style.fontSize = '0.8rem';
-                openBtn.style.borderRadius = '8px';
-                openBtn.style.backgroundColor = 'var(--primary)';
-                openBtn.style.color = 'var(--primary-contrast, #000000)';
-                openBtn.style.border = 'none';
-                openBtn.style.fontWeight = 'bold';
-                openBtn.style.textDecoration = 'none';
-                openBtn.style.cursor = 'pointer';
-                openBtn.style.width = 'fit-content';
-                openBtn.innerHTML = '🔗 Abrir Página Original';
-                
-                botMsg.appendChild(document.createElement('br'));
-                botMsg.appendChild(openBtn);
-                
-                // Botão de leitura de texto
-                const speakButton = document.createElement('button');
-                speakButton.className = 'reader-btn';
-                speakButton.innerHTML = '🔊';
-                speakButton.setAttribute('title', 'Ouvir Texto');
-                speakButton.onclick = () => speakText(summaryReply);
-                botMsg.appendChild(speakButton);
+                const openOriginalHtml = `<div style="margin-top: 12px;"><a href="${escapeChatAttr(urlVal)}" target="_blank" rel="noopener noreferrer" class="btn-universal" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 14px; font-size: 0.78rem; border-radius: 10px; background-color: var(--primary); color: var(--primary-contrast, #000000); border: none; font-weight: 700; text-decoration: none; cursor: pointer; width: fit-content;">🔗 Abrir Página Original</a></div>`;
+                botMsg.innerHTML = buildModernBotMessageHtml(activeIdForBotMsg, summaryReply, formatAIResponse(summaryReply), openOriginalHtml);
 
                 chatContainer.appendChild(botMsg);
                 scrollToBottom();
@@ -28815,12 +29464,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
         // --- SISTEMA PREMIUM DE MENU DE CONTEXTO EM MENSAGENS (LONG PRESS / DIREITO) ---
         function getCleanMessageText(messageEl) {
             const clone = messageEl.cloneNode(true);
-            const readerBtn = clone.querySelector('.reader-btn');
-            if (readerBtn) readerBtn.remove();
-            const avatar = clone.querySelector('.chat-msg-avatar');
-            if (avatar) avatar.remove();
-            const synapseOrbe = clone.querySelector('.synapse-orbe-inline, .synapse-orbe');
-            if (synapseOrbe) synapseOrbe.remove();
+            clone.querySelectorAll('.reader-btn, .chat-msg-avatar, .synapse-orbe-inline, .synapse-orbe, .chat-msg-meta, .chat-msg-actions').forEach(el => el.remove());
             return clone.innerText.trim();
         }
 
