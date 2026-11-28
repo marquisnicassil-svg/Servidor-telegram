@@ -3908,6 +3908,171 @@
             color: #000;
         }
 
+        /* ========================================================================= */
+        /* Central de Contas & Modo Portal SSO Isolado (Super AMOLED)               */
+        /* ========================================================================= */
+        body.synapse-sso-portal-mode #app-container,
+        body.synapse-sso-portal-mode #drawer,
+        body.synapse-sso-portal-mode #drawer-overlay,
+        body.synapse-sso-portal-mode #splash-screen,
+        body.synapse-sso-portal-mode .synapse-bottom-nav,
+        body.synapse-sso-portal-mode #live-mode-overlay {
+            display: none !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            opacity: 0 !important;
+        }
+
+        .hub-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        @media (min-width: 640px) {
+            .hub-stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        .hub-stat-box {
+            background: var(--card-bg-primary, #070709);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 12px;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .hub-stat-value {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+        .hub-stat-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .hub-tabs-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            background: #070709;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 5px;
+            margin-bottom: 16px;
+        }
+        .hub-tab-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            border-radius: 10px;
+            padding: 10px 6px;
+            min-height: 44px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            text-align: center;
+        }
+        .hub-tab-btn.active {
+            background: rgba(139, 92, 246, 0.16);
+            border-color: rgba(139, 92, 246, 0.42);
+            color: #ffffff;
+        }
+
+        .hub-filter-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .hub-filter-chip {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            border-radius: 999px;
+            padding: 7px 12px;
+            min-height: 36px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .hub-filter-chip.active {
+            background: rgba(139, 92, 246, 0.18);
+            border-color: rgba(139, 92, 246, 0.48);
+            color: #e9d5ff;
+        }
+
+        .hub-app-card {
+            background: var(--card-bg-secondary, #0d0d11);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .hub-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 3px 9px;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+        .hub-status-active {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.32);
+            color: #34d399;
+        }
+        .hub-status-banned {
+            background: rgba(245, 158, 11, 0.14);
+            border: 1px solid rgba(245, 158, 11, 0.36);
+            color: #fbbf24;
+        }
+        .hub-status-revoked {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.32);
+            color: #fca5a5;
+        }
+
+        .hub-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        .hub-action-btn {
+            border-radius: 10px;
+            padding: 9px 10px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            cursor: pointer;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            text-align: center;
+            transition: transform 0.15s ease, border-color 0.2s ease;
+        }
+        .hub-action-btn:active {
+            transform: scale(0.98);
+        }
+
     </style>
     <!-- Firebase SDK (Compat v10.8.0) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -6556,7 +6721,29 @@ CREATE TRIGGER on_synapse_user_signed_up
                         </svg>
                     </div>
 
-                    <!-- 6. Idioma -->
+                    <!-- 6. Central de Contas (Exclusivo para Apps Conectados, Abertos e Bloqueios) -->
+                    <div class="config-index-item" onclick="openConfigSubView('account-hub')">
+                        <div style="display: flex; align-items: center; gap: 14px; text-align: left; min-width: 0;">
+                            <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: rgba(var(--primary-rgb, 255,255,255), 0.08); flex-shrink: 0;">
+                                <svg style="width: 20px; height: 20px; stroke: var(--primary); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                                </svg>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 3px; min-width: 0;">
+                                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                    <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);" data-i18n="central_contas">Central de Contas</span>
+                                    <span id="hub-index-count-badge" style="font-size: 0.65rem; font-weight: 800; color: #c4b5fd; background: rgba(139, 92, 246, 0.14); border: 1px solid rgba(139, 92, 246, 0.3); padding: 2px 7px; border-radius: 999px;">0 apps</span>
+                                </div>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.3;" data-i18n="central_contas_desc">Apps abertos, credenciais, remover acessos, banir temporariamente e prompts</span>
+                            </div>
+                        </div>
+                        <svg style="width: 16px; height: 16px; stroke: var(--text-muted); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0;" viewBox="0 0 24 24">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </div>
+
+                    <!-- 7. Idioma -->
                     <div class="config-index-item" onclick="openConfigSubView('languages')">
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
                             <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: rgba(var(--primary-rgb, 255,255,255), 0.08); flex-shrink: 0;">
@@ -6576,7 +6763,7 @@ CREATE TRIGGER on_synapse_user_signed_up
                         </svg>
                     </div>
 
-                    <!-- 7. Avançado (Supabase, Conexões, APIs, Cache e Recursos de Desenvolvedor) -->
+                    <!-- 8. Avançado (Supabase, Conexões, APIs, Cache e Recursos de Desenvolvedor) -->
                     <div class="config-index-item" onclick="openConfigSubView('advanced')">
                         <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
                             <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: rgba(var(--primary-rgb, 255,255,255), 0.08); flex-shrink: 0;">
@@ -8519,32 +8706,137 @@ WITH CHECK (true);</code>
                     </div>
                 </div>
 
-                <!-- CENTRAL DE CONTAS (CONECTAR OUTROS APLICATIVOS) -->
-                <div class="supabase-card" id="account-hub-card" style="margin-bottom: 24px; text-align: left; padding: 18px; border: 1px solid var(--border-color); background: var(--card-bg-primary, #070709);">
-                    <div class="supabase-card-header" style="margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-                        <span class="supabase-card-title">🔗 Central de Contas (Conectar Apps)</span>
-                        <span style="font-size: 0.65rem; font-weight: 800; color: #c4b5fd; background: rgba(139, 92, 246, 0.16); border: 1px solid rgba(139, 92, 246, 0.3); padding: 3px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.4px;">SSO & Auth</span>
+                <!-- ATALHO PARA CENTRAL DE CONTAS (MENU EXCLUSIVO NAS CONFIGURAÇÕES) -->
+                <div class="supabase-card" id="account-hub-shortcut-card" style="margin-bottom: 24px; text-align: left; padding: 18px; border: 1px solid var(--border-color); background: var(--card-bg-primary, #070709);">
+                    <div class="supabase-card-header" style="margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                        <span class="supabase-card-title">🔗 Central de Contas (SSO)</span>
+                        <span style="font-size: 0.65rem; font-weight: 800; color: #c4b5fd; background: rgba(139, 92, 246, 0.16); border: 1px solid rgba(139, 92, 246, 0.3); padding: 3px 8px; border-radius: 999px; text-transform: uppercase;">Menu Exclusivo</span>
                     </div>
-                    <p style="font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; margin: 0 0 14px 0;">
-                        Crie uma credencial para qualquer novo aplicativo seu e copie um <strong>prompt pronto</strong> (com a credencial e instruções completas) para colar direto na outra conversa e conectar o login Synapse.
+                    <p id="account-hub-shortcut-summary" style="font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; margin: 0 0 12px 0;">
+                        Gerencie aplicativos abertos, credenciais de conexão, remoções de acesso, banimentos temporários e prompts corrigidos na Central de Contas dedicada.
                     </p>
+                    <button type="button" onclick="openConfigSubView('account-hub')" class="btn-supabase-action" style="border-color: rgba(139, 92, 246, 0.45); background: rgba(139, 92, 246, 0.14); color: #e9d5ff; font-size: 0.82rem; padding: 10px 14px; border-radius: 12px; font-weight: 700; width: 100%; min-height: 44px; cursor: pointer;">
+                        🔗 Abrir Central de Contas →
+                    </button>
+                </div>
+            </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 14px; margin-bottom: 14px;">
-                        <div>
-                            <label for="hub-app-name" style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 5px;">Nome do Aplicativo</label>
-                            <input type="text" id="hub-app-name" class="form-control" style="border-radius: 10px; padding: 10px 12px; font-size: 0.85rem; width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.28); border: 1px solid var(--border-color);" placeholder="Ex: Meu Novo App de Tarefas" maxlength="60" autocomplete="off">
-                        </div>
-                        <div>
-                            <label for="hub-app-redirect" style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 5px;">URL do App / Callback (Opcional)</label>
-                            <input type="url" id="hub-app-redirect" class="form-control" style="border-radius: 10px; padding: 10px 12px; font-size: 0.85rem; width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.28); border: 1px solid var(--border-color);" placeholder="https://seuusuario.github.io/outro-app/" autocomplete="off">
-                        </div>
-                        <button type="button" id="btn-create-hub-app" class="btn-supabase-action" onclick="createConnectedAppCredential()" style="border-color: var(--primary); background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(79, 70, 229, 0.18)); color: #fff; font-size: 0.84rem; padding: 11px 14px; border-radius: 12px; font-weight: 800; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px;">
-                            <span>✨</span> <span>+ Criar Credencial de Conexão</span>
-                        </button>
+            <!-- SUB-VIEW EXCLUSIVA: CENTRAL DE CONTAS SYNAPSE -->
+            <div id="config-subview-account-hub" class="config-subview" style="display: none; animation: fadeIn 0.3s ease-out;">
+                <button class="btn-back" onclick="showConfigIndex()" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 18px; width: fit-content; transition: 0.2s;">⬅️ Voltar para Ajustes</button>
+
+                <div class="section-header" style="text-align: left; margin-bottom: 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 210px;">
+                        <h2 style="font-size: 1.32rem; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 8px; margin: 0;">🔗 Central de Contas</h2>
+                        <p style="font-size: 0.76rem; color: var(--text-muted); margin: 4px 0 0 0; line-height: 1.4;">Controle total de aplicativos conectados, apps que foram abertos, credenciais SSO, remoções e banimentos temporários.</p>
+                    </div>
+                    <button type="button" onclick="switchHubTab('create', true)" style="background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.45); color: #f3e8ff; border-radius: 12px; padding: 10px 14px; font-size: 0.8rem; font-weight: 800; cursor: pointer; min-height: 44px; white-space: nowrap;">+ Novo App</button>
+                </div>
+
+                <!-- Resumo Numérico -->
+                <div class="hub-stats-grid">
+                    <div class="hub-stat-box">
+                        <span class="hub-stat-value" id="hub-stat-total">0</span>
+                        <span class="hub-stat-label">Apps Cadastrados</span>
+                    </div>
+                    <div class="hub-stat-box">
+                        <span class="hub-stat-value" id="hub-stat-active" style="color: #34d399;">0</span>
+                        <span class="hub-stat-label">Ativos Agora</span>
+                    </div>
+                    <div class="hub-stat-box">
+                        <span class="hub-stat-value" id="hub-stat-opened" style="color: #93c5fd;">0</span>
+                        <span class="hub-stat-label">Abertos / Acessos</span>
+                    </div>
+                    <div class="hub-stat-box">
+                        <span class="hub-stat-value" id="hub-stat-banned" style="color: #fbbf24;">0</span>
+                        <span class="hub-stat-label">Banidos Temp.</span>
+                    </div>
+                </div>
+
+                <!-- Navegação Interna da Central de Contas -->
+                <div class="hub-tabs-row" role="tablist">
+                    <button type="button" class="hub-tab-btn active" id="hub-tab-btn-apps" onclick="switchHubTab('apps')">📱 Apps</button>
+                    <button type="button" class="hub-tab-btn" id="hub-tab-btn-opened" onclick="switchHubTab('opened')">🕒 Abertos</button>
+                    <button type="button" class="hub-tab-btn" id="hub-tab-btn-create" onclick="switchHubTab('create')">➕ Criar / Editar</button>
+                </div>
+
+                <!-- PAINEL 1: GERENCIAMENTO DE APPS E CREDENCIAIS -->
+                <div id="hub-panel-apps" style="display: block;">
+                    <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                        <input type="text" id="hub-search-input" class="form-control" oninput="renderConnectedAppsList()" placeholder="Buscar app por nome, ID ou URL..." style="flex: 1; border-radius: 10px; padding: 10px 12px; font-size: 0.82rem; background: #070709; border: 1px solid var(--border-color); min-height: 44px;">
                     </div>
 
-                    <div id="hub-apps-list" style="display: flex; flex-direction: column; gap: 10px;">
-                        <!-- Lista de aplicativos conectados renderizada por renderConnectedAppsList() -->
+                    <div class="hub-filter-row">
+                        <button type="button" class="hub-filter-chip active" data-hub-filter="all" onclick="setHubAppsFilter('all')">Todos</button>
+                        <button type="button" class="hub-filter-chip" data-hub-filter="active" onclick="setHubAppsFilter('active')">✅ Ativos</button>
+                        <button type="button" class="hub-filter-chip" data-hub-filter="opened" onclick="setHubAppsFilter('opened')">🕒 Já Abertos</button>
+                        <button type="button" class="hub-filter-chip" data-hub-filter="banned" onclick="setHubAppsFilter('banned')">⏳ Banidos</button>
+                        <button type="button" class="hub-filter-chip" data-hub-filter="revoked" onclick="setHubAppsFilter('revoked')">🚫 Removidos</button>
+                    </div>
+
+                    <div id="hub-apps-list" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+                        <!-- Renderizado dinamicamente por renderConnectedAppsList() -->
+                    </div>
+
+                    <div class="supabase-card" style="padding: 14px; background: #070709; border: 1px solid var(--border-color); margin-bottom: 20px;">
+                        <div style="font-size: 0.76rem; font-weight: 700; color: #e2e8f0; margin-bottom: 10px;">🧰 Ferramentas Rápidas da Central</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <button type="button" onclick="exportConnectedAppsBackup()" style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.3); color: #93c5fd; border-radius: 10px; padding: 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; min-height: 44px;">💾 Exportar JSON</button>
+                            <button type="button" onclick="deleteAllConnectedAppsConfirm()" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.28); color: #fca5a5; border-radius: 10px; padding: 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; min-height: 44px;">🗑️ Apagar Todos Apps</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAINEL 2: APLICATIVOS ABERTOS E HISTÓRICO DE CONEXÃO -->
+                <div id="hub-panel-opened" style="display: none;">
+                    <div class="supabase-card" style="padding: 14px; background: #070709; border: 1px solid var(--border-color); margin-bottom: 12px; text-align: left;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+                            <div>
+                                <div style="font-size: 0.86rem; font-weight: 800; color: #ffffff;">🕒 Aplicativos que foram abertos</div>
+                                <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">Veja cada app que abriu ou tentou conectar com sua conta Synapse e gerencie bloqueios na hora.</div>
+                            </div>
+                            <button type="button" onclick="clearAllOpenedAppLogs()" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.28); color: #fca5a5; border-radius: 10px; padding: 8px 12px; font-size: 0.74rem; font-weight: 700; cursor: pointer; min-height: 40px;">🗑️ Limpar Histórico</button>
+                        </div>
+                    </div>
+
+                    <div id="hub-opened-logs-list" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
+                        <!-- Renderizado dinamicamente por renderOpenedAppsLog() -->
+                    </div>
+                </div>
+
+                <!-- PAINEL 3: CRIAR OU EDITAR CREDENCIAL & URL DO PORTAL -->
+                <div id="hub-panel-create" style="display: none;">
+                    <div class="supabase-card" style="margin-bottom: 16px; text-align: left; padding: 16px; border: 1px solid var(--border-color); background: #070709;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px;">
+                            <span class="supabase-card-title" id="hub-form-title">➕ Criar Credencial de Aplicativo</span>
+                            <button type="button" id="btn-cancel-hub-edit" onclick="cancelEditConnectedApp()" style="display: none; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: #e2e8f0; border-radius: 8px; padding: 6px 10px; font-size: 0.72rem; font-weight: 700; cursor: pointer;">Cancelar Edição</button>
+                        </div>
+
+                        <input type="hidden" id="hub-editing-app-id" value="">
+
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div>
+                                <label for="hub-app-name" style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 5px;">Nome Exato do Aplicativo</label>
+                                <input type="text" id="hub-app-name" class="form-control" style="border-radius: 10px; padding: 10px 12px; font-size: 0.86rem; width: 100%; box-sizing: border-box; background: #000000; border: 1px solid var(--border-color);" placeholder="Ex: Meu App de Finanças" maxlength="60" autocomplete="off">
+                                <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 4px;">Esse nome exato será usado no prompt, nas credenciais e na tela de autorização.</div>
+                            </div>
+
+                            <div>
+                                <label for="hub-app-redirect" style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 5px;">URL do Outro Aplicativo / Callback (Recomendado)</label>
+                                <input type="url" id="hub-app-redirect" class="form-control" style="border-radius: 10px; padding: 10px 12px; font-size: 0.85rem; width: 100%; box-sizing: border-box; background: #000000; border: 1px solid var(--border-color);" placeholder="https://seuusuario.github.io/outro-app/" autocomplete="off">
+                                <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 4px;">Cole o link do aplicativo que vai usar o login Synapse (não cole o link do próprio Synapse). Se deixar vazio, o app detectará a própria URL automaticamente.</div>
+                            </div>
+
+                            <div style="background: rgba(139, 92, 246, 0.06); border: 1px solid rgba(139, 92, 246, 0.22); border-radius: 12px; padding: 12px;">
+                                <label for="hub-portal-base-url" style="font-size: 0.69rem; color: #c4b5fd; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 5px;">URL do Portal Synapse (Automática ou Fixa)</label>
+                                <input type="url" id="hub-portal-base-url" class="form-control" oninput="saveHubCustomPortalUrl(this.value)" style="border-radius: 10px; padding: 9px 11px; font-size: 0.8rem; width: 100%; box-sizing: border-box; background: #000000; border: 1px solid rgba(139, 92, 246, 0.3);" placeholder="Automático (URL atual do Synapse)" autocomplete="off">
+                                <div id="hub-portal-url-hint" style="font-size: 0.68rem; color: var(--text-muted); margin-top: 5px; line-height: 1.35; word-break: break-all;"></div>
+                            </div>
+
+                            <button type="button" id="btn-create-hub-app" class="btn-supabase-action" onclick="createConnectedAppCredential()" style="border-color: var(--primary); background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(79, 70, 229, 0.18)); color: #fff; font-size: 0.85rem; padding: 12px 14px; border-radius: 12px; font-weight: 800; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 46px;">
+                                <span>✨</span> <span>+ Criar Credencial e Copiar Prompt</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -9169,7 +9461,8 @@ WITH CHECK (true);</code>
                 'app-share-modal',
                 'memory-manager-modal',
                 'supabase-provider-modal',
-                'user-management-modal'
+                'user-management-modal',
+                'hub-ban-modal'
             ];
             for (let i = 0; i < modalIds.length; i++) {
                 const modalEl = document.getElementById(modalIds[i]);
@@ -9517,8 +9810,10 @@ WITH CHECK (true);</code>
                     updateIntegrationHubStatusBadges();
                 }
             }
-            if (viewId === 'account' && typeof renderConnectedAppsList === 'function') {
-                renderConnectedAppsList();
+            if (viewId === 'account' || viewId === 'account-hub') {
+                if (typeof syncHubPortalConfigInputs === 'function') syncHubPortalConfigInputs();
+                if (typeof renderConnectedAppsList === 'function') renderConnectedAppsList();
+                if (typeof renderOpenedAppsLog === 'function') renderOpenedAppsLog();
             }
             pushAppHistoryState('config:' + viewId);
             if (typeof syncDrawerActiveStates === 'function') syncDrawerActiveStates();
@@ -9560,6 +9855,8 @@ WITH CHECK (true);</code>
                 "voz_acessibilidade_desc": "Voz narradora, velocidade de leitura, contraste, tamanhos e animações",
                 "minha_conta": "Conta e Sessão",
                 "minha_conta_desc": "Dados do usuário conectado, chaves de acesso e gerenciamento de login",
+                "central_contas": "Central de Contas",
+                "central_contas_desc": "Apps abertos, credenciais, remover acessos, banir temporariamente e prompts",
                 "menu_advanced_title": "Avançado",
                 "menu_advanced_desc": "Supabase, banco de dados, conexões técnicas, cache e ferramentas dev",
                 "config_voice_lang_title": "🎤 Voz e Idioma",
@@ -9657,6 +9954,8 @@ WITH CHECK (true);</code>
                 "voz_acessibilidade_desc": "Tweak TTS narration speed, acoustic pitch, and typography scale",
                 "minha_conta": "Account & Session",
                 "minha_conta_desc": "Review currently logged session details and credential safety",
+                "central_contas": "Account Hub",
+                "central_contas_desc": "Opened apps, credentials, remove access, temporary bans & prompts",
                 "idioma_selector_title": "Language",
                 "idioma_selector_desc": "Migrate your workspace interface language instantly to EN, PT, or ES",
                 "menu_advanced_title": "Advanced",
@@ -9756,6 +10055,8 @@ WITH CHECK (true);</code>
                 "voz_acessibilidade_desc": "Defina la agilidad de los diálogos, modulación de tonos y accesos",
                 "minha_conta": "Cuenta y Sesión",
                 "minha_conta_desc": "Administre su perfil de acceso y su estado de la sesión Postgres",
+                "central_contas": "Central de Cuentas",
+                "central_contas_desc": "Apps abiertas, credenciales, quitar accesos, bloqueos temporales y prompts",
                 "idioma_selector_title": "Idioma",
                 "idioma_selector_desc": "Actualizar el idioma visual de toda la plataforma a ES, PT o EN",
                 "menu_advanced_title": "Avanzado",
@@ -12861,7 +13162,7 @@ WITH CHECK (true);</code>
 
             // Registro do Service Worker (Necessário para o app baixar)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js?v=35')
+                navigator.serviceWorker.register('./sw.js?v=36')
                 .then(reg => {
                     addLog("Service Worker / PWA registrado na malha local.", "success");
                     // Força a verificação de atualizações no script do Service Worker
@@ -25114,6 +25415,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
         function greetUserAfterLogin(displayName, isFirstLoad = false) {
             if (!displayName) return;
+            if (typeof isSynapsePortalModeActive === 'function' && isSynapsePortalModeActive()) {
+                return;
+            }
             
             // 1. Atualizar e salvar novas configurações com prompt personalizado
             const systemPromptEl = document.getElementById('system-prompt');
@@ -25273,7 +25577,10 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     addLog("Conexão ao Supabase estabelecida com sucesso!", "success");
                     
                     localStorage.setItem('supabase_last_backup_time', new Date().toLocaleString());
-                    updateAuthUI();
+                    const portalOverlayEl = document.getElementById('synapse-auth-portal-overlay');
+                    if (!portalOverlayEl || portalOverlayEl.style.display !== 'flex') {
+                        updateAuthUI();
+                    }
                     
                     // Sincroniza configurações da API Mestre em tempo real da nuvem
                     if (typeof syncMasterApiSettingsFromSupabase === 'function') {
@@ -27138,11 +27445,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 if (typeof updateAuthPortalBanner === 'function') updateAuthPortalBanner();
                 if (typeof renderConnectedAppsList === 'function') renderConnectedAppsList();
                 if (window.pendingSynapsePortalRequest && typeof openSynapseAuthPortalModal === 'function') {
-                    setTimeout(() => {
-                        if (window.pendingSynapsePortalRequest) {
-                            openSynapseAuthPortalModal(window.pendingSynapsePortalRequest);
-                        }
-                    }, 180);
+                    openSynapseAuthPortalModal(window.pendingSynapsePortalRequest);
                 }
             } else {
                 // Deslogado
@@ -30347,19 +30650,29 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     enterSynapsePortalUiMode();
                 }
             }
+            if (typeof syncHubPortalConfigInputs === 'function') {
+                syncHubPortalConfigInputs();
+            }
             if (typeof renderConnectedAppsList === 'function') {
                 renderConnectedAppsList();
+            }
+            if (typeof renderOpenedAppsLog === 'function') {
+                renderOpenedAppsLog();
             }
         });
 
         // ==========================================================================
-        // 13. Central de Contas Synapse (SSO Portal & Credenciais para Outros Apps)
+        // 13. Central de Contas Synapse (SSO Portal, Apps Abertos, Banimentos & Prompts)
         // ==========================================================================
         const SYNAPSE_HUB_APPS_KEY = 'synapse_connected_apps_v1';
+        const SYNAPSE_HUB_LOGS_KEY = 'synapse_connected_app_logs_v1';
+        const SYNAPSE_HUB_PORTAL_URL_KEY = 'synapse_hub_portal_url_v1';
         const SYNAPSE_PENDING_PORTAL_KEY = 'synapse_pending_portal_request_v1';
         window.pendingSynapsePortalRequest = window.pendingSynapsePortalRequest || null;
         window.activeSynapsePortalContext = window.activeSynapsePortalContext || null;
         let lastPortalSandboxCopyPayload = '';
+        let currentHubTab = 'apps';
+        let currentHubAppsFilter = 'all';
 
         function escapeSynapseHtml(value) {
             return String(value ?? '')
@@ -30370,10 +30683,25 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 .replace(/'/g, '&#39;');
         }
 
+        function safeDecodeUriComponent(val) {
+            if (!val || typeof val !== 'string') return '';
+            let decoded = val.trim();
+            try {
+                if (/%[0-9A-Fa-f]{2}/.test(decoded)) {
+                    decoded = decodeURIComponent(decoded);
+                }
+            } catch (e) {}
+            return decoded.trim();
+        }
+
         function sanitizeSynapseRedirectUri(rawUri) {
             if (!rawUri || typeof rawUri !== 'string') return '';
-            const trimmed = rawUri.trim();
+            let trimmed = rawUri.trim();
             if (!trimmed) return '';
+            if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(trimmed) && /^[^\s]+\.[^\s]+/.test(trimmed)) {
+                const isLocal = /^(localhost|127\.0\.0\.1|0\.0\.0\.0)(:|\/|$)/i.test(trimmed);
+                trimmed = (isLocal ? 'http://' : 'https://') + trimmed;
+            }
             try {
                 const parsed = new URL(trimmed);
                 if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
@@ -30381,6 +30709,59 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 }
             } catch (e) {}
             return '';
+        }
+
+        function getAutoDetectedPortalUrl() {
+            const origin = window.location.origin || '';
+            const pathname = window.location.pathname || '/';
+            if (!origin.startsWith('http')) {
+                return 'https://seu-usuario.github.io/synapse/';
+            }
+            return `${origin}${pathname}`;
+        }
+
+        function saveHubCustomPortalUrl(rawVal) {
+            try {
+                const trimmed = String(rawVal || '').trim();
+                if (!trimmed) {
+                    localStorage.removeItem(SYNAPSE_HUB_PORTAL_URL_KEY);
+                } else {
+                    const sanitized = sanitizeSynapseRedirectUri(trimmed);
+                    if (sanitized) {
+                        localStorage.setItem(SYNAPSE_HUB_PORTAL_URL_KEY, sanitized.split('#')[0].split('?')[0]);
+                    }
+                }
+                updateHubPortalUrlHint();
+            } catch (e) {}
+        }
+
+        function updateHubPortalUrlHint() {
+            const hintEl = document.getElementById('hub-portal-url-hint');
+            if (!hintEl) return;
+            const cfg = getSynapsePublicAuthConfig();
+            let isIframePreview = false;
+            try {
+                isIframePreview = window.self !== window.top;
+            } catch (e) {
+                isIframePreview = true;
+            }
+            const autoWarning = isIframePreview
+                ? ' ⚠️ Você está em modo preview/iframe: para conectar apps externos em produção, cole aqui a URL real publicada do Synapse (ex: GitHub Pages).'
+                : '';
+            hintEl.textContent = `Portal ativo nas credenciais: ${cfg.portalUrl}${autoWarning}`;
+        }
+
+        function syncHubPortalConfigInputs() {
+            const inputEl = document.getElementById('hub-portal-base-url');
+            if (inputEl) {
+                try {
+                    const saved = localStorage.getItem(SYNAPSE_HUB_PORTAL_URL_KEY) || '';
+                    if (document.activeElement !== inputEl) {
+                        inputEl.value = saved;
+                    }
+                } catch (e) {}
+            }
+            updateHubPortalUrlHint();
         }
 
         function generateSynapseAppId() {
@@ -30400,11 +30781,47 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             return `syn_app_${suffix}`;
         }
 
+        function normalizeConnectedAppRecord(app) {
+            if (!app || typeof app !== 'object') return null;
+            const bannedUntilNum = app.bannedUntil ? Number(app.bannedUntil) : null;
+            const validBanUntil = bannedUntilNum && Number.isFinite(bannedUntilNum) && bannedUntilNum > Date.now()
+                ? bannedUntilNum
+                : null;
+            return {
+                id: String(app.id || generateSynapseAppId()),
+                name: String(app.name || 'Aplicativo Conectado').trim().slice(0, 60) || 'Aplicativo Conectado',
+                redirectUri: sanitizeSynapseRedirectUri(app.redirectUri || ''),
+                createdAt: app.createdAt || new Date().toISOString(),
+                updatedAt: app.updatedAt || app.createdAt || new Date().toISOString(),
+                status: app.status === 'revoked' ? 'revoked' : 'active',
+                bannedUntil: validBanUntil,
+                banReason: validBanUntil ? String(app.banReason || '').trim() : '',
+                banCount: Number(app.banCount || 0),
+                openCount: Number(app.openCount || 0),
+                lastOpenedAt: app.lastOpenedAt || null,
+                lastOpenedOrigin: app.lastOpenedOrigin || '',
+                lastUserEmail: app.lastUserEmail || '',
+                lastAction: app.lastAction || ''
+            };
+        }
+
         function getConnectedApps() {
             try {
                 const raw = localStorage.getItem(SYNAPSE_HUB_APPS_KEY);
                 const parsed = raw ? JSON.parse(raw) : [];
-                return Array.isArray(parsed) ? parsed : [];
+                if (!Array.isArray(parsed)) return [];
+                let changed = false;
+                const normalized = parsed.map(item => {
+                    const norm = normalizeConnectedAppRecord(item);
+                    if (item && item.bannedUntil && (!norm || !norm.bannedUntil)) {
+                        changed = true;
+                    }
+                    return norm;
+                }).filter(Boolean);
+                if (changed) {
+                    localStorage.setItem(SYNAPSE_HUB_APPS_KEY, JSON.stringify(normalized));
+                }
+                return normalized;
             } catch (e) {
                 return [];
             }
@@ -30418,13 +30835,84 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             }
         }
 
+        function getOpenedAppsLogs() {
+            try {
+                const raw = localStorage.getItem(SYNAPSE_HUB_LOGS_KEY);
+                const parsed = raw ? JSON.parse(raw) : [];
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveOpenedAppsLogs(logs) {
+            try {
+                localStorage.setItem(SYNAPSE_HUB_LOGS_KEY, JSON.stringify(logs.slice(0, 100)));
+            } catch (e) {
+                console.error('Erro ao salvar histórico de apps abertos:', e);
+            }
+        }
+
+        function isAppTemporarilyBanned(app) {
+            if (!app || !app.bannedUntil) return false;
+            return Number(app.bannedUntil) > Date.now();
+        }
+
+        function formatRemainingBanTime(bannedUntil) {
+            const diffMs = Number(bannedUntil || 0) - Date.now();
+            if (diffMs <= 0) return 'Expirado';
+            const totalMinutes = Math.ceil(diffMs / 60000);
+            if (totalMinutes < 60) return `${totalMinutes} min`;
+            const totalHours = Math.floor(totalMinutes / 60);
+            const remMins = totalMinutes % 60;
+            if (totalHours < 24) {
+                return remMins > 0 ? `${totalHours}h ${remMins}m` : `${totalHours}h`;
+            }
+            const days = Math.floor(totalHours / 24);
+            const remHours = totalHours % 24;
+            return remHours > 0 ? `${days}d ${remHours}h` : `${days} dias`;
+        }
+
+        function formatSynapseDateTime(isoStr) {
+            if (!isoStr) return 'Nunca';
+            try {
+                return new Date(isoStr).toLocaleString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch (e) {
+                return isoStr;
+            }
+        }
+
+        function isSameSynapsePortalUrl(candidateUri, portalUrl) {
+            if (!candidateUri || !portalUrl) return false;
+            try {
+                const a = new URL(candidateUri);
+                const b = new URL(portalUrl);
+                const normPath = (p) => p.replace(/\/index\.html$/i, '/').replace(/\/+$/, '') || '/';
+                return a.origin === b.origin && normPath(a.pathname) === normPath(b.pathname);
+            } catch (e) {
+                return false;
+            }
+        }
+
         function getSynapsePublicAuthConfig() {
             const urlInput = document.getElementById('supabase-url');
             const keyInput = document.getElementById('supabase-key');
             const supabaseUrl = (urlInput && urlInput.value.trim()) || 'https://hqnlyksuprjdabcgpqdl.supabase.co';
             const anonKey = (keyInput && keyInput.value.trim()) || 'sb_publishable_VNDxq3Hxp1Ly5tFF7BMBuQ_imQDmVSa';
             const cleanSupabaseUrl = supabaseUrl.replace(/\/+$/, '');
-            const portalUrl = `${window.location.origin}${window.location.pathname}`;
+            let portalUrl = getAutoDetectedPortalUrl();
+            try {
+                const customPortal = localStorage.getItem(SYNAPSE_HUB_PORTAL_URL_KEY);
+                const validCustom = customPortal ? sanitizeSynapseRedirectUri(customPortal) : '';
+                if (validCustom) {
+                    portalUrl = validCustom.split('#')[0].split('?')[0];
+                }
+            } catch (e) {}
             return {
                 supabaseUrl: cleanSupabaseUrl,
                 anonKey: anonKey,
@@ -30432,17 +30920,138 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             };
         }
 
+        function recordConnectedAppAccess(req, eventType, userEmail = '') {
+            if (!req || !req.appId) return;
+            const nowIso = new Date().toISOString();
+            let originHost = 'Origem externa';
+            if (req.redirectUri) {
+                try {
+                    originHost = new URL(req.redirectUri).origin;
+                } catch (e) {
+                    originHost = req.redirectUri;
+                }
+            } else if (req.isTestMode) {
+                originHost = 'Sandbox Interno';
+            }
+
+            const apps = getConnectedApps();
+            const idx = apps.findIndex(a => a.id === req.appId);
+            if (idx !== -1) {
+                apps[idx].openCount = Number(apps[idx].openCount || 0) + (eventType === 'opened' || eventType === 'authorized' ? 1 : 0);
+                if (apps[idx].openCount === 0) apps[idx].openCount = 1;
+                apps[idx].lastOpenedAt = nowIso;
+                apps[idx].lastOpenedOrigin = originHost;
+                if (userEmail) apps[idx].lastUserEmail = userEmail;
+                apps[idx].lastAction = eventType;
+                saveConnectedApps(apps);
+            }
+
+            const logs = getOpenedAppsLogs();
+            logs.unshift({
+                logId: 'log_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                appId: req.appId,
+                appName: req.appName || (idx !== -1 ? apps[idx].name : 'Aplicativo Externo'),
+                redirectUri: req.redirectUri || '',
+                origin: originHost,
+                userEmail: userEmail || (supabaseSession && supabaseSession.user ? supabaseSession.user.email : '') || '',
+                mode: req.mode || 'redirect',
+                eventType: eventType || 'opened',
+                timestamp: nowIso
+            });
+            saveOpenedAppsLogs(logs);
+
+            if (typeof renderConnectedAppsList === 'function') renderConnectedAppsList();
+            if (typeof renderOpenedAppsLog === 'function') renderOpenedAppsLog();
+        }
+
+        function switchHubTab(tabName, resetForm = false) {
+            currentHubTab = tabName;
+            const tabs = ['apps', 'opened', 'create'];
+            tabs.forEach(t => {
+                const panel = document.getElementById('hub-panel-' + t);
+                const btn = document.getElementById('hub-tab-btn-' + t);
+                if (panel) panel.style.display = (t === tabName) ? 'block' : 'none';
+                if (btn) btn.classList.toggle('active', t === tabName);
+            });
+
+            if (tabName === 'create') {
+                syncHubPortalConfigInputs();
+                if (resetForm) {
+                    cancelEditConnectedApp(true);
+                    const nameEl = document.getElementById('hub-app-name');
+                    if (nameEl) setTimeout(() => nameEl.focus(), 60);
+                }
+            } else if (tabName === 'opened') {
+                renderOpenedAppsLog();
+            } else {
+                renderConnectedAppsList();
+            }
+        }
+
+        function setHubAppsFilter(filterKey) {
+            currentHubAppsFilter = filterKey || 'all';
+            document.querySelectorAll('.hub-filter-chip').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.hubFilter === currentHubAppsFilter);
+            });
+            renderConnectedAppsList();
+        }
+
+        function startEditConnectedApp(appId) {
+            if (typeof triggerPulse === 'function') triggerPulse();
+            const app = getConnectedApps().find(a => a.id === appId);
+            if (!app) return;
+
+            const editIdEl = document.getElementById('hub-editing-app-id');
+            const nameEl = document.getElementById('hub-app-name');
+            const redirectEl = document.getElementById('hub-app-redirect');
+            const titleEl = document.getElementById('hub-form-title');
+            const cancelBtn = document.getElementById('btn-cancel-hub-edit');
+            const submitBtn = document.getElementById('btn-create-hub-app');
+
+            if (editIdEl) editIdEl.value = app.id;
+            if (nameEl) nameEl.value = app.name;
+            if (redirectEl) redirectEl.value = app.redirectUri || '';
+            if (titleEl) titleEl.textContent = `✏️ Editando: ${app.name}`;
+            if (cancelBtn) cancelBtn.style.display = 'inline-block';
+            if (submitBtn) submitBtn.innerHTML = '<span>💾</span> <span>Salvar Alterações</span>';
+
+            switchHubTab('create', false);
+            if (nameEl) setTimeout(() => nameEl.focus(), 60);
+        }
+
+        function cancelEditConnectedApp(silent = false) {
+            const editIdEl = document.getElementById('hub-editing-app-id');
+            const nameEl = document.getElementById('hub-app-name');
+            const redirectEl = document.getElementById('hub-app-redirect');
+            const titleEl = document.getElementById('hub-form-title');
+            const cancelBtn = document.getElementById('btn-cancel-hub-edit');
+            const submitBtn = document.getElementById('btn-create-hub-app');
+
+            if (editIdEl) editIdEl.value = '';
+            if (nameEl) nameEl.value = '';
+            if (redirectEl) redirectEl.value = '';
+            if (titleEl) titleEl.textContent = '➕ Criar Credencial de Aplicativo';
+            if (cancelBtn) cancelBtn.style.display = 'none';
+            if (submitBtn) submitBtn.innerHTML = '<span>✨</span> <span>+ Criar Credencial e Copiar Prompt</span>';
+
+            if (!silent) {
+                switchHubTab('apps');
+            }
+        }
+
         function createConnectedAppCredential() {
             if (typeof triggerPulse === 'function') triggerPulse();
+            const editIdEl = document.getElementById('hub-editing-app-id');
             const nameEl = document.getElementById('hub-app-name');
             const redirectEl = document.getElementById('hub-app-redirect');
 
+            const editingId = editIdEl ? editIdEl.value.trim() : '';
             const name = nameEl ? nameEl.value.trim() : '';
             const rawRedirect = redirectEl ? redirectEl.value.trim() : '';
 
             if (!name) {
                 if (typeof showAppToast === 'function') {
-                    showAppToast('Digite um nome para identificar o aplicativo.', 'warning');
+                    showAppToast('Digite o nome exato do aplicativo.', 'warning');
                 }
                 if (nameEl) nameEl.focus();
                 return;
@@ -30453,27 +31062,53 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 validRedirect = sanitizeSynapseRedirectUri(rawRedirect);
                 if (!validRedirect) {
                     if (typeof showAppToast === 'function') {
-                        showAppToast('A URL do app precisa começar com http:// ou https://', 'warning');
+                        showAppToast('A URL do outro app está inválida (ex: https://usuario.github.io/app/).', 'warning');
+                    }
+                    if (redirectEl) redirectEl.focus();
+                    return;
+                }
+                const cfg = getSynapsePublicAuthConfig();
+                if (isSameSynapsePortalUrl(validRedirect, cfg.portalUrl)) {
+                    if (typeof showAppToast === 'function') {
+                        showAppToast('Não coloque a URL do próprio Synapse como URL de callback do outro aplicativo.', 'warning');
                     }
                     if (redirectEl) redirectEl.focus();
                     return;
                 }
             }
 
-            const newApp = {
+            const apps = getConnectedApps();
+            if (editingId) {
+                const idx = apps.findIndex(a => a.id === editingId);
+                if (idx !== -1) {
+                    apps[idx].name = name.slice(0, 60);
+                    apps[idx].redirectUri = validRedirect;
+                    apps[idx].updatedAt = new Date().toISOString();
+                    saveConnectedApps(apps);
+                    cancelEditConnectedApp(true);
+                    switchHubTab('apps');
+                    renderConnectedAppsList();
+                    if (typeof showAppToast === 'function') {
+                        showAppToast(`Aplicativo "${apps[idx].name}" atualizado com sucesso!`, 'success');
+                    }
+                    return;
+                }
+            }
+
+            const newApp = normalizeConnectedAppRecord({
                 id: generateSynapseAppId(),
                 name: name.slice(0, 60),
                 redirectUri: validRedirect,
-                createdAt: new Date().toISOString()
-            };
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                status: 'active',
+                openCount: 0
+            });
 
-            const apps = getConnectedApps();
             apps.unshift(newApp);
             saveConnectedApps(apps);
-
-            if (nameEl) nameEl.value = '';
-            if (redirectEl) redirectEl.value = '';
-
+            cancelEditConnectedApp(true);
+            switchHubTab('apps');
             renderConnectedAppsList();
             copyConnectedAppCredential(newApp.id, true);
             if (typeof addLog === 'function') {
@@ -30481,94 +31116,561 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             }
         }
 
-        function deleteConnectedApp(appId) {
+        function revokeConnectedAppAccess(appId) {
+            if (typeof triggerPulse === 'function') triggerPulse();
+            const apps = getConnectedApps();
+            const idx = apps.findIndex(a => a.id === appId);
+            if (idx === -1) return;
+            apps[idx].status = 'revoked';
+            apps[idx].updatedAt = new Date().toISOString();
+            saveConnectedApps(apps);
+            renderConnectedAppsList();
+            renderOpenedAppsLog();
+            if (typeof showAppToast === 'function') {
+                showAppToast(`Acesso de "${apps[idx].name}" removido. Ele não poderá conectar até ser reativado.`, 'info');
+            }
+        }
+
+        function restoreConnectedAppAccess(appId) {
+            if (typeof triggerPulse === 'function') triggerPulse();
+            const apps = getConnectedApps();
+            const idx = apps.findIndex(a => a.id === appId);
+            if (idx === -1) return;
+            apps[idx].status = 'active';
+            apps[idx].bannedUntil = null;
+            apps[idx].banReason = '';
+            apps[idx].updatedAt = new Date().toISOString();
+            saveConnectedApps(apps);
+            renderConnectedAppsList();
+            renderOpenedAppsLog();
+            if (typeof showAppToast === 'function') {
+                showAppToast(`Acesso de "${apps[idx].name}" reativado!`, 'success');
+            }
+        }
+
+        function openBanAppModal(appId, fallbackName = 'Aplicativo Externo', fallbackRedirect = '') {
+            if (typeof triggerPulse === 'function') triggerPulse();
+            const existing = document.getElementById('hub-ban-modal');
+            if (existing) existing.remove();
+
+            const app = getConnectedApps().find(a => a.id === appId);
+            const appName = (app && app.name) || fallbackName || 'Aplicativo Externo';
+
+            const modal = document.createElement('div');
+            modal.id = 'hub-ban-modal';
+            modal.style.cssText = 'position:fixed;inset:0;z-index:120000;background:rgba(0,0,0,0.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;';
+
+            const safeName = escapeSynapseHtml(appName);
+            const safeId = escapeSynapseHtml(appId);
+            const safeRedirect = escapeSynapseHtml(fallbackRedirect);
+
+            modal.innerHTML = `
+                <div style="width:100%;max-width:420px;background:#070709;border:1px solid rgba(245,158,11,0.38);border-radius:20px;padding:20px;color:#f8fafc;box-shadow:0 24px 60px rgba(0,0,0,0.9);">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;">
+                        <div style="font-size:1rem;font-weight:800;color:#fbbf24;">⏳ Banir Temporariamente</div>
+                        <button type="button" onclick="document.getElementById('hub-ban-modal')?.remove()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#fff;border-radius:8px;width:36px;height:36px;cursor:pointer;font-weight:800;">✕</button>
+                    </div>
+                    <p style="font-size:0.78rem;color:#cbd5e1;margin:0 0 12px 0;line-height:1.4;">
+                        Escolha por quanto tempo <strong style="color:#ffffff;">${safeName}</strong> ficará bloqueado de abrir login na Central de Contas:
+                    </p>
+                    <input type="text" id="hub-ban-reason-input" class="form-control" placeholder="Motivo opcional (ex: Teste de segurança)" maxlength="80" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;background:#000000;border:1px solid var(--border-color);font-size:0.8rem;margin-bottom:12px;">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+                        <button type="button" onclick="applyBanFromModal('${safeId}', 15, '${safeName}', '${safeRedirect}')" style="min-height:44px;border-radius:10px;background:rgba(245,158,11,0.14);border:1px solid rgba(245,158,11,0.35);color:#fde68a;font-size:0.78rem;font-weight:700;cursor:pointer;">⏱️ 15 minutos</button>
+                        <button type="button" onclick="applyBanFromModal('${safeId}', 60, '${safeName}', '${safeRedirect}')" style="min-height:44px;border-radius:10px;background:rgba(245,158,11,0.14);border:1px solid rgba(245,158,11,0.35);color:#fde68a;font-size:0.78rem;font-weight:700;cursor:pointer;">🕐 1 hora</button>
+                        <button type="button" onclick="applyBanFromModal('${safeId}', 360, '${safeName}', '${safeRedirect}')" style="min-height:44px;border-radius:10px;background:rgba(245,158,11,0.14);border:1px solid rgba(245,158,11,0.35);color:#fde68a;font-size:0.78rem;font-weight:700;cursor:pointer;">🕕 6 horas</button>
+                        <button type="button" onclick="applyBanFromModal('${safeId}', 1440, '${safeName}', '${safeRedirect}')" style="min-height:44px;border-radius:10px;background:rgba(245,158,11,0.14);border:1px solid rgba(245,158,11,0.35);color:#fde68a;font-size:0.78rem;font-weight:700;cursor:pointer;">📅 24 horas</button>
+                        <button type="button" onclick="applyBanFromModal('${safeId}', 10080, '${safeName}', '${safeRedirect}')" style="min-height:44px;border-radius:10px;background:rgba(239,68,68,0.14);border:1px solid rgba(239,68,68,0.35);color:#fca5a5;font-size:0.78rem;font-weight:700;cursor:pointer;">📆 7 dias</button>
+                        <button type="button" onclick="applyBanFromModal('${safeId}', 43200, '${safeName}', '${safeRedirect}')" style="min-height:44px;border-radius:10px;background:rgba(239,68,68,0.14);border:1px solid rgba(239,68,68,0.35);color:#fca5a5;font-size:0.78rem;font-weight:700;cursor:pointer;">🗓️ 30 dias</button>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <input type="number" id="hub-ban-custom-minutes" min="1" max="525600" placeholder="Minutos personalizados" style="flex:1;min-height:44px;padding:10px;border-radius:10px;background:#000000;border:1px solid var(--border-color);color:#fff;font-size:0.78rem;box-sizing:border-box;">
+                        <button type="button" onclick="applyCustomBanFromModal('${safeId}', '${safeName}', '${safeRedirect}')" style="min-height:44px;padding:10px 14px;border-radius:10px;background:#f59e0b;border:none;color:#000;font-weight:800;font-size:0.78rem;cursor:pointer;">Aplicar</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function applyBanFromModal(appId, minutes, fallbackName, fallbackRedirect) {
+            const reasonEl = document.getElementById('hub-ban-reason-input');
+            const reason = reasonEl ? reasonEl.value.trim() : '';
+            document.getElementById('hub-ban-modal')?.remove();
+            applyTemporaryBanToApp(appId, minutes, reason, fallbackName, fallbackRedirect);
+        }
+
+        function applyCustomBanFromModal(appId, fallbackName, fallbackRedirect) {
+            const customEl = document.getElementById('hub-ban-custom-minutes');
+            const mins = parseInt(customEl ? customEl.value : '', 10);
+            if (!mins || mins < 1) {
+                if (typeof showAppToast === 'function') {
+                    showAppToast('Informe um número válido de minutos (mínimo 1).', 'warning');
+                }
+                return;
+            }
+            applyBanFromModal(appId, mins, fallbackName, fallbackRedirect);
+        }
+
+        function applyTemporaryBanToApp(appId, minutes, reason = '', fallbackName = 'Aplicativo Externo', fallbackRedirect = '') {
+            const apps = getConnectedApps();
+            let idx = apps.findIndex(a => a.id === appId);
+            const untilMs = Date.now() + (Number(minutes) * 60000);
+
+            if (idx === -1) {
+                const created = normalizeConnectedAppRecord({
+                    id: appId,
+                    name: fallbackName || 'Aplicativo Externo',
+                    redirectUri: fallbackRedirect || '',
+                    createdAt: new Date().toISOString(),
+                    status: 'active',
+                    bannedUntil: untilMs,
+                    banReason: reason,
+                    banCount: 1,
+                    openCount: 1,
+                    lastOpenedAt: new Date().toISOString()
+                });
+                apps.unshift(created);
+                idx = 0;
+            } else {
+                apps[idx].bannedUntil = untilMs;
+                apps[idx].banReason = reason;
+                apps[idx].banCount = Number(apps[idx].banCount || 0) + 1;
+                apps[idx].updatedAt = new Date().toISOString();
+            }
+
+            saveConnectedApps(apps);
+            renderConnectedAppsList();
+            renderOpenedAppsLog();
+            if (typeof showAppToast === 'function') {
+                showAppToast(`"${apps[idx].name}" banido temporariamente por ${formatRemainingBanTime(untilMs)}.`, 'warning');
+            }
+        }
+
+        function unbanConnectedApp(appId) {
+            if (typeof triggerPulse === 'function') triggerPulse();
+            const apps = getConnectedApps();
+            const idx = apps.findIndex(a => a.id === appId);
+            if (idx === -1) return;
+            apps[idx].bannedUntil = null;
+            apps[idx].banReason = '';
+            apps[idx].updatedAt = new Date().toISOString();
+            saveConnectedApps(apps);
+            renderConnectedAppsList();
+            renderOpenedAppsLog();
+            if (typeof showAppToast === 'function') {
+                showAppToast(`Banimento de "${apps[idx].name}" removido.`, 'success');
+            }
+        }
+
+        function rotateConnectedAppId(appId) {
+            if (typeof triggerPulse === 'function') triggerPulse();
+            const apps = getConnectedApps();
+            const idx = apps.findIndex(a => a.id === appId);
+            if (idx === -1) return;
+            const appName = apps[idx].name;
+            const doRotate = () => {
+                const list = getConnectedApps();
+                const i = list.findIndex(a => a.id === appId);
+                if (i === -1) return;
+                list[i].id = generateSynapseAppId();
+                list[i].updatedAt = new Date().toISOString();
+                saveConnectedApps(list);
+                renderConnectedAppsList();
+                copyConnectedAppCredential(list[i].id);
+                if (typeof showAppToast === 'function') {
+                    showAppToast(`Nova credencial gerada e copiada para "${appName}"!`, 'success');
+                }
+            };
+            if (typeof showAppConfirm === 'function') {
+                showAppConfirm(`Gerar um novo APP_ID para "${appName}"? O APP_ID antigo deixará de identificar este aplicativo.`, doRotate);
+            } else {
+                doRotate();
+            }
+        }
+
+        function deleteConnectedApp(appId, skipConfirm = false) {
             if (typeof triggerPulse === 'function') triggerPulse();
             const apps = getConnectedApps();
             const target = apps.find(a => a.id === appId);
-            const updated = apps.filter(a => a.id !== appId);
-            saveConnectedApps(updated);
+            if (!target) return;
+
+            const performDelete = () => {
+                const updated = getConnectedApps().filter(a => a.id !== appId);
+                saveConnectedApps(updated);
+                const updatedLogs = getOpenedAppsLogs().filter(l => l.appId !== appId);
+                saveOpenedAppsLogs(updatedLogs);
+                renderConnectedAppsList();
+                renderOpenedAppsLog();
+                if (typeof showAppToast === 'function') {
+                    showAppToast(`Aplicativo "${target.name}" apagado permanentemente.`, 'info');
+                }
+            };
+
+            if (!skipConfirm && typeof showAppConfirm === 'function') {
+                showAppConfirm(`Deseja apagar permanentemente "${target.name}" e todo o histórico dele na Central de Contas?`, performDelete);
+            } else {
+                performDelete();
+            }
+        }
+
+        function deleteAllConnectedAppsConfirm() {
+            const apps = getConnectedApps();
+            if (!apps.length) {
+                if (typeof showAppToast === 'function') showAppToast('Não há aplicativos cadastrados para apagar.', 'info');
+                return;
+            }
+            const doWipe = () => {
+                saveConnectedApps([]);
+                saveOpenedAppsLogs([]);
+                renderConnectedAppsList();
+                renderOpenedAppsLog();
+                if (typeof showAppToast === 'function') showAppToast('Todos os aplicativos e logs foram apagados.', 'info');
+            };
+            if (typeof showAppConfirm === 'function') {
+                showAppConfirm('Apagar TODOS os aplicativos conectados e o histórico de acessos da Central de Contas?', doWipe);
+            } else {
+                doWipe();
+            }
+        }
+
+        function deleteOpenedAppLog(logId) {
+            if (typeof triggerPulse === 'function') triggerPulse();
+            const updated = getOpenedAppsLogs().filter(l => l.logId !== logId);
+            saveOpenedAppsLogs(updated);
+            renderOpenedAppsLog();
             renderConnectedAppsList();
-            if (typeof showAppToast === 'function') {
-                showAppToast(target ? `Credencial "${target.name}" removida.` : 'Credencial removida.', 'info');
+            if (typeof showAppToast === 'function') showAppToast('Registro apagado.', 'info');
+        }
+
+        function clearAllOpenedAppLogs() {
+            const logs = getOpenedAppsLogs();
+            if (!logs.length) {
+                if (typeof showAppToast === 'function') showAppToast('O histórico de aplicativos abertos já está vazio.', 'info');
+                return;
+            }
+            const doClear = () => {
+                saveOpenedAppsLogs([]);
+                renderOpenedAppsLog();
+                renderConnectedAppsList();
+                if (typeof showAppToast === 'function') showAppToast('Histórico de aplicativos abertos apagado.', 'info');
+            };
+            if (typeof showAppConfirm === 'function') {
+                showAppConfirm('Apagar todo o histórico de aplicativos que foram abertos?', doClear);
+            } else {
+                doClear();
+            }
+        }
+
+        function importOpenedAppToManaged(appId, appName, redirectUri) {
+            if (typeof triggerPulse === 'function') triggerPulse();
+            const apps = getConnectedApps();
+            if (apps.some(a => a.id === appId)) {
+                switchHubTab('apps');
+                if (typeof showAppToast === 'function') showAppToast('Este aplicativo já está na lista de gerenciamento.', 'info');
+                return;
+            }
+            const newApp = normalizeConnectedAppRecord({
+                id: appId,
+                name: appName || 'Aplicativo Externo',
+                redirectUri: redirectUri || '',
+                createdAt: new Date().toISOString(),
+                status: 'active',
+                openCount: 1,
+                lastOpenedAt: new Date().toISOString()
+            });
+            apps.unshift(newApp);
+            saveConnectedApps(apps);
+            renderConnectedAppsList();
+            renderOpenedAppsLog();
+            if (typeof showAppToast === 'function') showAppToast(`"${newApp.name}" adicionado ao gerenciamento!`, 'success');
+        }
+
+        function exportConnectedAppsBackup() {
+            const payload = {
+                exportedAt: new Date().toISOString(),
+                portalUrl: getSynapsePublicAuthConfig().portalUrl,
+                apps: getConnectedApps(),
+                openedLogs: getOpenedAppsLogs()
+            };
+            copyTextToClipboardWithFallback(JSON.stringify(payload, null, 2)).then(() => {
+                if (typeof showAppToast === 'function') {
+                    showAppToast('Backup JSON da Central de Contas copiado!', 'success');
+                }
+            });
+        }
+
+        function updateHubSummaryBadges(apps, logs) {
+            const bannedCount = apps.filter(isAppTemporarilyBanned).length;
+            const activeCount = apps.filter(a => a.status !== 'revoked' && !isAppTemporarilyBanned(a)).length;
+            const openedAppsCount = new Set([
+                ...apps.filter(a => Number(a.openCount || 0) > 0 || a.lastOpenedAt).map(a => a.id),
+                ...logs.map(l => l.appId)
+            ]).size;
+
+            const setText = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = String(val);
+            };
+            setText('hub-stat-total', apps.length);
+            setText('hub-stat-active', activeCount);
+            setText('hub-stat-opened', openedAppsCount);
+            setText('hub-stat-banned', bannedCount);
+
+            const indexBadge = document.getElementById('hub-index-count-badge');
+            if (indexBadge) {
+                const parts = [`${apps.length} ${apps.length === 1 ? 'app' : 'apps'}`];
+                if (bannedCount > 0) parts.push(`${bannedCount} banido${bannedCount > 1 ? 's' : ''}`);
+                indexBadge.textContent = parts.join(' • ');
+            }
+
+            const shortcutSummary = document.getElementById('account-hub-shortcut-summary');
+            if (shortcutSummary) {
+                shortcutSummary.textContent = `${apps.length} aplicativo(s) cadastrado(s), ${openedAppsCount} aberto(s) recentemente e ${bannedCount} banido(s) temporariamente. Gerencie tudo na Central de Contas.`;
             }
         }
 
         function renderConnectedAppsList() {
+            const apps = getConnectedApps();
+            const logs = getOpenedAppsLogs();
+            updateHubSummaryBadges(apps, logs);
+
             const container = document.getElementById('hub-apps-list');
             if (!container) return;
 
-            const apps = getConnectedApps();
+            const searchEl = document.getElementById('hub-search-input');
+            const query = (searchEl ? searchEl.value : '').trim().toLowerCase();
+
+            const filtered = apps.filter(app => {
+                const isBanned = isAppTemporarilyBanned(app);
+                const isRevoked = app.status === 'revoked';
+                const isOpened = Number(app.openCount || 0) > 0 || !!app.lastOpenedAt;
+
+                if (currentHubAppsFilter === 'active' && (isBanned || isRevoked)) return false;
+                if (currentHubAppsFilter === 'banned' && !isBanned) return false;
+                if (currentHubAppsFilter === 'revoked' && !isRevoked) return false;
+                if (currentHubAppsFilter === 'opened' && !isOpened) return false;
+
+                if (query) {
+                    const hay = `${app.name} ${app.id} ${app.redirectUri || ''} ${app.lastUserEmail || ''}`.toLowerCase();
+                    if (!hay.includes(query)) return false;
+                }
+                return true;
+            });
+
             if (!apps.length) {
                 container.innerHTML = `
-                    <div style="text-align: center; padding: 18px 12px; border: 1px dashed rgba(255,255,255,0.12); border-radius: 12px; background: rgba(255,255,255,0.015);">
-                        <div style="font-size: 1.4rem; margin-bottom: 6px;">🪪</div>
-                        <div style="font-size: 0.82rem; font-weight: 700; color: #e2e8f0;">Nenhum aplicativo conectado ainda</div>
-                        <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; line-height: 1.4;">Crie acima para gerar sua primeira credencial e testar o portal "Entrar com Synapse".</div>
+                    <div style="text-align: center; padding: 22px 14px; border: 1px dashed rgba(255,255,255,0.14); border-radius: 16px; background: #070709;">
+                        <div style="font-size: 1.5rem; margin-bottom: 6px;">🪪</div>
+                        <div style="font-size: 0.86rem; font-weight: 800; color: #ffffff;">Nenhum aplicativo cadastrado ainda</div>
+                        <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 5px; line-height: 1.45;">Crie uma credencial para gerar um prompt corrigido, acompanhar aplicativos abertos e controlar acessos.</div>
+                        <button type="button" onclick="switchHubTab('create', true)" style="margin-top: 12px; background: rgba(139,92,246,0.2); border: 1px solid rgba(139,92,246,0.45); color: #f3e8ff; border-radius: 10px; padding: 10px 16px; font-size: 0.8rem; font-weight: 700; cursor: pointer; min-height: 44px;">+ Criar Primeiro Aplicativo</button>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = apps.map(app => {
+            if (!filtered.length) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 18px 12px; border: 1px dashed rgba(255,255,255,0.12); border-radius: 14px; background: #070709;">
+                        <div style="font-size: 0.82rem; font-weight: 700; color: #e2e8f0;">Nenhum aplicativo encontrado neste filtro</div>
+                        <button type="button" onclick="setHubAppsFilter('all'); const s=document.getElementById('hub-search-input'); if(s) s.value=''; renderConnectedAppsList();" style="margin-top: 10px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: #fff; border-radius: 8px; padding: 8px 12px; font-size: 0.74rem; font-weight: 700; cursor: pointer;">Limpar Filtro</button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(app => {
                 const safeId = escapeSynapseHtml(app.id);
                 const safeName = escapeSynapseHtml(app.name);
-                const safeRedirect = app.redirectUri ? escapeSynapseHtml(app.redirectUri) : 'Callback dinâmico (detectado automaticamente pelo app)';
+                const safeRedirect = app.redirectUri ? escapeSynapseHtml(app.redirectUri) : 'Callback dinâmico (detectado pelo app)';
+                const isBanned = isAppTemporarilyBanned(app);
+                const isRevoked = app.status === 'revoked';
+
+                let statusBadge = '<span class="hub-status-pill hub-status-active">● Ativo</span>';
+                if (isBanned) {
+                    statusBadge = `<span class="hub-status-pill hub-status-banned">⏳ Banido (${escapeSynapseHtml(formatRemainingBanTime(app.bannedUntil))})</span>`;
+                } else if (isRevoked) {
+                    statusBadge = '<span class="hub-status-pill hub-status-revoked">🚫 Removido</span>';
+                }
+
+                const openMeta = Number(app.openCount || 0) > 0
+                    ? `🕒 Aberto ${app.openCount}x • Último: ${escapeSynapseHtml(formatSynapseDateTime(app.lastOpenedAt))}${app.lastUserEmail ? ' • ' + escapeSynapseHtml(app.lastUserEmail) : ''}`
+                    : '🕒 Ainda não foi aberto';
+
+                const banAlert = isBanned ? `
+                    <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.28); border-radius: 10px; padding: 8px 10px; font-size: 0.72rem; color: #fde68a; line-height: 1.35;">
+                        <strong>Bloqueio temporário ativo:</strong> expira em ${escapeSynapseHtml(formatRemainingBanTime(app.bannedUntil))}${app.banReason ? ` — Motivo: ${escapeSynapseHtml(app.banReason)}` : ''}
+                    </div>
+                ` : '';
+
+                const banButton = isBanned
+                    ? `<button type="button" class="hub-action-btn" onclick="unbanConnectedApp('${safeId}')" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.34); color: #6ee7b7;">🔓 Desbanir</button>`
+                    : `<button type="button" class="hub-action-btn" onclick="openBanAppModal('${safeId}')" style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.34); color: #fde68a;">⏳ Banir Temp.</button>`;
+
+                const accessButton = isRevoked
+                    ? `<button type="button" class="hub-action-btn" onclick="restoreConnectedAppAccess('${safeId}')" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.34); color: #6ee7b7;">✅ Reativar</button>`
+                    : `<button type="button" class="hub-action-btn" onclick="revokeConnectedAppAccess('${safeId}')" style="background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.28); color: #fda4af;">🚫 Remover Acesso</button>`;
+
                 return `
-                    <div style="background: var(--card-bg-secondary, #0d0d11); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+                    <div class="hub-app-card">
                         <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;">
                             <div style="min-width: 0; flex: 1;">
-                                <div style="font-size: 0.92rem; font-weight: 800; color: #ffffff; word-break: break-word;">${safeName}</div>
-                                <div style="font-size: 0.72rem; color: #c4b5fd; font-family: monospace; margin-top: 3px; word-break: break-all;">ID: ${safeId}</div>
+                                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                    <span style="font-size: 0.95rem; font-weight: 800; color: #ffffff; word-break: break-word;">${safeName}</span>
+                                    ${statusBadge}
+                                </div>
+                                <div style="font-size: 0.72rem; color: #c4b5fd; font-family: monospace; margin-top: 4px; word-break: break-all;">APP_ID: ${safeId}</div>
                                 <div style="font-size: 0.69rem; color: var(--text-muted); margin-top: 3px; word-break: break-all;">🌐 ${safeRedirect}</div>
+                                <div style="font-size: 0.69rem; color: #93c5fd; margin-top: 4px; line-height: 1.35;">${openMeta}</div>
                             </div>
-                            <button type="button" onclick="deleteConnectedApp('${safeId}')" title="Remover credencial" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: #fca5a5; border-radius: 10px; padding: 8px 10px; font-size: 0.85rem; cursor: pointer; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center;">🗑️</button>
+                            <button type="button" onclick="deleteConnectedApp('${safeId}')" title="Apagar permanentemente" style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; border-radius: 10px; padding: 8px 10px; font-size: 0.85rem; cursor: pointer; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">🗑️</button>
                         </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                            <button type="button" onclick="copyConnectedAppCredential('${safeId}')" style="background: rgba(139, 92, 246, 0.14); border: 1px solid rgba(139, 92, 246, 0.35); color: #e9d5ff; border-radius: 10px; padding: 10px 8px; font-size: 0.74rem; font-weight: 700; cursor: pointer; min-height: 44px;">📋 Copiar Prompt</button>
-                            <button type="button" onclick="testConnectedAppPortal('${safeId}')" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.32); color: #6ee7b7; border-radius: 10px; padding: 10px 8px; font-size: 0.74rem; font-weight: 700; cursor: pointer; min-height: 44px;">🧪 Testar Portal</button>
+
+                        ${banAlert}
+
+                        <div class="hub-actions-grid">
+                            <button type="button" class="hub-action-btn" onclick="copyConnectedAppCredential('${safeId}')" style="background: rgba(139, 92, 246, 0.16); border: 1px solid rgba(139, 92, 246, 0.38); color: #e9d5ff;">📋 Prompt + Cred.</button>
+                            <button type="button" class="hub-action-btn" onclick="copyConnectedAppOnlyCredentials('${safeId}')" style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.32); color: #93c5fd;">🔑 Só Credenciais</button>
+                            <button type="button" class="hub-action-btn" onclick="testConnectedAppPortal('${safeId}')" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.32); color: #6ee7b7;">🧪 Testar Portal</button>
+                            <button type="button" class="hub-action-btn" onclick="startEditConnectedApp('${safeId}')" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.16); color: #e2e8f0;">✏️ Editar Nome/URL</button>
+                            ${banButton}
+                            ${accessButton}
+                            <button type="button" class="hub-action-btn" onclick="rotateConnectedAppId('${safeId}')" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.12); color: #cbd5e1;">🔄 Novo APP_ID</button>
+                            <button type="button" class="hub-action-btn" onclick="deleteConnectedApp('${safeId}')" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.28); color: #fca5a5;">🗑️ Apagar</button>
                         </div>
                     </div>
                 `;
             }).join('');
         }
 
-        function buildSynapseCredentialPayload(app) {
+        function renderOpenedAppsLog() {
+            const container = document.getElementById('hub-opened-logs-list');
+            const apps = getConnectedApps();
+            const logs = getOpenedAppsLogs();
+            updateHubSummaryBadges(apps, logs);
+            if (!container) return;
+
+            if (!logs.length) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 22px 14px; border: 1px dashed rgba(255,255,255,0.14); border-radius: 16px; background: #070709;">
+                        <div style="font-size: 1.5rem; margin-bottom: 6px;">🕒</div>
+                        <div style="font-size: 0.85rem; font-weight: 800; color: #ffffff;">Nenhum aplicativo aberto registrado ainda</div>
+                        <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 5px; line-height: 1.45;">Sempre que um aplicativo abrir o login do Synapse ou testar o portal, ele aparecerá aqui com horário, conta e opções de banimento ou remoção.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const eventLabels = {
+                authorized: { label: '✅ Conectado', cls: 'hub-status-active' },
+                opened: { label: '🔗 Portal Aberto', cls: 'hub-status-active' },
+                sandbox_test: { label: '🧪 Teste Sandbox', cls: 'hub-status-active' },
+                blocked_ban: { label: '⛔ Bloqueado (Banido)', cls: 'hub-status-banned' },
+                blocked_revoked: { label: '🚫 Acesso Removido', cls: 'hub-status-revoked' },
+                cancelled: { label: '✖ Cancelado', cls: 'hub-status-revoked' }
+            };
+
+            container.innerHTML = logs.map(entry => {
+                const safeLogId = escapeSynapseHtml(entry.logId);
+                const safeAppId = escapeSynapseHtml(entry.appId);
+                const matchedApp = apps.find(a => a.id === entry.appId);
+                const safeName = escapeSynapseHtml((matchedApp && matchedApp.name) || entry.appName || 'Aplicativo Externo');
+                const safeOrigin = escapeSynapseHtml(entry.origin || 'Origem externa');
+                const safeEmail = escapeSynapseHtml(entry.userEmail || 'Não autenticado no momento');
+                const safeTime = escapeSynapseHtml(formatSynapseDateTime(entry.timestamp));
+                const meta = eventLabels[entry.eventType] || eventLabels.opened;
+                const isBanned = matchedApp && isAppTemporarilyBanned(matchedApp);
+                const isRevoked = matchedApp && matchedApp.status === 'revoked';
+
+                return `
+                    <div class="hub-app-card">
+                        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;">
+                            <div style="min-width: 0; flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                    <span style="font-size: 0.92rem; font-weight: 800; color: #ffffff; word-break: break-word;">${safeName}</span>
+                                    <span class="hub-status-pill ${meta.cls}">${meta.label}</span>
+                                </div>
+                                <div style="font-size: 0.7rem; color: #c4b5fd; font-family: monospace; margin-top: 4px; word-break: break-all;">${safeAppId}</div>
+                                <div style="font-size: 0.71rem; color: var(--text-muted); margin-top: 3px; word-break: break-all;">🌐 ${safeOrigin}</div>
+                                <div style="font-size: 0.7rem; color: #93c5fd; margin-top: 3px;">👤 ${safeEmail} • 🕒 ${safeTime}</div>
+                            </div>
+                            <button type="button" onclick="deleteOpenedAppLog('${safeLogId}')" title="Apagar este registro" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: #fca5a5; border-radius: 10px; padding: 8px; font-size: 0.8rem; cursor: pointer; min-width: 40px; min-height: 40px;">🗑️</button>
+                        </div>
+
+                        <div class="hub-actions-grid">
+                            ${isBanned
+                                ? `<button type="button" class="hub-action-btn" onclick="unbanConnectedApp('${safeAppId}')" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.34); color: #6ee7b7;">🔓 Desbanir</button>`
+                                : `<button type="button" class="hub-action-btn" onclick="openBanAppModal('${safeAppId}', '${safeName}', '${escapeSynapseHtml(entry.redirectUri || '')}')" style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.34); color: #fde68a;">⏳ Banir Temp.</button>`
+                            }
+                            ${matchedApp
+                                ? (isRevoked
+                                    ? `<button type="button" class="hub-action-btn" onclick="restoreConnectedAppAccess('${safeAppId}')" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.34); color: #6ee7b7;">✅ Reativar Acesso</button>`
+                                    : `<button type="button" class="hub-action-btn" onclick="revokeConnectedAppAccess('${safeAppId}')" style="background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.28); color: #fda4af;">🚫 Remover Acesso</button>`
+                                )
+                                : `<button type="button" class="hub-action-btn" onclick="importOpenedAppToManaged('${safeAppId}', '${safeName}', '${escapeSynapseHtml(entry.redirectUri || '')}')" style="background: rgba(139, 92, 246, 0.16); border: 1px solid rgba(139, 92, 246, 0.38); color: #e9d5ff;">➕ Gerenciar App</button>`
+                            }
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function buildSynapseCompactCredentials(app) {
             const cfg = getSynapsePublicAuthConfig();
-            const callbackHint = app.redirectUri || 'Use window.location.origin + window.location.pathname (se http/https)';
-            const portalBaseUrl = `${cfg.portalUrl}?synapse_auth=1&app_id=${encodeURIComponent(app.id)}&app_name=${encodeURIComponent(app.name)}`;
+            const callbackValue = app.redirectUri || 'AUTO_CURRENT_URL';
             return [
-                'Conecte o sistema de login deste aplicativo à minha Central de Contas do Synapse usando a credencial abaixo.',
-                'Quero que o usuário possa clicar em "Entrar com Synapse" para fazer login com a mesma conta que já usa no Synapse (e também fazer login/cadastro direto, se aplicável).',
-                '',
-                'Aqui está a credencial e uma explicação completa de como implementar a conexão:',
-                '',
-                '=== SYNAPSE ACCOUNT CREDENTIAL ===',
+                '=== CREDENCIAL SYNAPSE SSO ===',
                 `APP_NAME=${app.name}`,
                 `APP_ID=${app.id}`,
-                `CALLBACK_URL=${callbackHint}`,
                 `SYNAPSE_PORTAL_URL=${cfg.portalUrl}`,
+                `CALLBACK_URL=${callbackValue}`,
                 `AUTH_API_URL=${cfg.supabaseUrl}`,
                 `PUBLIC_ANON_KEY=${cfg.anonKey}`,
-                '=== FIM DA CREDENCIAL ===',
+                '=== FIM DA CREDENCIAL ==='
+            ].join('\n');
+        }
+
+        function buildSynapseCredentialPayload(app) {
+            const cfg = getSynapsePublicAuthConfig();
+            const exactName = app.name;
+            const callbackRule = app.redirectUri
+                ? `Use "${app.redirectUri}" (ou \`window.location.origin + window.location.pathname\` se o app estiver hospedado em outro endereço http/https diferente de SYNAPSE_PORTAL_URL).`
+                : 'Use `window.location.origin + window.location.pathname` quando estiver em http/https (desde que NÃO seja a própria URL do Synapse).';
+
+            return [
+                `Conecte o sistema de login do aplicativo "${exactName}" à Central de Contas do Synapse usando exatamente os dados abaixo.`,
                 '',
-                'O QUE VOCÊ DEVE FAZER NESTE APLICATIVO:',
-                '1. Botão "Entrar com Synapse" (Login SSO):',
-                '   - Gere um `state` aleatório e salve em `sessionStorage` para validação na volta.',
-                '   - Defina `redirectUri`: use `window.location.origin + window.location.pathname` (se começar com `http:` ou `https:`) ou use a `CALLBACK_URL` acima.',
-                `   - Monte a URL do portal: \`${portalBaseUrl}&redirect_uri=\${encodeURIComponent(redirectUri)}&state=\${encodeURIComponent(state)}&mode=popup\``,
-                '   - IMPORTANTE (para funcionar mesmo dentro de preview/iframe): tente primeiro abrir um popup `window.open(url, "synapse_login", "width=460,height=680")`. Se o popup abrir, escute `window.addEventListener("message", ...)` validando `event.origin` igual à origem de `SYNAPSE_PORTAL_URL` e `event.data?.type === "SYNAPSE_AUTH_SUCCESS"`.',
-                '   - Se o navegador bloquear o popup (ou se preferir redirecionamento na mesma aba), troque `mode=popup` por `mode=redirect` e redirecione a janela principal (`(window.top || window).location.href = urlRedirect`).',
-                '   - No retorno por redirect, leia `window.location.hash`: `#synapse_access_token=...&synapse_refresh_token=...&synapse_uid=...&synapse_email=...&synapse_name=...&synapse_app_id=...&state=...`.',
-                '   - Valide se o `state` retornado confere com o salvo em `sessionStorage`, limpe o hash da URL com `history.replaceState` e salve a sessão do usuário autenticado (`synapse_uid`, `synapse_email`, `synapse_name`, `synapse_access_token`).',
+                buildSynapseCompactCredentials(app),
                 '',
-                '2. (Opcional) Login e cadastro direto por e-mail/senha compartilhando a mesma conta Synapse:',
+                'REGRAS OBRIGATÓRIAS (PARA NÃO ABRIR O SYNAPSE DENTRO DO APP E NÃO ERRAR O NOME):',
+                `1. USE EXATAMENTE o nome \`${exactName}\` no parâmetro \`app_name=${encodeURIComponent(exactName)}\` e \`app_id=${app.id}\`. Nunca envie "Synapse" como app_name.`,
+                '2. NUNCA abra `SYNAPSE_PORTAL_URL` dentro de um `<iframe>` e NUNCA navegue para `SYNAPSE_PORTAL_URL` pura sem parâmetros — isso abriria o app Synapse inteiro em vez da tela de conexão.',
+                '3. `redirect_uri` deve ser a URL DESTE aplicativo atual (para onde o usuário volta após logar), NUNCA a `SYNAPSE_PORTAL_URL`. ' + callbackRule,
+                '',
+                'PASSO A PASSO DE IMPLEMENTAÇÃO DO BOTÃO "Entrar com Synapse":',
+                '1. Ao carregar a página, verifique primeiro se já existe retorno de autenticação em `window.location.hash`:',
+                '   - Leia `const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));`',
+                '   - Se houver `hashParams.get("synapse_error")`, exiba a mensagem amigável de erro/bloqueio e limpe o hash.',
+                '   - Se houver `hashParams.get("synapse_access_token")`: confira se `hashParams.get("state")` bate com o salvo em `sessionStorage`, salve os dados (`synapse_access_token`, `synapse_refresh_token`, `synapse_uid`, `synapse_email`, `synapse_name`, `synapse_app_id`) no `localStorage`, e limpe o hash com `window.history.replaceState(null, "", window.location.pathname + window.location.search)`.',
+                '',
+                '2. Quando o usuário clicar em "Entrar com Synapse":',
+                '   - Gere `const state = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2);` e salve em `sessionStorage.setItem("synapse_sso_state", state)`.',
+                `   - Monte \`redirectUri\` válido com a URL deste app (não a do Synapse).`,
+                `   - Monte a URL completa do portal:`,
+                `     \`const authUrl = "${cfg.portalUrl}?synapse_auth=1&app_id=${encodeURIComponent(app.id)}&app_name=${encodeURIComponent(exactName)}&redirect_uri=" + encodeURIComponent(redirectUri) + "&state=" + encodeURIComponent(state);\``,
+                '   - Tente primeiro popup: `const popup = window.open(authUrl + "&mode=popup", "synapse_sso_login", "width=460,height=700");`',
+                '   - Se `popup` abrir, escute `window.addEventListener("message", ...)` verificando `event.origin === new URL("' + cfg.portalUrl + '").origin`:',
+                '     - Se `event.data?.type === "SYNAPSE_AUTH_SUCCESS"`, valide `state`, salve a sessão e entre no app.',
+                '     - Se `event.data?.type === "SYNAPSE_AUTH_ERROR"`, mostre o erro (`event.data.message`).',
+                '   - Se `!popup || popup.closed` (navegador móvel/PWA bloqueou popup): redirecione na mesma guia usando `window.location.assign(authUrl + "&mode=redirect")` (não acesse `window.top` sem `try/catch` para evitar erro cross-origin).',
+                '',
+                '3. (Opcional) Login/Cadastro direto por e-mail e senha na mesma base de usuários do Synapse:',
                 `   - Login: POST ${cfg.supabaseUrl}/auth/v1/token?grant_type=password (header "apikey: ${cfg.anonKey}", JSON { email, password })`,
                 `   - Cadastro: POST ${cfg.supabaseUrl}/auth/v1/signup (header "apikey: ${cfg.anonKey}", JSON { email, password })`,
-                `   - Conferir usuário atual: GET ${cfg.supabaseUrl}/auth/v1/user (headers "apikey: ${cfg.anonKey}" e "Authorization: Bearer <ACCESS_TOKEN>")`,
+                `   - Perfil atual: GET ${cfg.supabaseUrl}/auth/v1/user (headers "apikey: ${cfg.anonKey}" e "Authorization: Bearer <ACCESS_TOKEN>")`,
                 '',
-                '3. Regras importantes:',
-                '   - Use apenas a PUBLIC_ANON_KEY informada acima; nunca peça nem armazene chaves privadas/admin.',
-                '   - Exiba na interface quando o usuário estiver conectado (nome, e-mail e botão de sair).'
+                '4. Segurança e interface:',
+                '   - Use apenas a `PUBLIC_ANON_KEY`; nunca exponha chaves privadas/admin.',
+                '   - Mostre na tela o usuário conectado (nome, e-mail) e um botão "Sair da conta".'
             ].join('\n');
         }
 
@@ -30602,8 +31704,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 if (typeof showAppToast === 'function') {
                     showAppToast(
                         fromCreate
-                            ? `Prompt + credencial de "${app.name}" criados e copiados! Cole na outra conversa.`
-                            : `Prompt + credencial de "${app.name}" copiados! Cole na outra conversa.`,
+                            ? `Prompt e credenciais de "${app.name}" criados e copiados!`
+                            : `Prompt e credenciais de "${app.name}" copiados!`,
                         'success'
                     );
                 }
@@ -30614,7 +31716,33 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             });
         }
 
+        function copyConnectedAppOnlyCredentials(appId) {
+            const app = getConnectedApps().find(a => a.id === appId);
+            if (!app) return;
+            const text = buildSynapseCompactCredentials(app);
+            copyTextToClipboardWithFallback(text).then(() => {
+                if (typeof showAppToast === 'function') {
+                    showAppToast(`Credenciais puras de "${app.name}" copiadas!`, 'success');
+                }
+            });
+        }
+
+        function isSynapsePortalModeActive() {
+            if (window.pendingSynapsePortalRequest || window.activeSynapsePortalContext) return true;
+            try {
+                const sp = new URLSearchParams(window.location.search || '');
+                const authFlag = (sp.get('synapse_auth') || '').toLowerCase();
+                const connFlag = (sp.get('synapse_connect') || '').toLowerCase();
+                const appId = (sp.get('app_id') || sp.get('client_id') || '').trim();
+                if (authFlag === '1' || authFlag === 'true' || connFlag === '1' || connFlag === 'true' || appId.startsWith('syn_app_')) {
+                    return true;
+                }
+            } catch (e) {}
+            return false;
+        }
+
         function enterSynapsePortalUiMode() {
+            document.body.classList.add('synapse-sso-portal-mode');
             const splash = document.getElementById('splash-screen');
             if (splash) {
                 splash.style.display = 'none';
@@ -30629,6 +31757,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
         }
 
         function exitSynapsePortalUiMode() {
+            document.body.classList.remove('synapse-sso-portal-mode');
             try {
                 sessionStorage.removeItem(SYNAPSE_PENDING_PORTAL_KEY);
             } catch (e) {}
@@ -30643,19 +31772,25 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 const searchParams = new URLSearchParams(window.location.search || '');
                 const hashRaw = (window.location.hash || '').replace(/^#/, '');
                 const hashParams = hashRaw.includes('=') ? new URLSearchParams(hashRaw) : new URLSearchParams('');
-                const getParam = (k) => searchParams.get(k) ?? hashParams.get(k);
+                const getParam = (...keys) => {
+                    for (const k of keys) {
+                        const v = searchParams.get(k) ?? hashParams.get(k);
+                        if (v !== null && String(v).trim() !== '') return String(v);
+                    }
+                    return '';
+                };
 
-                const authFlag = (getParam('synapse_auth') || '').toLowerCase();
-                const connectFlag = (getParam('synapse_connect') || '').toLowerCase();
-                const rawAppId = (getParam('app_id') || '').trim();
-                const rawRedirectParam = getParam('redirect_uri') || '';
+                const authFlag = getParam('synapse_auth', 'sso').toLowerCase();
+                const connectFlag = getParam('synapse_connect').toLowerCase();
+                const rawAppId = getParam('app_id', 'client_id', 'appId').trim();
+                const rawRedirectParam = getParam('redirect_uri', 'redirect_url', 'callback_url', 'callback', 'return_url');
 
                 const isPortal =
                     authFlag === '1' ||
                     authFlag === 'true' ||
                     connectFlag === '1' ||
                     connectFlag === 'true' ||
-                    (rawAppId.startsWith('syn_app_') && !!rawRedirectParam);
+                    rawAppId.startsWith('syn_app_');
 
                 if (!isPortal) {
                     try {
@@ -30675,15 +31810,25 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
                 const appId = (rawAppId || 'app_externo').slice(0, 80);
                 const registeredApp = getConnectedApps().find(a => a.id === appId);
-                const appName = (getParam('app_name') || (registeredApp && registeredApp.name) || 'Aplicativo Externo').trim().slice(0, 60);
-                let redirectUri = sanitizeSynapseRedirectUri(rawRedirectParam);
-                if (!redirectUri && registeredApp && registeredApp.redirectUri) {
-                    redirectUri = sanitizeSynapseRedirectUri(registeredApp.redirectUri);
-                }
-                const state = (getParam('state') || '').trim().slice(0, 128);
-                const mode = getParam('mode') === 'popup' || !!window.opener ? 'popup' : 'redirect';
+                const rawAppName = safeDecodeUriComponent(getParam('app_name', 'appName', 'client_name', 'name'));
+                const appName = (rawAppName || (registeredApp && registeredApp.name) || 'Aplicativo Externo').slice(0, 60);
 
-                window.pendingSynapsePortalRequest = {
+                const cfg = getSynapsePublicAuthConfig();
+                let redirectUri = sanitizeSynapseRedirectUri(rawRedirectParam);
+                if (redirectUri && isSameSynapsePortalUrl(redirectUri, cfg.portalUrl)) {
+                    redirectUri = '';
+                }
+                if (!redirectUri && registeredApp && registeredApp.redirectUri) {
+                    const regRedirect = sanitizeSynapseRedirectUri(registeredApp.redirectUri);
+                    if (regRedirect && !isSameSynapsePortalUrl(regRedirect, cfg.portalUrl)) {
+                        redirectUri = regRedirect;
+                    }
+                }
+                const state = getParam('state').trim().slice(0, 128);
+                const mode = getParam('mode').toLowerCase() === 'popup' || !!window.opener ? 'popup' : 'redirect';
+
+                const previousJson = sessionStorage.getItem(SYNAPSE_PENDING_PORTAL_KEY);
+                const reqObj = {
                     appId: appId,
                     appName: appName,
                     redirectUri: redirectUri,
@@ -30691,9 +31836,22 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                     mode: mode,
                     isTestMode: !redirectUri && !window.opener
                 };
+                window.pendingSynapsePortalRequest = reqObj;
                 try {
-                    sessionStorage.setItem(SYNAPSE_PENDING_PORTAL_KEY, JSON.stringify(window.pendingSynapsePortalRequest));
+                    sessionStorage.setItem(SYNAPSE_PENDING_PORTAL_KEY, JSON.stringify(reqObj));
                 } catch (e) {}
+
+                const isNewIncoming = !previousJson || (() => {
+                    try {
+                        const prev = JSON.parse(previousJson);
+                        return prev.appId !== reqObj.appId || prev.state !== reqObj.state;
+                    } catch (e) {
+                        return true;
+                    }
+                })();
+                if (isNewIncoming) {
+                    recordConnectedAppAccess(reqObj, 'opened');
+                }
 
                 updateAuthPortalBanner();
                 return window.pendingSynapsePortalRequest;
@@ -30718,7 +31876,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             let hostLabel = 'Conexão externa pronta para autorizar após o login';
             if (req.redirectUri) {
                 try {
-                    hostLabel = `Destino: ${new URL(req.redirectUri).host}`;
+                    hostLabel = `Destino de retorno: ${new URL(req.redirectUri).host}`;
                 } catch (e) {}
             } else if (req.isTestMode) {
                 hostLabel = 'Modo Sandbox (nenhuma URL de retorno informada)';
@@ -30764,6 +31922,11 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             enterSynapsePortalUiMode();
             window.activeSynapsePortalContext = req;
 
+            const registeredApp = getConnectedApps().find(a => a.id === req.appId);
+            const effectiveAppName = (registeredApp && registeredApp.name) ? registeredApp.name : req.appName;
+            const isBanned = registeredApp ? isAppTemporarilyBanned(registeredApp) : false;
+            const isRevoked = registeredApp ? registeredApp.status === 'revoked' : false;
+
             const appNameEl = document.getElementById('portal-app-name');
             const appIdEl = document.getElementById('portal-app-id');
             const appHostEl = document.getElementById('portal-app-host');
@@ -30771,9 +31934,12 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             const userNameEl = document.getElementById('portal-user-name');
             const userEmailEl = document.getElementById('portal-user-email');
             const sandboxBox = document.getElementById('portal-sandbox-result');
+            const blockedBox = document.getElementById('portal-blocked-box');
+            const blockedText = document.getElementById('portal-blocked-text');
+            const permissionsBox = document.getElementById('portal-permissions-box');
             const approveBtn = document.getElementById('btn-portal-approve');
 
-            if (appNameEl) appNameEl.textContent = req.appName;
+            if (appNameEl) appNameEl.textContent = effectiveAppName;
             if (appIdEl) appIdEl.textContent = `App ID: ${req.appId}`;
 
             let hostDisplay = 'Modo de Teste Interativo (Sandbox)';
@@ -30801,19 +31967,97 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             if (userEmailEl) userEmailEl.textContent = email || 'Sessão ativa';
 
             if (sandboxBox) sandboxBox.style.display = 'none';
-            if (approveBtn) {
-                approveBtn.disabled = false;
-                approveBtn.textContent = '✅ Autorizar e Conectar';
+
+            if (isBanned || isRevoked) {
+                if (permissionsBox) permissionsBox.style.display = 'none';
+                if (blockedBox) blockedBox.style.display = 'block';
+                if (blockedText) {
+                    if (isBanned) {
+                        const rem = formatRemainingBanTime(registeredApp.bannedUntil);
+                        const reasonPart = registeredApp.banReason ? ` Motivo: ${registeredApp.banReason}.` : '';
+                        blockedText.textContent = `Este aplicativo foi banido temporariamente na sua Central de Contas (tempo restante: ${rem}).${reasonPart}`;
+                        recordConnectedAppAccess(req, 'blocked_ban', email);
+                    } else {
+                        blockedText.textContent = 'O acesso deste aplicativo foi removido na sua Central de Contas. Reative o aplicativo nas configurações para autorizar o login novamente.';
+                        recordConnectedAppAccess(req, 'blocked_revoked', email);
+                    }
+                }
+                if (approveBtn) {
+                    approveBtn.disabled = true;
+                    approveBtn.style.opacity = '0.45';
+                    approveBtn.textContent = isBanned ? '⛔ Aplicativo Banido Temporariamente' : '🚫 Acesso Removido';
+                }
+            } else {
+                if (permissionsBox) permissionsBox.style.display = 'block';
+                if (blockedBox) blockedBox.style.display = 'none';
+                if (approveBtn) {
+                    approveBtn.disabled = false;
+                    approveBtn.style.opacity = '1';
+                    approveBtn.textContent = '✅ Autorizar e Conectar';
+                }
             }
 
             overlay.style.display = 'flex';
         }
 
-        function approveSynapseAuthPortal() {
+        function isJwtSessionLikelyExpired(session) {
+            if (!session || !session.access_token) return true;
+            if (session.expires_at) {
+                return Number(session.expires_at) <= (Math.floor(Date.now() / 1000) + 30);
+            }
+            try {
+                const parts = session.access_token.split('.');
+                if (parts.length === 3) {
+                    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+                    if (payload && payload.exp) {
+                        return Number(payload.exp) <= (Math.floor(Date.now() / 1000) + 30);
+                    }
+                }
+            } catch (e) {}
+            return false;
+        }
+
+        async function approveSynapseAuthPortal() {
             const req = window.activeSynapsePortalContext || window.pendingSynapsePortalRequest;
             if (!req) return;
 
+            const registeredApp = getConnectedApps().find(a => a.id === req.appId);
+            if (registeredApp && isAppTemporarilyBanned(registeredApp)) {
+                if (typeof showAppToast === 'function') {
+                    showAppToast(`"${registeredApp.name}" está banido temporariamente (${formatRemainingBanTime(registeredApp.bannedUntil)} restantes).`, 'warning');
+                }
+                return;
+            }
+            if (registeredApp && registeredApp.status === 'revoked') {
+                if (typeof showAppToast === 'function') {
+                    showAppToast(`O acesso de "${registeredApp.name}" foi removido na Central de Contas.`, 'warning');
+                }
+                return;
+            }
+
             if (!supabaseSession || !supabaseSession.user || !supabaseSession.access_token) {
+                updateAuthPortalBanner();
+                showAuthGateScreen();
+                return;
+            }
+
+            const approveBtn = document.getElementById('btn-portal-approve');
+            if (approveBtn) {
+                approveBtn.disabled = true;
+                approveBtn.textContent = 'Conectando...';
+            }
+
+            try {
+                if (isJwtSessionLikelyExpired(supabaseSession) && typeof refreshSupabaseToken === 'function') {
+                    await refreshSupabaseToken();
+                }
+            } catch (e) {}
+
+            if (!supabaseSession || !supabaseSession.user || !supabaseSession.access_token) {
+                if (approveBtn) {
+                    approveBtn.disabled = false;
+                    approveBtn.textContent = '✅ Autorizar e Conectar';
+                }
                 updateAuthPortalBanner();
                 showAuthGateScreen();
                 return;
@@ -30834,18 +32078,20 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             hashParams.set('synapse_email', email);
             hashParams.set('synapse_name', displayName);
             hashParams.set('synapse_app_id', req.appId);
+            hashParams.set('synapse_app_name', (registeredApp && registeredApp.name) || req.appName || '');
             if (req.state) {
                 hashParams.set('state', req.state);
             }
 
             if (req.isTestMode) {
+                recordConnectedAppAccess(req, 'sandbox_test', email);
                 const baseRedirect = req.redirectUri || getSynapsePublicAuthConfig().portalUrl;
                 const cleanBase = baseRedirect.split('#')[0];
                 const simulatedUrl = `${cleanBase}#${hashParams.toString()}`;
                 const previewObj = {
                     status: 'authorized',
                     app_id: req.appId,
-                    app_name: req.appName,
+                    app_name: (registeredApp && registeredApp.name) || req.appName,
                     state: req.state,
                     user: {
                         uid: user.id || '',
@@ -30865,6 +32111,10 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 if (sandboxBox) {
                     sandboxBox.style.display = 'block';
                 }
+                if (approveBtn) {
+                    approveBtn.disabled = false;
+                    approveBtn.textContent = '✅ Autorizar e Conectar';
+                }
                 if (typeof showAppToast === 'function') {
                     showAppToast('Teste concluído! Sessão autorizada com sucesso no Sandbox.', 'success');
                 }
@@ -30872,12 +32122,18 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             }
 
             const validTarget = sanitizeSynapseRedirectUri(req.redirectUri);
-            if (!validTarget) {
+            if (!validTarget || isSameSynapsePortalUrl(validTarget, getSynapsePublicAuthConfig().portalUrl)) {
+                if (approveBtn) {
+                    approveBtn.disabled = false;
+                    approveBtn.textContent = '✅ Autorizar e Conectar';
+                }
                 if (typeof showAppToast === 'function') {
-                    showAppToast('URL de retorno inválida. Operação cancelada por segurança.', 'error');
+                    showAppToast('URL de retorno inválida ou igual ao próprio Synapse. Edite o Callback URL do app na Central de Contas.', 'error');
                 }
                 return;
             }
+
+            recordConnectedAppAccess(req, 'authorized', email);
 
             if ((req.mode === 'popup' || window.opener) && window.opener) {
                 try {
@@ -30890,6 +32146,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                         synapse_email: email,
                         synapse_name: displayName,
                         synapse_app_id: req.appId,
+                        synapse_app_name: (registeredApp && registeredApp.name) || req.appName || '',
                         state: req.state || ''
                     }, targetOrigin);
                     window.pendingSynapsePortalRequest = null;
@@ -30906,7 +32163,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             window.activeSynapsePortalContext = null;
             exitSynapsePortalUiMode();
             const cleanTarget = validTarget.split('#')[0];
-            window.location.href = `${cleanTarget}#${hashParams.toString()}`;
+            window.location.replace(`${cleanTarget}#${hashParams.toString()}`);
         }
 
         function copyPortalSandboxResult() {
@@ -30933,9 +32190,49 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
             updateAuthPortalBanner();
         }
 
-        function cancelSynapseAuthPortal() {
+        function cancelSynapseAuthPortal(stayInSynapse = false) {
+            const req = window.activeSynapsePortalContext || window.pendingSynapsePortalRequest;
             const overlay = document.getElementById('synapse-auth-portal-overlay');
             if (overlay) overlay.style.display = 'none';
+
+            if (req && !req.isTestMode) {
+                recordConnectedAppAccess(req, 'cancelled');
+            }
+
+            if (!stayInSynapse && req && !req.isTestMode && req.redirectUri) {
+                const validTarget = sanitizeSynapseRedirectUri(req.redirectUri);
+                const registeredApp = getConnectedApps().find(a => a.id === req.appId);
+                const errCode = (registeredApp && isAppTemporarilyBanned(registeredApp))
+                    ? 'app_banned'
+                    : ((registeredApp && registeredApp.status === 'revoked') ? 'app_revoked' : 'access_denied');
+
+                if (validTarget && !isSameSynapsePortalUrl(validTarget, getSynapsePublicAuthConfig().portalUrl)) {
+                    if ((req.mode === 'popup' || window.opener) && window.opener) {
+                        try {
+                            window.opener.postMessage({
+                                type: 'SYNAPSE_AUTH_ERROR',
+                                error: errCode,
+                                message: 'Conexão cancelada ou bloqueada pelo usuário no Synapse.',
+                                state: req.state || ''
+                            }, new URL(validTarget).origin);
+                            window.pendingSynapsePortalRequest = null;
+                            window.activeSynapsePortalContext = null;
+                            exitSynapsePortalUiMode();
+                            window.close();
+                            return;
+                        } catch (e) {}
+                    }
+                    const errHash = new URLSearchParams();
+                    errHash.set('synapse_error', errCode);
+                    if (req.state) errHash.set('state', req.state);
+                    window.pendingSynapsePortalRequest = null;
+                    window.activeSynapsePortalContext = null;
+                    exitSynapsePortalUiMode();
+                    window.location.replace(`${validTarget.split('#')[0]}#${errHash.toString()}`);
+                    return;
+                }
+            }
+
             window.pendingSynapsePortalRequest = null;
             window.activeSynapsePortalContext = null;
             exitSynapsePortalUiMode();
@@ -30943,8 +32240,8 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
 
             try {
                 const url = new URL(window.location.href);
-                if (url.searchParams.has('synapse_auth') || url.searchParams.has('synapse_connect')) {
-                    ['synapse_auth', 'synapse_connect', 'app_id', 'app_name', 'redirect_uri', 'state', 'mode'].forEach(k => {
+                if (url.searchParams.has('synapse_auth') || url.searchParams.has('synapse_connect') || url.searchParams.has('app_id')) {
+                    ['synapse_auth', 'synapse_connect', 'sso', 'app_id', 'client_id', 'app_name', 'appName', 'client_name', 'redirect_uri', 'redirect_url', 'callback_url', 'callback', 'return_url', 'state', 'mode'].forEach(k => {
                         url.searchParams.delete(k);
                     });
                     window.history.replaceState({}, document.title, url.pathname + url.search + url.hash);
@@ -31049,12 +32346,17 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 </div>
             </div>
 
-            <div style="margin-bottom: 16px;">
+            <div id="portal-permissions-box" style="margin-bottom: 16px;">
                 <div style="font-size: 0.72rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 6px;">Permissões desta conexão</div>
                 <div style="display: flex; flex-direction: column; gap: 5px; font-size: 0.78rem; color: #e2e8f0;">
                     <div>• Identificação básica do perfil (nome e e-mail)</div>
                     <div>• Autenticação compartilhada com sua conta Synapse</div>
                 </div>
+            </div>
+
+            <div id="portal-blocked-box" style="display: none; margin-bottom: 16px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 14px; padding: 12px 14px;">
+                <div style="font-size: 0.8rem; font-weight: 800; color: #fca5a5; margin-bottom: 4px;">⛔ Conexão Bloqueada pela Central de Contas</div>
+                <div id="portal-blocked-text" style="font-size: 0.75rem; color: #fecaca; line-height: 1.45;"></div>
             </div>
 
             <div id="portal-sandbox-result" style="display: none; margin-bottom: 16px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 12px;">
@@ -31069,8 +32371,9 @@ Retorne EXCLUSIVAMENTE um objeto JSON válido (sem tags markdown ou wraps):
                 <button type="button" id="btn-portal-approve" onclick="approveSynapseAuthPortal()" style="width: 100%; min-height: 46px; border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.6); background: linear-gradient(135deg, #8b5cf6, #4f46e5); color: #ffffff; font-size: 0.88rem; font-weight: 800; cursor: pointer;">✅ Autorizar e Conectar</button>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                     <button type="button" id="btn-portal-switch" onclick="switchAccountForSynapsePortal()" style="min-height: 44px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.05); color: #e2e8f0; font-size: 0.78rem; font-weight: 700; cursor: pointer;">🔄 Trocar Conta</button>
-                    <button type="button" id="btn-portal-cancel" onclick="cancelSynapseAuthPortal()" style="min-height: 44px; border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.28); background: rgba(239, 68, 68, 0.1); color: #fca5a5; font-size: 0.78rem; font-weight: 700; cursor: pointer;">Cancelar</button>
+                    <button type="button" id="btn-portal-cancel" onclick="cancelSynapseAuthPortal(false)" style="min-height: 44px; border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.28); background: rgba(239, 68, 68, 0.1); color: #fca5a5; font-size: 0.78rem; font-weight: 700; cursor: pointer;">Cancelar</button>
                 </div>
+                <button type="button" onclick="cancelSynapseAuthPortal(true)" style="background: none; border: none; color: #94a3b8; font-size: 0.72rem; cursor: pointer; padding: 4px; text-decoration: underline;">Fechar portal e abrir o Synapse</button>
             </div>
         </div>
     </div>
